@@ -1,5 +1,5 @@
 import React, { forwardRef, Ref } from "react";
-import { FlexDirection, FlexJustifyContent, FlexWrap, TextAlign } from "../../abstract/CSSTypes";
+import { FlexAlignContent, FlexDirection, FlexJustifyContent, FlexWrap, TextAlign } from "../../abstract/CSSTypes";
 import HelperProps from "../../abstract/HelperProps";
 import HelperView from "./HelperView";
 import { FlexAlignType, View, ViewProps, ViewStyle } from "react-native";
@@ -10,7 +10,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
     /** Wont be set at all if ```undefined``` */
     horizontalAlign?: FlexJustifyContent,
     /** Wont be set at all if ```undefined``` */
-    verticalAlign?: FlexAlignType,
+    verticalAlign?: FlexAlignContent,
     /** If true, dont set display to "flex". Default is false. */
     disableFlex?: boolean,
     /** Default is "row". See {@link FlexDirection} */
@@ -43,7 +43,7 @@ export default forwardRef(function(
     return (
         <HelperView 
             style={{
-                alignItems: verticalAlign,
+                alignContent: verticalAlign,
                 display: "flex",
                 flexDirection: flexDirection,
                 flexWrap: flexWrap,

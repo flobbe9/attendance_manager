@@ -5,6 +5,7 @@ import { TextStyle, ViewStyle } from "react-native";
 
 type StyleType = ViewStyle;
 
+
 export class AttendanceLinkStyles {
     static component: DynamicStyles<StyleType> = {
         default: {
@@ -29,6 +30,6 @@ export class AttendanceLinkStyles {
 
     static icon: TextStyle = {
         fontSize: 25,
-        marginStart: 5
+        marginStart: 5,
     }
 }

@@ -1,38 +1,50 @@
 import { DynamicStyles } from "@/abstract/DynamicStyles";
-import { ViewStyle } from "react-native";
+import { TextStyle, ViewStyle } from "react-native";
+import { HelperStyles } from "./helperStyles";
 
 
 type StyleType = ViewStyle;
+
+const componentPadding = 10;
+
+const addButtonWidth = 60;
+const addButtonPosition = 20;
 
 
 export class AttendanceIndexStyles {
     static component: DynamicStyles<StyleType> = {
         default: {
-            padding: 10
+            padding: componentPadding,
+            height: "100%"
         }
     }
 
     static link: DynamicStyles<StyleType> = {
         default: {
-            marginBottom: 10
+            marginBottom: componentPadding
         }
     }
 
-    // TODO: 
-        // button ripple border radius
-        // helper button should just pass dynamic styls to helperview?
-        // remove helperprops in most other components
+    static addButtonOuterView: DynamicStyles<StyleType> = {
+        default: {
+            bottom: addButtonPosition,
+            position: "absolute",
+            right: addButtonPosition,
+        }
+    }
+    
     static addButton: DynamicStyles<StyleType> = {
         default: {
-            backgroundColor: "gray",
             borderRadius: "100%",
-            bottom: 10,
-            // position: "fixed",
-            padding: 20,
-            right: 10,
-        },
-        touchStart: {
-            backgroundColor: "blue"
+            height: addButtonWidth,
+            width: addButtonWidth,
+        }
+    }
+
+    static buttonIcon: DynamicStyles<TextStyle> = {
+        default: {
+            fontSize: 20,
+            ...HelperStyles.fitContent
         }
     }
 }

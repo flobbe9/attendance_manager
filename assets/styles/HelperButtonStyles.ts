@@ -8,12 +8,9 @@ type StyleType = ViewStyle;
 export class HelperButtonStyles {
     static component: DynamicStyles<StyleType> = {
         default: {
-            backgroundColor: "#2196F3",
-            // ...HelperStyles.fitContent,
-            ...HelperStyles.flexCenter,
-        },
-        touchStart: {
-            backgroundColor: "red"
+            backgroundColor: "rgb(220, 220, 220)",
+            padding: 10,
+            ...HelperStyles.fitContent,
         }
     }
 }

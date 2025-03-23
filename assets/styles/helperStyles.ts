@@ -15,7 +15,10 @@ export class HelperStyles {
     static disabled: StyleType = { opacity: 0.5 };
     /** Css equivalent: ```width: "fit-content"``` */
     static fitContent: StyleType = { alignSelf: 'flex-start' };
-    static flex: ViewStyle = { display: "flex" };
+    static flex: ViewStyle = { 
+        display: "flex", 
+        flexDirection: "row"
+    };
     static flexCenter: ViewStyle = { 
         ...this.flex,
         justifyContent: "center", 
