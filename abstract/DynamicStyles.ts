@@ -1,0 +1,57 @@
+
+/**
+ * Replaces css pseudo classes like ```:focus``` and ```:hover``` with respective mobile properties. 
+ * 
+ * Use ```useDynamicStyles``` or ```useDefaultProps``` to apply dynamic styles to any component.
+ * 
+ * NOTE: For any property added to this interface, an "add"- and "remove"-style event handler should be
+ * added to the ```useDynamicStyles``` hook.
+ * 
+ * @since 0.0.1
+ */
+export interface DynamicStyles<StyleType> {
+    /** The 'static' styles that are always applied */
+    default?: StyleType
+    focus?: StyleType
+    blur?: StyleType
+    touchStart?: StyleType,
+    touchEnd?: StyleType
+}
+
+
+/**
+ * Creates one single object of given dynamic styles. ```dynamicStyles2``` props will have priority in case of duplicate props.
+ * 
+ * @param dynamicStyles1 
+ * @param dynamicStyles2 
+ * @returns single dynamic styles object
+ */
+export function combineDynamicStyles<StyleType>(dynamicStyles1: DynamicStyles<StyleType>, dynamicStyles2: DynamicStyles<StyleType>): DynamicStyles<StyleType> {
+
+    if (!dynamicStyles1 && !dynamicStyles2)
+        return {};
+
+    if (!dynamicStyles1)
+        return dynamicStyles2;
+    
+    if (!dynamicStyles2)
+        return dynamicStyles1;
+
+    Object.keys(dynamicStyles2)
+        .forEach(key => {
+            const dynamicStyles1Value = dynamicStyles1[key];
+            const dynamicStyles2Value = dynamicStyles2[key];
+
+            // case: nothing to combine
+            if (!dynamicStyles2Value)
+                return;
+        
+            if (!dynamicStyles1Value)
+                dynamicStyles1[key] = dynamicStyles2Value;
+
+            else
+                dynamicStyles1[key] = {...dynamicStyles1Value, ...dynamicStyles2Value};
+        })
+
+    return dynamicStyles1;
+}
