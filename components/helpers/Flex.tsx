@@ -3,6 +3,7 @@ import { FlexAlignContent, FlexDirection, FlexJustifyContent, FlexWrap, TextAlig
 import HelperProps from "../../abstract/HelperProps";
 import HelperView from "./HelperView";
 import { FlexAlignType, View, ViewProps, ViewStyle } from "react-native";
+import { isBlank } from "@/utils/utils";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -10,7 +11,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
     /** Wont be set at all if ```undefined``` */
     horizontalAlign?: FlexJustifyContent,
     /** Wont be set at all if ```undefined``` */
-    verticalAlign?: FlexAlignContent,
+    verticalAlign?: FlexAlignType,
     /** If true, dont set display to "flex". Default is false. */
     disableFlex?: boolean,
     /** Default is "row". See {@link FlexDirection} */
@@ -40,10 +41,19 @@ export default forwardRef(function(
     ref: Ref<View>
 ) {
 
+    function parseAlignContent(): FlexAlignContent | undefined {
+
+        if (isBlank(verticalAlign) || verticalAlign === "baseline")
+            return;
+
+        return verticalAlign;
+    }
+
     return (
-        <HelperView 
+        <HelperView
             style={{
-                alignContent: verticalAlign,
+                alignItems: verticalAlign,
+                alignContent: parseAlignContent(),
                 display: "flex",
                 flexDirection: flexDirection,
                 flexWrap: flexWrap,

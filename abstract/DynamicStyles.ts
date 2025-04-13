@@ -15,7 +15,9 @@ export interface DynamicStyles<StyleType> {
     focus?: StyleType
     blur?: StyleType
     touchStart?: StyleType,
-    touchEnd?: StyleType
+    touchEnd?: StyleType,
+    pressIn?: StyleType,
+    pressOut?: StyleType,
 }
 
 
@@ -24,7 +26,7 @@ export interface DynamicStyles<StyleType> {
  * 
  * @param dynamicStyles1 
  * @param dynamicStyles2 
- * @returns single dynamic styles object
+ * @returns single dynamic styles object (new instance)
  */
 export function combineDynamicStyles<StyleType>(dynamicStyles1: DynamicStyles<StyleType>, dynamicStyles2: DynamicStyles<StyleType>): DynamicStyles<StyleType> {
 
@@ -37,21 +39,25 @@ export function combineDynamicStyles<StyleType>(dynamicStyles1: DynamicStyles<St
     if (!dynamicStyles2)
         return dynamicStyles1;
 
+    const combined: DynamicStyles<StyleType> = {};
+
     Object.keys(dynamicStyles2)
         .forEach(key => {
             const dynamicStyles1Value = dynamicStyles1[key];
             const dynamicStyles2Value = dynamicStyles2[key];
 
-            // case: nothing to combine
-            if (!dynamicStyles2Value)
-                return;
-        
-            if (!dynamicStyles1Value)
-                dynamicStyles1[key] = dynamicStyles2Value;
+            // case: only style 1
+            if (!dynamicStyles2Value) {
+                combined[key] = dynamicStyles1Value;
+                
+            // case: only style 2
+            } else if (!dynamicStyles1Value)
+                combined[key] = dynamicStyles2Value;
 
+            // case: both
             else
-                dynamicStyles1[key] = {...dynamicStyles1Value, ...dynamicStyles2Value};
-        })
+                combined[key] = {...dynamicStyles1Value, ...dynamicStyles2Value};
+        });
 
-    return dynamicStyles1;
+    return combined;
 }

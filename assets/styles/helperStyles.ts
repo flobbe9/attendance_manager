@@ -15,13 +15,15 @@ export class HelperStyles {
     static disabled: StyleType = { opacity: 0.5 };
     /** Css equivalent: ```width: "fit-content"``` */
     static fitContent: StyleType = { alignSelf: 'flex-start' };
-    static flex: ViewStyle = { 
+    static flex: StyleType = { 
         display: "flex", 
-        flexDirection: "row"
+        flexDirection: "row",
+        flexWrap: "wrap"
     };
-    static flexCenter: ViewStyle = { 
+    static flexCenter: StyleType = { 
         ...this.flex,
         justifyContent: "center", 
-        alignContent: "center" 
+        alignItems: "center",
+        alignContent: "center"  // this is needed in combination with alignSelf: 'flex-start'
     };
 }

@@ -1,7 +1,6 @@
 /**
  * NOTE: cannot import from modules that import from utils.ts because that would create a cycle.
  */
-import { AnimationEasing } from "@/abstract/CSSTypes";
 import { CSSProperties } from "react";
 
 
@@ -55,6 +54,16 @@ export function isArrayFalsy(array: any[] | null | undefined): boolean {
 export function isStringFalsy(str: string | null | undefined): boolean {
 
     return str === undefined || str === null;
+}
+
+
+/**
+ * @param thing to check
+ * @returns ```true``` if ```thing === undefined || thing === null```
+ */
+export function isAnyFalsy(thing: any): boolean {
+
+    return thing === undefined || thing === null;
 }
 
 
@@ -744,205 +753,6 @@ export function isPathRelative(path: string | undefined | null): boolean {
 
 
 /**
- * Animate element from transparent to solid and set ```display = 'block'```.
- * 
- * @param element to fade in
- * @param duration time the animation will take in ms. Default is 100
- * @param easing animation function, see {@link AnimationEasing}
- * @param options more animation options, see {@link KeyframeAnimationOptions}
- * @param onComplete callback to execute on animation completion
- */
-export async function fadeIn(element: HTMLElement | undefined | null, duration = 100, easing?: AnimationEasing, options?: KeyframeAnimationOptions, onComplete?: () => void): Promise<void> {
-
-    if (!element)
-        return;
-
-    element.style.display = "block";
-    const animation = element.animate(
-        [
-            { opacity: 0 }, 
-            { opacity: 1 }
-        ],
-        { 
-            duration, 
-            easing, 
-            ...(options || {}) 
-        }
-    );
-
-    await animation.finished;
-
-    if (onComplete)
-        onComplete();
-}
-
-
-/**
- * Animate element to transparent, then set ```display = 'none'```. Resolves once animation is finished.
- * 
- * @param element to fade out
- * @param duration time the animation will take in ms. Default is 100
- * @param easing animation function, see {@link AnimationEasing}
- * @param options more animation options, see {@link KeyframeAnimationOptions}
- * @param onComplete callback to execute on animation completion
- */
-export async function fadeOut(element: HTMLElement | undefined | null, duration = 100, easing?: AnimationEasing, options?: KeyframeAnimationOptions, onComplete?: () => void): Promise<void> {
-
-    if (!element)
-        return;
-
-    if (isNumberFalsy(duration))
-        duration = 100;
-
-    const opacity = stringToNumber(window.getComputedStyle(element).getPropertyValue("opacity"));
-    const animation = element.animate(
-        [
-            { opacity: opacity === -1 ? 1 : opacity }, 
-            { opacity: 0 }
-        ],
-        { 
-            duration, 
-            easing, 
-            ...(options || {}) 
-        }
-    );
-
-    await animation.finished;
-
-    element.style.display = "none";
-    
-    if (onComplete)
-        onComplete();
-}
-
-
-/**
- * Sets ```display = "block"```, animates height to given ```elements``` actual height, starting from 0 and then commits that height.
- * 
- * @param element to slide down
- * @param duration time the animation will take in ms. Default is 100
- * @param easing animation function, see {@link AnimationEasing}
- * @param options more animation options, see {@link KeyframeAnimationOptions}
- * @param onComplete callback to execute on animation completion
- */
-export async function slideDown(element: HTMLElement | undefined | null, duration = 100, easing?: AnimationEasing, options?: KeyframeAnimationOptions, onComplete?: () => void): Promise<void> {
-    
-    if (!element)
-        return;
-
-    if (isNumberFalsy(duration))
-        duration = 100;
-
-    element.style.display = "block";
-
-    const actualHeight = element.offsetHeight;
-
-    await animateAndCommit(
-        element,
-        [{ height: "0px" }, { height: actualHeight + "px" }],
-        { 
-            duration, 
-            easing, 
-            ...(options || {}) 
-        },
-        onComplete
-    );
-}
-
-
-/**
- * Animates height to 0, assuming that given ```element``` had a larger height, then sets ```display = "none"```. Wont commit 0 as height. Resolves once animation is finished.
- * 
- * @param element to slide down
- * @param duration time the animation will take in ms. Default is 100
- * @param easing animation function, see {@link AnimationEasing}
- * @param options more animation options, see {@link KeyframeAnimationOptions}
- * @param onComplete callback to execute on animation completion
- */
-export async function slideUp(element: HTMLElement | undefined | null, duration = 100, easing?: AnimationEasing, options?: KeyframeAnimationOptions, onComplete?: () => void): Promise<void> {
-    
-    if (!element)
-        return;
-
-    if (isNumberFalsy(duration))
-        duration = 100;
-
-    const animation = element.animate(
-        [{ height: window.getComputedStyle(element).getPropertyValue("height") }, { height: "0px" }],
-        { 
-            duration, 
-            easing, 
-            ...(options || {}) 
-        },
-    );
-
-    await animation.finished;
-    
-    element.style.display = "none";
-
-    if (onComplete)
-        onComplete();
-}
-
-
-/**
- * Play (cancel that is) all animations of given element.
- * 
- * @param element to play all animations for
- */
-export function playAnimations(element: HTMLElement): void {
-
-    if (!element)
-        return;
-
-    const animations = element.getAnimations();
-    if (!animations || !animations.length)
-        return;
-
-    animations
-        .forEach(animation => animation.play());
-}
-
-
-/**
- * Pause (cancel that is) all animations of given element.
- * 
- * @param element to pause all animations for
- */
-export function pauseAnimations(element: HTMLElement): void {
-
-    if (!element)
-        return;
-
-    const animations = element.getAnimations();
-    if (!animations || !animations.length)
-        return;
-
-    animations
-        .forEach(animation => animation.pause());
-}
-
-
-/**
- * Stop (cancel that is) all animations of given element.
- * 
- * @param element to stop all animations for
- */
-export function stopAnimations(element: HTMLElement): void {
-
-    if (!element)
-        return;
-
-    const animations = element.getAnimations();
-    if (!animations || !animations.length)
-        return;
-
-    animations
-        .forEach(animation => animation.cancel());
-}
-
-
-/**
  * @param strNode to parse to element. Should be one node but may have any number of children
  * @returns the html element or an empty ```<div>``` element if arg is falsy
  */
@@ -1000,40 +810,6 @@ export function removeClass(element: HTMLElement | undefined | null, ...classNam
             if (!isBlank(className))
                 element.classList.remove(className);
         });
-}
-
-
-/**
- * Basically calls ```animate()``` but will commit any animation styles to ```element.style```.
- * 
- * @param element to animate styles of
- * @param keyframes see {@link KeyFrame} and {@link PropertyIndexedKeyframes}
- * @param options of the animation. Will set ```fill = "both"``` by default, this can be overridden though
- * @param onComplete callback to execute on animation completion
- * @returns the animation or ```null``` if given ```element``` is falsy
- */
-export async function animateAndCommit(element: HTMLElement | undefined | null, keyframes: Keyframe[] | PropertyIndexedKeyframes | null, options?: KeyframeAnimationOptions, onComplete?: () => void): Promise<Animation | null> {
-
-    if (!element)
-        return null;
-
-    const animation = element.animate(keyframes, {
-        fill: "both",
-        ...options
-    });
-
-    try {
-        await animation.finished;
-        animation.commitStyles();
-        
-    // might throw AbortError or InvalidStateError, happens when animation is canceled before finished, has no consequences though
-    } catch (e) {
-    }
-    
-    if (onComplete)
-        onComplete();
-
-    return animation
 }
 
 

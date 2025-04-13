@@ -3,11 +3,12 @@ import { HelperButtonStyles } from "@/assets/styles/HelperButtonStyles";
 import { HelperStyles } from "@/assets/styles/helperStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { forwardRef, Ref } from "react";
-import { ColorValue, TouchableNativeFeedback, View, ViewProps, ViewStyle } from "react-native";
+import { ColorValue, GestureResponderEvent, TouchableNativeFeedback, View, ViewProps, ViewStyle } from "react-native";
 import Flex from "./Flex";
 import HelperView from "./HelperView";
 import { DynamicStyles } from "@/abstract/DynamicStyles";
 import { useDynamicStyles } from "@/hooks/useDynamicStyles";
+import { log } from "@/utils/logUtils";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -15,7 +16,9 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
     /** Configure the ripple effect on press. ```undefined``` will make the ripple color adjust to the current background color. ```null``` will disable the ripple effect */
     ripple?: { rippleBackground: ColorValue } | null,
     /** Applied to the outer most tag of this component. Should only be used for positioning and component dimensions. */
-    outerViewPropsStyles?: DynamicStyles<ViewStyle>
+    containerStyles?: DynamicStyles<ViewStyle>,
+    /** For this component to be a child of a ```<Link>```. Is passed to ```<TouchableNativeFeedback>```  */
+    onPress?: (event?: GestureResponderEvent) => void
 }
 
 
@@ -28,7 +31,8 @@ export default forwardRef(function HelperButton(
     {
         disabled,
         ripple,
-        outerViewPropsStyles,
+        containerStyles,
+        onPress,
         ...props
     }: Props,
     ref: Ref<View>
@@ -37,8 +41,8 @@ export default forwardRef(function HelperButton(
     const componentName = "HelperButton";
     const { children, style, ...otherProps } = useHelperProps(props, componentName, HelperButtonStyles.component);
 
-    const { currentStyles: outerViewStyles, eventHandlers: outerViewEventHandlers } = useDynamicStyles(outerViewPropsStyles);
-    
+    const { currentStyles: componentStyles, eventHandlers: containerEventHandlers } = useDynamicStyles(containerStyles);
+
     return (
         <HelperView 
             style={{
@@ -46,11 +50,11 @@ export default forwardRef(function HelperButton(
                 borderRadius: (style as ViewStyle).borderRadius, 
                 overflow: "hidden",
                 ...HelperStyles.fitContent,
-                ...outerViewStyles,
+                ...componentStyles,
             }}
-            {...outerViewEventHandlers}
+            {...containerEventHandlers}
         >
-            <TouchableNativeFeedback background={ripple === null ? null : TouchableNativeFeedback.Ripple(ripple?.rippleBackground, false)}>
+            <TouchableNativeFeedback onPress={onPress} background={ripple === null ? null : TouchableNativeFeedback.Ripple(ripple?.rippleBackground, false)}>
                 <Flex
                     horizontalAlign="center"
                     verticalAlign="center"

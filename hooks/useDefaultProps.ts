@@ -23,15 +23,17 @@ import { AnimatedStyleProp } from "@/abstract/AnimatedStyleProp";
  */
 export function useDefaultProps<PropsType, StyleType>(
     props: DefaultProps<StyleType> & PropsType, 
-    componentName?: string,
+    componentName = "",
     dynamicStyles: DynamicStyles<StyleType> = {},
     animatedStyles?: AnimatedStyleProp<StyleType>[],
     componentNameAsId = false,
 ): DefaultProps<StyleType> & PropsType {
 
-    componentName = componentName || "";
-
-    const { eventHandlers: dynamicStylesEventHandlers, currentStyles } = useDynamicStyles<StyleType>(dynamicStyles, props.style, animatedStyles);
+    const { eventHandlers: dynamicStylesEventHandlers, currentStyles } = useDynamicStyles<StyleType>(
+        dynamicStyles, 
+        props.style, 
+        animatedStyles
+    );
 
     const [eventHandlers, setEvenHandlers] = useState({});
 
@@ -43,6 +45,9 @@ export function useDefaultProps<PropsType, StyleType>(
 
 
     /**
+     * This will "clone" the event handler function causing it to loose it's state. Will only clone, if a dynamicStyle eventhandler
+     * is present.
+     * 
      * @returns event handler functions calling both the dynamic style callback and the props[eventHandler] callback
      */
     function collectEventHandlers(): object {
@@ -54,12 +59,14 @@ export function useDefaultProps<PropsType, StyleType>(
 
         Object.keys(dynamicStylesEventHandlers)
             .forEach(eventHandlerName => {
-                eventHandlers[eventHandlerName] = (event) => {
-                    dynamicStylesEventHandlers[eventHandlerName]();
+                // only reassign if dynamicstyle event handler is present
+                if (dynamicStyles[eventHandlerName])
+                    eventHandlers[eventHandlerName] = (event) => {
+                        dynamicStylesEventHandlers[eventHandlerName]();
 
-                    if (props[eventHandlerName])
-                        props[eventHandlerName](event);
-                }
+                        if (props[eventHandlerName])
+                            props[eventHandlerName](event);
+                    }
             });
 
         return eventHandlers;
@@ -70,6 +77,6 @@ export function useDefaultProps<PropsType, StyleType>(
         ...eventHandlers,
         id: props.id || componentNameAsId ? componentName + (props.id || "") : undefined,
         className: componentName + " " + (props.className || ""),
-        style: {...currentStyles}
+        style: currentStyles
     };
 }

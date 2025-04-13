@@ -2,7 +2,7 @@ import { AnimatedStyleProp } from "@/abstract/AnimatedStyleProp";
 import { DynamicStyles } from "@/abstract/DynamicStyles";
 import { log, logWarn } from "@/utils/logUtils";
 import { TRANSITION_DURATION } from "@/utils/styleConstants";
-import { cloneObj, flatMapObject } from "@/utils/utils";
+import { cloneObj, flatMapObject, isAnyFalsy } from "@/utils/utils";
 import { useEffect, useState } from "react";
 import { Animated, StyleProp } from "react-native";
 import { useHasComponentMounted } from './useHasComponentMounted';
@@ -10,6 +10,8 @@ import { useHasComponentMounted } from './useHasComponentMounted';
 
 /**
  * Adds or removes certain styles for given ```styles``` using eventhandlers. 
+ * 
+ * NOTE: all style object are cloned to the deepest level which will result in them loosing their state. Use plain react-native components for that.
  * 
  * @param dynamicStyles the complete stylesheet including all dynamic styles, even if they shouldn't be applied on render
  * @param propsStyles the styles object passed to the component props of the component calling this hook. Will be added to default styles and 
@@ -36,7 +38,7 @@ export function useDynamicStyles<StyleType>(
 
     useEffect(() => {
         setCurrentStylesFlat(flatMapObject(currentStyles) as StyleType);
-        
+
     }, [currentStyles]);
 
 
@@ -64,12 +66,12 @@ export function useDynamicStyles<StyleType>(
             const fromStyleValue = initStyles.default[animatedStyleProp.styleProp];
             const toStyleValue = initStyles[animatedStyleProp.event][animatedStyleProp.styleProp];
 
-            if (!fromStyleValue) {
+            if (isAnyFalsy(fromStyleValue)) {
                 logWarn(`Missing 'fromStyleValue' for event '${animatedStyleProp.event}'`);
                 return;
             }
 
-            if (!toStyleValue) {
+            if (isAnyFalsy(toStyleValue)) {
                 logWarn(`Missing 'toStyleValue' for event '${animatedStyleProp.event}'`);
                 return;
             }
@@ -122,6 +124,32 @@ export function useDynamicStyles<StyleType>(
         startAnimations("touchEnd");
 
         addStyles("touchEnd");
+    }
+        
+
+    /**
+     * NOTE: triggered only when onPress event is present
+     */
+    function onPressIn(): void {
+
+        startAnimations("pressIn");
+        startAnimations("pressOut", true);
+
+        removeStyles("pressOut");
+        addStyles("pressIn");
+    }
+
+
+    /**
+     * NOTE: triggered only when onPress event is present
+     */
+    function onPressOut(): void {
+
+        startAnimations("pressOut");
+        startAnimations("pressIn", true);
+
+        removeStyles("pressIn");
+        addStyles("pressOut");
     }
 
 
@@ -185,7 +213,9 @@ export function useDynamicStyles<StyleType>(
             onFocus,
             onBlur,
             onTouchStart,
-            onTouchEnd
+            onTouchEnd,
+            onPressIn,
+            onPressOut
         },
         /** Add the styles with given key to the curentStyles state */
         addStyles,

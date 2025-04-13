@@ -20,7 +20,17 @@ export function useHelperProps<PropsType, StyleType>(
     dynamicStyles: DynamicStyles<StyleType> = {},
     animatedStyles: AnimatedStyleProp<StyleType>[] = [],
     componentNameAsId = false,
+    dontClonePropsStyle = false
 ): HelperProps<StyleType> & PropsType {
 
-    return useDefaultProps(props, componentName, combineDynamicStyles(dynamicStyles, props.dynamicStyles), [...animatedStyles, ...(props.animatedStyles || [])], componentNameAsId);
+    /** Get rid of props.dynamicStyles as its handled seperatly */
+    const { dynamicStyles: propsDynamicStyles, ...otherProps } = props;
+    
+    return useDefaultProps(
+        otherProps as PropsType, 
+        componentName, 
+        combineDynamicStyles(dynamicStyles, propsDynamicStyles), 
+        [...animatedStyles, ...(props.animatedStyles || [])], 
+        componentNameAsId
+    );
 }
