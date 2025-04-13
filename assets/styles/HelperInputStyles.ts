@@ -6,7 +6,7 @@ import { Animated, TextStyle, ViewStyle } from "react-native";
 type StyleType = TextStyle;
 
 
-export class HelperTextInputStyles {
+export class HelperInputStyles {
     static component: DynamicStyles<StyleType> = {
         default: {
             borderWidth: 1

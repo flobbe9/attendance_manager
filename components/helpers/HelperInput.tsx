@@ -1,27 +1,29 @@
 import HelperProps from "@/abstract/HelperProps";
-import "@/assets/styles/HelperTextInputStyles";
-import { getAnimatedBackgroundColorProp, HelperTextInputStyles } from "@/assets/styles/HelperTextInputStyles";
 import { useDynamicStyles } from "@/hooks/useDynamicStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { forwardRef, Ref, useImperativeHandle, useRef } from "react";
-import { NativeSyntheticEvent, TextInput, TextInputFocusEventData, TextInputProps, TextStyle, useAnimatedValue } from "react-native";
+import { KeyboardTypeOptions, NativeSyntheticEvent, TextInput, TextInputFocusEventData, TextInputProps, TextStyle, useAnimatedValue, ViewStyle } from "react-native";
 import HelperView from "./HelperView";
+import { getAnimatedBackgroundColorProp, HelperInputStyles } from "@/assets/styles/HelperInputStyles";
+import { combineDynamicStyles, DynamicStyles } from "@/abstract/DynamicStyles";
+import HelperText from "./HelperText";
+import { HelperStyles } from "@/assets/styles/helperStyles";
 
 
 interface Props extends HelperProps<TextStyle>, TextInputProps {
     disabled?: boolean
-    value: string,
-    setValue: (value: string) => void,
+    setValue?: (value: string) => void,
+    containerStyles?: DynamicStyles<ViewStyle>
 }
 
 
 /**
  * @since 0.0.1
  */
-export default forwardRef(function HelperTextInput({
+export default forwardRef(function HelperInput({
     rendered,
     disabled,
-    value,
+    containerStyles,
     setValue,
     onRender,
     onChangeText: onChangeTextProps,
@@ -32,9 +34,9 @@ export default forwardRef(function HelperTextInput({
 
     const animatedBackgroundColor = useAnimatedValue(0);
     
-    const componentName = "HelperTextInput";
-    const { onFocus: propsOnFocus, onBlur: propsOnBlur, ...otherProps } = useHelperProps<TextInputProps, TextStyle>(props, componentName, HelperTextInputStyles.component);
-    const { eventHandlers: viewEventHandlers, currentStyles: viewStyles } = useDynamicStyles(HelperTextInputStyles.view, {}, [getAnimatedBackgroundColorProp(animatedBackgroundColor)])
+    const componentName = "HelperInput";
+    const { children, onFocus: propsOnFocus, onBlur: propsOnBlur, style, ...otherProps } = useHelperProps<TextInputProps, TextStyle>(props, componentName, HelperInputStyles.component);
+    const { eventHandlers: viewEventHandlers, currentStyles: viewStyles } = useDynamicStyles(combineDynamicStyles(HelperInputStyles.view, containerStyles), {}, [getAnimatedBackgroundColorProp(animatedBackgroundColor)])
 
     
     useImperativeHandle(ref, () => componentRef.current!, []);
@@ -45,7 +47,8 @@ export default forwardRef(function HelperTextInput({
         if (onChangeTextProps)
             onChangeTextProps(value);
 
-        setValue(value);
+        if (setValue)
+            setValue(value);
     }
 
 
@@ -63,21 +66,28 @@ export default forwardRef(function HelperTextInput({
         if (propsOnBlur)
             propsOnBlur(event);
 
-        viewEventHandlers.onBlur();
+        viewEventHandlers.onBlur(); 
     }
 
 
     return (
         <HelperView style={viewStyles} onRender={onRender} rendered={rendered}>
-            <TextInput 
+            <TextInput
                 ref={ref}
                 editable={!disabled}
                 selectTextOnFocus={!disabled}
                 onChangeText={onChangeText}
                 onFocus={onFocus}
                 onBlur={onBlur}
+                style={{
+                    ...(disabled ? HelperStyles.disabled : {}),
+                    ...style as object,
+                }}
+                returnKeyType={otherProps.multiline ? "none" : "default"}
                 {...otherProps}
             />
+
+            {children}
         </HelperView>
     )
 })
