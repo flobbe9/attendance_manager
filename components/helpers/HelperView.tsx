@@ -24,9 +24,6 @@ export default forwardRef(function HelperView(
     ref: Ref<View>
 ) {
 
-    if (rendered === false)
-        return <Fragment />;
-
     const { children, ...otherProps } = useHelperProps(props, undefined, dynamicStyles, animatedStyles);
 
     const componentRef = useRef<View>(null);
@@ -39,6 +36,10 @@ export default forwardRef(function HelperView(
             onRender();    
 
     }, []);    
+    
+
+    if (!rendered)
+        return <Fragment />
 
 
     return (

@@ -1,8 +1,8 @@
 import HelperProps from "@/abstract/HelperProps";
 import { useDynamicStyles } from "@/hooks/useDynamicStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
-import React, { forwardRef, Ref, useImperativeHandle, useRef } from "react";
-import { KeyboardTypeOptions, NativeSyntheticEvent, TextInput, TextInputFocusEventData, TextInputProps, TextStyle, useAnimatedValue, ViewStyle } from "react-native";
+import React, { forwardRef, Fragment, Ref, useEffect, useImperativeHandle, useRef } from "react";
+import { Animated, KeyboardTypeOptions, NativeSyntheticEvent, TextInput, TextInputFocusEventData, TextInputProps, TextStyle, useAnimatedValue, View, ViewStyle } from "react-native";
 import HelperView from "./HelperView";
 import { getAnimatedBackgroundColorProp, HelperInputStyles } from "@/assets/styles/HelperInputStyles";
 import { combineDynamicStyles, DynamicStyles } from "@/abstract/DynamicStyles";
@@ -20,15 +20,18 @@ interface Props extends HelperProps<TextStyle>, TextInputProps {
 /**
  * @since 0.0.1
  */
-export default forwardRef(function HelperInput({
-    rendered,
-    disabled,
-    containerStyles,
-    setValue,
-    onRender,
-    onChangeText: onChangeTextProps,
-    ...props
-}: Props, ref: Ref<TextInput>) {
+export default forwardRef(function HelperInput(
+    {
+        rendered = true,
+        disabled,
+        containerStyles,
+        setValue,
+        onRender,
+        onChangeText: onChangeTextProps,
+        ...props
+    }: Props, 
+    ref: Ref<TextInput>
+) {
 
     const componentRef = useRef<TextInput>(null);
 
@@ -36,10 +39,24 @@ export default forwardRef(function HelperInput({
     
     const componentName = "HelperInput";
     const { children, onFocus: propsOnFocus, onBlur: propsOnBlur, style, ...otherProps } = useHelperProps<TextInputProps, TextStyle>(props, componentName, HelperInputStyles.component);
-    const { eventHandlers: viewEventHandlers, currentStyles: viewStyles } = useDynamicStyles(combineDynamicStyles(HelperInputStyles.view, containerStyles), {}, [getAnimatedBackgroundColorProp(animatedBackgroundColor)])
+    const { eventHandlers: viewEventHandlers, currentStyles: viewStyles } = useDynamicStyles(
+        combineDynamicStyles(HelperInputStyles.view, containerStyles), 
+        {}, 
+        [getAnimatedBackgroundColorProp(animatedBackgroundColor)]
+    );
 
     
     useImperativeHandle(ref, () => componentRef.current!, []);
+
+
+    useEffect(() => {
+        if (onRender)
+            onRender();
+    }, []);
+
+    
+    if (!rendered)
+        return <Fragment />;
 
 
     function onChangeText(value: string): void {
@@ -71,7 +88,7 @@ export default forwardRef(function HelperInput({
 
 
     return (
-        <HelperView style={viewStyles} onRender={onRender} rendered={rendered}>
+        <Animated.View style={viewStyles}>
             <TextInput
                 ref={ref}
                 editable={!disabled}
@@ -88,6 +105,6 @@ export default forwardRef(function HelperInput({
             />
 
             {children}
-        </HelperView>
+        </Animated.View>
     )
 })
