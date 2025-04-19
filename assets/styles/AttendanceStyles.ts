@@ -1,14 +1,83 @@
 import { DynamicStyles } from "@/abstract/DynamicStyles";
-import { ViewStyle } from "react-native";
+import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { TextStyle, ViewStyle } from "react-native";
+import { HelperStyles } from "./helperStyles";
 
 
 type StyleType = ViewStyle;
+
+/** The padding a <List.Accordion> element has, which I can't get rid of */
+const accordionPadding = 5;
 
 
 export class AttendanceStyles {
     static component: DynamicStyles<StyleType> = {
         default: {
+            height: "100%",
+            padding: GLOBAL_SCREEN_PADDING,
+        }
+    }
+    
+    static heading: DynamicStyles<TextStyle> = {
+        default: {
+            fontSize: 20,
+            fontWeight: "bold",
+            marginBottom: GLOBAL_SCREEN_PADDING
+        }
+    }
 
+    static subHeading: DynamicStyles<TextStyle> = {
+        default: {
+            fontSize: 17,
+        }
+    }
+
+    static inputContainer: DynamicStyles<ViewStyle> = {
+        default: {
+            marginBottom: 30
+        }
+    }
+
+    static defaultHelperInputContainer: DynamicStyles<ViewStyle & TextStyle> = {
+        default: {
+            backgroundColor: "rgb(220, 220, 220)",
+        },
+        focus: {
+            backgroundColor: "rgb(240, 240, 240)"
+        }
+    }
+
+    static defaultMultilineHelperInput: DynamicStyles<TextStyle> = {
+        default: {
+            ...this.defaultHelperInputContainer.default,
+            ...HelperStyles.flexCenter,
+            maxHeight: 200,
+            minHeight: 80,
+        },
+        focus: {
+            ...this.defaultHelperInputContainer.focus
+        }
+    }
+
+    static examinerIconContainer: DynamicStyles<ViewStyle> = {
+        default: {
+            marginRight: 10,
+            marginTop: GLOBAL_SCREEN_PADDING + accordionPadding
+        }
+    }
+    
+    static examinerIcon: TextStyle = {
+        fontSize: 30,
+        flexShrink: 0,
+        marginRight: 5,
+        marginTop: 15
+    }
+
+    static notesContainer: DynamicStyles<ViewStyle> = {
+        default: {
+            ...HelperStyles.fullWidth,
+            marginBottom: 60,
+            marginTop: 50,
         }
     }
 }

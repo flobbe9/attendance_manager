@@ -1,7 +1,7 @@
 import { DynamicStyles } from "@/abstract/DynamicStyles";
 import { TextStyle, ViewStyle } from "react-native";
-import { componentPadding } from "./AttendanceIndexStyles";
 import { HelperStyles } from './helperStyles';
+import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 
 const fontSize = 15;
 
@@ -18,7 +18,7 @@ export class HelperSelectStyles {
         default: {
             borderBottomWidth: 1,
             justifyContent: "space-between",
-            padding: componentPadding,
+            padding: GLOBAL_SCREEN_PADDING,
             width: "100%",
         }
     }
@@ -41,8 +41,8 @@ export class HelperSelectStyles {
         default: {
             backgroundColor: "white",
             justifyContent: "space-between",
-            paddingBottom: componentPadding,
-            paddingTop: componentPadding,
+            paddingBottom: GLOBAL_SCREEN_PADDING,
+            paddingTop: GLOBAL_SCREEN_PADDING,
             width: "100%",
         },
     }

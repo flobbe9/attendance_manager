@@ -43,7 +43,7 @@ export default function AttendanceLink({
 
     function getColor(): string {
 
-        return subject === "Geschichte" ? MUSIC_COLOR : HISTORY_COLOR;
+        return subject === "Geschichte" ? HISTORY_COLOR : MUSIC_COLOR;
     }
 
     return (
@@ -71,23 +71,10 @@ export default function AttendanceLink({
                     </HelperText>
                      
                     <Flex>
-                        <FontAwesome
-                            style={{
-                                ...AttendanceLinkStyles.icon,
-                                color: getColor()
-                            }}
-                            name="user" 
-                        />
-                        <FontAwesome
-                            style={{
-                                ...AttendanceLinkStyles.icon,
-                            }}
-                            name="user" 
-                        />
+                        {children}
                     </Flex>
                 </Flex>
 
-                {children}
             </Link>
         </HelperView>
     )

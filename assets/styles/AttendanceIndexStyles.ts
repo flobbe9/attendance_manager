@@ -1,11 +1,10 @@
 import { DynamicStyles } from "@/abstract/DynamicStyles";
 import { TextStyle, ViewStyle } from "react-native";
 import { HelperStyles } from "./helperStyles";
+import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 
 
 type StyleType = ViewStyle;
-
-const componentPadding = 10;
 
 const addButtonWidth = 60;
 const addButtonPosition = 20;
@@ -14,14 +13,14 @@ const addButtonPosition = 20;
 export class AttendanceIndexStyles {
     static component: DynamicStyles<StyleType> = {
         default: {
-            padding: componentPadding,
-            height: "100%"
+            padding: GLOBAL_SCREEN_PADDING,
+            minHeight: "100%"
         }
     }
 
     static link: DynamicStyles<StyleType> = {
         default: {
-            marginBottom: componentPadding
+            marginBottom: GLOBAL_SCREEN_PADDING
         }
     }
 
@@ -41,10 +40,8 @@ export class AttendanceIndexStyles {
         }
     }
 
-    static buttonIcon: DynamicStyles<TextStyle> = {
-        default: {
-            fontSize: 20,
-            ...HelperStyles.fitContent
-        }
+    static buttonIcon: TextStyle = {
+        fontSize: 20,
+        ...HelperStyles.fitContent
     }
 }

@@ -16,3 +16,8 @@ export const LOG_LEVEL_COLORS: Record<LogLevelName, string> = {
 
 /** Dont log to console if the 'message' contains one of these strings */
 export const CONSOLE_MESSAGES_TO_AVOID: (string | number)[] = [];
+
+/**
+ * @see Checkbox from 'react-native-paper'
+ */
+export type CheckboxStatus = "checked" | "indeterminate" | "unchecked";

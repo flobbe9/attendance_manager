@@ -16,7 +16,6 @@ export class CustomExceptionFormatService {
     public static getInstance(status: number, message: string): CustomExceptionFormat {
 
         return {
-            // TODO: 
             status: status, 
             timestamp: getTimeStamp(),
             message: message,

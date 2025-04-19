@@ -18,7 +18,9 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
     /** Applied to the outer most tag of this component. Should only be used for positioning and component dimensions. */
     containerStyles?: DynamicStyles<ViewStyle>,
     /** For this component to be a child of a ```<Link>```. Is passed to ```<TouchableNativeFeedback>```  */
-    onPress?: (event?: GestureResponderEvent) => void
+    onPress?: (event?: GestureResponderEvent) => void,
+    /** Whether button children container is not flex. Default is ```false```. */
+    disableFlex?: boolean
 }
 
 
@@ -32,6 +34,7 @@ export default forwardRef(function HelperButton(
         disabled,
         ripple,
         containerStyles,
+        disableFlex = false,
         onPress,
         ...props
     }: Props,
@@ -56,8 +59,9 @@ export default forwardRef(function HelperButton(
         >
             <TouchableNativeFeedback onPress={onPress} background={ripple === null ? null : TouchableNativeFeedback.Ripple(ripple?.rippleBackground, false)}>
                 <Flex
-                    horizontalAlign="center"
-                    verticalAlign="center"
+                    justifyContent="center"
+                    alignItems="center"
+                    disableFlex={disableFlex}
                     ref={ref}
                     style={{
                         ...style as object,

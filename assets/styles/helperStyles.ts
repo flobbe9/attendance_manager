@@ -12,18 +12,34 @@ type StyleType = ViewStyle & TextStyle;
 
 
 export class HelperStyles {
-    static disabled: StyleType = { opacity: 0.5 };
+    static disabled: StyleType = { 
+        opacity: 0.5
+    };
+
     /** Css equivalent: ```width: "fit-content"``` */
-    static fitContent: StyleType = { alignSelf: 'flex-start' };
+    static fitContent: StyleType = { 
+        alignSelf: 'flex-start' 
+    };
+
     static flex: StyleType = { 
         display: "flex", 
         flexDirection: "row",
         flexWrap: "wrap"
     };
+
     static flexCenter: StyleType = { 
+        ...this.flex,
+        justifyContent: "center", 
+    };
+
+    static flexCenterCenter: StyleType = { 
         ...this.flex,
         justifyContent: "center", 
         alignItems: "center",
         alignContent: "center"  // this is needed in combination with alignSelf: 'flex-start'
     };
+
+    static fullWidth: StyleType = {
+        width: "100%"
+    }
 }

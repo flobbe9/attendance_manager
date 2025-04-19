@@ -2,23 +2,22 @@ import HelperProps from "@/abstract/HelperProps";
 import { HelperSelectStyles } from "@/assets/styles/HelperSelectStyles";
 import HelperView from "@/components/helpers/HelperView";
 import { useAnimatedStyles } from "@/hooks/useAnimatedStyles";
+import { useBackHandler } from "@/hooks/useBackHandler";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
+import { logError } from "@/utils/logUtils";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { Animated, BackHandler, StyleProp, Text, useAnimatedValue, ViewProps, ViewStyle } from "react-native";
+import { Animated, Text, ViewProps, ViewStyle } from "react-native";
 import HelperButton from "./HelperButton";
 import HelperText from "./HelperText";
-import { log, logError } from "@/utils/logUtils";
-import { useBackHandler } from "@/hooks/useBackHandler";
-import { DynamicStyles } from "@/abstract/DynamicStyles";
 
 
-interface Props extends HelperProps<ViewStyle>, ViewProps {
-    options: string[],
+interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
+    options: OptionType[],
     /** Needs to be a set if ```multiselect``` is ```true```, else may be both */
-    selectedOptions: Set<string> | string | undefined,
+    selectedOptions: Set<OptionType> | OptionType | undefined,
     /** Needs to have a set as arg if ```multiselect``` is ```true```, else may be both */
-    setSelectedOptions: (options: Set<string> | string | undefined) => void,
+    setSelectedOptions: (options: Set<OptionType> | OptionType | undefined) => void,
     /** Default is 200 */
     optionsContainerHeight?: number,
     /** 
@@ -39,7 +38,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
 /**
  * @since 0.0.1
  */
-export default function HelperSelect({
+export default function HelperSelect<OptionType>({
     options,
     selectedOptions,
     setSelectedOptions,
@@ -48,7 +47,7 @@ export default function HelperSelect({
     multiselect = false,
     noSelectionLabel = "No selection",
     ...props
-}: Props) {
+}: Props<OptionType>) {
 
     const [optionElements, setOptionElements] = useState<JSX.Element[]>([]);
     const [areOptionsVisible, setAreOptionsVisible] = useState(false);
@@ -57,11 +56,9 @@ export default function HelperSelect({
     const componentName = "HelperSelect";
     const { children, ...otherProps } = useDefaultProps(props, componentName, HelperSelectStyles.component);
     
-    const animatedOptionsContainerHeightValue = useAnimatedValue(0);
     const { animatedStyle: animatedOptionsContainerHeight, animate: slideOptionsContainer } = useAnimatedStyles(
         [0, optionsContainerHeight], 
         [0, optionsContainerHeight], 
-        animatedOptionsContainerHeightValue
     );
 
 
@@ -91,7 +88,7 @@ export default function HelperSelect({
      * 
      * @param pressedOption 
      */
-    function handleOptionPress(pressedOption: string): void {
+    function handleOptionPress(pressedOption: OptionType): void {
 
         if (multiselect) {
             if (!(selectedOptions instanceof Set)) {
@@ -139,7 +136,7 @@ export default function HelperSelect({
                     onPress={() => handleOptionPress(option)}
                     key={i}
                 >
-                    <HelperText dynamicStyles={HelperSelectStyles.optionButtonText}>{option}</HelperText>
+                    <HelperText dynamicStyles={HelperSelectStyles.optionButtonText}>{option as string}</HelperText>
                     {isOptionSelected(option) && multiselect && <FontAwesome name="check" style={HelperSelectStyles.optionButtonText.default} />}
                 </HelperButton>
             );
@@ -155,16 +152,16 @@ export default function HelperSelect({
             if (!selectedOptions.size)
                 return noSelectionLabel;
             
-            return options
-                .filter(option => isOptionSelected(option))
+            return (options as string[])
+                .filter(option => isOptionSelected(option as OptionType))
                 .reduce((prev, cur) => `${prev}, ${cur}`);
         }
     
-        return selectedOptions;
+        return selectedOptions as string;
     }
 
 
-    function isOptionSelected(optionValue: string): boolean {
+    function isOptionSelected(optionValue: OptionType): boolean {
 
         return selectedOptions instanceof Set ? selectedOptions.has(optionValue) : selectedOptions === optionValue;
     }

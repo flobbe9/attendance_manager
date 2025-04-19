@@ -9,32 +9,34 @@ import { isBlank } from "@/utils/utils";
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 
     /** Wont be set at all if ```undefined``` */
-    horizontalAlign?: FlexJustifyContent,
+    justifyContent?: FlexJustifyContent,
     /** Wont be set at all if ```undefined``` */
-    verticalAlign?: FlexAlignType,
+    alignItems?: FlexAlignType,
     /** If true, dont set display to "flex". Default is false. */
     disableFlex?: boolean,
     /** Default is "row". See {@link FlexDirection} */
     flexDirection?: FlexDirection,
     /** Default is "wrap". See {@link FlexWrap} */
     flexWrap?: FlexWrap,
+    /** Default is 0 */
+    flexShrink?: number
 }
 
 
 /**
- * Component that is basically a div with ```display: "flex"``` using the ```horizontalAlign``` prop for
- * ```justify-content``` and the ```verticalAlign``` prop for ```align-items```. 
+ * Component with ```flexDirection: "row"```. In react-native, flex is not done with ```display``` but with ```flexDirection```.
  * 
  * @since 0.0.1
  */
 export default forwardRef(function(
     {
-        horizontalAlign, 
-        verticalAlign,
+        justifyContent, 
+        alignItems,
         disableFlex = false,
         flexDirection = "row",
         flexWrap = "wrap",
         rendered = true,
+        flexShrink = 0,
         style,
         ...props
     }: Props,
@@ -43,21 +45,21 @@ export default forwardRef(function(
 
     function parseAlignContent(): FlexAlignContent | undefined {
 
-        if (isBlank(verticalAlign) || verticalAlign === "baseline")
+        if (isBlank(alignItems) || alignItems === "baseline")
             return;
 
-        return verticalAlign;
+        return alignItems;
     }
 
     return (
         <HelperView
             style={{
-                alignItems: verticalAlign,
+                alignItems: alignItems,
                 alignContent: parseAlignContent(),
-                display: "flex",
-                flexDirection: flexDirection,
+                flexDirection: disableFlex ? "column" : flexDirection,
                 flexWrap: flexWrap,
-                justifyContent: horizontalAlign,
+                flexShrink: flexShrink,
+                justifyContent: justifyContent,
                 ...style as object
             }}
             ref={ref}

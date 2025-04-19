@@ -13,6 +13,7 @@ import { HelperStyles } from "@/assets/styles/helperStyles";
 interface Props extends HelperProps<TextStyle>, TextInputProps {
     disabled?: boolean
     setValue?: (value: string) => void,
+    /** Applied to the outer most tag of this component. Should only be used for positioning and component dimensions. */
     containerStyles?: DynamicStyles<ViewStyle>
 }
 

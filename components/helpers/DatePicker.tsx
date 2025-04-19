@@ -17,7 +17,6 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
     /** Default is "de". Remember to register locales in "GlobalContextProvider.tsx" before adding more. See also https://web-ridge.github.io/react-native-paper-dates/docs/intro/ */
     locale?: "de" | "en",
     buttonStyles?: DynamicStyles<ViewStyle>
-    buttonContainerStyles?: DynamicStyles<ViewStyle>
 }
 
 
@@ -33,7 +32,6 @@ export default forwardRef(function DatePicker(
         locale = "de",
         onTouchEnd,
         buttonStyles,
-        buttonContainerStyles,
         ...props
     }: Props,
     ref: Ref<View>) {
@@ -47,13 +45,13 @@ export default forwardRef(function DatePicker(
     function DefaultChildren(): JSX.Element {
 
         return (
-            <HelperButton dynamicStyles={buttonStyles} containerStyles={buttonContainerStyles}>
-                <HelperText>{`${date.getDate()}.${date.getMonth()}.${date.getFullYear()}`}</HelperText>        
+            <HelperButton dynamicStyles={buttonStyles}>
+                <HelperText>{`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}</HelperText>        
             </HelperButton>
         );  
     }
 
-    
+
     function handleDismiss(): void {
 
         setIsVisible(false);

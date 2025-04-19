@@ -1,3 +1,5 @@
+import { log } from "@/utils/logUtils";
+import { isObjectFalsy } from "@/utils/utils";
 
 /**
  * Replaces css pseudo classes like ```:focus``` and ```:hover``` with respective mobile properties. 
@@ -41,17 +43,17 @@ export function combineDynamicStyles<StyleType>(dynamicStyles1: DynamicStyles<St
 
     const combined: DynamicStyles<StyleType> = {};
 
-    Object.keys(dynamicStyles2)
+    new Set([...Object.keys(dynamicStyles1), ...Object.keys(dynamicStyles2)])
         .forEach(key => {
             const dynamicStyles1Value = dynamicStyles1[key];
             const dynamicStyles2Value = dynamicStyles2[key];
 
             // case: only style 1
-            if (!dynamicStyles2Value) {
+            if (isObjectFalsy(dynamicStyles2Value)) {
                 combined[key] = dynamicStyles1Value;
                 
             // case: only style 2
-            } else if (!dynamicStyles1Value)
+            } else if (isObjectFalsy(dynamicStyles1Value))
                 combined[key] = dynamicStyles2Value;
 
             // case: both

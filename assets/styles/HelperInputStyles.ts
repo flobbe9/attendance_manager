@@ -1,15 +1,15 @@
 import { AnimatedStyleProp } from "@/abstract/AnimatedStyleProp";
 import { DynamicStyles } from "@/abstract/DynamicStyles";
+import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { Animated, TextStyle, ViewStyle } from "react-native";
 
 
-type StyleType = TextStyle;
-
-
 export class HelperInputStyles {
-    static component: DynamicStyles<StyleType> = {
+    static component: DynamicStyles<TextStyle> = {
         default: {
-            borderWidth: 1
+            borderBottomWidth: 1,
+            padding: GLOBAL_SCREEN_PADDING,
+            
         }
     }
 
@@ -20,7 +20,7 @@ export class HelperInputStyles {
         },
         focus: {
             backgroundColor: "rgb(220, 220, 220)",
-        },
+        }
     }
 }
 
