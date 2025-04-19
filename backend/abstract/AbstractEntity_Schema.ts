@@ -1,6 +1,7 @@
 import { HasDefault, IsPrimaryKey, NotNull } from "drizzle-orm";
 import { integer, SQLiteIntegerBuilderInitial } from "drizzle-orm/sqlite-core";
 
+
 /**
  * @since 0.0.1
  */
@@ -17,8 +18,22 @@ export abstract class AbstractEntity_Schema<TName extends string> {
 /**
  * @since 0.0.1
  */
-export const abstractEntityTable = {
+export const AbstractEntity_Table = {
+
     id: integer().primaryKey({autoIncrement: true}),
     created: integer({ mode: 'timestamp_ms' }).notNull(),
     updated: integer({ mode: 'timestamp_ms' }).notNull()
+}
+
+
+/**
+ * @since 0.0.1
+ */
+export default abstract class AbstractEntity {
+
+    id?: number;
+
+    created?: Date;
+
+    updated?: Date;
 }
