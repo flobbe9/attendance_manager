@@ -1,7 +1,7 @@
 import { DynamicStyles } from "@/abstract/DynamicStyles";
 import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
-import { HelperStyles } from "./helperStyles";
+import HS from "./helperStyles";
 
 
 type StyleType = ViewStyle;
@@ -50,7 +50,7 @@ export class AttendanceStyles {
     static defaultMultilineHelperInput: DynamicStyles<TextStyle> = {
         default: {
             ...this.defaultHelperInputContainer.default,
-            ...HelperStyles.flexCenter,
+            ...HS.flexCenter,
             maxHeight: 200,
             minHeight: 80,
         },
@@ -75,7 +75,7 @@ export class AttendanceStyles {
 
     static notesContainer: DynamicStyles<ViewStyle> = {
         default: {
-            ...HelperStyles.fullWidth,
+            ...HS.fullWidth,
             marginBottom: 60,
             marginTop: 50,
         }

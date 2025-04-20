@@ -1,8 +1,6 @@
 import GlobalContextProvider from "@/components/context/GlobalContextProvider";
 import CustomSqliteProvider from "@/components/CustomSqliteProvider";
-import HelperText from "@/components/helpers/HelperText";
 import { Stack } from "expo-router";
-import { StatusBar } from "react-native";
 
 
 /**
@@ -15,7 +13,7 @@ export default function layout() {
     return (
         <CustomSqliteProvider>
             <GlobalContextProvider>
-                <Stack screenOptions={{headerShown: false}} />
+                <Stack screenOptions={{headerShown: false, orientation: "all"}} />
             </GlobalContextProvider>
         </CustomSqliteProvider>
     );

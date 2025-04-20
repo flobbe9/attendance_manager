@@ -11,7 +11,7 @@ import { TextStyle, ViewStyle } from "react-native";
 type StyleType = ViewStyle & TextStyle;
 
 
-export class HelperStyles {
+export default class HelperStyles {
     static disabled: StyleType = { 
         opacity: 0.5
     };
@@ -40,6 +40,6 @@ export class HelperStyles {
     };
 
     static fullWidth: StyleType = {
-        width: "100%"
+        width: "100%",
     }
 }

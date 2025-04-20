@@ -1,6 +1,6 @@
 import { DynamicStyles } from "@/abstract/DynamicStyles";
 import { TextStyle, ViewStyle } from "react-native";
-import { HelperStyles } from './helperStyles';
+import HS from './helperStyles';
 import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 
 const fontSize = 15;
@@ -32,9 +32,11 @@ export class HelperSelectStyles {
         }
     }
 
-    static optionsContainer: ViewStyle = {
-        backgroundColor: "white",
-        width: "100%",
+    static optionsContainer: DynamicStyles<ViewStyle> = {
+        default: {
+            backgroundColor: "white",
+            width: "100%",
+        }
     }
 
     static optionButton: DynamicStyles<ViewStyle> = {

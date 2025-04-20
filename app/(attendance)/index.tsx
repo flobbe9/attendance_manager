@@ -9,6 +9,7 @@ import DatePicker from "@/components/helpers/DatePicker";
 import Flex from "@/components/helpers/Flex";
 import HelperButton from "@/components/helpers/HelperButton";
 import HelperInput from "@/components/helpers/HelperInput";
+import HelperScrollView from "@/components/helpers/HelperScrollView";
 import HelperSelect from "@/components/helpers/HelperSelect";
 import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
@@ -78,7 +79,7 @@ export default function index(props: Props) {
         return SCHOOLCLASS_MODES.map((mode, i) => (
             <Flex alignItems="center" key={i}>
                 <RadioButton.IOS value={mode} />
-                <HelperText onPress={() => setSchoolclassMode(mode)}>{schoolclassModeObj[mode]}</HelperText>
+                <HelperText onPress={() => setSchoolclassMode(mode)}>{mode}</HelperText>
             </Flex>
         ));
     }
@@ -92,15 +93,12 @@ export default function index(props: Props) {
             // consider full screen
         // figure out grid thing
             // do myself
-        // make components
-            // full width
-            // fit content
         // fix icons
 
 
     return (
         <SafeAreaView style={{height: "100%"}}>
-            <ScrollView 
+            <HelperScrollView 
                 style={{
                     backgroundColor: subjectColor,
                     ...style as object
@@ -131,7 +129,7 @@ export default function index(props: Props) {
                     <HelperInput 
                         placeholder="5 - 13"
                         keyboardType="numeric"
-                        dynamicStyles={AttendanceStyles.defaultHelperInputContainer}
+                        containerStyles={AttendanceStyles.defaultHelperInputContainer}
                     />
                 </HelperView>
 
@@ -265,7 +263,7 @@ export default function index(props: Props) {
                         />
                     </HelperView>
                 </HelperView>
-            </ScrollView>
+            </HelperScrollView>
         </SafeAreaView>
     )
 }

@@ -1,6 +1,6 @@
 import { DynamicStyles } from "@/abstract/DynamicStyles";
 import { TextStyle, ViewStyle } from "react-native";
-import { HelperStyles } from "./helperStyles";
+import HS from "./helperStyles";
 import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 
 
@@ -42,6 +42,6 @@ export class AttendanceIndexStyles {
 
     static buttonIcon: TextStyle = {
         fontSize: 20,
-        ...HelperStyles.fitContent
+        ...HS.fitContent
     }
 }

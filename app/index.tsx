@@ -3,16 +3,15 @@ import { AttendanceLinkStyles } from "@/assets/styles/AttendanceLinkStyles";
 import AttendanceLink from "@/components/AttendanceLink";
 import Flex from "@/components/helpers/Flex";
 import HelperButton from "@/components/helpers/HelperButton";
-import HelperInput from "@/components/helpers/HelperInput";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
 import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
-import { logWarn } from "@/utils/logUtils";
-import { HISTORY_COLOR, HISTORY_COLOR_TRANSPARENT, MUSIC_COLOR, MUSIC_COLOR_TRANSPARENT } from "@/utils/styleConstants";
-import { isStringNumeric } from "@/utils/utils";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { log } from "@/utils/logUtils";
+import { HISTORY_COLOR, HISTORY_COLOR_TRANSPARENT, MUSIC_COLOR } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import { TextInput } from "react-native-paper";
+import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
@@ -21,57 +20,66 @@ import { SafeAreaView } from "react-native-safe-area-context";
  */
 export default function index() {
 
+    const {my_sm_5} = useResponsiveStyles();
+
+    // TODO:
+        // add docs
+            // in order
+            // examples
+        // add col
+        // consider order problem
+            // function with all props, then choose prio?
+        // integrate animated styles into dynamic styles obj?
+
     return (
         <SafeAreaView>
-            <HelperView dynamicStyles={AttendanceIndexStyles.component}>
+            <HelperView dynamicStyles={AttendanceIndexStyles.component} style={my_sm_5}>
                 <Flex justifyContent="flex-end">
                     <HelperText>Erledigt:</HelperText>
 
-                    <Flex>
-                        <Flex 
+                    <Flex 
+                        style={{
+                            marginStart: 10
+                        }}
+                        alignItems="center"
+                    >
+                        <FontAwesome
                             style={{
-                                marginStart: 10
+                                color: MUSIC_COLOR,
                             }}
-                            alignItems="center"
-                        >
-                            <FontAwesome
-                                style={{
-                                    color: MUSIC_COLOR,
-                                }}
-                                name="user" 
-                            />
-                            <HelperText>1/9</HelperText>
-                        </Flex>
+                            name="user" 
+                        />
+                        <HelperText>1/9</HelperText>
+                    </Flex>
 
-                        <Flex 
+                    <Flex 
+                        style={{
+                            marginStart: 10
+                        }}
+                        alignItems="center"
+                    >
+                        <FontAwesome
                             style={{
-                                marginStart: 10
+                                color: HISTORY_COLOR,
                             }}
-                            alignItems="center"
-                        >
-                            <FontAwesome
-                                style={{
-                                    color: HISTORY_COLOR,
-                                }}
-                                name="user" 
-                            />
-                            <HelperText>2/9</HelperText>
-                        </Flex>
+                            name="user" 
+                        />
+                        <HelperText>2/9</HelperText>
+                    </Flex>
 
-                        <Flex 
+                    <Flex 
+                        style={{
+                            marginStart: 10
+                        }}
+                        alignItems="center"
+                    >
+                        <FontAwesome
                             style={{
-                                marginStart: 10
+                                color: "black",
                             }}
-                            alignItems="center"
-                        >
-                            <FontAwesome
-                                style={{
-                                    color: "black",
-                                }}
-                                name="user" 
-                            />
-                            <HelperText>2/8</HelperText>
-                        </Flex>
+                            name="user" 
+                        />
+                        <HelperText>2/8</HelperText>
                     </Flex>
                 </Flex>
 
@@ -80,8 +88,6 @@ export default function index() {
                         <AttendanceLink
                             key={0} 
                             dynamicStyles={AttendanceIndexStyles.link} 
-                            style={{
-                            }}
                             subject="Musik"
                             date={new Date()}
                         >

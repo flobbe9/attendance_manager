@@ -12,3 +12,10 @@ export const HISTORY_COLOR_TRANSPARENT = "rgb(229, 242, 255)";
 /** Other */
 export const BORDER_RADIUS = 8;
 export const GLOBAL_SCREEN_PADDING = 10;
+
+/** Refers to bootstrap grid */
+export const SM_MIN_WIDTH = 576;
+/** Refers to bootstrap grid */
+export const MD_MIN_WIDTH = 992;
+/** Refers to bootstrap grid */
+export const LG_MIN_WIDTH = 1200;

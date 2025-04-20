@@ -10,6 +10,7 @@ import React, { useEffect, useState } from "react";
 import { Animated, Text, ViewProps, ViewStyle } from "react-native";
 import HelperButton from "./HelperButton";
 import HelperText from "./HelperText";
+import HelperScrollView from "./HelperScrollView";
 
 
 interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
@@ -175,22 +176,22 @@ export default function HelperSelect<OptionType>({
                 dynamicStyles={HelperSelectStyles.selectionButton}
                 onTouchStart={() => setAreOptionsVisible(!areOptionsVisible)}
             >
-                <Text style={{...HelperSelectStyles.selectionButtonValue.default, opacity: selectionButtonValue === noSelectionLabel ? 0.5 : 1}}>
+                <HelperText dynamicStyles={HelperSelectStyles.selectionButtonValue} style={{opacity: selectionButtonValue === noSelectionLabel ? 0.5 : 1}}>
                     {selectionButtonValue}
-                </Text>
+                </HelperText>
                 <FontAwesome name="chevron-down" style={HelperSelectStyles.selectionButtonValue.default} />
             </HelperButton>
 
             <HelperView style={{position: "relative"}}>
-                <Animated.ScrollView 
+                <HelperScrollView 
+                    dynamicStyles={HelperSelectStyles.optionsContainer}
                     style={{
-                        ...HelperSelectStyles.optionsContainer,
                         height: animatedOptionsContainerHeight,
                         position: optionsContainerScroll ? "static" : "absolute",
                     }}
                 >
                     {optionElements}
-                </Animated.ScrollView>
+                </HelperScrollView>
             </HelperView>
         </HelperView>
     )

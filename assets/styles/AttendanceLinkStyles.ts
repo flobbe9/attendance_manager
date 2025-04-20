@@ -12,7 +12,6 @@ export class AttendanceLinkStyles {
             borderWidth: 4,
             borderRadius: BORDER_RADIUS,
             padding: 5,
-            width: "100%"
         }
     }
 

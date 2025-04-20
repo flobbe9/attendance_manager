@@ -7,23 +7,11 @@ import { DynamicStyles } from "./DynamicStyles";
  * 
  * @since 0.0.1
  */
-export interface AnimatedStyleProp<StyleProp> {
+export interface AnimatedStyleProp<StyleType> {
     
-    styleProp: keyof StyleProp,
+    styleProp: keyof StyleType,
     animatedValue: Animated.AnimatedValue,
     inputRange: number[],
-    event: keyof DynamicStyles<StyleProp>,
+    event: keyof DynamicStyles<StyleType>,
     duration?: number
 }
-
-// EXAMPLE:
-// export function getAnimatedBackgroundColorProp(animatedValue: Animated.Value): AnimatedStyleProp<ViewStyle> {
-
-//     return {
-//         styleProp: "backgroundColor",
-//         animatedValue,
-//         inputRange: [0, 255],
-//         event: "focus",
-//         duration: 100
-//     }
-// }

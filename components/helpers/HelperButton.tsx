@@ -1,6 +1,6 @@
 import HelperProps from "@/abstract/HelperProps";
 import { HelperButtonStyles } from "@/assets/styles/HelperButtonStyles";
-import { HelperStyles } from "@/assets/styles/helperStyles";
+import HS from "@/assets/styles/helperStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { forwardRef, Ref } from "react";
 import { ColorValue, GestureResponderEvent, TouchableNativeFeedback, View, ViewProps, ViewStyle } from "react-native";
@@ -52,7 +52,7 @@ export default forwardRef(function HelperButton(
                 // prevent corner leaks of ripple effect
                 borderRadius: (style as ViewStyle).borderRadius, 
                 overflow: "hidden",
-                ...HelperStyles.fitContent,
+                ...HS.fitContent,
                 ...componentStyles,
             }}
             {...containerEventHandlers}
@@ -65,7 +65,7 @@ export default forwardRef(function HelperButton(
                     ref={ref}
                     style={{
                         ...style as object,
-                        ...(disabled ? HelperStyles.disabled : {})
+                        ...(disabled ? HS.disabled : {})
                     }}
                     {...otherProps}
                 >

@@ -1,5 +1,8 @@
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { de, en, registerTranslation } from 'react-native-paper-dates'
+import { StyleProp, ViewStyle, TextStyle } from "react-native";
+import { de, en, registerTranslation } from 'react-native-paper-dates';
+
 
 /**
  * Contains global variables accessible in the whole app.
@@ -9,17 +12,19 @@ import { de, en, registerTranslation } from 'react-native-paper-dates'
  */
 export default function GlobalContextProvider({children}: {children: ReactNode}) {
     
-    const [errorMessage, setErrorMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState(""); 
+
+    const responsiveStyles = useResponsiveStyles();
     
     const context = {
         errorMessage,
-        setErrorMessage
+        setErrorMessage,
+        responsiveStyles
     }
 
 
     useEffect(() => {
         initReactPaperLocales();
-
     }, []);
 
     
@@ -32,14 +37,15 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
 
 
     return (
-        <IndexContext.Provider value={context}>
+        <GlobalContext.Provider value={context}>
             {children}
-        </IndexContext.Provider>
+        </GlobalContext.Provider>
     )
 }
 
 
-export const IndexContext = createContext({
+export const GlobalContext = createContext({
     errorMessage: "",
-    setErrorMessage: (errorMessage: string) => {}
+    setErrorMessage: (errorMessage: string) => {},
+    responsiveStyles: {} as Record<any, StyleProp<ViewStyle & TextStyle>>
 })

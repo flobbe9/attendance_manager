@@ -1,6 +1,6 @@
 import { DynamicStyles } from "@/abstract/DynamicStyles";
 import HelperProps from "@/abstract/HelperProps";
-import { HelperStyles } from "@/assets/styles/helperStyles";
+import HS from "@/assets/styles/helperStyles";
 import HelperView from "@/components/helpers/HelperView";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import React, { forwardRef, Fragment, Ref, useState } from "react";
@@ -88,7 +88,7 @@ export default forwardRef(function DatePicker(
             <HelperView
                 ref={ref}
                 style={{
-                    ...HelperStyles.fitContent,
+                    ...HS.fitContent,
                     ...style as object
                 }}
                 onTouchEnd={handleTouchEnd} 

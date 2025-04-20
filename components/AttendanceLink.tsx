@@ -13,6 +13,7 @@ import HelperText from "./helpers/HelperText";
 import P from "./helpers/P";
 import { AttendanceLinkStyles } from "@/assets/styles/AttendanceLinkStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
+import HS from "@/assets/styles/helperStyles";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
