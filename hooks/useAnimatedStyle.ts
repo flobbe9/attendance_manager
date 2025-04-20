@@ -5,7 +5,6 @@ import { useHasComponentMounted } from "./useHasComponentMounted";
 
 
 /**
- * 
  * @param inputRange determines how finegrained the animation will be, e.g. [0, 255]
  * @param outputRange the actual style value range, e.g. ["rgb(0, 0, 0)", "rgb(255, 255, 255)"]
  * @param reverse whether to animate in reverse when animationDeps change
@@ -13,7 +12,7 @@ import { useHasComponentMounted } from "./useHasComponentMounted";
  * @since 0.0.1
  * @see Animated.Value.interpolate
  */
-export function useAnimatedStyles(
+export function useAnimatedStyle(
     inputRange: number[],
     outputRange: string[] | number[],
     reverse?: boolean,

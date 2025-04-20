@@ -1,6 +1,6 @@
-import { AnimatedStyleProp } from './AnimatedStyleProp';
+import { AnimatedDynamicStyle } from './AnimatedDynamicStyle';
 import DefaultProps from './DefaultProps';
-import { DynamicStyles } from './DynamicStyles';
+import { DynamicStyle } from './DynamicStyle';
 
 
 /**
@@ -12,9 +12,9 @@ import { DynamicStyles } from './DynamicStyles';
 export default interface HelperProps<StyleType> extends DefaultProps<StyleType> {
 
     /** To apply _focus style etc */
-    dynamicStyles?: DynamicStyles<StyleType>,
-    /** Styles with transition effect. Needs ```dynamicStyles``` to be present */
-    animatedStyles?: AnimatedStyleProp<StyleType>[],
+    dynamicStyle?: DynamicStyle<StyleType>,
+    /** Styles with transition effect. Needs ```dynamicStyle``` to be present */
+    animatedStyles?: AnimatedDynamicStyle<StyleType>[],
     /** If ```false``` (not falsy), this component wont be rendered at all, meaning it cant even be faded in or similar. Default is ```true``` */
     rendered?: boolean,
     /** Called with useffect on render */

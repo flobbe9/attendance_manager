@@ -13,7 +13,7 @@ import HelperScrollView from "@/components/helpers/HelperScrollView";
 import HelperSelect from "@/components/helpers/HelperSelect";
 import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
-import { useAnimatedStyles } from "@/hooks/useAnimatedStyles";
+import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { useSubjectColor } from "@/hooks/useSubjectColor";
 import { CheckboxStatus } from "@/utils/constants";
@@ -55,7 +55,7 @@ export default function index(props: Props) {
     const [schoolclassMode, setSchoolclassMode] = useState<SchoolclassMode>("Eigenverantwortlicher Unterricht");
     const [schoolclassModeRadioButtons, setSchoolclassModeRadioButtons] = useState<JSX.Element[]>([]); 
 
-    const { animatedStyle } = useAnimatedStyles(
+    const { animatedStyle } = useAnimatedStyle(
         [0, 180],
         ["0deg", "-180deg"],
         !areNotesVisible,
@@ -107,25 +107,25 @@ export default function index(props: Props) {
             >
                 {/* Subject */}
                 <HelperSelect 
-                    dynamicStyles={AttendanceStyles.inputContainer}
+                    dynamicStyle={AttendanceStyles.inputContainer}
                     options={SCHOOL_SUBJECTS}
                     selectedOptions={selectedSubject}
                     setSelectedOptions={setSelectedSubject}
                     optionsContainerScroll={false}
                     optionsContainerHeight={85}
                 >
-                    <HelperText dynamicStyles={AttendanceStyles.heading}>Fach</HelperText>
+                    <HelperText dynamicStyle={AttendanceStyles.heading}>Fach</HelperText>
                 </HelperSelect>
 
                 {/* Date */}
-                <HelperView dynamicStyles={AttendanceStyles.inputContainer}>
-                    <HelperText dynamicStyles={AttendanceStyles.heading}>Datum (und Zeit? oder Schulstunde?)</HelperText>
+                <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
+                    <HelperText dynamicStyle={AttendanceStyles.heading}>Datum (und Zeit? oder Schulstunde?)</HelperText>
                     <DatePicker date={date} setDate={setDate} />
                 </HelperView>
 
                 {/* Year */}
-                <HelperView dynamicStyles={AttendanceStyles.inputContainer}>
-                    <HelperText dynamicStyles={AttendanceStyles.heading}>Jahrgang</HelperText>
+                <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
+                    <HelperText dynamicStyle={AttendanceStyles.heading}>Jahrgang</HelperText>
                     <HelperInput 
                         placeholder="5 - 13"
                         keyboardType="numeric"
@@ -136,7 +136,7 @@ export default function index(props: Props) {
                 {/* Topic */}
                 <HelperSelect 
                     rendered={selectedSubject === "Musik"}
-                    dynamicStyles={AttendanceStyles.inputContainer}
+                    dynamicStyle={AttendanceStyles.inputContainer}
                     options={MUSIC_LESSON_TOPICS}
                     selectedOptions={selectedMusicLessonTopic}
                     setSelectedOptions={setSelectedMusicLessonTopic}
@@ -144,16 +144,16 @@ export default function index(props: Props) {
                     optionsContainerHeight={210}
                     style={{zIndex: 2}} // needs to be higher than next sibling
                 >
-                    <HelperText dynamicStyles={AttendanceStyles.heading}>Stundenthema</HelperText>
+                    <HelperText dynamicStyle={AttendanceStyles.heading}>Stundenthema</HelperText>
                 </HelperSelect>
 
                 {/* Examinants */}
-                <HelperView dynamicStyles={AttendanceStyles.inputContainer} style={{zIndex: 1/* for select container */}}>
-                    <HelperText dynamicStyles={AttendanceStyles.heading} style={{marginBottom: 0}}>Anwesende Prüfer</HelperText>
+                <HelperView dynamicStyle={AttendanceStyles.inputContainer} style={{zIndex: 1/* for select container */}}>
+                    <HelperText dynamicStyle={AttendanceStyles.heading} style={{marginBottom: 0}}>Anwesende Prüfer</HelperText>
 
                     <Flex flexWrap="nowrap">
                         {/* Subjects */}
-                        <HelperView dynamicStyles={AttendanceStyles.examinerIconContainer}>
+                        <HelperView dynamicStyle={AttendanceStyles.examinerIconContainer}>
                             <FontAwesome 
                                 name={historyExaminantStatus === "checked" ? "user" : "user-o"} 
                                 color={HISTORY_COLOR} 
@@ -162,7 +162,7 @@ export default function index(props: Props) {
                             />
                         </HelperView>
 
-                        <HelperView dynamicStyles={AttendanceStyles.examinerIconContainer}>
+                        <HelperView dynamicStyle={AttendanceStyles.examinerIconContainer}>
                             <FontAwesome 
                                 name={musicExaminantStatus === "checked" ? "user" : "user-o"}
                                 color={MUSIC_COLOR}
@@ -171,7 +171,7 @@ export default function index(props: Props) {
                             />
                         </HelperView>
 
-                        <HelperView dynamicStyles={AttendanceStyles.examinerIconContainer}>
+                        <HelperView dynamicStyle={AttendanceStyles.examinerIconContainer}>
                             <FontAwesome
                                 name={educatorExaminantStatus === "checked" ? "user" : "user-o"} 
                                 color={"black"} 
@@ -186,7 +186,7 @@ export default function index(props: Props) {
                             alignItems="flex-start" 
                             flexShrink={1} 
                             style={{marginLeft: 20}} 
-                            dynamicStyles={AttendanceStyles.examinerIconContainer}
+                            dynamicStyle={AttendanceStyles.examinerIconContainer}
                         >
                             <FontAwesome
                                 name={isHeadmaster ? "user-plus" : "user-o"} 
@@ -211,7 +211,7 @@ export default function index(props: Props) {
                 </HelperView>
 
                 {/* Toggle notes */}
-                <Flex justifyContent="center" dynamicStyles={AttendanceStyles.notesContainer}>
+                <Flex justifyContent="center" dynamicStyle={AttendanceStyles.notesContainer}>
                     <HelperButton 
                         disableFlex={true} 
                         style={{borderRadius: BORDER_RADIUS, width: 100}} 
@@ -231,27 +231,27 @@ export default function index(props: Props) {
                 {/* Notes */}
                 <HelperView rendered={areNotesVisible}>
                     {/* Note */}
-                    <HelperView dynamicStyles={AttendanceStyles.inputContainer}>
+                    <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
                         <HelperInput 
                             multiline
                             numberOfLines={numHelperInputLines}
                             placeholder="Thema"
-                            dynamicStyles={AttendanceStyles.defaultMultilineHelperInput}
+                            dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
                         />
                     </HelperView>
 
                     {/* Note2 */}
-                    <HelperView dynamicStyles={AttendanceStyles.inputContainer}>
+                    <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
                         <HelperInput 
                             multiline
                             numberOfLines={numHelperInputLines}
                             placeholder="Lerngruppe"
-                            dynamicStyles={AttendanceStyles.defaultMultilineHelperInput}
+                            dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
                         />
                     </HelperView>
 
                     {/* Own/Other class */}
-                    <HelperView dynamicStyles={AttendanceStyles.inputContainer}>
+                    <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
                         <RadioButton.Group value={schoolclassMode} onValueChange={(mode) => setSchoolclassMode(mode as SchoolclassMode)}>
                             {schoolclassModeRadioButtons}
                         </RadioButton.Group>
@@ -259,7 +259,7 @@ export default function index(props: Props) {
                         <HelperInput
                             placeholder="Ausbildungslehrer"
                             rendered={schoolclassMode === "Ausbildungsunterricht"}
-                            dynamicStyles={AttendanceStyles.defaultHelperInputContainer}
+                            dynamicStyle={AttendanceStyles.defaultHelperInputContainer}
                         />
                     </HelperView>
                 </HelperView>

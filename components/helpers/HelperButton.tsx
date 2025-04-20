@@ -6,8 +6,8 @@ import React, { forwardRef, Ref } from "react";
 import { ColorValue, GestureResponderEvent, TouchableNativeFeedback, View, ViewProps, ViewStyle } from "react-native";
 import Flex from "./Flex";
 import HelperView from "./HelperView";
-import { DynamicStyles } from "@/abstract/DynamicStyles";
-import { useDynamicStyles } from "@/hooks/useDynamicStyles";
+import { DynamicStyle } from "@/abstract/DynamicStyle";
+import { useDynamicStyle } from "@/hooks/useDynamicStyle";
 import { log } from "@/utils/logUtils";
 
 
@@ -16,7 +16,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
     /** Configure the ripple effect on press. ```undefined``` will make the ripple color adjust to the current background color. ```null``` will disable the ripple effect */
     ripple?: { rippleBackground: ColorValue } | null,
     /** Applied to the outer most tag of this component. Should only be used for positioning and component dimensions. */
-    containerStyles?: DynamicStyles<ViewStyle>,
+    containerStyles?: DynamicStyle<ViewStyle>,
     /** For this component to be a child of a ```<Link>```. Is passed to ```<TouchableNativeFeedback>```  */
     onPress?: (event?: GestureResponderEvent) => void,
     /** Whether button children container is not flex. Default is ```false```. */
@@ -44,7 +44,7 @@ export default forwardRef(function HelperButton(
     const componentName = "HelperButton";
     const { children, style, ...otherProps } = useHelperProps(props, componentName, HelperButtonStyles.component);
 
-    const { currentStyles: componentStyles, eventHandlers: containerEventHandlers } = useDynamicStyles(containerStyles);
+    const { currentStyles: componentStyles, eventHandlers: containerEventHandlers } = useDynamicStyle(containerStyles);
 
     return (
         <HelperView 

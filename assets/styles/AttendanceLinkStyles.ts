@@ -1,4 +1,4 @@
-import { DynamicStyles } from "@/abstract/DynamicStyles";
+import { DynamicStyle } from "@/abstract/DynamicStyle";
 import { BORDER_RADIUS } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
 
@@ -7,7 +7,7 @@ type StyleType = ViewStyle;
 
 
 export class AttendanceLinkStyles {
-    static component: DynamicStyles<StyleType> = {
+    static component: DynamicStyle<StyleType> = {
         default: {
             borderWidth: 4,
             borderRadius: BORDER_RADIUS,
@@ -15,13 +15,13 @@ export class AttendanceLinkStyles {
         }
     }
 
-    static heading: DynamicStyles<TextStyle> = {
+    static heading: DynamicStyle<TextStyle> = {
         default: {
             fontSize: 25
         }
     }
 
-    static subheading: DynamicStyles<TextStyle> = {
+    static subheading: DynamicStyle<TextStyle> = {
         default: {
             fontSize: 15
         }

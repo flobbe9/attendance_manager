@@ -1,8 +1,8 @@
-import { combineDynamicStyles, DynamicStyles } from "@/abstract/DynamicStyles";
+import { combineDynamicStyles, DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
 import { HelperInputStyles } from "@/assets/styles/HelperInputStyles";
 import HS from "@/assets/styles/helperStyles";
-import { useDynamicStyles } from "@/hooks/useDynamicStyles";
+import { useDynamicStyle } from "@/hooks/useDynamicStyle";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { forwardRef, Fragment, Ref, useEffect, useImperativeHandle, useRef } from "react";
 import { Animated, NativeSyntheticEvent, TextInput, TextInputFocusEventData, TextInputProps, TextStyle, useAnimatedValue, ViewStyle } from "react-native";
@@ -12,7 +12,7 @@ interface Props extends HelperProps<TextStyle>, TextInputProps {
     disabled?: boolean
     setValue?: (value: string) => void,
     /** Applied to the outer most tag of this component. Should only be used for positioning and component dimensions. */
-    containerStyles?: DynamicStyles<ViewStyle>
+    containerStyles?: DynamicStyle<ViewStyle>
 }
 
 
@@ -38,9 +38,9 @@ export default forwardRef(function HelperInput(
     
     const componentName = "HelperInput";
     const { children, onFocus: propsOnFocus, onBlur: propsOnBlur, style, ...otherProps } = useHelperProps<TextInputProps, TextStyle>(props, componentName, HelperInputStyles.component);
-    const { eventHandlers: viewEventHandlers, currentStyles: viewStyles } = useDynamicStyles(
+    const { eventHandlers: viewEventHandlers, currentStyles: viewStyles } = useDynamicStyle(
         combineDynamicStyles(HelperInputStyles.view, containerStyles), 
-        [HelperInputStyles.view.animatedStyleProps.backgroundColor(animatedBackgroundColor)]
+        [HelperInputStyles.view.animatedDynamicStyles.backgroundColor(animatedBackgroundColor)]
     );
 
     

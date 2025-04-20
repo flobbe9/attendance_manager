@@ -1,4 +1,4 @@
-import { DynamicStyles } from "@/abstract/DynamicStyles";
+import { DynamicStyle } from "@/abstract/DynamicStyle";
 import { TextStyle, ViewStyle } from "react-native";
 import HS from './helperStyles';
 import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
@@ -6,7 +6,7 @@ import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 const fontSize = 15;
 
 export class HelperSelectStyles {
-    static component: DynamicStyles<ViewStyle> = {
+    static component: DynamicStyle<ViewStyle> = {
         default: {
             width: "100%",
             zIndex: 1
@@ -14,7 +14,7 @@ export class HelperSelectStyles {
     }
 
     // NOTE: dont pass touchStart event, since the props.touchStart would loos it's state
-    static selectionButton: DynamicStyles<ViewStyle> = {
+    static selectionButton: DynamicStyle<ViewStyle> = {
         default: {
             borderBottomWidth: 1,
             justifyContent: "space-between",
@@ -23,7 +23,7 @@ export class HelperSelectStyles {
         }
     }
 
-    static selectionButtonValue: DynamicStyles<TextStyle> = {
+    static selectionButtonValue: DynamicStyle<TextStyle> = {
         default: {
             backgroundColor: "transparent",
             borderWidth: 0,
@@ -32,14 +32,14 @@ export class HelperSelectStyles {
         }
     }
 
-    static optionsContainer: DynamicStyles<ViewStyle> = {
+    static optionsContainer: DynamicStyle<ViewStyle> = {
         default: {
             backgroundColor: "white",
             width: "100%",
         }
     }
 
-    static optionButton: DynamicStyles<ViewStyle> = {
+    static optionButton: DynamicStyle<ViewStyle> = {
         default: {
             backgroundColor: "white",
             justifyContent: "space-between",
@@ -49,7 +49,7 @@ export class HelperSelectStyles {
         },
     }
 
-    static optionButtonText: DynamicStyles<TextStyle> = {
+    static optionButtonText: DynamicStyle<TextStyle> = {
         default: {
             fontSize: fontSize
         }

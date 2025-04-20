@@ -1,4 +1,4 @@
-import { DynamicStyles } from "@/abstract/DynamicStyles";
+import { DynamicStyle } from "@/abstract/DynamicStyle";
 import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
 import HS from "./helperStyles";
@@ -11,14 +11,14 @@ const accordionPadding = 5;
 
 
 export class AttendanceStyles {
-    static component: DynamicStyles<StyleType> = {
+    static component: DynamicStyle<StyleType> = {
         default: {
             height: "100%",
             padding: GLOBAL_SCREEN_PADDING,
         }
     }
     
-    static heading: DynamicStyles<TextStyle> = {
+    static heading: DynamicStyle<TextStyle> = {
         default: {
             fontSize: 20,
             fontWeight: "bold",
@@ -26,19 +26,19 @@ export class AttendanceStyles {
         }
     }
 
-    static subHeading: DynamicStyles<TextStyle> = {
+    static subHeading: DynamicStyle<TextStyle> = {
         default: {
             fontSize: 17,
         }
     }
 
-    static inputContainer: DynamicStyles<ViewStyle> = {
+    static inputContainer: DynamicStyle<ViewStyle> = {
         default: {
             marginBottom: 30
         }
     }
 
-    static defaultHelperInputContainer: DynamicStyles<ViewStyle & TextStyle> = {
+    static defaultHelperInputContainer: DynamicStyle<ViewStyle & TextStyle> = {
         default: {
             backgroundColor: "rgb(220, 220, 220)",
         },
@@ -47,7 +47,7 @@ export class AttendanceStyles {
         }
     }
 
-    static defaultMultilineHelperInput: DynamicStyles<TextStyle> = {
+    static defaultMultilineHelperInput: DynamicStyle<TextStyle> = {
         default: {
             ...this.defaultHelperInputContainer.default,
             ...HS.flexCenter,
@@ -59,7 +59,7 @@ export class AttendanceStyles {
         }
     }
 
-    static examinerIconContainer: DynamicStyles<ViewStyle> = {
+    static examinerIconContainer: DynamicStyle<ViewStyle> = {
         default: {
             marginRight: 10,
             marginTop: GLOBAL_SCREEN_PADDING + accordionPadding
@@ -73,7 +73,7 @@ export class AttendanceStyles {
         marginTop: 15
     }
 
-    static notesContainer: DynamicStyles<ViewStyle> = {
+    static notesContainer: DynamicStyle<ViewStyle> = {
         default: {
             ...HS.fullWidth,
             marginBottom: 60,

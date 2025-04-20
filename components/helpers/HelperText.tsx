@@ -1,5 +1,5 @@
-import { AnimatedStyleProp } from '@/abstract/AnimatedStyleProp';
-import { DynamicStyles } from '@/abstract/DynamicStyles';
+import { AnimatedDynamicStyle } from '@/abstract/AnimatedDynamicStyle';
+import { DynamicStyle } from '@/abstract/DynamicStyle';
 import HelperProps from "@/abstract/HelperProps";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { forwardRef, Fragment, Ref, useEffect, useImperativeHandle, useRef } from "react";
@@ -12,13 +12,13 @@ interface Props extends HelperProps<TextStyle>, TextProps {}
 /**
  * ```<Text>``` which Supports dynamic and animated text styles.
  * 
- * @see DynamicStyles
- * @see AnimatedStyleProp 
+ * @see DynamicStyle
+ * @see AnimatedDynamicStyle 
  * @since 0.0.1
  */
 export default forwardRef(function HelperText(
     {
-        dynamicStyles = {},
+        dynamicStyle = {},
         animatedStyles,
         rendered = true,
         onRender,
@@ -30,7 +30,7 @@ export default forwardRef(function HelperText(
     if (rendered === false)
         return <Fragment />;
 
-    const { children, ...otherProps } = useHelperProps(props, undefined, dynamicStyles, animatedStyles);
+    const { children, ...otherProps } = useHelperProps(props, undefined, dynamicStyle, animatedStyles);
 
     const componentRef = useRef<Text>(null);
 

@@ -29,11 +29,10 @@ export default function index() {
         // add col
         // consider order problem
             // function with all props, then choose prio?
-        // integrate animated styles into dynamic styles obj?
 
     return (
         <SafeAreaView>
-            <HelperView dynamicStyles={AttendanceIndexStyles.component} style={my_sm_5}>
+            <HelperView dynamicStyle={AttendanceIndexStyles.component} style={my_sm_5}>
                 <Flex justifyContent="flex-end">
                     <HelperText>Erledigt:</HelperText>
 
@@ -87,7 +86,7 @@ export default function index() {
                     {[
                         <AttendanceLink
                             key={0} 
-                            dynamicStyles={AttendanceIndexStyles.link} 
+                            dynamicStyle={AttendanceIndexStyles.link} 
                             subject="Musik"
                             date={new Date()}
                         >
@@ -107,7 +106,7 @@ export default function index() {
                         </AttendanceLink>,
                         <AttendanceLink
                             key={1} 
-                            dynamicStyles={AttendanceIndexStyles.link}
+                            dynamicStyle={AttendanceIndexStyles.link}
                             style={{
                                 backgroundColor: HISTORY_COLOR_TRANSPARENT,
                             }}
@@ -136,7 +135,7 @@ export default function index() {
                         </AttendanceLink>,
                         <AttendanceLink
                             key={2} 
-                            dynamicStyles={AttendanceIndexStyles.link}
+                            dynamicStyle={AttendanceIndexStyles.link}
                             style={{
                             }}
                             subject="Geschichte"
@@ -155,7 +154,7 @@ export default function index() {
                 <Link href={"/(attendance)"} asChild>
                     {/* TODO: make this an FAB */}
                     <HelperButton 
-                        dynamicStyles={AttendanceIndexStyles.addButton}
+                        dynamicStyle={AttendanceIndexStyles.addButton}
                         containerStyles={AttendanceIndexStyles.addButtonOuterView}
                     >
                         <FontAwesome name="plus" style={AttendanceIndexStyles.buttonIcon} />

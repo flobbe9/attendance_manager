@@ -1,4 +1,4 @@
-import { DynamicStyles } from "@/abstract/DynamicStyles";
+import { DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
 import HS from "@/assets/styles/helperStyles";
 import HelperView from "@/components/helpers/HelperView";
@@ -16,7 +16,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
     setDate: (date: CalendarDate) => void,
     /** Default is "de". Remember to register locales in "GlobalContextProvider.tsx" before adding more. See also https://web-ridge.github.io/react-native-paper-dates/docs/intro/ */
     locale?: "de" | "en",
-    buttonStyles?: DynamicStyles<ViewStyle>
+    buttonStyles?: DynamicStyle<ViewStyle>
 }
 
 
@@ -45,7 +45,7 @@ export default forwardRef(function DatePicker(
     function DefaultChildren(): JSX.Element {
 
         return (
-            <HelperButton dynamicStyles={buttonStyles}>
+            <HelperButton dynamicStyle={buttonStyles}>
                 <HelperText>{`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}</HelperText>        
             </HelperButton>
         );  

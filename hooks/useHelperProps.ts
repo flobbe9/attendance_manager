@@ -1,11 +1,11 @@
-import { AnimatedStyleProp } from "@/abstract/AnimatedStyleProp";
-import { combineDynamicStyles, DynamicStyles } from "@/abstract/DynamicStyles";
+import { AnimatedDynamicStyle } from "@/abstract/AnimatedDynamicStyle";
+import { combineDynamicStyles, DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
 import { useDefaultProps } from "./useDefaultProps";
 
 
 /**
- * Simply calls ```useDefaultProps``` but combining ```props.dynamicStyles``` with ```dynamicStyles``` and ```props.animatedStyles``` with ```animatedStyles```.
+ * Simply calls ```useDefaultProps``` but combining ```props.dynamicStyle``` with ```dynamicStyle``` and ```props.animatedStyles``` with ```animatedStyles```.
  * 
  * Use this instead of ```useDefaultProps``` if the component uses ```HelperProps```.
  * 
@@ -15,18 +15,18 @@ import { useDefaultProps } from "./useDefaultProps";
 export function useHelperProps<PropsType, StyleType>(
     props: HelperProps<StyleType> & PropsType, 
     componentName?: string,
-    dynamicStyles: DynamicStyles<StyleType> = {},
-    animatedStyles: AnimatedStyleProp<StyleType>[] = [],
+    dynamicStyle: DynamicStyle<StyleType> = {},
+    animatedStyles: AnimatedDynamicStyle<StyleType>[] = [],
     componentNameAsId = false
 ): HelperProps<StyleType> & PropsType {
 
-    /** Get rid of props.dynamicStyles as its handled seperatly */
-    const { dynamicStyles: propsDynamicStyles, ...otherProps } = props;
+    /** Get rid of props.dynamicStyle as its handled seperatly */
+    const { dynamicStyle: propsDynamicStyle, ...otherProps } = props;
     
     return useDefaultProps(
         otherProps as PropsType, 
         componentName, 
-        combineDynamicStyles(dynamicStyles, propsDynamicStyles), 
+        combineDynamicStyles(dynamicStyle, propsDynamicStyle), 
         [...animatedStyles, ...(props.animatedStyles || [])], 
         componentNameAsId
     );

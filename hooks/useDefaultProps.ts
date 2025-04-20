@@ -1,35 +1,35 @@
 import DefaultProps from "@/abstract/DefaultProps";
-import { DynamicStyles } from "@/abstract/DynamicStyles";
+import { DynamicStyle } from "@/abstract/DynamicStyle";
 import { useEffect, useState } from "react";
-import { useDynamicStyles } from "./useDynamicStyles";
+import { useDynamicStyle } from "./useDynamicStyle";
 import { log } from "@/utils/logUtils";
-import { AnimatedStyleProp } from "@/abstract/AnimatedStyleProp";
+import { AnimatedDynamicStyle } from "@/abstract/AnimatedDynamicStyle";
 
 
 /**
- * Will add ```componentName``` to ```props.id``` and ```props.className```. Will adjust some event handlers for ```dynamicStyles``` to take effect.
+ * Will add ```componentName``` to ```props.id``` and ```props.className```. Will adjust some event handlers for ```dynamicStyle``` to take effect.
  * 
  * @param props to adjust
- * @param dynamicStyles style object for the component
+ * @param dynamicStyle style object for the component
  * @param animatedStyles list of styles that are supposed to be animated. This object needs both initial and final style values to be 
- * specified in given ```styles``` object. See {@link AnimatedStyleProp}
+ * specified in given ```styles``` object. See {@link AnimatedDynamicStyle}
  * @param componentName to prepend to id and className
  * @param componentNameAsId if true, the ```componentName``` will be prepended to id. Default is ```false```
  * @type ```StyleType``` type of style the outer most tag of the component calling this hook needs (e.g. ```ViewStyle```). 
  * @type ```PropsType``` type of props of the component calling this hook (e.g. ```ViewProps```). 
  * @returns adjusted component props ready to be passed to component without any more changes 
- * @see {@link useDynamicStyles}
+ * @see {@link useDynamicStyle}
  * @since 0.0.1
  */
 export function useDefaultProps<PropsType, StyleType>(
     props: DefaultProps<StyleType> & PropsType, 
     componentName = "",
-    dynamicStyles: DynamicStyles<StyleType> = {},
-    animatedStyles?: AnimatedStyleProp<StyleType>[],
+    dynamicStyle: DynamicStyle<StyleType> = {},
+    animatedStyles?: AnimatedDynamicStyle<StyleType>[],
     componentNameAsId = false,
 ): DefaultProps<StyleType> & PropsType {
 
-    const { eventHandlers: dynamicStylesEventHandlers, currentStyles } = useDynamicStyles<StyleType>(dynamicStyles, animatedStyles);
+    const { eventHandlers: dynamicStyleEventHandlers, currentStyles } = useDynamicStyle<StyleType>(dynamicStyle, animatedStyles);
 
     const [eventHandlers, setEvenHandlers] = useState({});
 
@@ -48,17 +48,17 @@ export function useDefaultProps<PropsType, StyleType>(
      */
     function collectEventHandlers(): object {
 
-        if (!dynamicStyles)
+        if (!dynamicStyle)
             return {};
 
         const eventHandlers: object = {};
 
-        Object.keys(dynamicStylesEventHandlers)
+        Object.keys(dynamicStyleEventHandlers)
             .forEach(eventHandlerName => {
                 // only reassign if dynamicstyle event handler is present
-                if (dynamicStyles[eventHandlerName])
+                if (dynamicStyle[eventHandlerName])
                     eventHandlers[eventHandlerName] = (event) => {
-                        dynamicStylesEventHandlers[eventHandlerName]();
+                        dynamicStyleEventHandlers[eventHandlerName]();
 
                         if (props[eventHandlerName])
                             props[eventHandlerName](event);

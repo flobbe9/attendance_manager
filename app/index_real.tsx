@@ -22,7 +22,7 @@ export default function index() {
 
     return (
         <SafeAreaView>
-            <HelperView dynamicStyles={AttendanceIndexStyles.component}>
+            <HelperView dynamicStyle={AttendanceIndexStyles.component}>
                 <Flex justifyContent="flex-end">
                     <HelperText>Erledigt:</HelperText>
 
@@ -63,18 +63,18 @@ export default function index() {
                     {[
                         <AttendanceLink
                             key={0} 
-                            dynamicStyles={AttendanceIndexStyles.link} 
+                            dynamicStyle={AttendanceIndexStyles.link} 
                             subject="Musik"
                             date={new Date()}
                         />,
                         <AttendanceLink
                             key={1} 
-                            dynamicStyles={AttendanceIndexStyles.link}
+                            dynamicStyle={AttendanceIndexStyles.link}
                             subject="Geschichte"
                         />,
                         <AttendanceLink
                             key={2} 
-                            dynamicStyles={AttendanceIndexStyles.link}
+                            dynamicStyle={AttendanceIndexStyles.link}
                             subject="Geschichte"
                         />
                     ]}
@@ -83,7 +83,7 @@ export default function index() {
                 <Link href={"/(attendance)"} asChild>
                     {/* TODO: make this an FAB */}
                     <HelperButton 
-                        dynamicStyles={AttendanceIndexStyles.addButton}
+                        dynamicStyle={AttendanceIndexStyles.addButton}
                         containerStyles={AttendanceIndexStyles.addButtonOuterView}
                     >
                         <FontAwesome name="plus" style={AttendanceIndexStyles.buttonIcon} />

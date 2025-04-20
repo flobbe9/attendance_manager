@@ -1,6 +1,6 @@
 /**
  * Contains generic helper styles which may be used for any component. An exported constant
- * should be of type ```DynamicStyles``` or a react-native style type like ```ViewStyle```.
+ * should be of type ```DynamicStyle``` or a react-native style type like ```ViewStyle```.
  * 
  * @since 0.0.1
  */

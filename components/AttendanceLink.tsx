@@ -56,7 +56,7 @@ export default function AttendanceLink({
             {...otherProps}
         >
             <Link href="/(attendance)">
-                <P dynamicStyles={AttendanceLinkStyles.heading}>{subject}</P>
+                <P dynamicStyle={AttendanceLinkStyles.heading}>{subject}</P>
                 <Br />
 
                 <Flex 
@@ -66,7 +66,7 @@ export default function AttendanceLink({
                     }}
                 >
                     <HelperText 
-                        dynamicStyles={AttendanceLinkStyles.subheading}
+                        dynamicStyle={AttendanceLinkStyles.subheading}
                     >
                         {getDate()}
                     </HelperText>

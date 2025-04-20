@@ -1,7 +1,7 @@
 import HelperProps from "@/abstract/HelperProps";
 import { HelperSelectStyles } from "@/assets/styles/HelperSelectStyles";
 import HelperView from "@/components/helpers/HelperView";
-import { useAnimatedStyles } from "@/hooks/useAnimatedStyles";
+import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useBackHandler } from "@/hooks/useBackHandler";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { logError } from "@/utils/logUtils";
@@ -57,7 +57,7 @@ export default function HelperSelect<OptionType>({
     const componentName = "HelperSelect";
     const { children, ...otherProps } = useDefaultProps(props, componentName, HelperSelectStyles.component);
     
-    const { animatedStyle: animatedOptionsContainerHeight, animate: slideOptionsContainer } = useAnimatedStyles(
+    const { animatedStyle: animatedOptionsContainerHeight, animate: slideOptionsContainer } = useAnimatedStyle(
         [0, optionsContainerHeight], 
         [0, optionsContainerHeight], 
     );
@@ -132,12 +132,12 @@ export default function HelperSelect<OptionType>({
         return options
             .map((option, i) => 
                 <HelperButton 
-                    dynamicStyles={HelperSelectStyles.optionButton} 
+                    dynamicStyle={HelperSelectStyles.optionButton} 
                     containerStyles={{default: {width: "100%"}}}
                     onPress={() => handleOptionPress(option)}
                     key={i}
                 >
-                    <HelperText dynamicStyles={HelperSelectStyles.optionButtonText}>{option as string}</HelperText>
+                    <HelperText dynamicStyle={HelperSelectStyles.optionButtonText}>{option as string}</HelperText>
                     {isOptionSelected(option) && multiselect && <FontAwesome name="check" style={HelperSelectStyles.optionButtonText.default} />}
                 </HelperButton>
             );
@@ -173,10 +173,10 @@ export default function HelperSelect<OptionType>({
             {children}
 
             <HelperButton 
-                dynamicStyles={HelperSelectStyles.selectionButton}
+                dynamicStyle={HelperSelectStyles.selectionButton}
                 onTouchStart={() => setAreOptionsVisible(!areOptionsVisible)}
             >
-                <HelperText dynamicStyles={HelperSelectStyles.selectionButtonValue} style={{opacity: selectionButtonValue === noSelectionLabel ? 0.5 : 1}}>
+                <HelperText dynamicStyle={HelperSelectStyles.selectionButtonValue} style={{opacity: selectionButtonValue === noSelectionLabel ? 0.5 : 1}}>
                     {selectionButtonValue}
                 </HelperText>
                 <FontAwesome name="chevron-down" style={HelperSelectStyles.selectionButtonValue.default} />
@@ -184,7 +184,7 @@ export default function HelperSelect<OptionType>({
 
             <HelperView style={{position: "relative"}}>
                 <HelperScrollView 
-                    dynamicStyles={HelperSelectStyles.optionsContainer}
+                    dynamicStyle={HelperSelectStyles.optionsContainer}
                     style={{
                         height: animatedOptionsContainerHeight,
                         position: optionsContainerScroll ? "static" : "absolute",
