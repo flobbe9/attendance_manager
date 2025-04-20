@@ -1,13 +1,11 @@
+import { combineDynamicStyles, DynamicStyles } from "@/abstract/DynamicStyles";
 import HelperProps from "@/abstract/HelperProps";
+import { HelperInputStyles } from "@/assets/styles/HelperInputStyles";
+import HS from "@/assets/styles/helperStyles";
 import { useDynamicStyles } from "@/hooks/useDynamicStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { forwardRef, Fragment, Ref, useEffect, useImperativeHandle, useRef } from "react";
-import { Animated, KeyboardTypeOptions, NativeSyntheticEvent, TextInput, TextInputFocusEventData, TextInputProps, TextStyle, useAnimatedValue, View, ViewStyle } from "react-native";
-import HelperView from "./HelperView";
-import { getAnimatedBackgroundColorProp, HelperInputStyles } from "@/assets/styles/HelperInputStyles";
-import { combineDynamicStyles, DynamicStyles } from "@/abstract/DynamicStyles";
-import HelperText from "./HelperText";
-import { HelperStyles } from "@/assets/styles/helperStyles";
+import { Animated, NativeSyntheticEvent, TextInput, TextInputFocusEventData, TextInputProps, TextStyle, useAnimatedValue, ViewStyle } from "react-native";
 
 
 interface Props extends HelperProps<TextStyle>, TextInputProps {
@@ -25,7 +23,7 @@ export default forwardRef(function HelperInput(
     {
         rendered = true,
         disabled,
-        containerStyles,
+        containerStyles = {},
         setValue,
         onRender,
         onChangeText: onChangeTextProps,
@@ -42,8 +40,7 @@ export default forwardRef(function HelperInput(
     const { children, onFocus: propsOnFocus, onBlur: propsOnBlur, style, ...otherProps } = useHelperProps<TextInputProps, TextStyle>(props, componentName, HelperInputStyles.component);
     const { eventHandlers: viewEventHandlers, currentStyles: viewStyles } = useDynamicStyles(
         combineDynamicStyles(HelperInputStyles.view, containerStyles), 
-        {}, 
-        [getAnimatedBackgroundColorProp(animatedBackgroundColor)]
+        [HelperInputStyles.view.animatedStyleProps.backgroundColor(animatedBackgroundColor)]
     );
 
     
@@ -53,6 +50,7 @@ export default forwardRef(function HelperInput(
     useEffect(() => {
         if (onRender)
             onRender();
+
     }, []);
 
     
@@ -98,7 +96,7 @@ export default forwardRef(function HelperInput(
                 onFocus={onFocus}
                 onBlur={onBlur}
                 style={{
-                    ...(disabled ? HelperStyles.disabled : {}),
+                    ...(disabled ? HS.disabled : {}),
                     ...style as object,
                 }}
                 returnKeyType={otherProps.multiline ? "none" : "default"}

@@ -1,10 +1,10 @@
 import { AnimatedStyleProp } from "@/abstract/AnimatedStyleProp";
 import { DynamicStyles } from "@/abstract/DynamicStyles";
-import { log, logWarn } from "@/utils/logUtils";
+import { logWarn } from "@/utils/logUtils";
 import { TRANSITION_DURATION } from "@/utils/styleConstants";
 import { cloneObj, flatMapObject, isAnyFalsy } from "@/utils/utils";
 import { useEffect, useState } from "react";
-import { Animated, StyleProp } from "react-native";
+import { Animated } from "react-native";
 import { useHasComponentMounted } from './useHasComponentMounted';
 
 
@@ -151,7 +151,7 @@ export function useDynamicStyles<StyleType>(
 
     function addStyles(key: keyof DynamicStyles<StyleType>): void {
 
-        if (!key)
+        if (!key || key === "animatedStyleProps")
             return;
 
         if (!initStyles[key])
@@ -164,7 +164,7 @@ export function useDynamicStyles<StyleType>(
 
     function removeStyles(key: keyof DynamicStyles<StyleType>): void {
 
-        if (!key)
+        if (!key || key === "animatedStyleProps")
             return;
 
         if (!initStyles[key])

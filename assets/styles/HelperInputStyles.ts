@@ -1,7 +1,6 @@
-import { AnimatedStyleProp } from "@/abstract/AnimatedStyleProp";
 import { DynamicStyles } from "@/abstract/DynamicStyles";
 import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
-import { Animated, TextStyle, ViewStyle } from "react-native";
+import { TextStyle, ViewStyle } from "react-native";
 
 
 export class HelperInputStyles {
@@ -20,18 +19,15 @@ export class HelperInputStyles {
         },
         focus: {
             backgroundColor: "rgb(220, 220, 220)",
+        },
+        animatedStyleProps: {
+            backgroundColor: (animatedValue) => ({
+                styleProp: "backgroundColor",
+                animatedValue,
+                inputRange: [0, 255],
+                event: "focus",
+                duration: 100
+            })
         }
-    }
-}
-
-
-export function getAnimatedBackgroundColorProp(animatedValue: Animated.Value): AnimatedStyleProp<ViewStyle> {
-
-    return {
-        styleProp: "backgroundColor",
-        animatedValue,
-        inputRange: [0, 255],
-        event: "focus",
-        duration: 100
     }
 }

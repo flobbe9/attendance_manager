@@ -1,5 +1,8 @@
 import { log } from "@/utils/logUtils";
 import { isObjectFalsy } from "@/utils/utils";
+import { AnimatedStyleProp } from "./AnimatedStyleProp";
+import { Animated, StyleProp, ViewStyle } from "react-native";
+import { PartialRecord } from "./PartialRecord";
 
 /**
  * Replaces css pseudo classes like ```:focus``` and ```:hover``` with respective mobile properties. 
@@ -14,6 +17,9 @@ import { isObjectFalsy } from "@/utils/utils";
 export interface DynamicStyles<StyleType> {
     /** The 'static' styles that are always applied */
     default?: StyleType
+    /** For animating a styleprop which has been defined in "default" and for any event */
+    animatedStyleProps?: PartialRecord<keyof StyleType, (animatedValue: Animated.Value) => AnimatedStyleProp<StyleType>>,
+    
     focus?: StyleType
     blur?: StyleType
     touchStart?: StyleType,
