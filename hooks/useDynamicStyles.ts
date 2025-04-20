@@ -9,13 +9,12 @@ import { useHasComponentMounted } from './useHasComponentMounted';
 
 
 /**
- * Adds or removes certain styles for given ```styles``` using eventhandlers. 
+ * Adds or removes certain styles uising eventhandlers. 
  * 
- * NOTE: all style object are cloned to the deepest level which will result in them loosing their state. Use plain react-native components for that.
+ * NOTE: both dynamic style objects are cloned to the deepest level which will result in them loosing their state. Use the normal ```props.style``` 
+ * object for states. Notice that any ```props.style``` prop will always take precedence over any ```dynamicStyles``` prop, even the ones added by eventlistener. 
  * 
  * @param dynamicStyles the complete stylesheet including all dynamic styles, even if they shouldn't be applied on render
- * @param propsStyles the styles object passed to the component props of the component calling this hook. Will be added to default styles and 
- * overriden by dynamic styles
  * @param animmatedStyleProps list of styles that are supposed to be animated. This object needs both initial and final style values to be 
  * specified in given ```styles``` object. See {@link AnimatedStyleProp}
  * @returns some eventhandlers adding / removing their respective styles and a flat stylesheet state which is the modified style object to pass to 
@@ -24,14 +23,13 @@ import { useHasComponentMounted } from './useHasComponentMounted';
  */
 export function useDynamicStyles<StyleType>(
     dynamicStyles: DynamicStyles<StyleType> = {}, 
-    propsStyles?: StyleProp<StyleType>,
     animatedStyleProps?: AnimatedStyleProp<StyleType>[]
 ) {
 
     const hasComponentMounted = useHasComponentMounted();
 
     /** Copy of style objects that will only be altered for animated styles and for nothing else */
-    const [initStyles, setInitStyles] = useState<DynamicStyles<StyleType>>(cloneObj({...dynamicStyles, default: {...dynamicStyles.default, ...propsStyles as object}}, 2)); // somehow destructuring "propsStyles" on a deeper level than 1 will return a weird different object. So dont go further than 2 here
+    const [initStyles, setInitStyles] = useState<DynamicStyles<StyleType>>(cloneObj(dynamicStyles, 2)); 
     const [currentStyles, setCurrentStyles] = useState<DynamicStyles<StyleType>>(initAnimatedStyles());
     const [currentStylesFlat, setCurrentStylesFlat] = useState<StyleType>(initStyles.default);
     
@@ -51,10 +49,8 @@ export function useDynamicStyles<StyleType>(
      */
     function initAnimatedStyles(): DynamicStyles<StyleType> {
 
-        // case: no styles to animate or initialized already
-        if (hasComponentMounted || 
-            !initStyles || !Object.keys(initStyles.default).length || 
-            !animatedStyleProps || !animatedStyleProps.length)
+        // case: initialized already or no styles to animate
+        if (hasComponentMounted || !animatedStyleProps?.length)
             return {default: initStyles.default};
 
         animatedStyleProps.forEach(animatedStyleProp => {

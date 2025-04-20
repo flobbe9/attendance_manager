@@ -1,8 +1,6 @@
 import { AnimatedStyleProp } from "@/abstract/AnimatedStyleProp";
 import { combineDynamicStyles, DynamicStyles } from "@/abstract/DynamicStyles";
 import HelperProps from "@/abstract/HelperProps";
-import { useEffect, useState } from "react";
-import { useDynamicStyles } from "./useDynamicStyles";
 import { useDefaultProps } from "./useDefaultProps";
 
 
@@ -19,8 +17,7 @@ export function useHelperProps<PropsType, StyleType>(
     componentName?: string,
     dynamicStyles: DynamicStyles<StyleType> = {},
     animatedStyles: AnimatedStyleProp<StyleType>[] = [],
-    componentNameAsId = false,
-    dontClonePropsStyle = false
+    componentNameAsId = false
 ): HelperProps<StyleType> & PropsType {
 
     /** Get rid of props.dynamicStyles as its handled seperatly */

@@ -29,11 +29,7 @@ export function useDefaultProps<PropsType, StyleType>(
     componentNameAsId = false,
 ): DefaultProps<StyleType> & PropsType {
 
-    const { eventHandlers: dynamicStylesEventHandlers, currentStyles } = useDynamicStyles<StyleType>(
-        dynamicStyles, 
-        props.style, 
-        animatedStyles
-    );
+    const { eventHandlers: dynamicStylesEventHandlers, currentStyles } = useDynamicStyles<StyleType>(dynamicStyles, animatedStyles);
 
     const [eventHandlers, setEvenHandlers] = useState({});
 
@@ -77,6 +73,6 @@ export function useDefaultProps<PropsType, StyleType>(
         ...eventHandlers,
         id: props.id || componentNameAsId ? componentName + (props.id || "") : undefined,
         className: componentName + " " + (props.className || ""),
-        style: currentStyles
+        style: {...currentStyles, ...props.style as object},
     };
 }
