@@ -1022,3 +1022,35 @@ export function cloneObj<T extends object>(obj: T, depth = -1, currentDepth = 0)
 
     return copy;
 }
+
+/**
+ * 
+ * @param obj TODO
+ * @param sortCallback 
+ * @returns 
+ */
+export function sortObjectByKeys<T extends object>(obj: T, sortCallback?: (key1: any, key2: any) => number): T {
+
+    if (!obj) 
+        return {} as T;
+
+    const sortedKeys = Object.keys(obj).sort(sortCallback);
+    
+    const sortedObj = {};
+    sortedKeys.forEach(key => sortedObj[key] = obj[key]);
+
+    return sortedObj as T;
+}
+
+
+export function mergeObjects<T extends object>(...objs: T[]): T {
+
+    if (!objs || !objs.length)
+        return {} as T;
+
+    const mergedObj = {};
+
+    objs.forEach(obj => Object.assign(mergedObj, obj));
+
+    return mergedObj as T;
+}

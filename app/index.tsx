@@ -20,19 +20,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
  */
 export default function index() {
 
-    const {my_sm_5} = useResponsiveStyles();
+    const { allStyles: {my_sm_5, my_10, col_6}, parseResponsiveStyleToStyle: parseRs } = useResponsiveStyles();
 
-    // TODO:
-        // add docs
-            // in order
-            // examples
-        // add col
-        // consider order problem
-            // function with all props, then choose prio?
 
     return (
         <SafeAreaView>
-            <HelperView dynamicStyle={AttendanceIndexStyles.component} style={my_sm_5}>
+            <HelperView dynamicStyle={AttendanceIndexStyles.component} style={parseRs({my_sm_5, my_10, col_6})}>
                 <Flex justifyContent="flex-end">
                     <HelperText>Erledigt:</HelperText>
 
