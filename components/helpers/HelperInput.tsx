@@ -89,7 +89,7 @@ export default forwardRef(function HelperInput(
     return (
         <Animated.View style={viewStyles}>
             <TextInput
-                ref={ref}
+                ref={componentRef}
                 editable={!disabled}
                 selectTextOnFocus={!disabled}
                 onChangeText={onChangeText}

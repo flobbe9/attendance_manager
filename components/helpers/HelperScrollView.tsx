@@ -17,7 +17,7 @@ interface Props extends HelperProps<ViewStyle>, ScrollViewProps {
 export default forwardRef(function HelperScrollView(
     {
         dynamicStyle = {},
-        animatedStyles,
+        animatedDynamicStyles,
         rendered = true,
         onRender,
         ...props
@@ -28,7 +28,7 @@ export default forwardRef(function HelperScrollView(
     if (rendered === false)
         return <Fragment />;
 
-    const { children, ...otherProps } = useHelperProps(props, undefined, dynamicStyle, animatedStyles);
+    const { children, ...otherProps } = useHelperProps(props, undefined, dynamicStyle, animatedDynamicStyles);
 
     const componentRef = useRef<ScrollView>(null);
 

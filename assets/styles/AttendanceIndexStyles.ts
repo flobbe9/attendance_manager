@@ -1,13 +1,14 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
 import { TextStyle, ViewStyle } from "react-native";
 import HS from "./helperStyles";
-import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { BORDER_RADIUS, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 
 
 type StyleType = ViewStyle;
 
 const addButtonWidth = 60;
-const addButtonPosition = 20;
+const addButtonPosition = 50;
+const addButtonFontSize = 20;
 
 
 export class AttendanceIndexStyles {
@@ -26,7 +27,7 @@ export class AttendanceIndexStyles {
 
     static addButtonOuterView: DynamicStyle<StyleType> = {
         default: {
-            bottom: addButtonPosition,
+            bottom: 80,
             position: "absolute",
             right: addButtonPosition,
         }
@@ -34,14 +35,21 @@ export class AttendanceIndexStyles {
     
     static addButton: DynamicStyle<StyleType> = {
         default: {
-            borderRadius: "100%",
             height: addButtonWidth,
-            width: addButtonWidth,
+            paddingStart: 20,
+            paddingEnd: 20,
+            width: addButtonWidth
+        }
+    }
+
+    static addButtonLabel: DynamicStyle<TextStyle> = {
+        default: {
+            fontSize: addButtonFontSize
         }
     }
 
     static buttonIcon: TextStyle = {
-        fontSize: 20,
+        fontSize: addButtonFontSize,
         ...HS.fitContent
     }
 }

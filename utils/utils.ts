@@ -24,7 +24,7 @@ export function stringToNumber(str: string | number | undefined | null): number 
 }
 
 
-export function isNumberFalsy(num: number | null | undefined): boolean {
+export function isNumberFalsy(num: any): boolean {
 
     return num === undefined || num === null || isNaN(num);
 }
@@ -1023,11 +1023,13 @@ export function cloneObj<T extends object>(obj: T, depth = -1, currentDepth = 0)
     return copy;
 }
 
+
 /**
+ * Sort first level object entries by their keys. If no sort callback is specified use the natural sort order.
  * 
- * @param obj TODO
- * @param sortCallback 
- * @returns 
+ * @param obj to sort
+ * @param sortCallback to sort the keys 
+ * @returns a new instance of `obj` with sorted entries or {} if invalid args. Never `undefined`
  */
 export function sortObjectByKeys<T extends object>(obj: T, sortCallback?: (key1: any, key2: any) => number): T {
 
@@ -1043,6 +1045,12 @@ export function sortObjectByKeys<T extends object>(obj: T, sortCallback?: (key1:
 }
 
 
+/**
+ * Merge first level entries of `objs` into one object.
+ * 
+ * @param objs to merge
+ * @returns new object containing all first level values of `objs` 
+ */
 export function mergeObjects<T extends object>(...objs: T[]): T {
 
     if (!objs || !objs.length)

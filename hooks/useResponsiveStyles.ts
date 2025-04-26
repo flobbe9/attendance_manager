@@ -47,7 +47,7 @@ export function useResponsiveStyles() {
         "_lg": !isNumberFalsy(width) && width >= LG_MIN_WIDTH
     };
     type StylePropScreenWidth = keyof typeof stylePropScreenWidthObj;
-    const stylePropPixelQuantifierObj = {"_0": 0, "_1": 5, "_2": 10, "_3": 20, "_4": 30, "_5": 40, "_6": 50, "_7": 60, "_8": 70, "_9": 80, "_10": 90};
+    const stylePropPixelQuantifierObj = {"_0": 0, "_1": 5, "_2": 10, "_3": 20, "_4": 30, "_5": 40, "_6": 60, "_7": 80, "_8": 100, "_9": 120, "_10": 140};
     type StylePropPixelQuantifier = keyof typeof stylePropPixelQuantifierObj;
     const stylePropWidthQuantifierObj = {
         "_1": `${1 / 12 * 100}%`,
@@ -137,7 +137,7 @@ export function useResponsiveStyles() {
 
     
     /**
-     * Make sure the responsive styles override each other correctly depewnding on the current screen width.
+     * Make sure the responsive styles override each other correctly depending on the current screen width.
      * 
      * @param responsiveStyle to parse
      * @returns a valid style object containing the responsiveStyle values in the correct order depending on ```screenWidthObj```

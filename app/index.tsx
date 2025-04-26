@@ -1,17 +1,21 @@
 import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import { AttendanceLinkStyles } from "@/assets/styles/AttendanceLinkStyles";
 import AttendanceLink from "@/components/AttendanceLink";
+import ExtendableButton from "@/components/helpers/ExtendableButton";
 import Flex from "@/components/helpers/Flex";
 import HelperButton from "@/components/helpers/HelperButton";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
 import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
+import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { log } from "@/utils/logUtils";
-import { HISTORY_COLOR, HISTORY_COLOR_TRANSPARENT, MUSIC_COLOR } from "@/utils/styleConstants";
+import { GLOBAL_SCREEN_PADDING, HISTORY_COLOR, HISTORY_COLOR_TRANSPARENT, MUSIC_COLOR } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { NativeScrollEvent, NativeSyntheticEvent, Platform } from "react-native";
+import { AnimatedFAB } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
@@ -20,13 +24,24 @@ import { SafeAreaView } from "react-native-safe-area-context";
  */
 export default function index() {
 
-    const { allStyles: {my_sm_5, my_10, col_6}, parseResponsiveStyleToStyle: parseRs } = useResponsiveStyles();
+    const [isExtended, setIsExtended] = useState(true);
+    
+    function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
+        const currentScrollPosition = Math.floor(event.nativeEvent?.contentOffset?.y) ?? 0;
+        
+        setIsExtended(currentScrollPosition <= 0);
+    };
 
+
+    const { allStyles: { px_5 }} = useResponsiveStyles();
+
+
+    const fabStyle = { ['right']: 16 };
 
     return (
         <SafeAreaView>
-            <HelperView dynamicStyle={AttendanceIndexStyles.component} style={parseRs({my_sm_5, my_10, col_6})}>
-                <Flex justifyContent="flex-end">
+            <HelperView dynamicStyle={AttendanceIndexStyles.component}>
+                <Flex justifyContent="flex-end" style={{paddingBottom: GLOBAL_SCREEN_PADDING}}>
                     <HelperText>Erledigt:</HelperText>
 
                     <Flex 
@@ -75,7 +90,7 @@ export default function index() {
                     </Flex>
                 </Flex>
 
-                <HelperScrollView>
+                <HelperScrollView onScroll={handleScroll}>
                     {[
                         <AttendanceLink
                             key={0} 
@@ -140,18 +155,112 @@ export default function index() {
                                 }}
                                 name="user" 
                             />
+                        </AttendanceLink>,
+                        <AttendanceLink
+                            key={3} 
+                            dynamicStyle={AttendanceIndexStyles.link}
+                            style={{
+                            }}
+                            subject="Geschichte"
+                        >
+                            <FontAwesome
+                                style={{    
+                                    color: HISTORY_COLOR,
+                                    ...AttendanceLinkStyles.icon,
+                                }}
+                                name="user" 
+                            />
+                        </AttendanceLink>,
+                        <AttendanceLink
+                            key={4} 
+                            dynamicStyle={AttendanceIndexStyles.link}
+                            style={{
+                            }}
+                            subject="Geschichte"
+                        >
+                            <FontAwesome
+                                style={{    
+                                    color: HISTORY_COLOR,
+                                    ...AttendanceLinkStyles.icon,
+                                }}
+                                name="user" 
+                            />
+                        </AttendanceLink>,
+                        <AttendanceLink
+                            key={5} 
+                            dynamicStyle={AttendanceIndexStyles.link}
+                            style={{
+                            }}
+                            subject="Geschichte"
+                        >
+                            <FontAwesome
+                                style={{    
+                                    color: HISTORY_COLOR,
+                                    ...AttendanceLinkStyles.icon,
+                                }}
+                                name="user" 
+                            />
+                        </AttendanceLink>,
+                        <AttendanceLink
+                            key={6} 
+                            dynamicStyle={AttendanceIndexStyles.link}
+                            style={{
+                            }}
+                            subject="Geschichte"
+                        >
+                            <FontAwesome
+                                style={{    
+                                    color: HISTORY_COLOR,
+                                    ...AttendanceLinkStyles.icon,
+                                }}
+                                name="user" 
+                            />
+                        </AttendanceLink>,
+                        <AttendanceLink
+                            key={7} 
+                            dynamicStyle={AttendanceIndexStyles.link}
+                            style={{
+                            }}
+                            subject="Geschichte"
+                        >
+                            <FontAwesome
+                                style={{    
+                                    color: HISTORY_COLOR,
+                                    ...AttendanceLinkStyles.icon,
+                                }}
+                                name="user" 
+                            />
+                        </AttendanceLink>,
+                        <AttendanceLink
+                            key={8} 
+                            dynamicStyle={AttendanceIndexStyles.link}
+                            style={{
+                            }}
+                            subject="Geschichte"
+                        >
+                            <FontAwesome
+                                style={{    
+                                    color: HISTORY_COLOR,
+                                    ...AttendanceLinkStyles.icon,
+                                }}
+                                name="user" 
+                            />
                         </AttendanceLink>
                     ]}
                 </HelperScrollView>
 
                 <Link href={"/(attendance)"} asChild>
-                    {/* TODO: make this an FAB */}
-                    <HelperButton 
+                    <ExtendableButton 
+                        isExtended={isExtended}
                         dynamicStyle={AttendanceIndexStyles.addButton}
                         containerStyles={AttendanceIndexStyles.addButtonOuterView}
+                        align="flex-end"
+                        extendedWidth={152}
+                        disabled
+                        label={<HelperText dynamicStyle={AttendanceIndexStyles.addButtonLabel}>Neuer UB</HelperText>}
                     >
                         <FontAwesome name="plus" style={AttendanceIndexStyles.buttonIcon} />
-                    </HelperButton>
+                    </ExtendableButton>
                 </Link>
             </HelperView>
         </SafeAreaView>

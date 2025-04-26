@@ -1,4 +1,5 @@
 import DefaultProps from "@/abstract/DefaultProps";
+import { DynamicStyle } from "@/abstract/DynamicStyle";
 import { Headmaster, HEADMASTERS } from "@/abstract/Headmaster";
 import { MUSIC_LESSON_TOPICS, MusicLessonTopic } from "@/abstract/MusicLessonTopic";
 import { SCHOOLCLASS_MODES, SchoolclassMode, schoolclassModeObj } from "@/abstract/SchoolclassMode";
@@ -20,7 +21,7 @@ import { CheckboxStatus } from "@/utils/constants";
 import { BORDER_RADIUS, HISTORY_COLOR, MUSIC_COLOR } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { ScrollView, ViewProps, ViewStyle } from "react-native";
+import { ScrollView, TextStyle, ViewProps, ViewStyle } from "react-native";
 import { RadioButton } from "react-native-paper";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -129,7 +130,7 @@ export default function index(props: Props) {
                     <HelperInput 
                         placeholder="5 - 13"
                         keyboardType="numeric"
-                        containerStyles={AttendanceStyles.defaultHelperInputContainer}
+                        containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
                     />
                 </HelperView>
 
@@ -237,6 +238,7 @@ export default function index(props: Props) {
                             numberOfLines={numHelperInputLines}
                             placeholder="Thema"
                             dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
+                            containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
                         />
                     </HelperView>
 
@@ -247,6 +249,7 @@ export default function index(props: Props) {
                             numberOfLines={numHelperInputLines}
                             placeholder="Lerngruppe"
                             dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
+                            containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
                         />
                     </HelperView>
 
@@ -259,7 +262,7 @@ export default function index(props: Props) {
                         <HelperInput
                             placeholder="Ausbildungslehrer"
                             rendered={schoolclassMode === "Ausbildungsunterricht"}
-                            dynamicStyle={AttendanceStyles.defaultHelperInputContainer}
+                            containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
                         />
                     </HelperView>
                 </HelperView>

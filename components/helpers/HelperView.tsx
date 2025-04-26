@@ -16,7 +16,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
 export default forwardRef(function HelperView(
     {
         dynamicStyle = {},
-        animatedStyles,
+        animatedDynamicStyles,
         rendered = true,
         onRender,
         ...props
@@ -24,7 +24,7 @@ export default forwardRef(function HelperView(
     ref: Ref<View>
 ) {
 
-    const { children, ...otherProps } = useHelperProps(props, undefined, dynamicStyle, animatedStyles);
+    const { children, ...otherProps } = useHelperProps(props, undefined, dynamicStyle, animatedDynamicStyles);
 
     const componentRef = useRef<View>(null);
 

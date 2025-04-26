@@ -3,15 +3,16 @@ import { HelperButtonStyles } from "@/assets/styles/HelperButtonStyles";
 import HS from "@/assets/styles/helperStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { forwardRef, Ref } from "react";
-import { ColorValue, GestureResponderEvent, TouchableNativeFeedback, View, ViewProps, ViewStyle } from "react-native";
+import { ColorValue, GestureResponderEvent, Platform, TouchableNativeFeedback, View, ViewProps, ViewStyle } from "react-native";
 import Flex from "./Flex";
 import HelperView from "./HelperView";
 import { DynamicStyle } from "@/abstract/DynamicStyle";
 import { useDynamicStyle } from "@/hooks/useDynamicStyle";
 import { log } from "@/utils/logUtils";
+import { AnimatedFAB } from "react-native-paper";
 
 
-interface Props extends HelperProps<ViewStyle>, ViewProps {
+export interface HelperButtonProps extends HelperProps<ViewStyle>, ViewProps {
     disabled?: boolean
     /** Configure the ripple effect on press. ```undefined``` will make the ripple color adjust to the current background color. ```null``` will disable the ripple effect */
     ripple?: { rippleBackground: ColorValue } | null,
@@ -36,8 +37,9 @@ export default forwardRef(function HelperButton(
         containerStyles,
         disableFlex = false,
         onPress,
+        onLayout,
         ...props
-    }: Props,
+    }: HelperButtonProps,
     ref: Ref<View>
 ) {
 
@@ -45,6 +47,13 @@ export default forwardRef(function HelperButton(
     const { children, style, ...otherProps } = useHelperProps(props, componentName, HelperButtonStyles.component);
 
     const { currentStyles: componentStyles, eventHandlers: containerEventHandlers } = useDynamicStyle(containerStyles);
+
+    function handlePress(event?: GestureResponderEvent): void {
+
+        if (!disabled && onPress)
+            onPress(event);
+
+    }
 
     return (
         <HelperView 
@@ -55,9 +64,13 @@ export default forwardRef(function HelperButton(
                 ...HS.fitContent,
                 ...componentStyles,
             }}
+            onLayout={onLayout}
             {...containerEventHandlers}
         >
-            <TouchableNativeFeedback onPress={onPress} background={ripple === null ? null : TouchableNativeFeedback.Ripple(ripple?.rippleBackground, false)}>
+            <TouchableNativeFeedback 
+                onPress={handlePress} 
+                background={ripple === null || disabled ? null : TouchableNativeFeedback.Ripple(ripple?.rippleBackground, false)}
+            >
                 <Flex
                     justifyContent="center"
                     alignItems="center"

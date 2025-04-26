@@ -49,13 +49,9 @@ export class AttendanceStyles {
 
     static defaultMultilineHelperInput: DynamicStyle<TextStyle> = {
         default: {
-            ...this.defaultHelperInputContainer.default,
             ...HS.flexCenter,
             maxHeight: 200,
             minHeight: 80,
-        },
-        focus: {
-            ...this.defaultHelperInputContainer.focus
         }
     }
 

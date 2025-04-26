@@ -19,7 +19,7 @@ interface Props extends HelperProps<TextStyle>, TextProps {}
 export default forwardRef(function HelperText(
     {
         dynamicStyle = {},
-        animatedStyles,
+        animatedDynamicStyles,
         rendered = true,
         onRender,
         ...props
@@ -30,7 +30,7 @@ export default forwardRef(function HelperText(
     if (rendered === false)
         return <Fragment />;
 
-    const { children, ...otherProps } = useHelperProps(props, undefined, dynamicStyle, animatedStyles);
+    const { children, ...otherProps } = useHelperProps(props, undefined, dynamicStyle, animatedDynamicStyles);
 
     const componentRef = useRef<Text>(null);
 
