@@ -1,7 +1,6 @@
-import { log } from "@/utils/logUtils";
 import { TRANSITION_DURATION } from "@/utils/styleConstants";
-import { DependencyList, useEffect, useState } from "react";
-import { Animated, useAnimatedValue } from "react-native";
+import { DependencyList, useEffect } from "react";
+import { Animated, Easing, useAnimatedValue } from "react-native";
 import { useHasComponentMounted } from "./useHasComponentMounted";
 
 
@@ -12,6 +11,7 @@ import { useHasComponentMounted } from "./useHasComponentMounted";
  * @param animationDeps if specified, the animation will be triggered whenever the deps change (useEffect). Set to `null` in order
  * to disable animation triggered by state. Default is `[reverse]`
  * @param duration in ms. Default is {@link TRANI}
+ * @param easing see {@link Easing}. Default is "inOut"
  * @since 0.0.1
  * @see Animated.Value.interpolate
  */
@@ -20,7 +20,8 @@ export function useAnimatedStyle(
     outputRange: string[] | number[],
     reverse?: boolean,
     animationDeps: DependencyList | null = [reverse],
-    duration = TRANSITION_DURATION
+    duration = TRANSITION_DURATION,
+    easing = Easing.inOut(Easing.ease)
 ) {
 
     const animatedValue = useAnimatedValue(inputRange.length ? inputRange[0] : 0);
@@ -40,7 +41,8 @@ export function useAnimatedStyle(
             animatedValue,
             {
                 toValue: inputRange[reverse ? 0 : inputRange.length - 1],
-                duration: duration,
+                duration,
+                easing,
                 useNativeDriver: false
             }
         ).start();
