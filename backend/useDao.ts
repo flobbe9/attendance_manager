@@ -1,8 +1,9 @@
-import AbstractEntity from "@/abstract/entities/AbstractEntity";
 import { Dao } from "@/backend/abstract/Dao";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
 import { useSQLiteContext } from "expo-sqlite";
+import AbstractEntity from "./abstract/Abstract_Schema";
+import { DRIZZLE_DB_CONFIG } from "@/utils/constants";
 
 /**
  * @returns a new instance of ```Dao``` to perform any db actions
@@ -11,7 +12,9 @@ import { useSQLiteContext } from "expo-sqlite";
 export function useDao<Entity extends AbstractEntity, Table extends SQLiteTableWithColumns<any>>(table: Table) {
 
     const db = useSQLiteContext();
-    const drizzleDb = drizzle(db);
+    db.execSync("PRAGMA FOREIGN_KEYS = ON"); // enable cascade
+
+    const drizzleDb = drizzle(db, DRIZZLE_DB_CONFIG);
     
     return {
         dao: new SimpleDaoImpl<Entity, Table>(drizzleDb, table),
