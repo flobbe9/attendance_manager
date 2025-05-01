@@ -1,6 +1,8 @@
 import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import { AttendanceLinkStyles } from "@/assets/styles/AttendanceLinkStyles";
 import HelperStyles from "@/assets/styles/helperStyles";
+import { Attendance_Table, AttendanceEntity, SchoolclassMode_Table, SchoolclassModeEntity } from "@/backend/DbSchema";
+import { useDao } from "@/backend/useDao";
 import AttendanceLink from "@/components/AttendanceLink";
 import ExtendableButton from "@/components/helpers/ExtendableButton";
 import Flex from "@/components/helpers/Flex";
@@ -8,19 +10,25 @@ import HelperScrollView from "@/components/helpers/HelperScrollView";
 import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { log, logError } from "@/utils/logUtils";
 import { HISTORY_COLOR, HISTORY_COLOR_TRANSPARENT, MUSIC_COLOR } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { eq } from "drizzle-orm";
 import { useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import '../gesture-handler.js';
 
 
 /**
  * @since 0.0.1
  */
 export default function index() {
+
+    const { dao: attendanceDao } = useDao<AttendanceEntity, typeof Attendance_Table>(Attendance_Table);
+    const { dao: schoolclassModeDao } = useDao<SchoolclassModeEntity, typeof SchoolclassMode_Table>(SchoolclassMode_Table);
+    // const { dao, drizzleDb } = useDao(Attendance_Table);
+    // const { dao, drizzleDb } = useDao<TestEntity, typeof Test_Table>(Test_Table);
+
 
     const [isExtended, setIsExtended] = useState(true);
 
@@ -32,6 +40,46 @@ export default function index() {
         setIsExtended(currentScrollPosition <= 0);
     };
 
+    async function handlePress(event): Promise<void> {
+
+        log(process.env.EXPO_PUBLIC_DATABASE_NAME)
+
+        const attendance: AttendanceEntity = {
+            schoolSubject: "history",
+            date: new Date(),
+            schoolYear: "5",
+            examinants: [],
+            schoolclassMode: undefined,
+            note: "nooooote",
+            note2: "Note2"
+        }
+
+        // TODO: continue here
+            // try cascade, fix schema first
+
+        // TODO: 
+            // questions
+                // duplicate realtions definition???
+                // cascade?
+            // add ids for realtions
+
+
+        // const attendanceResult = await attendanceDao.insert(attendance);
+        // const attendanceResult = await attendanceDao.update(attendance);
+        // const attendanceResult = await attendanceDao.delete(eq(Attendance_Table.id, 1))
+        // const attendanceResult = await attendanceDao.select(eq(Attendance_Table.id, 5));
+        // log(attendanceResult)
+
+        // const schoolclassMode: SchoolclassModeEntity = {
+        //     mode: "ownClass",                
+        //     fullName: null,
+        //     attendanceId: attendanceResult[0].id
+        // };
+
+        // const schoolclasModeResult = await schoolclassModeDao.insert(schoolclassMode);
+
+        // log(schoolclasModeResult)
+    } 
 
     return (
         <SafeAreaProvider>
@@ -245,7 +293,20 @@ export default function index() {
                         ]}
                     </HelperScrollView>
 
-                    <Link href={"/(attendance)"} asChild>
+                    <ExtendableButton 
+                        isExtended={isExtended}
+                        dynamicStyle={AttendanceIndexStyles.addButton}
+                        containerStyles={AttendanceIndexStyles.addButtonOuterView}
+                        align="flex-end"
+                        extendedWidth={152}
+                        label={<HelperText dynamicStyle={{...AttendanceIndexStyles.addButtonLabel}} style={{color: "white"}}>Neuer UB</HelperText>}
+                        ripple={{rippleBackground: "rgb(70, 70, 70)"}}
+                        onPress={handlePress}
+                    >
+                        <FontAwesome name="plus" style={AttendanceIndexStyles.buttonIcon} color="white" />
+                    </ExtendableButton>
+
+                    {/* <Link href={"/(attendance)"} asChild>
                         <ExtendableButton 
                             isExtended={isExtended}
                             dynamicStyle={AttendanceIndexStyles.addButton}
@@ -257,7 +318,7 @@ export default function index() {
                         >
                             <FontAwesome name="plus" style={AttendanceIndexStyles.buttonIcon} color="white" />
                         </ExtendableButton>
-                    </Link>
+                    </Link> */}
                 </HelperView>
             </SafeAreaView>
         </SafeAreaProvider>

@@ -1,8 +1,10 @@
-import AbstractEntity from "@/abstract/entities/AbstractEntity";
-import { log } from "@/utils/logUtils";
 import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
 import { SQLiteDatabase } from "expo-sqlite";
+import AbstractEntity from "./AbstractEntity_Schema";
+import { eq, SQL } from "drizzle-orm/sql";
+import { logError } from "@/utils/logUtils";
+
 
 /**
  * Basically an equivalent of calling ```drizzle()``` with slight modifications.
@@ -26,31 +28,74 @@ export abstract class Dao<Entity extends AbstractEntity, Table extends SQLiteTab
     }
 
 
-    insertValues(values: Entity) {
+    async insert(values: Entity): Promise<Entity[] | null> {
 
         values.created = new Date();
         values.updated = new Date();
 
-        return this.db.insert(this.table).values(values);
+        try {
+            return this.db.insert(this.table).values(values).returning() as any as Entity[];
+            
+        } catch (e) {
+            logError(e.message);
+            return null;
+        }
     }
     
 
-    update(values: Entity) {
+    /**
+     * Update all entities matching `whereClause`.
+     * 
+     * @param values to insert. Object may be incomplete, will only update what's given
+     * @param whereClause to identify the row(s) to update. If not specified, `values.id` is used as `whereClause` 
+     * @returns the updated entities or `null` if error
+     * @throws if sql error or no valid `whereClause` could be resolved
+     */
+    async update(values: Entity, whereClause?: SQL): Promise<Entity[] | null> {
 
         values.updated = new Date();
         
-        return this.db.update(this.table).set(values);
+        try {
+            if (!whereClause) {
+                if (!values.id)
+                    throw new Error(`Cannot update table. Missing both 'whereClause' and 'values.id'.`);
+
+                whereClause = eq(this.table.id, values.id); 
+            }
+
+            return this.db
+                .update(this.table)
+                .set(values)
+                .where(whereClause)
+                .returning() as any as Entity[];
+
+        } catch (e) {
+            logError(e.message);
+            return null;
+        }
     }
 
 
-    selectFrom() {
+    async select(where: SQL): Promise<Entity[] | null> {
 
-        return this.db.select().from(this.table);
+        try {
+            return this.db.select().from(this.table).where(where);
+
+        } catch (e) {
+            logError(e.message);
+            return null;
+        }
     }
 
 
-    delete() {
+    async delete(where: SQL) {
 
-        return this.db.delete(this.table);
+        try {
+            return this.db.delete(this.table).where(where);
+
+        } catch (e) {
+            logError(e.message);
+            return null;
+        }
     }
 }

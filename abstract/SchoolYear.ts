@@ -1,4 +1,4 @@
-export const schoolYearObj: Readonly<Record<string, SchoolYearSection>> = {
+export const schoolYearObj = {
     "5": "sek1",
     "6": "sek1",
     "7": "sek1",
@@ -9,12 +9,11 @@ export const schoolYearObj: Readonly<Record<string, SchoolYearSection>> = {
     "12": "sek2",
     "13": "sek2"
 };
-type Type = typeof schoolYearObj;
 
 /**
  *  @since 0.0.1
 */
-export type SchoolYear = keyof Type;
+export type SchoolYear = keyof typeof schoolYearObj;
 export const SCHOOL_YEARS: SchoolYear[] = Object.keys(schoolYearObj) as SchoolYear[]; 
 
 export type SchoolYearSection = "sek1" | "sek2";

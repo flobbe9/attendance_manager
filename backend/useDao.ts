@@ -1,8 +1,8 @@
-import AbstractEntity from "@/abstract/entities/AbstractEntity";
 import { Dao } from "@/backend/abstract/Dao";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
 import { useSQLiteContext } from "expo-sqlite";
+import AbstractEntity from "./abstract/AbstractEntity_Schema";
 
 /**
  * @returns a new instance of ```Dao``` to perform any db actions

@@ -36,6 +36,6 @@ export interface ExaminantEntity extends AbstractEntity {
 
     /** The type of examinant. See {@link Examinant} */
     role: Examinant_Key,
-    fullName: string | null,
-    attendanceId: number
+    fullName?: string,
+    attendanceId?: number
 }

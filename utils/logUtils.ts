@@ -30,7 +30,7 @@ export function logWarn(message?: any, ...optionalParams: any[]): void {
 
     const errorObj = typeof message === "string" ? new Error(message) : new Error("<no message>");
 
-    console.warn(getTimeStamp(), errorObj, ...optionalParams);
+    console.warn(getTimeStamp(), errorObj, errorObj.stack, ...optionalParams);
 }
 
 
@@ -47,7 +47,7 @@ export function logError(message?: any, ...optionalParams: any[]): void {
 
     const errorObj = typeof message === "string" ? new Error(message) : new Error("<no message>");
 
-    console.error(getTimeStamp(), errorObj, ...optionalParams);
+    console.error(getTimeStamp(), errorObj, errorObj.stack, ...optionalParams);
 }
 
 

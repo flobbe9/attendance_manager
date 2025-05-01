@@ -1,10 +1,8 @@
 import { LogLevelName } from "@/abstract/LogLevel";
-import { env } from "./processEnv";
 
-export const APP_VERSION = "0.0.1";
-
-export const DATABASE_NAME = env("DATABASE_NAME");
-export const LOG_LEVEL = env("LOG_LEVEL");
+export const APP_VERSION = process.env.EXPO_PUBLIC_APP_VERSION;
+export const DATABASE_NAME = process.env.EXPO_PUBLIC_DATABASE_NAME;
+export const LOG_LEVEL = process.env.EXPO_PUBLIC_LOG_LEVEL;
 
 // Custom log
 export const LOG_LEVEL_COLORS: Record<LogLevelName, string> = {

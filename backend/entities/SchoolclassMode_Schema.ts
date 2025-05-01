@@ -16,17 +16,17 @@ export const SchoolclassMode_Table = sqliteTable(
         fullName: text("full_name"),
         attendanceId: integer("attendance_id")
             .notNull()
-            .references(() => Attendance_Table.id, {onDelete: 'cascade', onUpdate: 'cascade'})
+            .references(() => Attendance_Table.id)
     },
 );
 
 
-export const SchoolclassMode_Relations = relations(
-    SchoolclassMode_Table,
-    ({one}) => ({
-        attendance: one(Attendance_Table)
-    })
-)
+// export const SchoolclassMode_Relations = relations(
+//     SchoolclassMode_Table,
+//     ({one}) => ({
+//         attendance: one(Attendance_Table)
+//     })
+// )
 
 
 /**
@@ -37,6 +37,6 @@ export interface SchoolclassModeEntity extends AbstractEntity {
 
     mode: SchoolclassMode_Key,
     /** Name of the teacher responsible for the attended class in case the mode is not "ownClass" */
-    fullName: string | null,
-    attendanceId: number
+    fullName?: string,
+    attendanceId?: number
 }

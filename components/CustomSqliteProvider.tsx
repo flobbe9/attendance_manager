@@ -19,16 +19,17 @@ export default function CustomSqliteProvider({children, useSuspense = true}: Pro
 
     const db = openDatabaseSync(DATABASE_NAME);
     const drizzleDb = drizzle(db, { casing: 'snake_case' });
-    const { error } = useMigrations(drizzleDb, migrations);
+    const { error: migrationsError } = useMigrations(drizzleDb, migrations);
     
     // drizzle dev tools
     if (process.env.NODE_ENV !== 'production')
         useDrizzleStudio(db);
 
     useEffect(() => {
-        if (error)
-            logDebug(error);
-    }, [error])
+        if (migrationsError)
+            logDebug(migrationsError.message);
+        
+    }, [migrationsError])
 
     return (
         <Suspense fallback={<ActivityIndicator size="large" />}>

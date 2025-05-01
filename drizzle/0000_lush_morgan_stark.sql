@@ -1,4 +1,4 @@
-CREATE TABLE `Attendance` (
+CREATE TABLE `Test` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`created` integer NOT NULL,
 	`updated` integer NOT NULL,
@@ -8,6 +8,20 @@ CREATE TABLE `Attendance` (
 	`school_year` text NOT NULL,
 	`note` text,
 	`note2` text
+);
+--> statement-breakpoint
+CREATE TABLE `Attendance` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`created` integer NOT NULL,
+	`updated` integer NOT NULL,
+	`school_subject` text NOT NULL,
+	`date` integer NOT NULL,
+	`music_lesson_topic` text,
+	`school_year` text NOT NULL,
+	`schoolclass_mode_id` integer NOT NULL,
+	`note` text,
+	`note2` text,
+	FOREIGN KEY (`schoolclass_mode_id`) REFERENCES `SchoolclassMode`(`id`) ON UPDATE cascade ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `Examinant` (
@@ -27,7 +41,5 @@ CREATE TABLE `SchoolclassMode` (
 	`mode` text NOT NULL,
 	`full_name` text,
 	`attendance_id` integer NOT NULL,
-	FOREIGN KEY (`attendance_id`) REFERENCES `Attendance`(`id`) ON UPDATE cascade ON DELETE cascade
+	FOREIGN KEY (`attendance_id`) REFERENCES `Attendance`(`id`) ON UPDATE no action ON DELETE no action
 );
---> statement-breakpoint
-DROP TABLE `User`;
