@@ -11,7 +11,6 @@ import HelperView from "./HelperView";
 
 interface Props extends HelperButtonProps {
     isExtended: boolean
-    setExtended?: (extended: boolean) => void,
     /** Default is 200. The starting width is taken from `style.width` */
     extendedWidth?: number,
 

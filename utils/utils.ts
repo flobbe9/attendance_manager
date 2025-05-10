@@ -96,7 +96,7 @@ export function isEmpty(str: string): boolean {
 
 
 /**
- * @param length num chars the string should have
+ * @param length num chars the string should have. Default is 12 (but returns length 10 for some reason)
  * @returns random string of of alphanumeric chars with given length
  */
 export function getRandomString(length = 12): string {
@@ -1061,4 +1061,69 @@ export function mergeObjects<T extends object>(...objs: T[]): T {
     objs.forEach(obj => Object.assign(mergedObj, obj));
 
     return mergedObj as T;
+}
+
+
+/**
+ * Throws at the first arg beeing falsy (but not if no args are specified). Use util "isFalsy" methods for primitive types.
+ * 
+ * @param args to check
+ */
+export function assertFalsyAndThrow(...args: any[]): void {
+
+    if (!args || !args.length)
+        return;
+
+    for (let i = 0; i < args.length; i++) {
+        const arg = args[i];
+
+        let isFalsy = false;
+
+        if (typeof arg === "string")
+            isFalsy = isStringFalsy(arg);
+
+        else if (typeof arg === "number")
+            isFalsy = isNumberFalsy(arg);
+
+        else if (typeof arg === "boolean")
+            isFalsy = isBooleanFalsy(arg);
+
+        else 
+            isFalsy = !arg;
+
+        if (isFalsy)
+            throw new Error(`Invalid arg at index ${i}`);
+    }
+}
+
+
+/**
+ * Example: 
+ * ```
+ * const arr1 = [1, 2, 3];
+ * const arr2 = [2, 3, 4];
+ * getArrayDiff(arr1, arr2); // returns [1]
+ * ```
+ * @param arr1 to get diff for
+ * @param arr2 to check the diff against
+ * @returns all elements from arr1 that are not in arr2. An empty array if `arr1` is falsy
+ */
+export function getArrayDiff<T>(arr1: T[], arr2: T[]): T[] {
+
+    if (!arr1)
+        return [];
+
+    if (!arr2)
+        return arr1;
+
+    const arr2Set = new Set(arr2);
+    const diffArr: T[] = [];
+
+    arr1
+        .forEach(el => {
+            if (!arr2Set.has(el))
+                diffArr.push(el);
+        })
+
+    return diffArr;
 }

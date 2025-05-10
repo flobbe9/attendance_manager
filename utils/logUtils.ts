@@ -8,29 +8,35 @@ export function log(message?: any, ...optionalParams: any[]): void {
     if (!isInfoLogLevel())
         return;
 
+    // NOTE: dont use helper method here for objects to be displayed properly
     console.log(message, ...optionalParams);
 }
 
 
-export function logDebug(message?: any, ...optionalParams: any[]): void {
+export function logTrace(message?: string, ...optionalParams: any[]): void {
+
+    if (!isTraceLogLevel())
+        return;
+
+    logColored("TRACE", `${getTimeStamp()} ${message ?? '<no message>'}`, ...optionalParams);
+}
+
+
+export function logDebug(message?: string, ...optionalParams: any[]): void {
 
     if (!isDebugLogLevel())
         return;
 
-    const errorObj = typeof message === "string" ? new Error(message) : new Error("<no message>");
-    
-    console.log(getTimeStamp(), errorObj, ...optionalParams);
+    logColored("DEBUG", `${getTimeStamp()} ${message ?? '<no message>'}`, ...optionalParams);
 }
 
 
-export function logWarn(message?: any, ...optionalParams: any[]): void {
+export function logWarn(message?: string, ...optionalParams: any[]): void {
     
     if (!isWarnLogLevel())
         return;
 
-    const errorObj = typeof message === "string" ? new Error(message) : new Error("<no message>");
-
-    console.warn(getTimeStamp(), errorObj, ...optionalParams);
+    logColored("WARN", `${getTimeStamp()} ${message ?? '<no message>'}`, ...optionalParams);
 }
 
 
@@ -40,14 +46,12 @@ export function logWarnFiltered(message?: any, ...optionalParams: any[]): void {
 }
 
 
-export function logError(message?: any, ...optionalParams: any[]): void {
+export function logError(message?: string, ...optionalParams: any[]): void {
 
     if (!isErrorLogLevel())
         return;
 
-    const errorObj = typeof message === "string" ? new Error(message) : new Error("<no message>");
-
-    console.error(getTimeStamp(), errorObj, ...optionalParams);
+    logColored("ERROR", `${getTimeStamp()} ${message ?? '<no message>'}`, ...optionalParams);
 }
 
 
@@ -101,7 +105,8 @@ function logColored(logLevelName: LogLevelName, obj?: any, ...optionalParams: an
     // get log color by sevirity
     const color = LOG_LEVEL_COLORS[logLevelName];
 
-    console.log("%c" + obj, "background: " + color, ...optionalParams);
+    const params = [`%c${logLevelName} ${obj}`, "background: " + color, ...optionalParams];
+    console.log(...params);
 }
 
 
@@ -163,4 +168,15 @@ export function isDebugLogLevel(): boolean {
     }
 
     return isLogLevel("DEBUG");
+}
+
+
+export function isTraceLogLevel(): boolean {
+
+    if ("production" === process.env.NODE_ENV) {
+        logWarn("Cannot log at 'TRACE' level in 'production'");
+        return false;
+    }
+
+    return isLogLevel("TRACE");
 }

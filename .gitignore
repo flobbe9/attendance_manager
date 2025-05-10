@@ -41,3 +41,4 @@ notes.md
 DefaultComponent.tsx
 DefaultComponentStyles.ts
 test.*
+.vscode

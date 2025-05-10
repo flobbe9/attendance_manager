@@ -1,7 +1,7 @@
 /**
  * NOTE: dont change, values are constants in db
  */
-const musicLessonTopicKeysObj: Readonly<Record<string, number>> = {
+const musicLessonTopicKeysObj = {
     "sound": 0,
     "rhythm": 1,
     "structure": 2,
