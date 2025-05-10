@@ -93,7 +93,7 @@ export default function HelperSelect<OptionType>({
 
         if (multiselect) {
             if (!(selectedOptions instanceof Set)) {
-                logError("'selectedOptions' needs to be a set if 'multiselect' is true");
+                logError("'selectedOptions' needs to be a Set if 'multiselect' is true");
                 return;
             }
             let updatedSelectedOptions = new Set([...selectedOptions]);
@@ -132,7 +132,7 @@ export default function HelperSelect<OptionType>({
         return options
             .map((option, i) => 
                 <HelperButton 
-                    dynamicStyle={HelperSelectStyles.optionButton} 
+                    style={isOptionSelected(option) && !multiselect ? HelperSelectStyles.selectedOptionButton.default : HelperSelectStyles.optionButton.default} 
                     containerStyles={{default: {width: "100%"}}}
                     onPress={() => handleOptionPress(option)}
                     key={i}

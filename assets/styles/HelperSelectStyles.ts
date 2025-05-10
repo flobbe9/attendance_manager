@@ -49,6 +49,14 @@ export class HelperSelectStyles {
         },
     }
 
+
+    static selectedOptionButton: DynamicStyle<ViewStyle> = {
+        default: {
+            ...this.optionButton.default,
+            backgroundColor: "rgb(200, 200, 200)"
+        }
+    }
+
     static optionButtonText: DynamicStyle<TextStyle> = {
         default: {
             fontSize: fontSize
