@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "dec21ee3-8e81-4ca1-8a7e-f7be693a2e5f",
-  "prevId": "e8b28fd8-2bb3-4a93-8818-702c988311d1",
+  "id": "76140035-11b8-4c66-80e1-5640461e726e",
+  "prevId": "dec21ee3-8e81-4ca1-8a7e-f7be693a2e5f",
   "tables": {
     "attendance": {
       "name": "attendance",
@@ -202,6 +202,65 @@
             "id"
           ],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "test": {
+      "name": "test",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created": {
+          "name": "created",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated": {
+          "name": "updated",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "some_text": {
+          "name": "some_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "schoolclass_mode_id": {
+          "name": "schoolclass_mode_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "test_schoolclass_mode_id_school_class_mode_id_fk": {
+          "name": "test_schoolclass_mode_id_school_class_mode_id_fk",
+          "tableFrom": "test",
+          "tableTo": "school_class_mode",
+          "columnsFrom": [
+            "schoolclass_mode_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },

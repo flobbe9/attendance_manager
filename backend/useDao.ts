@@ -1,31 +1,28 @@
 import { Dao } from "@/backend/abstract/Dao";
+import { DRIZZLE_DB_CONFIG } from "@/utils/constants";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
 import { useSQLiteContext } from "expo-sqlite";
 import AbstractEntity from "./abstract/Abstract_Schema";
-import { DRIZZLE_DB_CONFIG } from "@/utils/constants";
+import { log } from "@/utils/logUtils";
+
 
 /**
+ * Any database implementation should use this hook to get a db instance.
+ * 
  * @returns a new instance of ```Dao``` to perform any db actions
  * @since 0.0.1
  */
-export function useDao<Entity extends AbstractEntity, Table extends SQLiteTableWithColumns<any>>(table: Table) {
+export function useDao<Entity extends AbstractEntity>(table: SQLiteTableWithColumns<any>) {
 
-    const db = useSQLiteContext();
-    db.execSync("PRAGMA FOREIGN_KEYS = ON"); // enable cascade
+    const sqliteDb = useSQLiteContext();
+    sqliteDb.execSync("PRAGMA FOREIGN_KEYS = ON"); // enable cascade
 
-    const drizzleDb = drizzle(db, DRIZZLE_DB_CONFIG);
-    
+    const db = drizzle(sqliteDb, DRIZZLE_DB_CONFIG);
+
     return {
-        dao: new SimpleDaoImpl<Entity, Table>(drizzleDb, table),
-        db,
-        drizzleDb
+        dao: new Dao<Entity>(db, table),
+        sqliteDb,
+        db
     };
 }
-
-/**
- * This classes' only purpose is to instantiate a ```new Dao```. Don't export this, use ```useDao``` instead.
- * 
- * @since 0.0.1 
- */
-class SimpleDaoImpl<Entity extends AbstractEntity, Table extends SQLiteTableWithColumns<any>> extends Dao<Entity, Table> {}

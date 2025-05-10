@@ -1,22 +1,23 @@
-import { SCHOOLCLASS_MODE_KEYS, SchoolclassMode, SchoolclassMode_Key } from "@/abstract/SchoolclassMode";
+import { SCHOOLCLASS_MODE_KEYS, SchoolclassMode_Key } from "@/abstract/SchoolclassMode";
 import { relations } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import AbstractEntity, { AbstractEntity_Table } from "../abstract/AbstractEntity_Schema";
+import AbstractEntity, { Abstract_Table } from "../abstract/Abstract_Schema";
 import { Attendance_Table } from "./Attendance_Schema";
+import { Test_Table, TestEntity } from "./Test_Schema";
 
-type TableName = "SchoolclassMode";
-const TableNameValue: TableName = "SchoolclassMode";
+
+const TableNameValue = "schoolclass_mode";
 
 
 export const SchoolclassMode_Table = sqliteTable(
     TableNameValue, 
     {
-        ...AbstractEntity_Table,
+        ...Abstract_Table,
         mode: text({ enum: SCHOOLCLASS_MODE_KEYS as [SchoolclassMode_Key]}).notNull(),
-        fullName: text("full_name"),
-        attendanceId: integer("attendance_id")
+        fullName: text(),
+        attendanceId: integer()
             .notNull()
-            .references(() => Attendance_Table.id, {onDelete: 'cascade', onUpdate: 'cascade'})
+            .references(() => Attendance_Table.id, {onDelete: 'cascade'})
     },
 );
 
@@ -24,7 +25,8 @@ export const SchoolclassMode_Table = sqliteTable(
 export const SchoolclassMode_Relations = relations(
     SchoolclassMode_Table,
     ({one}) => ({
-        attendance: one(Attendance_Table)
+        attendance: one(Attendance_Table),
+        test: one(Test_Table)
     })
 )
 
@@ -33,10 +35,11 @@ export const SchoolclassMode_Relations = relations(
  * @since 0.0.1
  * @see SchoolclassMode
  */
-export interface SchoolclassModeEntity extends AbstractEntity {
+export class SchoolclassModeEntity extends AbstractEntity {
 
-    mode: SchoolclassMode_Key,
+    mode: SchoolclassMode_Key;
     /** Name of the teacher responsible for the attended class in case the mode is not "ownClass" */
-    fullName: string | null,
-    attendanceId: number
+    fullName?: string;
+    attendanceId?: number;
+    test?: TestEntity
 }

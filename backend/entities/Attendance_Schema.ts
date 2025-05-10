@@ -1,28 +1,27 @@
-import { MUSIC_LESSON_TOPIC_KEYS, MusicLessonTopic, MusicLessonTopic_Key } from "@/abstract/MusicLessonTopic";
-import { SCHOOL_SUBJECT_KEYS, SchoolSubject, SchoolSubject_Key } from "@/abstract/SchoolSubject";
+import { MUSIC_LESSON_TOPIC_KEYS, MusicLessonTopic_Key } from "@/abstract/MusicLessonTopic";
+import { SCHOOL_SUBJECT_KEYS, SchoolSubject_Key } from "@/abstract/SchoolSubject";
 import { SCHOOL_YEARS, SchoolYear } from "@/abstract/SchoolYear";
 import { relations } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import AbstractEntity, { AbstractEntity_Table } from "../abstract/AbstractEntity_Schema";
+import { integer, sqliteTable, SQLiteTableWithColumns, text } from "drizzle-orm/sqlite-core";
+import AbstractEntity, { Abstract_Table } from "../abstract/Abstract_Schema";
 import { Examinant_Table, ExaminantEntity } from "./Examinant_Schema";
 import { SchoolclassMode_Table, SchoolclassModeEntity } from './SchoolclassMode_Schema';
 
 
-type TableName = "Attendance";
-const TableNameValue: TableName = "Attendance";
+const ATTENDANCE_TABLE_NAME = "attendance";
 
 
 /**
  * @since 0.0.1
  */
 export const Attendance_Table = sqliteTable(
-    TableNameValue, 
+    ATTENDANCE_TABLE_NAME, 
     {
-        ...AbstractEntity_Table,
+        ...Abstract_Table,
         schoolSubject: text({ enum: SCHOOL_SUBJECT_KEYS as [SchoolSubject_Key]}).notNull(),
         date: integer({ mode: 'timestamp' }).notNull(),
         musicLessonTopic: text({enum: MUSIC_LESSON_TOPIC_KEYS as [MusicLessonTopic_Key]}),
-        schoolYear: text( "school_year", { enum: SCHOOL_YEARS as [SchoolYear]}).notNull(),
+        schoolYear: text({ enum: SCHOOL_YEARS as [SchoolYear]}).notNull(),
         note: text(),
         note2: text(),
     }
@@ -38,18 +37,18 @@ export const Attendance_Relations = relations(
 )
 
 
-export interface AttendanceEntity extends AbstractEntity {
+export class AttendanceEntity extends AbstractEntity {
 
-    schoolSubject: SchoolSubject_Key,
+    schoolSubject: SchoolSubject_Key;
     /** Date of the attendance */
-    date: Date,
-    schoolYear: SchoolYear,
+    date: Date;
+    schoolYear: SchoolYear;
     /** Only mandatory if ```schoolSubject``` is "Musik" */
-    musicLessonTopic: MusicLessonTopic_Key | null,
+    musicLessonTopic?: MusicLessonTopic_Key;
     /** Cannot be empty */
-    examinants: ExaminantEntity[],
+    examinants: ExaminantEntity[];
     /** Default should be "ownClass" */
-    schoolclassMode: SchoolclassModeEntity,
-    note: string | null,
-    note2: string | null
+    schoolclassMode: SchoolclassModeEntity;
+    note?: string;
+    note2?: string;
 }

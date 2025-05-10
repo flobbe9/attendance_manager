@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "dec21ee3-8e81-4ca1-8a7e-f7be693a2e5f",
-  "prevId": "e8b28fd8-2bb3-4a93-8818-702c988311d1",
+  "id": "12b6873b-0c1b-4d99-8bb6-ffec87341deb",
+  "prevId": "76140035-11b8-4c66-80e1-5640461e726e",
   "tables": {
     "attendance": {
       "name": "attendance",
@@ -143,8 +143,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "school_class_mode": {
-      "name": "school_class_mode",
+    "schoolclass_mode": {
+      "name": "schoolclass_mode",
       "columns": {
         "id": {
           "name": "id",
@@ -191,9 +191,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "school_class_mode_attendance_id_attendance_id_fk": {
-          "name": "school_class_mode_attendance_id_attendance_id_fk",
-          "tableFrom": "school_class_mode",
+        "schoolclass_mode_attendance_id_attendance_id_fk": {
+          "name": "schoolclass_mode_attendance_id_attendance_id_fk",
+          "tableFrom": "schoolclass_mode",
           "tableTo": "attendance",
           "columnsFrom": [
             "attendance_id"
@@ -208,13 +208,74 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
+    },
+    "test": {
+      "name": "test",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created": {
+          "name": "created",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated": {
+          "name": "updated",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "some_text": {
+          "name": "some_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "schoolclass_mode_id": {
+          "name": "schoolclass_mode_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "test_schoolclass_mode_id_schoolclass_mode_id_fk": {
+          "name": "test_schoolclass_mode_id_schoolclass_mode_id_fk",
+          "tableFrom": "test",
+          "tableTo": "schoolclass_mode",
+          "columnsFrom": [
+            "schoolclass_mode_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     }
   },
   "views": {},
   "enums": {},
   "_meta": {
     "schemas": {},
-    "tables": {},
+    "tables": {
+      "\"school_class_mode\"": "\"schoolclass_mode\""
+    },
     "columns": {}
   },
   "internal": {
