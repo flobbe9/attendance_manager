@@ -10,7 +10,8 @@ import { useHasComponentMounted } from "./useHasComponentMounted";
  * @param reverse whether to animate in reverse when animationDeps change
  * @param animationDeps if specified, the animation will be triggered whenever the deps change (useEffect). Set to `null` in order
  * to disable animation triggered by state. Default is `[reverse]`
- * @param duration in ms. Default is {@link TRANI}
+ * @param duration in ms. Default is {@link TRANSITION_DURATION}
+ * @param startReversed indicates to use the `inputRange`'s last value as initial animated value. Default is `false`
  * @param easing see {@link Easing}. Default is "inOut"
  * @since 0.0.1
  * @see Animated.Value.interpolate
@@ -21,10 +22,11 @@ export function useAnimatedStyle(
     reverse?: boolean,
     animationDeps: DependencyList | null = [reverse],
     duration = TRANSITION_DURATION,
+    startReversed = false,
     easing = Easing.inOut(Easing.ease)
 ) {
 
-    const animatedValue = useAnimatedValue(inputRange.length ? inputRange[0] : 0);
+    const animatedValue = useAnimatedValue(inputRange.length ? inputRange[startReversed ? inputRange.length - 1 : 0] : 0);
 
     const hasMounted = useHasComponentMounted();
 

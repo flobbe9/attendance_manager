@@ -12,14 +12,11 @@ import { de, en, registerTranslation } from 'react-native-paper-dates';
  */
 export default function GlobalContextProvider({children}: {children: ReactNode}) {
     
-    const [errorMessage, setErrorMessage] = useState(""); 
+    /** Toggle state, meaning the boolean value does not represent any information but is just to be listened to with `useEffect` */
+    const [globalBlur, setGlobalBlur] = useState(false);
 
-    const responsiveStyles = useResponsiveStyles();
-    
     const context = {
-        errorMessage,
-        setErrorMessage,
-        responsiveStyles
+        globalBlur, setGlobalBlur
     }
 
 
@@ -45,7 +42,6 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
 
 
 export const GlobalContext = createContext({
-    errorMessage: "",
-    setErrorMessage: (errorMessage: string) => {},
-    responsiveStyles: {} as Record<any, StyleProp<ViewStyle & TextStyle>>
+    globalBlur: false, 
+    setGlobalBlur: (_globalBlur: boolean) => {}
 })
