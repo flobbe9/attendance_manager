@@ -14,6 +14,7 @@ import HelperScrollView from "@/components/helpers/HelperScrollView";
 import HelperSelect from "@/components/helpers/HelperSelect";
 import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
+import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { useSubjectColor } from "@/hooks/useSubjectColor";
@@ -24,7 +25,6 @@ import React, { useEffect, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { RadioButton } from "react-native-paper";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 
 interface Props extends DefaultProps<ViewStyle>, ViewProps {
@@ -92,183 +92,183 @@ export default function index(props: Props) {
         // multiline max height
             // consider tablet
             // consider full screen
-        // figure out grid thing
-            // do myself
         // fix icons
+        // keyboard does not stay in view on ios
+            // make a wrapper with all these providers
+            // fix: <KeyboardAvoidingView
+                //   behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
 
 
     return (
-        <SafeAreaProvider>
-            <SafeAreaView style={{height: "100%"}}>
-                <HelperScrollView 
-                    style={{
-                        backgroundColor: subjectColor,
-                        ...style as object
-                    }} 
-                    {...otherProps}
+        <ScreenWrapper>
+            <HelperScrollView 
+                style={{
+                    backgroundColor: subjectColor,
+                    ...style as object
+                }} 
+                {...otherProps}
+            >
+                {/* Subject */}
+                <HelperSelect 
+                    dynamicStyle={AttendanceStyles.inputContainer}
+                    options={SCHOOL_SUBJECTS}
+                    selectedOptions={selectedSubject}
+                    setSelectedOptions={setSelectedSubject}
+                    optionsContainerScroll={false}
+                    optionsContainerHeight={85}
                 >
-                    {/* Subject */}
-                    <HelperSelect 
-                        dynamicStyle={AttendanceStyles.inputContainer}
-                        options={SCHOOL_SUBJECTS}
-                        selectedOptions={selectedSubject}
-                        setSelectedOptions={setSelectedSubject}
-                        optionsContainerScroll={false}
-                        optionsContainerHeight={85}
+                    <HelperText dynamicStyle={AttendanceStyles.heading}>Fach</HelperText>
+                </HelperSelect>
+
+                {/* Date */}
+                <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
+                    <HelperText dynamicStyle={AttendanceStyles.heading}>Datum (und Zeit? oder Schulstunde?)</HelperText>
+                    <DatePicker date={date} setDate={setDate} />
+                </HelperView>
+
+                {/* Year */}
+                <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
+                    <HelperText dynamicStyle={AttendanceStyles.heading}>Jahrgang</HelperText>
+                    <HelperInput 
+                        placeholder="5 - 13"
+                        keyboardType="numeric"
+                        containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
+                    />
+                </HelperView>
+
+                {/* Topic */}
+                <HelperSelect 
+                    rendered={selectedSubject === "Musik"}
+                    dynamicStyle={AttendanceStyles.inputContainer}
+                    options={MUSIC_LESSON_TOPICS}
+                    selectedOptions={selectedMusicLessonTopic}
+                    setSelectedOptions={setSelectedMusicLessonTopic}
+                    optionsContainerScroll={false}
+                    optionsContainerHeight={210}
+                    style={{zIndex: 2}} // needs to be higher than next sibling
+                >
+                    <HelperText dynamicStyle={AttendanceStyles.heading}>Stundenthema</HelperText>
+                </HelperSelect>
+
+                {/* Examinants */}
+                <HelperView dynamicStyle={AttendanceStyles.inputContainer} style={{zIndex: 1/* for select container */}}>
+                    <HelperText dynamicStyle={AttendanceStyles.heading} style={{marginBottom: 0}}>Anwesende Prüfer</HelperText>
+
+                    <Flex flexWrap="nowrap">
+                        {/* Subjects */}
+                        <HelperView dynamicStyle={AttendanceStyles.examinerIconContainer}>
+                            <FontAwesome 
+                                name={historyExaminantStatus === "checked" ? "user" : "user-o"} 
+                                color={HISTORY_COLOR} 
+                                style={{...AttendanceStyles.examinerIcon, fontSize: historyExaminantStatus === "checked" ? 35 : 30}}
+                                onPress={(e) => setHistoryExaminantStatus(historyExaminantStatus === "checked" ? "unchecked" : "checked")}
+                            />
+                        </HelperView>
+
+                        <HelperView dynamicStyle={AttendanceStyles.examinerIconContainer}>
+                            <FontAwesome 
+                                name={musicExaminantStatus === "checked" ? "user" : "user-o"}
+                                color={MUSIC_COLOR}
+                                style={{...AttendanceStyles.examinerIcon, fontSize: musicExaminantStatus === "checked" ? 35 : 30}}
+                                onPress={(e) => setMusicExaminantStatus(musicExaminantStatus === "checked" ? "unchecked" : "checked")}
+                            />
+                        </HelperView>
+
+                        <HelperView dynamicStyle={AttendanceStyles.examinerIconContainer}>
+                            <FontAwesome
+                                name={educatorExaminantStatus === "checked" ? "user" : "user-o"} 
+                                color={"black"} 
+                                style={{...AttendanceStyles.examinerIcon, fontSize: educatorExaminantStatus === "checked" ? 35 : 30}}
+                                onPress={(e) => setEducatorExaminantStatus(educatorExaminantStatus === "checked" ? "unchecked" : "checked")}
+                            />
+                        </HelperView>
+            
+                        {/* Headmaster */}
+                        <Flex 
+                            flexWrap="nowrap" 
+                            alignItems="flex-start" 
+                            flexShrink={1} 
+                            style={{marginLeft: 20}} 
+                            dynamicStyle={AttendanceStyles.examinerIconContainer}
+                        >
+                            <FontAwesome
+                                name={isHeadmaster ? "user-plus" : "user-o"} 
+                                color={"black"} 
+                                style={{...AttendanceStyles.examinerIcon, fontSize: isHeadmaster ? 32 : 30}}
+                                onPress={(e) => setIsHeadMaster(!isHeadmaster)}
+                            />
+                            
+                            <HelperSelect  
+                                style={{flexShrink: 1}}
+                                rendered={isHeadmaster}
+                                options={HEADMASTERS} 
+                                selectedOptions={selectedHeadmaster}
+                                setSelectedOptions={setSelectedHeadMaster} 
+                                optionsContainerHeight={85}
+                                optionsContainerScroll={false}
+                            >
+                                <HelperText>Schulleitung</HelperText>
+                            </HelperSelect>
+                        </Flex>
+                    </Flex>
+                </HelperView>
+
+                {/* Toggle notes */}
+                <Flex justifyContent="center" dynamicStyle={AttendanceStyles.notesContainer}>
+                    <HelperButton 
+                        disableFlex={true} 
+                        style={{borderRadius: BORDER_RADIUS, width: 100}} 
+                        onPress={() => setAreNotesVisible(!areNotesVisible)}
                     >
-                        <HelperText dynamicStyle={AttendanceStyles.heading}>Fach</HelperText>
-                    </HelperSelect>
+                        <HelperText>Mehr</HelperText>
+                        <HelperView
+                            style={{
+                                transform: [{rotate: animatedStyle}]
+                            }} 
+                        >
+                            <FontAwesome name={"chevron-down"} size={20} />
+                        </HelperView>
+                    </HelperButton>
+                </Flex>
 
-                    {/* Date */}
+                {/* Notes */}
+                <HelperView rendered={areNotesVisible}>
+                    {/* Note */}
                     <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
-                        <HelperText dynamicStyle={AttendanceStyles.heading}>Datum (und Zeit? oder Schulstunde?)</HelperText>
-                        <DatePicker date={date} setDate={setDate} />
-                    </HelperView>
-
-                    {/* Year */}
-                    <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
-                        <HelperText dynamicStyle={AttendanceStyles.heading}>Jahrgang</HelperText>
                         <HelperInput 
-                            placeholder="5 - 13"
-                            keyboardType="numeric"
+                            multiline
+                            numberOfLines={numHelperInputLines}
+                            placeholder="Thema"
+                            dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
                             containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
                         />
                     </HelperView>
 
-                    {/* Topic */}
-                    <HelperSelect 
-                        rendered={selectedSubject === "Musik"}
-                        dynamicStyle={AttendanceStyles.inputContainer}
-                        options={MUSIC_LESSON_TOPICS}
-                        selectedOptions={selectedMusicLessonTopic}
-                        setSelectedOptions={setSelectedMusicLessonTopic}
-                        optionsContainerScroll={false}
-                        optionsContainerHeight={210}
-                        style={{zIndex: 2}} // needs to be higher than next sibling
-                    >
-                        <HelperText dynamicStyle={AttendanceStyles.heading}>Stundenthema</HelperText>
-                    </HelperSelect>
-
-                    {/* Examinants */}
-                    <HelperView dynamicStyle={AttendanceStyles.inputContainer} style={{zIndex: 1/* for select container */}}>
-                        <HelperText dynamicStyle={AttendanceStyles.heading} style={{marginBottom: 0}}>Anwesende Prüfer</HelperText>
-
-                        <Flex flexWrap="nowrap">
-                            {/* Subjects */}
-                            <HelperView dynamicStyle={AttendanceStyles.examinerIconContainer}>
-                                <FontAwesome 
-                                    name={historyExaminantStatus === "checked" ? "user" : "user-o"} 
-                                    color={HISTORY_COLOR} 
-                                    style={{...AttendanceStyles.examinerIcon, fontSize: historyExaminantStatus === "checked" ? 35 : 30}}
-                                    onPress={(e) => setHistoryExaminantStatus(historyExaminantStatus === "checked" ? "unchecked" : "checked")}
-                                />
-                            </HelperView>
-
-                            <HelperView dynamicStyle={AttendanceStyles.examinerIconContainer}>
-                                <FontAwesome 
-                                    name={musicExaminantStatus === "checked" ? "user" : "user-o"}
-                                    color={MUSIC_COLOR}
-                                    style={{...AttendanceStyles.examinerIcon, fontSize: musicExaminantStatus === "checked" ? 35 : 30}}
-                                    onPress={(e) => setMusicExaminantStatus(musicExaminantStatus === "checked" ? "unchecked" : "checked")}
-                                />
-                            </HelperView>
-
-                            <HelperView dynamicStyle={AttendanceStyles.examinerIconContainer}>
-                                <FontAwesome
-                                    name={educatorExaminantStatus === "checked" ? "user" : "user-o"} 
-                                    color={"black"} 
-                                    style={{...AttendanceStyles.examinerIcon, fontSize: educatorExaminantStatus === "checked" ? 35 : 30}}
-                                    onPress={(e) => setEducatorExaminantStatus(educatorExaminantStatus === "checked" ? "unchecked" : "checked")}
-                                />
-                            </HelperView>
-                
-                            {/* Headmaster */}
-                            <Flex 
-                                flexWrap="nowrap" 
-                                alignItems="flex-start" 
-                                flexShrink={1} 
-                                style={{marginLeft: 20}} 
-                                dynamicStyle={AttendanceStyles.examinerIconContainer}
-                            >
-                                <FontAwesome
-                                    name={isHeadmaster ? "user-plus" : "user-o"} 
-                                    color={"black"} 
-                                    style={{...AttendanceStyles.examinerIcon, fontSize: isHeadmaster ? 32 : 30}}
-                                    onPress={(e) => setIsHeadMaster(!isHeadmaster)}
-                                />
-                                
-                                <HelperSelect  
-                                    style={{flexShrink: 1}}
-                                    rendered={isHeadmaster}
-                                    options={HEADMASTERS} 
-                                    selectedOptions={selectedHeadmaster}
-                                    setSelectedOptions={setSelectedHeadMaster} 
-                                    optionsContainerHeight={85}
-                                    optionsContainerScroll={false}
-                                >
-                                    <HelperText>Schulleitung</HelperText>
-                                </HelperSelect>
-                            </Flex>
-                        </Flex>
+                    {/* Note2 */}
+                    <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
+                        <HelperInput 
+                            multiline
+                            numberOfLines={numHelperInputLines}
+                            placeholder="Lerngruppe"
+                            dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
+                            containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
+                        />
                     </HelperView>
 
-                    {/* Toggle notes */}
-                    <Flex justifyContent="center" dynamicStyle={AttendanceStyles.notesContainer}>
-                        <HelperButton 
-                            disableFlex={true} 
-                            style={{borderRadius: BORDER_RADIUS, width: 100}} 
-                            onPress={() => setAreNotesVisible(!areNotesVisible)}
-                        >
-                            <HelperText>Mehr</HelperText>
-                            <HelperView
-                                style={{
-                                    transform: [{rotate: animatedStyle}]
-                                }} 
-                            >
-                                <FontAwesome name={"chevron-down"} size={20} />
-                            </HelperView>
-                        </HelperButton>
-                    </Flex>
+                    {/* Own/Other class */}
+                    <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
+                        <RadioButton.Group value={schoolclassMode} onValueChange={(mode) => setSchoolclassMode(mode as SchoolclassMode)}>
+                            {schoolclassModeRadioButtons}
+                        </RadioButton.Group>
 
-                    {/* Notes */}
-                    <HelperView rendered={areNotesVisible}>
-                        {/* Note */}
-                        <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
-                            <HelperInput 
-                                multiline
-                                numberOfLines={numHelperInputLines}
-                                placeholder="Thema"
-                                dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
-                                containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
-                            />
-                        </HelperView>
-
-                        {/* Note2 */}
-                        <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
-                            <HelperInput 
-                                multiline
-                                numberOfLines={numHelperInputLines}
-                                placeholder="Lerngruppe"
-                                dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
-                                containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
-                            />
-                        </HelperView>
-
-                        {/* Own/Other class */}
-                        <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
-                            <RadioButton.Group value={schoolclassMode} onValueChange={(mode) => setSchoolclassMode(mode as SchoolclassMode)}>
-                                {schoolclassModeRadioButtons}
-                            </RadioButton.Group>
-
-                            <HelperInput
-                                placeholder="Ausbildungslehrer"
-                                rendered={schoolclassMode === "Ausbildungsunterricht"}
-                                containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
-                            />
-                        </HelperView>
+                        <HelperInput
+                            placeholder="Ausbildungslehrer"
+                            rendered={schoolclassMode === "Ausbildungsunterricht"}
+                            containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
+                        />
                     </HelperView>
-                </HelperScrollView>
-            </SafeAreaView>
-        </SafeAreaProvider>
+                </HelperView>
+            </HelperScrollView>
+        </ScreenWrapper>
     )
 }
