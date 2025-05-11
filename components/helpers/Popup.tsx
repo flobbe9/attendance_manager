@@ -3,12 +3,14 @@ import { PopupStyles } from "@/assets/styles/PopupStyles";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import React, { ReactNode, useState } from "react";
-import { ViewProps, ViewStyle } from "react-native";
+import React, { ReactNode, useContext, useState } from "react";
+import { GestureResponderEvent, ViewProps, ViewStyle } from "react-native";
 import Flex from "./Flex";
 import HelperText from "./HelperText";
 import HelperView from "./HelperView";
 import { TRANSITION_DURATION } from "@/utils/styleConstants";
+import { GestureEvent } from "react-native-gesture-handler";
+import { GlobalContext } from "../context/GlobalContextProvider";
 
 
 export type GlobalPopupProps = PopupProps & { duration?: number};
@@ -35,8 +37,11 @@ export default function Popup({
     visible,
     message,
     containerStyle = {},
+    onTouchStart,
     ...props
 }: Props) {
+
+    const { hideGlobalPopup, globalPopupProps } = useContext(GlobalContext);
 
     // make sure hidden popup does not overlay anything
     const [componentZIndex, setComponentZIndex] = useState(0);
@@ -56,6 +61,20 @@ export default function Popup({
     const { allStyles: { pe_1 }, parseResponsiveStyleToStyle: pR} = useResponsiveStyles();
 
 
+    /**
+     * Hide self on touch
+     * 
+     * @param event 
+     */
+    function handleTouchStart(event: GestureResponderEvent): void {
+
+        if (onTouchStart)
+            onTouchStart(event);
+
+        hideGlobalPopup(globalPopupProps);
+    }
+
+
     return (
         <Flex 
             style={{
@@ -63,6 +82,7 @@ export default function Popup({
                 zIndex: componentZIndex
             }}
             justifyContent="center" 
+            onTouchStart={handleTouchStart}
             {...otherProps}
         >
             <Flex

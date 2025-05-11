@@ -1,10 +1,11 @@
 import { useDefaultProps } from "@/hooks/useDefaultProps";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { KeyboardAvoidingView, Platform, SafeAreaView, ViewProps, ViewStyle } from "react-native";
 import HelperView from "@/components/helpers/HelperView";
 import DefaultProps from "@/abstract/DefaultProps";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GlobalContext } from "../context/GlobalContextProvider";
+import { useHasComponentMounted } from "@/hooks/useHasComponentMounted";
 
 
 interface Props extends DefaultProps<ViewStyle>, ViewProps {
@@ -18,16 +19,26 @@ interface Props extends DefaultProps<ViewStyle>, ViewProps {
  * 
  * Avoid nesting these.
  * 
- * Will update `globalBlur` state on touchstart.
+ * Will update `globalBlur` state on touchstart. Will hide `<Popup>` on blur
  * 
  * @since 0.0.1
  */
 export default function ScreenWrapper({...props}: Props) {
 
-    const { globalBlur, setGlobalBlur } = useContext(GlobalContext);
+    const { globalBlur, setGlobalBlur, globalPopupProps, hideGlobalPopup } = useContext(GlobalContext);
 
     const componentName = "ScreenWrapper";
     const { children, ...otherProps } = useDefaultProps(props, componentName);
+    const hasMounted = useHasComponentMounted();
+
+
+    useEffect(() => {
+        if (!hasMounted)
+            return;
+
+        hideGlobalPopup(globalPopupProps);
+
+    }, [globalBlur])
 
 
     function handleTouchStart(_event): void {

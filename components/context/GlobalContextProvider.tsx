@@ -4,6 +4,7 @@ import { de, en, registerTranslation } from 'react-native-paper-dates';
 import { CustomnSnackbarProps, CustomSnackbarStatus } from "../helpers/CustomSnackbar";
 import { GlobalPopupProps } from "../helpers/Popup";
 import { isNumberFalsy } from "@/utils/utils";
+import { log } from "@/utils/logUtils";
 
 
 /**
@@ -88,6 +89,12 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
     }
 
 
+    /**
+     * Display a subtle `<Popup>` and hide automatically. 
+     * 
+     * @param message rendered as children
+     * @param options see {@link GlobalPopupProps}
+     */
     function popup(message: ReactNode, options: Omit<GlobalPopupProps, "visible" | "message"> = {}): void {
 
         const popupProps: GlobalPopupProps = {
@@ -99,7 +106,9 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
         if (globalPopupTimeout)
             clearTimeout(globalPopupTimeout);
 
-        setGlobalPopupProps(popupProps);
+        setTimeout(() => {
+            setGlobalPopupProps(popupProps);
+        }, 0); // somhow causes popup call to be after blur hidePopup call
 
         setGlobalPopupTimeout(setTimeout(() => hideGlobalPopup(popupProps), options.duration ?? 5000));
     }

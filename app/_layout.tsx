@@ -1,5 +1,6 @@
 import GlobalContextProvider from "@/components/context/GlobalContextProvider";
 import CustomSqliteProvider from "@/components/CustomSqliteProvider";
+import GlobalComponentProvider from "@/components/GlobalComponentProvider";
 import { logErrorFiltered, logWarnFiltered } from "@/utils/logUtils";
 import { Stack } from "expo-router";
 
@@ -17,12 +18,14 @@ export default function layout() {
     return (
         <CustomSqliteProvider>
             <GlobalContextProvider>
-                <Stack 
-                    screenOptions={{
-                        headerShown: false, 
-                        orientation: "all", 
-                    }} 
-                />
+                <GlobalComponentProvider>
+                    <Stack
+                        screenOptions={{
+                            headerShown: false, 
+                            orientation: "all", 
+                        }} 
+                    />
+                </GlobalComponentProvider>
             </GlobalContextProvider>
         </CustomSqliteProvider>
     );
