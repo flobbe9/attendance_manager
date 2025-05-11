@@ -1,6 +1,7 @@
 import { SnackbarStyles } from "@/assets/styles/SnackbarStyles";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { BORDER_RADIUS, BORDER_WIDTH } from "@/utils/styleConstants";
+import { isBlank } from "@/utils/utils";
 import React, { useEffect, useState } from "react";
 import { ViewStyle } from "react-native";
 import { Portal, Snackbar, SnackbarProps } from "react-native-paper";
@@ -44,7 +45,7 @@ export default function CustomSnackbar(
                 action={{
                     ...action,
                     labelStyle: {
-                        ...SnackbarStyles.label,
+                        ...(!isBlank(action.label) ? SnackbarStyles.label : {}),
                         color: status !== "info" ? "black" : action.textColor
                     },
                 }}

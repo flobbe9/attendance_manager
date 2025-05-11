@@ -2,15 +2,15 @@ import HelperProps from "@/abstract/HelperProps";
 import { TooltipStyles } from "@/assets/styles/TooltipStyles";
 import HelperView from "@/components/helpers/HelperView";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
-import { useDefaultProps } from "@/hooks/useDefaultProps";
+import { useHelperProps } from "@/hooks/useHelperProps";
 import { TRANSITION_DURATION } from "@/utils/styleConstants";
 import { isBooleanFalsy, isNumberFalsy } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext, useEffect, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
+import { GlobalContext } from "../context/GlobalContextProvider";
 import Flex from "./Flex";
 import HelperText from "./HelperText";
-import { GlobalContext } from "../context/GlobalContextProvider";
 
 
 export type TooltipIconAlign = "top" | "bottom" | "left" | "right";
@@ -58,14 +58,14 @@ export default function Tooltip(
     const { animatedStyle } = useAnimatedStyle(
         [0, 100],
         [0, 1],
-        !visibleState,
-        [visibleState],
-        TRANSITION_DURATION,
-        visible
+        {
+            reverse: !visibleState,
+            startReversed: visible
+        }
     )
 
     const componentName = "Tooltip";
-    const { children, ...otherProps } = useDefaultProps(props, componentName, TooltipStyles.component);
+    const { children, ...otherProps } = useHelperProps(props, componentName, TooltipStyles.component);
 
 
     useEffect(() => {

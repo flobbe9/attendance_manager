@@ -3,11 +3,12 @@ import { PopupStyles } from "@/assets/styles/PopupStyles";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import Flex from "./Flex";
 import HelperText from "./HelperText";
 import HelperView from "./HelperView";
+import { TRANSITION_DURATION } from "@/utils/styleConstants";
 
 
 export type GlobalPopupProps = PopupProps & { duration?: number};
@@ -37,14 +38,20 @@ export default function Popup({
     ...props
 }: Props) {
 
+    // make sure hidden popup does not overlay anything
+    const [componentZIndex, setComponentZIndex] = useState(0);
+
     const componentName = "Popup";
     const { children, style, ...otherProps } = useDefaultProps(props, componentName, PopupStyles.component);
 
     const { animatedStyle } = useAnimatedStyle(
         [0, 100],
         [0, 1],
-        !visible,
-    )
+        {
+            reverse: !visible,
+            onComplete: () => setComponentZIndex(visible ? 0 : -1)
+        }
+    );
 
     const { allStyles: { pe_1 }, parseResponsiveStyleToStyle: pR} = useResponsiveStyles();
 
@@ -53,7 +60,7 @@ export default function Popup({
         <Flex 
             style={{
                 ...style as object,
-                zIndex: visible ? 0 : -1 // make sure hidden popup does not overlay anything
+                zIndex: componentZIndex
             }}
             justifyContent="center" 
             {...otherProps}

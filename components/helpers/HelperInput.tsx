@@ -9,7 +9,7 @@ import { Animated, NativeSyntheticEvent, TextInput, TextInputFocusEventData, Tex
 
 
 interface Props extends HelperProps<TextStyle>, TextInputProps {
-    disabled?: boolean
+    disabled?: boolean,
     setValue?: (value: string) => void,
     /** Applied to the outer most tag of this component. Should only be used for positioning and component dimensions. */
     containerStyles?: DynamicStyle<ViewStyle>

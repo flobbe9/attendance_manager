@@ -43,8 +43,6 @@ export default forwardRef(function ExtendableButton(
     useImperativeHandle(ref, () => componentRef.current, []);
 
     const [labelStyle, setLabelStyle] = useState<ViewStyle>({});
-
-    const animationDuration = TRANSITION_DURATION;
     
     const componentName = "ExtendableButton";
     const { children, style, ...otherProps } = useHelperProps(props, componentName, ExtendableButtonStyles.component);
@@ -53,9 +51,9 @@ export default forwardRef(function ExtendableButton(
     const { animatedStyle: animatedButtonWidth } = useAnimatedStyle(
         [0, 200],
         [extendedWidth, typeof (style as ViewStyle).width === "number" ? (style as ViewStyle).width  as number : defaultCollapsedButtonWidth], // cannot be a function for some reason
-        isExtended,
-        [isExtended],
-        animationDuration
+        {
+            reverse: isExtended,
+        }
     )
 
 
