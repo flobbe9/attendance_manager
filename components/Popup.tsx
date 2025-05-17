@@ -1,16 +1,14 @@
 import HelperProps from "@/abstract/HelperProps";
 import { PopupStyles } from "@/assets/styles/PopupStyles";
+import { GlobalContext } from "@/components/context/GlobalContextProvider";
+import Flex from "@/components/helpers/Flex";
+import HelperText from "@/components/helpers/HelperText";
+import HelperView from "@/components/helpers/HelperView";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import React, { ReactNode, useContext, useState } from "react";
 import { GestureResponderEvent, ViewProps, ViewStyle } from "react-native";
-import Flex from "./Flex";
-import HelperText from "./HelperText";
-import HelperView from "./HelperView";
-import { TRANSITION_DURATION } from "@/utils/styleConstants";
-import { GestureEvent } from "react-native-gesture-handler";
-import { GlobalContext } from "../context/GlobalContextProvider";
 
 
 export type GlobalPopupProps = PopupProps & { duration?: number};

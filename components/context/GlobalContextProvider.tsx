@@ -1,10 +1,11 @@
+import { GlobalPopupProps } from "@/components/Popup";
+import { log, logWarn } from "@/utils/logUtils";
+import { isAnyFalsy } from "@/utils/utils";
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { SnackbarProps } from "react-native-paper";
 import { de, en, registerTranslation } from 'react-native-paper-dates';
-import { CustomnSnackbarProps, CustomSnackbarStatus } from "../helpers/CustomSnackbar";
-import { GlobalPopupProps } from "../helpers/Popup";
-import { isNumberFalsy } from "@/utils/utils";
-import { log } from "@/utils/logUtils";
+import { CustomnSnackbarProps, CustomSnackbarStatus } from "../CustomSnackbar";
+import { GlobalToastProps } from "../Toast";
 
 
 /**
@@ -14,7 +15,7 @@ import { log } from "@/utils/logUtils";
  * @since 0.0.1
  */
 export default function GlobalContextProvider({children}: {children: ReactNode}) {
-    
+
     /** Toggle state, meaning the boolean value does not represent any information but is just to be listened to with `useEffect` */
     const [globalBlur, setGlobalBlur] = useState(false);
 
@@ -28,6 +29,11 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
     const [globalPopupProps, setGlobalPopupProps] = useState<GlobalPopupProps>({message: "", visible: false})
     const [globalPopupTimeout, setGlobalPopupTimeout] = useState<NodeJS.Timeout>();
 
+    const [globalToastProps, setGlobalToastProps] = useState<GlobalToastProps>({
+        visible: false,
+        content: '',
+    });
+
     const context = {
         globalBlur, setGlobalBlur,
 
@@ -36,7 +42,10 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
 
         popup,
         hideGlobalPopup,
-        globalPopupProps, setGlobalPopupProps
+        globalPopupProps, setGlobalPopupProps,
+
+        toast,hideToast,
+        globalToastProps
     }
 
 
@@ -120,6 +129,37 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
     }
 
 
+    /**
+     * Show toast popup and update `globalToastProps`. Always combine `toastProps` with `globalToastProps` for fallback values.
+     * 
+     * @param content of toast, optionally including a custom footer. Set `toastProps.defaultFooter` to `false` for that
+     * @param toastProps 
+     */
+    function toast(content: ReactNode, toastProps: Omit<GlobalToastProps, "content" | "visible"> = {}): void {
+
+        if (isAnyFalsy(content)) {
+            logWarn("Not toasting without content. Please specifiy toast 'content'");
+            return;
+        }
+
+        setGlobalToastProps({
+            ...globalToastProps,
+            ...toastProps,
+            visible: true,
+            content
+        })
+    }
+
+
+    function hideToast(): void {
+
+        setGlobalToastProps({
+            ...globalToastProps,
+            visible: false
+        })
+    }
+
+
     function initReactPaperLocales() {
         
         // https://web-ridge.github.io/react-native-paper-dates/docs/intro/        
@@ -147,5 +187,9 @@ export const GlobalContext = createContext({
     popup: (message: ReactNode, options: Omit<GlobalPopupProps, "visible" | "message"> = {}) => {},
     hideGlobalPopup: (globalPopupProps: GlobalPopupProps) => {},
     globalPopupProps: {} as GlobalPopupProps,
-    setGlobalPopupProps: (props: GlobalPopupProps) => {}
+    setGlobalPopupProps: (props: GlobalPopupProps) => {},
+
+    toast: (content: ReactNode, globalToastProps: Omit<GlobalToastProps, "content" | "visible"> = {}): void => {},
+    hideToast: (): void => {},
+    globalToastProps: {} as GlobalToastProps
 })

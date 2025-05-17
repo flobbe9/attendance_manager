@@ -39,6 +39,17 @@ export default class HelperStyles {
         alignContent: "center"  // this is needed in combination with alignSelf: 'flex-start'
     };
 
+    static flexStart: StyleType = { 
+        ...this.flex,
+        justifyContent: "flex-start", 
+    };
+
+    static flexStartStart: StyleType = { 
+        ...this.flex,
+        alignItems: "flex-start", 
+        justifyContent: "flex-start",
+    };
+
     static fullWidth: StyleType = {
         width: "100%",
     }

@@ -27,7 +27,7 @@ import { BORDER_RADIUS, HISTORY_COLOR, MUSIC_COLOR } from "@/utils/styleConstant
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext, useEffect, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
-import { RadioButton } from "react-native-paper";
+import { Modal, Portal, RadioButton } from "react-native-paper";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 
 
@@ -141,13 +141,6 @@ export default function index(props: Props) {
             }} 
             {...otherProps}
         >
-            {/* Verbose popup */}
-            {/* <Portal>
-                <Modal visible={true} contentContainerStyle={{backgroundColor: "white", height: "50%", margin: "auto", padding: 20}}>
-                    <HelperText>Some popup text</HelperText>
-                </Modal>
-            </Portal> */}
-
             {/* TopBar */}
             <Flex justifyContent="flex-end" dynamicStyle={AttendanceStyles.topBar}>
                 {/* Save */}

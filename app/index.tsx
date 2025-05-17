@@ -1,6 +1,7 @@
 import { IndexStyles } from "@/assets/styles/IndexStyles";
 import { AttendanceEntity } from "@/backend/DbSchema";
 import AttendanceLink from "@/components/AttendanceLink";
+import { GlobalContext } from "@/components/context/GlobalContextProvider";
 import { IndexContext } from "@/components/context/IndexContextProvider";
 import ExtendableButton from "@/components/helpers/ExtendableButton";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
@@ -21,6 +22,7 @@ import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
  */
 export default function index() {
 
+    const { toast, hideToast } = useContext(GlobalContext);
     const { setCurrentAttendanceEntity, allAttendanceEntities, setAllAttendanceEntities } = useContext(IndexContext);
 
     const [attendanceLinks, setAttendanceLinks] = useState<JSX.Element[]>([]);
@@ -94,7 +96,7 @@ export default function index() {
                     {attendanceLinks}
                 </HelperScrollView>
 
-                <Link href={"/(attendance)"} asChild>
+                {/* <Link href={"/(attendance)"} asChild> */}
                     <ExtendableButton 
                         isExtended={isExtended}
                         dynamicStyle={IndexStyles.addButton}
@@ -103,11 +105,60 @@ export default function index() {
                         extendedWidth={152}
                         label={<HelperText dynamicStyle={{...IndexStyles.addButtonLabel}} style={{color: "white"}}>Neuer UB</HelperText>}
                         ripple={{rippleBackground: "rgb(70, 70, 70)"}}
-                        // onPress={() => setCurrentAttendanceEntity(null)}
+                        onPress={() => {
+                            toast((
+                                <HelperView>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdfasdfasdfasdf</HelperText>
+                                    <HelperText>asdfasdfasdfasdf</HelperText>
+                                    <HelperText>asdfasdfasdfasdf</HelperText>
+                                    <HelperText>asdfasdfasdfasdf</HelperText>
+                                    <HelperText>asdfasdfasdfasdf</HelperText>
+                                    <HelperText>asdfasdfasdfasdf</HelperText>
+                                    <HelperText>asdfasdfasdfasdf</HelperText>
+                                    <HelperText>asdfasdfasdfasdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                    <HelperText>asdf</HelperText>
+                                </HelperView>
+                            ),
+                            {
+                                childrenContainerStyle: {width: 200, height: 200}
+                            })
+                        }}
                     >
                         <FontAwesome name="plus" style={IndexStyles.buttonIcon} color="white" />
                     </ExtendableButton>
-                </Link>
+                {/* </Link> */}
             </HelperView>
         </ScreenWrapper>
     )
