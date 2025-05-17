@@ -1,6 +1,6 @@
-import { Examinant_Key } from "@/abstract/Examinant";
+import { ExaminantRole_Key } from "@/abstract/Examinant";
 import { SchoolSubject } from "@/abstract/SchoolSubject";
-import { EXAMINANT_COLOR_NO_SUBJECT, HISTORY_COLOR, HISTORY_COLOR_TRANSPARENT } from "@/utils/styleConstants";
+import { EXAMINANT_COLOR_NO_SUBJECT, HISTORY_COLOR, HISTORY_COLOR_TRANSPARENT, MUSIC_COLOR, MUSIC_COLOR_TRANSPARENT } from "@/utils/styleConstants";
 import { DependencyList, useEffect, useState } from "react";
 import { ColorValue } from "react-native";
 
@@ -15,7 +15,7 @@ interface SubjectColor {
  * @param deps 
  * @returns both color and transparent color of the subject
  */
-export function useSubjectColor(subject: SchoolSubject | Examinant_Key | undefined, defaultColor?: ColorValue, deps?: DependencyList): SubjectColor {
+export function useSubjectColor(subject: SchoolSubject | ExaminantRole_Key | undefined, defaultColor?: ColorValue, deps?: DependencyList): SubjectColor {
 
     const [subjectColor, setSubjectColor] = useState<SubjectColor>({
         color: defaultColor,
@@ -42,13 +42,13 @@ export function useSubjectColor(subject: SchoolSubject | Examinant_Key | undefin
  * @param defaultColor to return if subject is ```undefined```. Default is `white`
  * @returns the color of the subject or ```defaultColor```
  */
-export function getSubjectColor(subject: SchoolSubject | Examinant_Key | undefined, transparent = false, defaultColor: ColorValue = "white"): ColorValue {
+export function getSubjectColor(subject: SchoolSubject | ExaminantRole_Key | undefined, transparent = false, defaultColor: ColorValue = "white"): ColorValue {
 
     if (subject === "Geschichte" || subject === "history")
         return transparent ? HISTORY_COLOR_TRANSPARENT : HISTORY_COLOR;
 
     if (subject === "Musik" || subject === "music")
-        return transparent ? HISTORY_COLOR_TRANSPARENT : HISTORY_COLOR;
+        return transparent ? MUSIC_COLOR_TRANSPARENT : MUSIC_COLOR;
 
     if (subject === "educator" || subject === "headmaster")
         return EXAMINANT_COLOR_NO_SUBJECT;

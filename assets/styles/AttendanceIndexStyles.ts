@@ -15,7 +15,14 @@ const addButtonFontSize = 20;
 export class AttendanceIndexStyles {
     static component: DynamicStyle<StyleType> = {
         default: {
+            minHeight: "100%",
             padding: GLOBAL_SCREEN_PADDING,
+        }
+    }
+    
+    static linkContainer: DynamicStyle<ViewStyle> = {
+        default: {
+            ...HelperStyles.fitContent
         }
     }
 

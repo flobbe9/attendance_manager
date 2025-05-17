@@ -1,5 +1,5 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { BORDER_RADIUS, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
 import HS from "./helperStyles";
 
@@ -15,6 +15,19 @@ export class AttendanceStyles {
         default: {
             height: "100%",
             padding: GLOBAL_SCREEN_PADDING,
+        }
+    }
+
+    static topBar: DynamicStyle<ViewStyle> = {
+        default: {
+            padding: GLOBAL_SCREEN_PADDING,
+        }
+    }
+
+    static saveButton: DynamicStyle<ViewStyle> = {
+        default: {
+            backgroundColor: "rgb(100, 200, 50)",
+            borderRadius: BORDER_RADIUS
         }
     }
     

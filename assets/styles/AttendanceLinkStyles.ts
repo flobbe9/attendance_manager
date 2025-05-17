@@ -1,5 +1,5 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { BORDER_RADIUS } from "@/utils/styleConstants";
+import { BORDER_RADIUS, BORDER_WIDTH, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
 
 
@@ -9,8 +9,9 @@ type StyleType = ViewStyle;
 export class AttendanceLinkStyles {
     static component: DynamicStyle<StyleType> = {
         default: {
-            borderWidth: 4,
+            borderWidth: BORDER_WIDTH,
             borderRadius: BORDER_RADIUS,
+            marginBottom: GLOBAL_SCREEN_PADDING,
             padding: 5,
         }
     }

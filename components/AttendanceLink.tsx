@@ -1,24 +1,24 @@
 import HelperProps from "@/abstract/HelperProps";
+import { getSchoolSubjectBySchoolSubjectKey } from "@/abstract/SchoolSubject";
+import { AttendanceLinkStyles } from "@/assets/styles/AttendanceLinkStyles";
 import "@/assets/styles/AttendanceLinkStyles.ts";
+import { AttendanceEntity } from "@/backend/DbSchema";
 import HelperView from "@/components/helpers/HelperView";
-import { useDefaultProps } from "@/hooks/useDefaultProps";
-import { MUSIC_COLOR, HISTORY_COLOR } from "@/utils/styleConstants";
+import { useHelperProps } from "@/hooks/useHelperProps";
+import { getSubjectColor, useSubjectColor } from "@/hooks/useSubjectColor";
+import { FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import Br from "./helpers/Br";
 import Flex from "./helpers/Flex";
 import HelperText from "./helpers/HelperText";
 import P from "./helpers/P";
-import { AttendanceLinkStyles } from "@/assets/styles/AttendanceLinkStyles";
-import { useHelperProps } from "@/hooks/useHelperProps";
-import HS from "@/assets/styles/helperStyles";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
-    subject?: "Musik" | "Geschichte",
-    date?: Date
+    attendanceEntity: AttendanceEntity
 }    
 
 
@@ -26,13 +26,24 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  * @since 0.0.1
  */
 export default function AttendanceLink({
-    subject,
-    date,
+    attendanceEntity,
     ...props
 }: Props) {
 
+    const [examinantIcons, setExaminantIcons] = useState<JSX.Element[]>([]);
+    const { date, schoolSubject, examinants } = attendanceEntity;
+    
+    const {color: attendanceColor, transparentColor: attendanceColorTransparent} = useSubjectColor(schoolSubject);
+
     const componentName = "AttendanceLink";
     const { children, style, ...otherProps } = useHelperProps(props, componentName, AttendanceLinkStyles.component);
+
+
+    useEffect(() => {
+        setExaminantIcons(mapExaminantIcons());
+
+    }, []);
+
 
     function getDate(): string {
 
@@ -42,21 +53,30 @@ export default function AttendanceLink({
         return `${date.getDate()}.${date.getMonth()}.${date.getFullYear()}`;
     }
 
-    function getColor(): string {
 
-        return subject === "Geschichte" ? HISTORY_COLOR : MUSIC_COLOR;
+    function mapExaminantIcons(): JSX.Element[] {
+
+        if (!examinants)
+            return [];
+
+        return examinants
+            .map((examinant, i) => 
+                <FontAwesome name="user" color={getSubjectColor(examinant.role)} size={FONT_SIZE} key={i} />);
     }
 
     return (
         <HelperView
             style={{
-                borderColor: getColor(),
+                borderColor: attendanceColor,
+                // TODO: add GUB condition
+                    // consider structure for all non-db conditions
+                backgroundColor: attendanceColorTransparent,
                 ...style as object
             }}
             {...otherProps}
         >
             <Link href="/(attendance)">
-                <P dynamicStyle={AttendanceLinkStyles.heading}>{subject}</P>
+                <P dynamicStyle={AttendanceLinkStyles.heading}>{getSchoolSubjectBySchoolSubjectKey(schoolSubject)}</P>
                 <Br />
 
                 <Flex 
@@ -72,10 +92,11 @@ export default function AttendanceLink({
                     </HelperText>
                      
                     <Flex>
-                        {children}
+                        {examinantIcons}
                     </Flex>
                 </Flex>
 
+                {children}
             </Link>
         </HelperView>
     )
