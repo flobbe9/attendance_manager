@@ -177,4 +177,16 @@ export class Dao<E extends AbstractEntity> {
 
         return getTableName(this.table);
     }
+
+
+    public async count(where?: SQL): Promise<number | null> {
+
+        try {
+            return await this.db.$count(this.table, where);
+
+        } catch (e) {
+            logError(e.message);
+            return null;
+        }
+    }
 }

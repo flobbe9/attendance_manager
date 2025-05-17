@@ -86,7 +86,6 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
             logError(e.message);
             return null;
         }
-                
     }
     
 
