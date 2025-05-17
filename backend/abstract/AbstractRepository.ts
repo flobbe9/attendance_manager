@@ -1,7 +1,7 @@
-import { logDebug, logError, logTrace } from "@/utils/logUtils";
-import { assertFalsyAndThrow, isAnyFalsy } from "@/utils/utils";
-import { and, eq, notInArray, SQL } from "drizzle-orm";
-import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
+import { log, logDebug, logError, logTrace } from "@/utils/logUtils";
+import { assertFalsyAndThrow, getRandomString, isAnyFalsy, isBooleanFalsy } from "@/utils/utils";
+import { and, eq, getTableName, notInArray, SQL } from "drizzle-orm";
+import { alias, SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
 import { SQLiteDatabase } from "expo-sqlite";
 import { DbTransaction } from "../DbTransaction";
 import AbstractEntity from "./Abstract_Schema";
@@ -9,7 +9,8 @@ import { Cascade } from "./Cascade";
 import { Dao } from "./Dao";
 import { Db } from "./Db";
 import { FetchType } from "./FetchType";
-import { RelatedEntityDetail } from "./RelatedEntityDetail";
+import { getFetchType, RelatedEntityDetail } from "./RelatedEntityDetail";
+import { EntityRelationType } from "./EntityRelationType";
 
 
 /**
@@ -49,40 +50,44 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
      */
     abstract getOwnedEntities(entity?: E): RelatedEntityDetail<E, any>[];
 
-    
+
     /**
-     * Select `E` and attach all owned entities that are marked as `FetchType.EAGER`.
+     * Select all `E` with given `where` and attach all owned entities that are marked as `FetchType.EAGER`.
      * 
      * @param where used only for initial `select()` statement. Optional
-     * @param result the current select / join result. Used for recursive calls
-     * @returns select result for `E` with all owned entites attached or `null` if error
+     * @returns `E` with all owned entites attached or `null` if error
      */
-    public async selectCascade(where?: SQL, result?: any): Promise<E[] | null> {
+    public async selectCascade(where?: SQL): Promise<E[] | null> {
 
         try {
-            if (!result)
-                result = this.db.select().from(this.table).where(where);
-            
+            const entityResults = await this.select(where);
+            if (!entityResults)
+                throw new Error(`Failed to cascade select entity '${this.getTableName()}'`);
+
             for (const ownedEntityDetail of this.getOwnedEntities()) {
-                // case: is lazy owned entity, dont fetch
-                if (!isAnyFalsy(ownedEntityDetail.fetchType) && ownedEntityDetail.fetchType === FetchType.LAZY)
+                if (getFetchType(ownedEntityDetail.fetchType) === FetchType.LAZY)
                     continue;
 
-                result = result.leftJoin(ownedEntityDetail.repository.table, eq(this.table.id, ownedEntityDetail.repository.table[this.getBackReferenceColumnName()]))
-                const joinResult = ownedEntityDetail.repository.selectCascade(undefined, result);
+                for (const entityResult of entityResults) {
+                    const ownedEntityRepository = ownedEntityDetail.repository;
 
-                // case: error thrown somewhere inside a recursive call
-                if (!joinResult)
-                    return null;
+                    // fetch owned entity's owned entities
+                    const ownedEntityResults = await ownedEntityRepository.selectCascade(eq(ownedEntityRepository.table[this.getBackReferenceColumnName()], entityResult.id));
+                    if (!ownedEntityResults)
+                        throw new Error(`Failed to cascade select owned entity '${ownedEntityRepository.getTableName()}`);
+                    
+                    entityResult[ownedEntityDetail.column.name] = ownedEntityDetail.relationType === EntityRelationType.ONE_TO_ONE ? ownedEntityResults[0] : ownedEntityResults;
+                }
             }
 
-            return result;
-            
+            return entityResults;
+
         } catch (e) {
             logError(e.message);
             return null;
         }
-    } 
+                
+    }
     
 
     /**

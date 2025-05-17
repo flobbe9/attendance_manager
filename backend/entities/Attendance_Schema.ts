@@ -19,7 +19,7 @@ export const Attendance_Table = sqliteTable(
     {
         ...Abstract_Table,
         schoolSubject: text({ enum: SCHOOL_SUBJECT_KEYS as [SchoolSubject_Key]}).notNull(),
-        date: integer({ mode: 'timestamp' }).notNull(),
+        date: integer({ mode: 'timestamp' }),
         musicLessonTopic: text({enum: MUSIC_LESSON_TOPIC_KEYS as [MusicLessonTopic_Key]}),
         schoolYear: text({ enum: SCHOOL_YEARS as [SchoolYear]}).notNull(),
         note: text(),
@@ -41,7 +41,7 @@ export class AttendanceEntity extends AbstractEntity {
 
     schoolSubject: SchoolSubject_Key;
     /** Date of the attendance */
-    date: Date;
+    date?: Date;
     schoolYear: SchoolYear;
     /** Only mandatory if ```schoolSubject``` is "Musik" */
     musicLessonTopic?: MusicLessonTopic_Key;

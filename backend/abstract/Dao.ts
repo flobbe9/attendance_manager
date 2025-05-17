@@ -4,6 +4,7 @@ import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
 import AbstractEntity from "./Abstract_Schema";
 import { Db } from "./Db";
 import { assertFalsyAndThrow } from "@/utils/utils";
+import { getTableName } from "drizzle-orm";
 
 
 /**
@@ -28,7 +29,7 @@ export class Dao<E extends AbstractEntity> {
     }
 
 
-    async insert(values: E): Promise<E | null> {
+    public async insert(values: E): Promise<E | null> {
 
         try {
             values.created = new Date();
@@ -45,7 +46,7 @@ export class Dao<E extends AbstractEntity> {
                 return result;
             }
 
-            throw new Error(`Failed to insert into ${values.constructor.name}. Empty result set.`);
+            throw new Error(`Failed to insert into ${getTableName(this.table)}. Empty result set.`);
             
         } catch (e) {
             logError(e.message);
@@ -62,14 +63,14 @@ export class Dao<E extends AbstractEntity> {
      * @returns the updated entities or `null` if error
      * @throws if sql error or no valid `where` could be resolved
      */
-    async update(values: E, where?: SQL): Promise<E[] | null> {
+    public async update(values: E, where?: SQL): Promise<E[] | null> {
 
         try {
             values.updated = new Date();
         
             if (!where) {
                 if (!values.id)
-                    throw new Error(`Cannot update table ${values.constructor.name}. Missing both 'where' and 'values.id'.`);
+                    throw new Error(`Cannot update table ${getTableName(this.table)}. Missing both 'where' and 'values.id'.`);
 
                 where = eq(this.table.id, values.id); 
             }
@@ -94,7 +95,7 @@ export class Dao<E extends AbstractEntity> {
      * @param where matcher for update statement
      * @returns inserted / updated value(s) or `null` if error
      */
-    async updateOrInsert(values: E, where?: SQL): Promise<E | E[] | null> {
+    public async updateOrInsert(values: E, where?: SQL): Promise<E | E[] | null> {
 
         assertFalsyAndThrow(values);
 
@@ -120,7 +121,7 @@ export class Dao<E extends AbstractEntity> {
      * @param where if not specified, select all entities
      * @returns array of results, empty array if no matches, `null` if error
      */
-    async select(where?: SQL): Promise<E[] | null> {
+    public async select(where?: SQL): Promise<E[] | null> {
 
         try {
             return this.db.select().from(this.table).where(where);
@@ -132,7 +133,7 @@ export class Dao<E extends AbstractEntity> {
     }
 
 
-    async delete(where: SQL) {
+    public async delete(where: SQL) {
 
         try {
             return this.db.delete(this.table).where(where);
@@ -149,7 +150,7 @@ export class Dao<E extends AbstractEntity> {
      * @returns true if entity with `id` exists
      * @throws if `id` is falsy
      */
-    async existsById(id?: number): Promise<boolean> {
+    public async existsById(id?: number): Promise<boolean> {
 
         assertFalsyAndThrow(id);
 
@@ -162,12 +163,18 @@ export class Dao<E extends AbstractEntity> {
      * @returns true if select query returns at least 1 result
      * @throws if arg is falsy
      */
-    async exists(where: SQL): Promise<boolean> {
+    public async exists(where: SQL): Promise<boolean> {
 
         assertFalsyAndThrow(where);
 
         const results = await this.select(where);
 
         return !!results.length;
+    }
+
+
+    public getTableName(): string {
+
+        return getTableName(this.table);
     }
 }

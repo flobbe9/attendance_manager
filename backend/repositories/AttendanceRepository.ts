@@ -7,6 +7,7 @@ import { SchoolclassModeRepository } from "./SchoolclassModeRepository";
 import { ExaminantRepository } from "./ExaminantRepository";
 import { Cascade } from "../abstract/Cascade";
 import { FetchType } from "../abstract/FetchType";
+import { EntityRelationType } from "../abstract/EntityRelationType";
 
 
 /**
@@ -36,6 +37,7 @@ export class AttendanceRepository extends AbstractRepository<AttendanceEntity> {
                 name: "examinants",
                 value: entity?.examinants
             },
+            relationType: EntityRelationType.ONE_TO_MANY,
             cascade: new Set([Cascade.INSERT, Cascade.UPDATE]),
             orphanRemoval: true,
             fetchType: FetchType.EAGER
@@ -47,6 +49,7 @@ export class AttendanceRepository extends AbstractRepository<AttendanceEntity> {
                 name: "schoolclassMode",
                 value: entity?.schoolclassMode
             },
+            relationType: EntityRelationType.ONE_TO_ONE,
             cascade: new Set([Cascade.INSERT, Cascade.UPDATE])
         });
 
