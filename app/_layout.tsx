@@ -1,8 +1,13 @@
 import GlobalContextProvider from "@/components/context/GlobalContextProvider";
+import IndexContextProvider from "@/components/context/IndexContextProvider";
 import CustomSqliteProvider from "@/components/CustomSqliteProvider";
 import GlobalComponentProvider from "@/components/GlobalComponentProvider";
 import { logErrorFiltered, logWarnFiltered } from "@/utils/logUtils";
 import { Stack } from "expo-router";
+
+
+console.warn = logWarnFiltered;
+console.error = logErrorFiltered;
 
 
 /**
@@ -12,20 +17,21 @@ import { Stack } from "expo-router";
  */
 export default function layout() {
 
-    console.warn = logWarnFiltered;
-    console.error = logErrorFiltered;
-
     return (
         <CustomSqliteProvider>
             <GlobalContextProvider>
-                <GlobalComponentProvider>
-                    <Stack
-                        screenOptions={{
-                            headerShown: false, 
-                            orientation: "all", 
-                        }} 
-                    />
-                </GlobalComponentProvider>
+                <IndexContextProvider>
+                    <GlobalComponentProvider>
+                        <Stack
+                            screenOptions={{
+                                headerShown: false, 
+                                orientation: "all", 
+                            }} 
+                            >
+                            {/* <Stack.Screen name="(attendance)" /> */}
+                        </Stack>
+                    </GlobalComponentProvider>
+                </IndexContextProvider>
             </GlobalContextProvider>
         </CustomSqliteProvider>
     );
