@@ -1098,6 +1098,25 @@ export function assertFalsyAndThrow(...args: any[]): void {
 
 
 /**
+ * See {@link assertFalsyAndThrow}.
+ * 
+ * @param args to check
+ * @returns `true` if no arg was falsy, else `false`
+ */
+export function assertFalsyAndLog(...args: any[]): boolean {
+
+    try {
+        assertFalsyAndThrow(args);
+        return true;
+
+    } catch (e) {
+        console.error(e.message);
+        return false;
+    }
+}
+
+
+/**
  * Example: 
  * ```
  * const arr1 = [1, 2, 3];
