@@ -3,9 +3,10 @@ import { DynamicStyle } from "@/abstract/DynamicStyle";
 import { Headmaster, HEADMASTERS } from "@/abstract/Headmaster";
 import { MUSIC_LESSON_TOPICS, MusicLessonTopic } from "@/abstract/MusicLessonTopic";
 import { SCHOOLCLASS_MODES, SchoolclassMode } from "@/abstract/SchoolclassMode";
-import { SCHOOL_SUBJECTS, SchoolSubject } from "@/abstract/SchoolSubject";
+import { getSchoolSubjectBySchoolSubjectKey, SCHOOL_SUBJECTS, SchoolSubject } from "@/abstract/SchoolSubject";
 import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
 import "@/assets/styles/AttendanceStyles.ts";
+import { IndexContext } from "@/components/context/IndexContextProvider";
 import DatePicker from "@/components/helpers/DatePicker";
 import Flex from "@/components/helpers/Flex";
 import HelperButton from "@/components/helpers/HelperButton";
@@ -15,13 +16,16 @@ import HelperSelect from "@/components/helpers/HelperSelect";
 import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
+import Tooltip from "@/components/helpers/Tooltip";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { useSubjectColor } from "@/hooks/useSubjectColor";
 import { CheckboxStatus } from "@/utils/constants";
+import { log } from "@/utils/logUtils";
 import { BORDER_RADIUS, HISTORY_COLOR, MUSIC_COLOR } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { RadioButton } from "react-native-paper";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
@@ -33,16 +37,34 @@ interface Props extends DefaultProps<ViewStyle>, ViewProps {
 
 
 /**
+ * Attendance create / edit screen.
+ * 
  * @since 0.0.1
  */
 export default function index(props: Props) {
 
+
+    const { currentAttendanceEntity } = useContext(IndexContext);
+    // get current attendance id from global state
+    // on load
+        // load current attendance
+        // if id null     
+            // just set to empty object
+        // pass attendance down to index context
+
+    // modified
+
+    // 
+
+    const { allStyles: { pe_2 }, parseResponsiveStyleToStyle: pr } = useResponsiveStyles();
     const [date, setDate] = useState<CalendarDate>(new Date());
     
-    const [selectedSubject, setSelectedSubject] = useState<SchoolSubject>();
-    const subjectColor = useSubjectColor(selectedSubject, true, "rgb(240, 240, 240)");
+    const [selectedSubject, setSelectedSubject] = useState<SchoolSubject>(getSchoolSubjectBySchoolSubjectKey(currentAttendanceEntity.schoolSubject));
+    const { transparentColor: subjectColor} = useSubjectColor(selectedSubject, "rgb(240, 240, 240)");
 
     const [selectedMusicLessonTopic, setSelectedMusicLessonTopic] = useState<MusicLessonTopic>();
+
+    const [schoolYear, setSchoolYear] = useState<string>("");
 
     const [historyExaminantStatus, setHistoryExaminantStatus] = useState<CheckboxStatus>("unchecked");
     const [musicExaminantStatus, setMusicExaminantStatus] = useState<CheckboxStatus>("unchecked");
@@ -59,8 +81,9 @@ export default function index(props: Props) {
     const { animatedStyle } = useAnimatedStyle(
         [0, 180],
         ["0deg", "-180deg"],
-        !areNotesVisible,
-        [areNotesVisible]
+        {
+            reverse: !areNotesVisible,
+        }
     )
 
     const componentName = "Attendance";
@@ -86,29 +109,56 @@ export default function index(props: Props) {
     }
 
 
+    function handleSavePress(): void {
+
+        
+    }
+
+
     // TODO: 
+        // confirm leave if unsaved changes
+        // component for each input
         // validation
+            // flash input as invalid (?)
+                // flash tooltip(?)
+            // small popup with short description, dismissable with action
+                // "invalid value, see tooltip for valid options"
+            // tooltip next to every input label
+                // explain logic shortly
+                // list valid options
+                // make a component for that?
         // disable all inputs when date is in past
         // multiline max height
             // consider tablet
             // consider full screen
         // fix icons
-        // keyboard does not stay in view on ios
-            // make a wrapper with all these providers
-            // fix: <KeyboardAvoidingView
-                //   behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-
 
     return (
-        <ScreenWrapper>
-            <HelperScrollView 
-                style={{
-                    backgroundColor: subjectColor,
-                    ...style as object
-                }} 
-                {...otherProps}
-            >
-                {/* Subject */}
+        <ScreenWrapper 
+            style={{
+                backgroundColor: subjectColor,
+                ...style as object
+            }} 
+            {...otherProps}
+        >
+            {/* Verbose popup */}
+            {/* <Portal>
+                <Modal visible={true} contentContainerStyle={{backgroundColor: "white", height: "50%", margin: "auto", padding: 20}}>
+                    <HelperText>Some popup text</HelperText>
+                </Modal>
+            </Portal> */}
+
+            {/* TopBar */}
+            <Flex justifyContent="flex-end" dynamicStyle={AttendanceStyles.topBar}>
+                {/* Save */}
+                <HelperButton dynamicStyle={AttendanceStyles.saveButton} onPress={handleSavePress}>
+                    <FontAwesome name="save" style={{...pr({pe_2})}} />
+                    <HelperText>Save</HelperText>
+                </HelperButton>
+            </Flex>
+
+            <HelperScrollView>
+                {/* Subject */}  
                 <HelperSelect 
                     dynamicStyle={AttendanceStyles.inputContainer}
                     options={SCHOOL_SUBJECTS}
@@ -117,12 +167,17 @@ export default function index(props: Props) {
                     optionsContainerScroll={false}
                     optionsContainerHeight={85}
                 >
-                    <HelperText dynamicStyle={AttendanceStyles.heading}>Fach</HelperText>
+                    <Flex alignItems="center">
+                        <HelperText dynamicStyle={AttendanceStyles.heading}>Fach</HelperText>
+                        <Tooltip>
+                            8 UBs pro Fach
+                        </Tooltip>
+                    </Flex>
                 </HelperSelect>
 
                 {/* Date */}
                 <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
-                    <HelperText dynamicStyle={AttendanceStyles.heading}>Datum (und Zeit? oder Schulstunde?)</HelperText>
+                    <HelperText dynamicStyle={AttendanceStyles.heading}>Datum</HelperText>
                     <DatePicker date={date} setDate={setDate} />
                 </HelperView>
 
@@ -130,6 +185,8 @@ export default function index(props: Props) {
                 <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
                     <HelperText dynamicStyle={AttendanceStyles.heading}>Jahrgang</HelperText>
                     <HelperInput 
+                        value={schoolYear}
+                        setValue={setSchoolYear}
                         placeholder="5 - 13"
                         keyboardType="numeric"
                         containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}

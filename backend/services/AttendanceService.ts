@@ -8,10 +8,5 @@ import { AttendanceEntity } from "../DbSchema";
  */
 export class AttendanceService extends AbstractService<AttendanceEntity> {
     
-    isTypeOfEntity(entity: AbstractEntity): entity is AttendanceEntity {
 
-        return !!entity && 
-            Object.hasOwn(entity, "schoolSubject") && 
-            Object.hasOwn(entity, "schoolYear");
-    }
 }

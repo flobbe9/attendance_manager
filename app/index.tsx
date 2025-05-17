@@ -1,20 +1,19 @@
-import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
-import { AttendanceLinkStyles } from "@/assets/styles/AttendanceLinkStyles";
-import HelperStyles from "@/assets/styles/helperStyles";
+import { IndexStyles } from "@/assets/styles/IndexStyles";
+import { AttendanceEntity } from "@/backend/DbSchema";
 import AttendanceLink from "@/components/AttendanceLink";
+import { IndexContext } from "@/components/context/IndexContextProvider";
 import ExtendableButton from "@/components/helpers/ExtendableButton";
-import Flex from "@/components/helpers/Flex";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
 import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
+import IndexTopBar from "@/components/IndexTopBar";
+import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import { HISTORY_COLOR, HISTORY_COLOR_TRANSPARENT, MUSIC_COLOR } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 
 /**
@@ -22,239 +21,91 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
  */
 export default function index() {
 
+    const { setCurrentAttendanceEntity, allAttendanceEntities, setAllAttendanceEntities } = useContext(IndexContext);
+
+    const [attendanceLinks, setAttendanceLinks] = useState<JSX.Element[]>([]);
     const [isExtended, setIsExtended] = useState(true);
 
-    const { allStyles: {mt_5}} = useResponsiveStyles();
+    const { attendanceRespository } = useAttendanceRepository();
+
+    // TODO: warn if wrong obj name
+    const { allStyles: {mt_5} } = useResponsiveStyles();
+
+
+    useEffect(() => {
+        loadAttendanceEntities();
+
+    }, []);
+
+
+    useEffect(() => {
+        setAttendanceLinks(mapAttendanceLinks(allAttendanceEntities));
+
+    }, [allAttendanceEntities]);
+
     
     function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
+
         const currentScrollPosition = Math.floor(event.nativeEvent?.contentOffset?.y) ?? 0;
         
         setIsExtended(currentScrollPosition <= 0);
     };
 
 
+    /**
+     * @param attendanceEntities expected to be fetched with cascade
+     */
+    function mapAttendanceLinks(attendanceEntities: AttendanceEntity[]): JSX.Element[] {
+
+        if (!attendanceEntities)
+            return [];
+
+        return attendanceEntities
+            .map((attendanceEntity, i) => 
+                <AttendanceLink 
+                    key={i} 
+                    attendanceEntity={attendanceEntity} 
+                    onTouchEnd={() => setCurrentAttendanceEntity(attendanceEntity)}
+                />
+            );
+    }
+
+
+    // TODO: consider max num and pageable?
+        // test how long 30 attendances take to load
+    async function loadAttendanceEntities(): Promise<void> {
+
+        const attendanceEntities = await attendanceRespository.selectCascade();
+
+        setAllAttendanceEntities(attendanceEntities ?? []);
+    }
+
+
+    // display something if no attendances yet
+        // maybe large button or something
+
+
     return (
         <ScreenWrapper>
-            <HelperView dynamicStyle={AttendanceIndexStyles.component}>
-                <Flex justifyContent="flex-end" dynamicStyle={AttendanceIndexStyles.statusBarContainer}>
-                    <HelperText>Erledigt:</HelperText>
+            <HelperView dynamicStyle={IndexStyles.component}>
+                <IndexTopBar />
 
-                    <Flex 
-                        style={{
-                            marginStart: 10
-                        }}
-                        alignItems="center"
-                    >
-                        <FontAwesome
-                            style={{
-                                color: MUSIC_COLOR,
-                            }}
-                            name="user" 
-                        />
-                        <HelperText>1/9</HelperText>
-                    </Flex>
-
-                    <Flex 
-                        style={{
-                            marginStart: 10
-                        }}
-                        alignItems="center"
-                    >
-                        <FontAwesome
-                            style={{
-                                color: HISTORY_COLOR,
-                            }}
-                            name="user" 
-                        />
-                        <HelperText>2/9</HelperText>
-                    </Flex>
-
-                    <Flex 
-                        style={{
-                            marginStart: 10
-                        }}
-                        alignItems="center"
-                    >
-                        <FontAwesome
-                            style={{
-                                color: "black",
-                            }}
-                            name="user" 
-                        />
-                        <HelperText>2/8</HelperText>
-                    </Flex>
-                </Flex>
-
-                <HelperScrollView onScroll={handleScroll} style={{...HelperStyles.fitContent, ...mt_5 }}>
-                    {[
-                        <AttendanceLink
-                            key={0} 
-                            dynamicStyle={AttendanceIndexStyles.link} 
-                            subject="Musik"
-                            date={new Date()}
-                        >
-                            <FontAwesome
-                                style={{
-                                    ...AttendanceLinkStyles.icon,
-                                }}
-                                name="user" 
-                            />
-                            <FontAwesome
-                                style={{    
-                                    color: MUSIC_COLOR,
-                                    ...AttendanceLinkStyles.icon,
-                                }}
-                                name="user" 
-                            />
-                        </AttendanceLink>,
-                        <AttendanceLink
-                            key={1} 
-                            dynamicStyle={AttendanceIndexStyles.link}
-                            style={{
-                                backgroundColor: HISTORY_COLOR_TRANSPARENT,
-                            }}
-                            subject="Geschichte"
-                        >
-                            <FontAwesome
-                                style={{    
-                                    color: HISTORY_COLOR,
-                                    ...AttendanceLinkStyles.icon,
-                                }}
-                                name="user" 
-                            />
-                            <FontAwesome
-                                style={{
-                                    ...AttendanceLinkStyles.icon,
-                                }}
-                                name="user" 
-                            />
-                            <FontAwesome
-                                style={{    
-                                    color: MUSIC_COLOR,
-                                    ...AttendanceLinkStyles.icon,
-                                }}
-                                name="user" 
-                            />
-                        </AttendanceLink>,
-                        <AttendanceLink
-                            key={2} 
-                            dynamicStyle={AttendanceIndexStyles.link}
-                            style={{
-                            }}
-                            subject="Geschichte"
-                        >
-                            <FontAwesome
-                                style={{    
-                                    color: HISTORY_COLOR,
-                                    ...AttendanceLinkStyles.icon,
-                                }}
-                                name="user" 
-                            />
-                        </AttendanceLink>,
-                        <AttendanceLink
-                            key={3} 
-                            dynamicStyle={AttendanceIndexStyles.link}
-                            style={{
-                            }}
-                            subject="Geschichte"
-                        >
-                            <FontAwesome
-                                style={{    
-                                    color: HISTORY_COLOR,
-                                    ...AttendanceLinkStyles.icon,
-                                }}
-                                name="user" 
-                            />
-                        </AttendanceLink>,
-                        <AttendanceLink
-                            key={4} 
-                            dynamicStyle={AttendanceIndexStyles.link}
-                            style={{
-                            }}
-                            subject="Geschichte"
-                        >
-                            <FontAwesome
-                                style={{    
-                                    color: HISTORY_COLOR,
-                                    ...AttendanceLinkStyles.icon,
-                                }}
-                                name="user" 
-                            />
-                        </AttendanceLink>,
-                        <AttendanceLink
-                            key={5} 
-                            dynamicStyle={AttendanceIndexStyles.link}
-                            style={{
-                            }}
-                            subject="Geschichte"
-                        >
-                            <FontAwesome
-                                style={{    
-                                    color: HISTORY_COLOR,
-                                    ...AttendanceLinkStyles.icon,
-                                }}
-                                name="user" 
-                            />
-                        </AttendanceLink>,
-                        <AttendanceLink
-                            key={6} 
-                            dynamicStyle={AttendanceIndexStyles.link}
-                            style={{
-                            }}
-                            subject="Geschichte"
-                        >
-                            <FontAwesome
-                                style={{    
-                                    color: HISTORY_COLOR,
-                                    ...AttendanceLinkStyles.icon,
-                                }}
-                                name="user" 
-                            />
-                        </AttendanceLink>,
-                        <AttendanceLink
-                            key={7} 
-                            dynamicStyle={AttendanceIndexStyles.link}
-                            style={{
-                            }}
-                            subject="Geschichte"
-                        >
-                            <FontAwesome
-                                style={{    
-                                    color: HISTORY_COLOR,
-                                    ...AttendanceLinkStyles.icon,
-                                }}
-                                name="user" 
-                            />
-                        </AttendanceLink>,
-                        <AttendanceLink
-                            key={8} 
-                            dynamicStyle={AttendanceIndexStyles.link}
-                            style={{
-                            }}
-                            subject="Musik"
-                        >
-                            <FontAwesome
-                                style={{    
-                                    color: MUSIC_COLOR,
-                                    ...AttendanceLinkStyles.icon,
-                                }}
-                                name="user" 
-                            />
-                        </AttendanceLink> 
-                    ]}
+                <HelperScrollView onScroll={handleScroll} dynamicStyle={IndexStyles.linkContainer} style={{...mt_5 }}>
+                    {attendanceLinks}
                 </HelperScrollView>
 
                 <Link href={"/(attendance)"} asChild>
                     <ExtendableButton 
                         isExtended={isExtended}
-                        dynamicStyle={AttendanceIndexStyles.addButton}
-                        containerStyles={AttendanceIndexStyles.addButtonOuterView}
+                        dynamicStyle={IndexStyles.addButton}
+                        containerStyles={IndexStyles.addButtonOuterView}
                         align="flex-end"
                         extendedWidth={152}
-                        label={<HelperText dynamicStyle={{...AttendanceIndexStyles.addButtonLabel}} style={{color: "white"}}>Neuer UB</HelperText>}
+                        label={<HelperText dynamicStyle={{...IndexStyles.addButtonLabel}} style={{color: "white"}}>Neuer UB</HelperText>}
                         ripple={{rippleBackground: "rgb(70, 70, 70)"}}
+                        // onPress={() => setCurrentAttendanceEntity(null)}
                     >
-                        <FontAwesome name="plus" style={AttendanceIndexStyles.buttonIcon} color="white" />
+                        <FontAwesome name="plus" style={IndexStyles.buttonIcon} color="white" />
                     </ExtendableButton>
                 </Link>
             </HelperView>

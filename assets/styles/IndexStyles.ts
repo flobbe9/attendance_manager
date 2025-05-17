@@ -8,11 +8,10 @@ import HelperStyles from "./helperStyles";
 type StyleType = ViewStyle;
 
 const addButtonWidth = 59;
-const addButtonPosition = 20;
 const addButtonFontSize = 20;
 
 
-export class AttendanceIndexStyles {
+export class IndexStyles {
     static component: DynamicStyle<StyleType> = {
         default: {
             minHeight: "100%",

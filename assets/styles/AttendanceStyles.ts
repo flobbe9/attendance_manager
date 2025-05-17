@@ -20,14 +20,14 @@ export class AttendanceStyles {
 
     static topBar: DynamicStyle<ViewStyle> = {
         default: {
-            padding: GLOBAL_SCREEN_PADDING,
         }
     }
 
     static saveButton: DynamicStyle<ViewStyle> = {
         default: {
             backgroundColor: "rgb(100, 200, 50)",
-            borderRadius: BORDER_RADIUS
+            borderRadius: BORDER_RADIUS,
+            margin: 0
         }
     }
     

@@ -29,6 +29,20 @@
       "when": 1746354325326,
       "tag": "0003_amazing_skreet",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1747327757819,
+      "tag": "0004_bizarre_leopardon",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1747327844607,
+      "tag": "0005_oval_talisman",
+      "breakpoints": true
     }
   ]
 }

@@ -3,6 +3,8 @@ import { AbstractRepository } from "../abstract/AbstractRepository";
 import { Db } from "../abstract/Db";
 import { RelatedEntityDetail } from "../abstract/RelatedEntityDetail";
 import { SchoolclassMode_Table, SchoolclassModeEntity } from "../DbSchema";
+import { TestRepository } from "./TestRepository";
+import { EntityRelationType } from "../abstract/EntityRelationType";
 
 
 /**
@@ -21,10 +23,15 @@ export class SchoolclassModeRepository extends AbstractRepository<SchoolclassMod
     }
 
     
-    getOwnedEntities(_entity: SchoolclassModeEntity): RelatedEntityDetail<SchoolclassModeEntity, any>[] {
+    getOwnedEntities(entity: SchoolclassModeEntity): RelatedEntityDetail<SchoolclassModeEntity, any>[] {
 
-        // owns no entities
-        
-        return [];
+        return [{
+            repository: new TestRepository(this.db, this.sqliteDb),
+            column: {
+                name: "test",
+                value: entity?.test
+            },
+            relationType: EntityRelationType.ONE_TO_ONE
+        }];
     }
 }

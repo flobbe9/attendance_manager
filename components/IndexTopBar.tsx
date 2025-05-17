@@ -1,5 +1,5 @@
 import HelperProps from "@/abstract/HelperProps";
-import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
+import { IndexStyles } from "@/assets/styles/IndexStyles";
 import { IndexTopBarStyles } from "@/assets/styles/IndexTopBarStyles";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { HISTORY_COLOR, MUSIC_COLOR } from "@/utils/styleConstants";
@@ -53,7 +53,7 @@ export default function IndexTopBar({...props}: Props) {
     return ( 
         <Flex 
             justifyContent="flex-end" 
-            dynamicStyle={AttendanceIndexStyles.statusBarContainer}
+            dynamicStyle={IndexStyles.statusBarContainer}
             {...otherProps}
         >
             <HelperText>Erledigt:</HelperText>
