@@ -42,7 +42,7 @@ export default function Popup({
     const { hideGlobalPopup, globalPopupProps } = useContext(GlobalContext);
 
     // make sure hidden popup does not overlay anything
-    const [componentZIndex, setComponentZIndex] = useState(0);
+    const [componentZIndex, setComponentZIndex] = useState(-1);
 
     const componentName = "Popup";
     const { children, style, ...otherProps } = useDefaultProps(props, componentName, PopupStyles.component);
@@ -77,7 +77,7 @@ export default function Popup({
         <Flex 
             style={{
                 ...style as object,
-                zIndex: componentZIndex
+                zIndex: componentZIndex,
             }}
             justifyContent="center" 
             onTouchStart={handleTouchStart}
