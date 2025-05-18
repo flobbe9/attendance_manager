@@ -7,7 +7,7 @@ import { createContext, useState } from "react";
  * 
  * @since 0.0.1
  */
-export default function IndexContextProvider({children}) {
+export default function GlobalAttendanceContextProvider({children}) {
 
     const [attendanceEntities, setAttendanceEntities] = useState<AttendanceEntity[]>([]);
     /** The attendance entity currently beeing edited. `undefined` if not on edit screen */
@@ -19,14 +19,14 @@ export default function IndexContextProvider({children}) {
     }
     
     return (
-        <IndexContext.Provider value={context}>
+        <GlobalAttendanceContext.Provider value={context}>
             {children}
-        </IndexContext.Provider>
+        </GlobalAttendanceContext.Provider>
     )
 }
 
 
-export const IndexContext = createContext({
+export const GlobalAttendanceContext = createContext({
     currentAttendanceEntity: {} as AttendanceEntity | undefined,
     setCurrentAttendanceEntity: (currentAttendanceEntity: AttendanceEntity): void => {},
     allAttendanceEntities: [] as AttendanceEntity[],

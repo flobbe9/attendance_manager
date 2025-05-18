@@ -11,6 +11,7 @@ import { Animated, Text, ViewProps, ViewStyle } from "react-native";
 import HelperButton from "./HelperButton";
 import HelperText from "./HelperText";
 import HelperScrollView from "./HelperScrollView";
+import { NO_SELECTION_LABEL } from "@/utils/constants";
 
 
 interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
@@ -31,7 +32,7 @@ interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
     optionsContainerScroll?: boolean,
     /** Default is ```false``` */
     multiselect?: boolean,
-    /** Default is "No selection" */
+    /** Default is {@link NO_SELECTION_LABEL} */
     noSelectionLabel?: string,
 }
 
@@ -46,7 +47,7 @@ export default function HelperSelect<OptionType>({
     optionsContainerHeight = 200,
     optionsContainerScroll = true,
     multiselect = false,
-    noSelectionLabel = "No selection",
+    noSelectionLabel = NO_SELECTION_LABEL,
     ...props
 }: Props<OptionType>) {
 

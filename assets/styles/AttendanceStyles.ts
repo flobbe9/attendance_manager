@@ -4,14 +4,9 @@ import { TextStyle, ViewStyle } from "react-native";
 import HS from "./helperStyles";
 
 
-type StyleType = ViewStyle;
-
-/** The padding a <List.Accordion> element has, which I can't get rid of */
-const accordionPadding = 5;
-
 
 export class AttendanceStyles {
-    static component: DynamicStyle<StyleType> = {
+    static component: DynamicStyle<ViewStyle> = {
         default: {
             height: "100%",
             padding: GLOBAL_SCREEN_PADDING,
@@ -28,6 +23,12 @@ export class AttendanceStyles {
             backgroundColor: "rgb(100, 200, 50)",
             borderRadius: BORDER_RADIUS,
             margin: 0
+        }
+    }
+
+    static scrollView: DynamicStyle<ViewStyle> = {
+        default: {
+            marginVertical: 40 // more than padding sothat keyboard does not cover bottom input
         }
     }
     
@@ -66,20 +67,6 @@ export class AttendanceStyles {
             maxHeight: 200,
             minHeight: 80,
         }
-    }
-
-    static examinerIconContainer: DynamicStyle<ViewStyle> = {
-        default: {
-            marginRight: 10,
-            marginTop: GLOBAL_SCREEN_PADDING + accordionPadding
-        }
-    }
-    
-    static examinerIcon: TextStyle = {
-        fontSize: 30,
-        flexShrink: 0,
-        marginRight: 5,
-        marginTop: 15
     }
 
     static notesContainer: DynamicStyle<ViewStyle> = {

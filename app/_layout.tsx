@@ -1,5 +1,5 @@
 import GlobalContextProvider from "@/components/context/GlobalContextProvider";
-import IndexContextProvider from "@/components/context/IndexContextProvider";
+import GlobalAttendanceContextProvider from "@/components/context/GlobalAttendanceContextProvider";
 import CustomSqliteProvider from "@/components/CustomSqliteProvider";
 import GlobalComponentProvider from "@/components/GlobalComponentProvider";
 import { logErrorFiltered, logWarnFiltered } from "@/utils/logUtils";
@@ -20,7 +20,7 @@ export default function layout() {
     return (
         <CustomSqliteProvider>
             <GlobalContextProvider>
-                <IndexContextProvider>
+                <GlobalAttendanceContextProvider>
                     <GlobalComponentProvider>
                         <Stack
                             screenOptions={{
@@ -31,7 +31,7 @@ export default function layout() {
                             {/* <Stack.Screen name="(attendance)" /> */}
                         </Stack>
                     </GlobalComponentProvider>
-                </IndexContextProvider>
+                </GlobalAttendanceContextProvider>
             </GlobalContextProvider>
         </CustomSqliteProvider>
     );

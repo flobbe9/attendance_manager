@@ -27,3 +27,5 @@ export type CheckboxStatus = "checked" | "indeterminate" | "unchecked";
 export const DRIZZLE_DB_CONFIG: DrizzleConfig<Record<string, never>>  = {
     casing: 'snake_case',
 }
+
+export const NO_SELECTION_LABEL = "No selection";

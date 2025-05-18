@@ -8,7 +8,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import Flex from "./helpers/Flex";
 import HelperText from "./helpers/HelperText";
-import { IndexContext } from "./context/IndexContextProvider";
+import { GlobalAttendanceContext } from "./context/GlobalAttendanceContextProvider";
 import { log } from "@/utils/logUtils";
 import { useExaminantRepository } from "@/hooks/repositories/useExaminantRepository";
 
@@ -23,7 +23,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function IndexTopBar({...props}: Props) {
 
-    const { allAttendanceEntities } = useContext(IndexContext);
+    const { allAttendanceEntities } = useContext(GlobalAttendanceContext);
 
     const { examinantRepository } = useExaminantRepository();
 
