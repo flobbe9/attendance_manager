@@ -3,7 +3,7 @@ import { HelperButtonStyles } from "@/assets/styles/HelperButtonStyles";
 import HS from "@/assets/styles/helperStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { forwardRef, Ref } from "react";
-import { ColorValue, GestureResponderEvent, Platform, TouchableNativeFeedback, View, ViewProps, ViewStyle } from "react-native";
+import { ActivityIndicator, ActivityIndicatorIOSProps, ColorValue, GestureResponderEvent, Platform, TouchableNativeFeedback, View, ViewProps, ViewStyle } from "react-native";
 import Flex from "./Flex";
 import HelperView from "./HelperView";
 import { DynamicStyle } from "@/abstract/DynamicStyle";
@@ -21,7 +21,10 @@ export interface HelperButtonProps extends HelperProps<ViewStyle>, ViewProps {
     /** For this component to be a child of a ```<Link>```. Is passed to ```<TouchableNativeFeedback>```  */
     onPress?: (event?: GestureResponderEvent) => void,
     /** Whether button children container is not flex. Default is ```false```. */
-    disableFlex?: boolean
+    disableFlex?: boolean,
+    /** Renders a loading indicator while `true`. Also disabled the button. Use `loadingProps` to style the indicator. Defualt is `false` */
+    loading?: boolean,
+    loadingProps?: ActivityIndicatorIOSProps
 }
 
 
@@ -36,6 +39,8 @@ export default forwardRef(function HelperButton(
         ripple,
         containerStyles,
         disableFlex = false,
+        loading = false,
+        loadingProps = {},
         onPress,
         onLayout,
         ...props
@@ -50,7 +55,7 @@ export default forwardRef(function HelperButton(
 
     function handlePress(event?: GestureResponderEvent): void {
 
-        if (!disabled && onPress)
+        if (!disabled && !loading && onPress)
             onPress(event);
 
     }
@@ -69,7 +74,7 @@ export default forwardRef(function HelperButton(
         >
             <TouchableNativeFeedback 
                 onPress={handlePress} 
-                background={ripple === null || disabled ? null : TouchableNativeFeedback.Ripple(ripple?.rippleBackground, false)}
+                background={ripple === null || disabled || loading ? null : TouchableNativeFeedback.Ripple(ripple?.rippleBackground, false)}
             >
                 <Flex
                     justifyContent="center"
@@ -78,10 +83,19 @@ export default forwardRef(function HelperButton(
                     ref={ref}
                     style={{
                         ...style as object,
-                        ...(disabled ? HS.disabled : {})
+                        ...(disabled || loading ? HS.disabled : {})
                     }}
                     {...otherProps}
                 >
+                    {
+                        loading && 
+                        <ActivityIndicator
+                            animating={true} 
+                            {...loadingProps}
+                            style={{...HelperButtonStyles.loadingIndicator, ...loadingProps.style as object}}
+                        />
+                    }
+                    
                     {children}
                 </Flex>
             </TouchableNativeFeedback>
