@@ -12,8 +12,10 @@ import { FontAwesome } from "@expo/vector-icons";
 import Flex from "../helpers/Flex";
 import HelperSelect from "../helpers/HelperSelect";
 import { CheckboxStatus, NO_SELECTION_LABEL } from "@/utils/constants";
-import { AttendanceContext } from "@/app/(attendance)/_layout";
+import { AttendanceContext } from "../context/AttendanceContextProvider";
 import { ExaminantEntity } from "@/backend/DbSchema";
+import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
+import { AttendanceService } from "@/backend/services/AttendanceService";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -26,17 +28,25 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function ExaminantInput({...props}: Props) {
 
+    const { currentAttendanceEntity } = useContext(GlobalAttendanceContext);
     const { updateCurrentAttendanceEntity } = useContext(AttendanceContext);
 
-    const [historyExaminantStatus, setHistoryExaminantStatus] = useState<CheckboxStatus>("unchecked");
-    const [musicExaminantStatus, setMusicExaminantStatus] = useState<CheckboxStatus>("unchecked");
-    const [educatorExaminantStatus, setEducatorExaminantStatus] = useState<CheckboxStatus>("unchecked");
+    const [historyExaminantStatus, setHistoryExaminantStatus] = useState<CheckboxStatus>("indeterminate");
+    const [musicExaminantStatus, setMusicExaminantStatus] = useState<CheckboxStatus>("indeterminate");
+    const [educatorExaminantStatus, setEducatorExaminantStatus] = useState<CheckboxStatus>("indeterminate");
     
     const [isHeadmaster, setIsHeadMaster] = useState(false);
     const [selectedHeadmaster, setSelectedHeadMaster] = useState<Headmaster | typeof NO_SELECTION_LABEL>();
 
     const componentName = "ExaminantInput";
     const { children, ...otherProps } = useHelperProps(props, componentName, ExaminantInputStyles.component);
+
+    const attendanceService = new AttendanceService();
+
+    useEffect(() => {
+        initializeStates();
+
+    }, []);
 
 
     useEffect(() => {
@@ -45,21 +55,41 @@ export default function ExaminantInput({...props}: Props) {
     }, [historyExaminantStatus, musicExaminantStatus, educatorExaminantStatus, isHeadmaster, selectedHeadmaster]);
 
 
+    function initializeStates(): void {
+
+        setHistoryExaminantStatus(attendanceService.hasExaminant(currentAttendanceEntity, "history") ? "checked" : "unchecked");
+        setMusicExaminantStatus(attendanceService.hasExaminant(currentAttendanceEntity, "music") ? "checked" : "unchecked");
+        setEducatorExaminantStatus(attendanceService.hasExaminant(currentAttendanceEntity, "educator") ? "checked" : "unchecked");
+        setIsHeadMaster(attendanceService.hasExaminant(currentAttendanceEntity, "headmaster"));
+    }
+
+
+    /**
+     * Update `currentAttendance` state
+     */
     function handleStatusChange(): void {
 
-        const examinants: ExaminantEntity[] = [];
+        const examinants: ExaminantEntity[] = currentAttendanceEntity.examinants;
 
         if (historyExaminantStatus === "checked")
-            examinants.push({role: "history"});
-        
+            attendanceService.addExaminantByRole(currentAttendanceEntity, "history");
+        else if (historyExaminantStatus === "unchecked")
+            attendanceService.removeExaminant(currentAttendanceEntity, "history");
+
         if (musicExaminantStatus === "checked")
-            examinants.push({role: "music"});
-        
+            attendanceService.addExaminantByRole(currentAttendanceEntity, "music");
+        else if (musicExaminantStatus === "unchecked")
+            attendanceService.removeExaminant(currentAttendanceEntity, "music");
+
         if (educatorExaminantStatus === "checked")
-            examinants.push({role: "educator"});
+            attendanceService.addExaminantByRole(currentAttendanceEntity, "educator");
+        else if (educatorExaminantStatus === "unchecked")
+            attendanceService.removeExaminant(currentAttendanceEntity, "educator");
         
         if (isHeadmaster)
-            examinants.push({role: "headmaster", fullName: selectedHeadmaster === NO_SELECTION_LABEL ? undefined : selectedHeadmaster});
+            attendanceService.addExaminant(currentAttendanceEntity, {role: "headmaster", fullName: selectedHeadmaster === NO_SELECTION_LABEL ? undefined : selectedHeadmaster});
+        else if (!isHeadmaster)
+            attendanceService.removeExaminant(currentAttendanceEntity, "headmaster");
 
         updateCurrentAttendanceEntity("examinants", examinants);
     }

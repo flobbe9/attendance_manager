@@ -1,10 +1,10 @@
 import HelperProps from "@/abstract/HelperProps";
 import { getSchoolSubjectBySchoolSubjectKey, getSchoolSubjectKeyBySchoolSubject, SCHOOL_SUBJECTS, SchoolSubject } from "@/abstract/SchoolSubject";
-import { AttendanceContext } from "@/app/(attendance)/_layout";
 import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
+import { AttendanceContext } from "../context/AttendanceContextProvider";
 import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 import Flex from "../helpers/Flex";
 import HelperSelect from "../helpers/HelperSelect";
@@ -28,12 +28,18 @@ export default function SchoolSubjectInput({...props}: Props) {
     const componentName = "SchoolSubjectInput";
     const { children, ...otherProps } = useDefaultProps(props, componentName);
 
+
+    function handleSelect(value: SchoolSubject): void {
+
+        updateCurrentAttendanceEntity("schoolSubject", value ? getSchoolSubjectKeyBySchoolSubject(value) : undefined);
+    }
     
+
     return (
         <HelperSelect 
             options={SCHOOL_SUBJECTS}
             selectedOptions={getSchoolSubjectBySchoolSubjectKey(currentAttendanceEntity.schoolSubject)}
-            setSelectedOptions={(value) => updateCurrentAttendanceEntity("schoolSubject", getSchoolSubjectKeyBySchoolSubject(value as SchoolSubject))}
+            setSelectedOptions={handleSelect}
             optionsContainerScroll={false}
             optionsContainerHeight={81}
             {...otherProps}

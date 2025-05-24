@@ -11,7 +11,15 @@ export default function GlobalAttendanceContextProvider({children}) {
 
     const [attendanceEntities, setAttendanceEntities] = useState<AttendanceEntity[]>([]);
     /** The attendance entity currently beeing edited. `undefined` if not on edit screen */
-    const [currentAttendanceEntity, setCurrentAttendanceEntity] = useState<AttendanceEntity | undefined>();
+    const [currentAttendanceEntity, setCurrentAttendanceEntity] = useState<AttendanceEntity | undefined>({
+        schoolSubject: undefined,
+        schoolclassMode: {
+            mode: "ownClass"
+        },
+        examinants: [],
+        schoolYear: undefined
+    });
+    
 
     const context = {
         currentAttendanceEntity, setCurrentAttendanceEntity,

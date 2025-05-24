@@ -1,6 +1,7 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
-import { AttendanceContext } from "@/app/(attendance)/_layout";
+import { AttendanceContext } from "../context/AttendanceContextProvider";
+;
 import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";

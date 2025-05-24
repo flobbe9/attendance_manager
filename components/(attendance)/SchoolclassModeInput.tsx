@@ -6,7 +6,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { RadioButton } from "react-native-paper";
 import HelperInput from "../helpers/HelperInput";
-import { AttendanceContext } from "@/app/(attendance)/_layout";
+import { AttendanceContext } from "../context/AttendanceContextProvider";
+;
 import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 import Flex from "../helpers/Flex";
 import HelperText from "../helpers/HelperText";
@@ -62,9 +63,17 @@ export default function SchoolclassModeInput({...props}: Props) {
     function updateSchoolclassMode(mode: SchoolclassMode): void {
 
         updateCurrentAttendanceEntity<SchoolclassModeEntity>("schoolclassMode", {
-            mode: getSchoolclassModeKeyBySchoolclassMode(mode),
-            attendanceId: currentAttendanceEntity.id
+            mode: getSchoolclassModeKeyBySchoolclassMode(mode)
         });
+    }
+
+
+    function updateSchoolclassModeNote(fullName: string): void {
+
+        updateCurrentAttendanceEntity<SchoolclassModeEntity>("schoolclassMode", {
+            ...currentAttendanceEntity.schoolclassMode,
+            fullName
+        })
     }
 
 
@@ -81,6 +90,7 @@ export default function SchoolclassModeInput({...props}: Props) {
                 placeholder="Ausbildungslehrer"
                 rendered={currentAttendanceEntity.schoolclassMode.mode === "othersClass"}
                 containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
+                onChangeText={(value) => updateSchoolclassModeNote(value)}
             />
         </HelperView>
     )

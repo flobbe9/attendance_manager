@@ -1,16 +1,14 @@
 import HelperProps from "@/abstract/HelperProps";
-import HelperView from "@/components/helpers/HelperView";
+import { MUSIC_LESSON_TOPICS, MusicLessonTopic } from "@/abstract/MusicLessonTopic";
+import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
+import { AttendanceContext } from "../context/AttendanceContextProvider";
+import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
-import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
-import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
-import { AttendanceEntity } from "@/backend/DbSchema";
-import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
-import { MUSIC_LESSON_TOPICS, MusicLessonTopic } from "@/abstract/MusicLessonTopic";
-import { AttendanceContext } from "@/app/(attendance)/_layout";
+;
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
