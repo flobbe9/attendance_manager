@@ -1,16 +1,16 @@
 import { log, logDebug, logError, logTrace } from "@/utils/logUtils";
-import { assertFalsyAndThrow, getRandomString, isAnyFalsy, isBooleanFalsy } from "@/utils/utils";
-import { and, eq, getTableName, notInArray, SQL } from "drizzle-orm";
-import { alias, SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
+import { assertFalsyAndThrow, isAnyFalsy } from "@/utils/utils";
+import { and, eq, notInArray, SQL } from "drizzle-orm";
+import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
 import { SQLiteDatabase } from "expo-sqlite";
 import { DbTransaction } from "../DbTransaction";
 import AbstractEntity from "./Abstract_Schema";
 import { Cascade } from "./Cascade";
 import { Dao } from "./Dao";
 import { Db } from "./Db";
+import { EntityRelationType } from "./EntityRelationType";
 import { FetchType } from "./FetchType";
 import { getFetchType, RelatedEntityDetail } from "./RelatedEntityDetail";
-import { EntityRelationType } from "./EntityRelationType";
 
 
 /**
@@ -149,6 +149,8 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
                         continue;
                     }
 
+                    await this.handleOrphanRemoval(owningEntityResult.id, relatedEntityDetail);
+
                     result = await this.persistCascadeRelatedEntity(relatedEntityValue, relatedEntityDetail.repository, owningEntityResult.id, transaction);
                     assertFalsyAndThrow(result);
                 }
@@ -203,11 +205,20 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
         assertFalsyAndThrow(id);
 
         if (!newRelatedEntityDetail || 
-            !Array.isArray(newRelatedEntityDetail.column.value) || // not one-to-may
+            // !Array.isArray(newRelatedEntityDetail.column.value) || // not one-to-may
             !newRelatedEntityDetail.orphanRemoval) // orphanremoval intentionally disabled 
             return;
 
-        const newRelatedEntityIds = newRelatedEntityDetail.column.value.map(entity => entity.id);
+        let newRelatedEntityIds: number[] = [];
+        // case: one-to-many
+        if (Array.isArray(newRelatedEntityDetail.column.value))
+            newRelatedEntityDetail.column.value.map(entity => entity.id ?? 0);
+        // case: one-to-one
+        else
+            newRelatedEntityIds.push(newRelatedEntityDetail.column.value.id ?? 0);
+
+        log(newRelatedEntityDetail.repository.getTableName(), newRelatedEntityIds)
+
         const relatedEntityRepository = newRelatedEntityDetail.repository;
         const relatedEntityTable = relatedEntityRepository.table;
 
