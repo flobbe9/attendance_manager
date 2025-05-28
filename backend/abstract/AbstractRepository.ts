@@ -1,4 +1,4 @@
-import { log, logDebug, logError, logTrace } from "@/utils/logUtils";
+import { logDebug, logError, logTrace } from "@/utils/logUtils";
 import { assertFalsyAndThrow, isAnyFalsy } from "@/utils/utils";
 import { and, eq, notInArray, SQL } from "drizzle-orm";
 import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
@@ -162,7 +162,12 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
             return owningEntityResult;
         };
 
-        return currentTransaction ? await transactionCallback() : await transaction.run(transactionCallback);
+        try {
+            return currentTransaction ? await transactionCallback() : await transaction.run(transactionCallback);
+
+        } catch (e) {
+            return null;
+        }
     }
         
 
@@ -216,8 +221,6 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
         // case: one-to-one
         else
             newRelatedEntityIds.push(newRelatedEntityDetail.column.value.id ?? 0);
-
-        log(newRelatedEntityDetail.repository.getTableName(), newRelatedEntityIds)
 
         const relatedEntityRepository = newRelatedEntityDetail.repository;
         const relatedEntityTable = relatedEntityRepository.table;

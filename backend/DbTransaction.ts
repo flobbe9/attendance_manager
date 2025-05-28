@@ -66,6 +66,7 @@ export class DbTransaction {
      * 
      * @param transactionCallback call all your db actions in here. Returns whatever you specify or `null` if error
      * @returns the `transactionCallback` value or `null` if callback is falsy
+     * @throws if error during `transactionCallback`
      */
     public async run<T>(transactionCallback: () => Promise<T | null>): Promise<T | null> {
 

@@ -1,10 +1,10 @@
-import { log, logError, logTrace } from "@/utils/logUtils";
+import { logError } from "@/utils/logUtils";
+import { assertFalsyAndThrow } from "@/utils/utils";
+import { getTableName } from "drizzle-orm";
 import { eq, SQL } from "drizzle-orm/sql";
 import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
 import AbstractEntity from "./Abstract_Schema";
 import { Db } from "./Db";
-import { assertFalsyAndThrow } from "@/utils/utils";
-import { getTableName } from "drizzle-orm";
 
 
 /**
@@ -106,13 +106,10 @@ export class Dao<E extends AbstractEntity> {
         // update if where has at least 1 result
         if (where) {
             const selectResults = await this.select(where);
-            if (selectResults.length) {
-                logTrace(" Update instead of insert")
+            if (selectResults.length)
                 return this.update(values, where);
-            }
         }
 
-        logTrace("Insert instead of update");
         return this.insert(values);
     }
 
