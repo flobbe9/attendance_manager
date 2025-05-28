@@ -15,8 +15,7 @@ export class SchoolclassModeService extends AbstractService<SchoolclassModeEntit
         if (!entityModified)
             return true;
 
-        return entityLastSaved.id !== entityModified.id || 
-            entityLastSaved.mode !== entityModified.mode ||
+        return entityLastSaved.mode !== entityModified.mode ||
             entityLastSaved.fullName !== entityModified.fullName ||
             entityLastSaved.attendanceId !== entityModified.attendanceId;
     }

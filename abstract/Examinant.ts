@@ -1,7 +1,7 @@
 import { SCHOOL_SUBJECTS, SchoolSubject_Key } from "./SchoolSubject";
 
 
-const examinantRoleKeysObject = {
+export const examinantRoleKeysObject = {
     "educator": SCHOOL_SUBJECTS.length,
     "headmaster": SCHOOL_SUBJECTS.length + 1
 }

@@ -1,7 +1,5 @@
 import { AttendanceEntity, ExaminantEntity, SchoolclassModeEntity } from "@/backend/DbSchema";
-import { ExaminantService } from "../ExaminantService";
 import { AttendanceService } from "../AttendanceService";
-import { SchoolclassModeService } from "../SchoolclassModeService";
 
 
 describe('isModified', () => {
@@ -107,11 +105,6 @@ describe('isModified', () => {
         
         expect(attendanceService.isModified(attendance1, attendance2)).toBe(false);
         
-        attendance2.id = 2;
-        expect(attendanceService.isModified(attendance1, attendance2)).toBe(true);
-        attendance2.id = 1;
-        expect(attendanceService.isModified(attendance1, attendance2)).toBe(false);
-
         attendance2.schoolSubject = "music";
         expect(attendanceService.isModified(attendance1, attendance2)).toBe(true);
         attendance2.schoolSubject = "history";
@@ -146,9 +139,9 @@ describe('isModified', () => {
         attendance2.examinants = [
             examinant1,
             {
-                id: 0, // altered id
+                id: examinant2.id,
                 role: examinant2.role,
-                attendanceId: examinant2.attendanceId,
+                attendanceId: 0,  // altered 
                 fullName: examinant2.fullName,
             }
         ]
@@ -160,14 +153,6 @@ describe('isModified', () => {
         attendance2.examinants = [examinant1];
         expect(attendanceService.isModified(attendance1, attendance2)).toBe(true);
         attendance2.examinants = [examinant1, examinant2];
-        expect(attendanceService.isModified(attendance1, attendance2)).toBe(false);
-                
-        // examinants order
-        examinant2.id = 0;
-        attendance2.examinants = [examinant2, examinant1];
-        expect(attendanceService.isModified(attendance1, attendance2)).toBe(true);
-        attendance2.examinants = [examinant1, examinant2];
-        examinant2.id = 1;
         expect(attendanceService.isModified(attendance1, attendance2)).toBe(false);
 
         schoolclassMode2.fullName = "namee";
@@ -202,9 +187,66 @@ describe('isModified', () => {
 
         expect(attendanceService.isModified(attendance1, attendance2)).toBe(false);
 
-        attendance2.date = new Date(1); // one more second
+        attendance2.date = new Date(1000); // one more second
         expect(attendanceService.isModified(attendance1, attendance2)).toBe(false);
-        attendance2.date = new Date(60 * 60 * 24) // one more day
+        attendance2.date = new Date(1000 * 60 * 60 * 24) // one more day        
         expect(attendanceService.isModified(attendance1, attendance2)).toBe(true);
+    })
+
+    test("should not be modified", () => {
+        const examinant1: ExaminantEntity = {
+            id: 1,
+            role: "history",
+            attendanceId: 1,
+            fullName: "name",
+        }
+        const examinant2: ExaminantEntity = {
+            id: 1, 
+            role: "history",
+            attendanceId: 1,
+            fullName: "name",
+        }
+
+        const schoolclassMode1: SchoolclassModeEntity = {
+            id: 1,
+            mode: "ownClass",
+            attendanceId: 1,
+            fullName: "name",
+        }
+        const schoolclassMode2: SchoolclassModeEntity = {
+            id: 1, 
+            mode: "ownClass",
+            attendanceId: 1,
+            fullName: "name",
+        }
+
+        const attendance1: AttendanceEntity = {
+            schoolSubject: "history",
+            schoolYear: "5",
+            examinants: [examinant1, examinant2],
+            schoolclassMode: schoolclassMode1,
+            id: 1,
+            note: "note1",
+            note2: "note2",
+            musicLessonTopic: "history",
+            date: new Date(0)    
+        }
+        const attendance2: AttendanceEntity = {
+            schoolSubject: "history",
+            schoolYear: "5",
+            examinants: [examinant1, examinant2] ,
+            schoolclassMode: schoolclassMode2,
+            id: 1,
+            note: "note1",
+            note2: "note2",
+            musicLessonTopic: "history",
+            date: new Date(0)
+        } 
+                
+        // examinants order
+        attendance2.examinants = [examinant2, examinant1];
+        expect(attendanceService.isModified(attendance1, attendance2)).toBe(false);
+        attendance2.examinants = [examinant1, examinant2];
+        expect(attendanceService.isModified(attendance1, attendance2)).toBe(false);
     })
 })

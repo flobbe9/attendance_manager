@@ -1004,15 +1004,20 @@ export function flatMapObject(obj: object): object {
  */
 export function cloneObj<T extends object>(obj: T, depth = -1, currentDepth = 0): T {
 
-    if (!obj || typeof obj !== "object")
+    if (!obj || typeof obj !== "object" || obj instanceof Date)
         return obj;
 
     // case: reached desired depth
     if (depth === currentDepth)
         return obj;
 
-    const copy = {...obj};
     currentDepth++;
+
+    if (Array.isArray(obj))
+        return [...obj].map(o => 
+            cloneObj(o, depth, currentDepth)) as T;
+
+    const copy = {...obj};
 
     Object.entries(copy)
         .forEach(([key, value]) => {

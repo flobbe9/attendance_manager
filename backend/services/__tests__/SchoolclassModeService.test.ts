@@ -13,9 +13,9 @@ describe('isModified', () => {
             fullName: "name",
         }
         const schoolclassMode2: SchoolclassModeEntity = {
-            id: 2, 
+            id: 1, 
             mode: "ownClass",
-            attendanceId: 1,
+            attendanceId: 2,
             fullName: "name",
         }
         
@@ -39,11 +39,6 @@ describe('isModified', () => {
         
         expect(schoolclassModeService.isModified(schoolclassMode1, schoolclassMode2)).toBe(false);
         
-        schoolclassMode2.id = 2;
-        expect(schoolclassModeService.isModified(schoolclassMode1, schoolclassMode2)).toBe(true);
-        schoolclassMode2.id = 1;
-        expect(schoolclassModeService.isModified(schoolclassMode1, schoolclassMode2)).toBe(false);
-
         schoolclassMode2.mode = "othersClass";
         expect(schoolclassModeService.isModified(schoolclassMode1, schoolclassMode2)).toBe(true);
         schoolclassMode2.mode = "ownClass";

@@ -1,5 +1,8 @@
+import { ExaminantRole_Key, examinantRoleKeysObject } from "@/abstract/Examinant";
+import { schoolSubjectKeysObj } from "@/abstract/SchoolSubject";
 import { AbstractService } from "../abstract/AbstractService";
 import { ExaminantEntity } from "../DbSchema";
+import { log } from "@/utils/logUtils";
 
 
 /**
@@ -7,7 +10,6 @@ import { ExaminantEntity } from "../DbSchema";
  */
 export class ExaminantService extends AbstractService<ExaminantEntity> {
 
-    // TODO: test this
     public isModified(entityLastSaved: ExaminantEntity, entityModified: ExaminantEntity): boolean {
 
         if (!entityLastSaved)
@@ -16,8 +18,7 @@ export class ExaminantService extends AbstractService<ExaminantEntity> {
         if (!entityModified)
             return true;
 
-        return entityLastSaved.id !== entityModified.id || 
-            entityLastSaved.role !== entityModified.role ||
+        return entityLastSaved.role !== entityModified.role ||
             entityLastSaved.fullName !== entityModified.fullName ||
             entityLastSaved.attendanceId !== entityModified.attendanceId;
     }
@@ -30,7 +31,6 @@ export class ExaminantService extends AbstractService<ExaminantEntity> {
      * @returns true if only one list is falsy or the `length`s don't match or the order has changed or at least one entity {@link isModified} 
      * compared to the entity at the same index of the other array
      */
-    // TODO: test this
     public areModified(entitiesLastSaved: ExaminantEntity[], entitiesModified: ExaminantEntity[]): boolean {
 
         if (!entitiesLastSaved)
@@ -42,8 +42,32 @@ export class ExaminantService extends AbstractService<ExaminantEntity> {
         if (entitiesLastSaved.length !== entitiesModified.length)
             return true;
 
-        // find at least one modified
-        return !!entitiesLastSaved
-            .find((entityLastSaved, i) => this.isModified(entityLastSaved, entitiesModified[i]));
+        const entitiesLastSavedSorted = this.sortByRole(entitiesLastSaved);
+        const entitiesModifiedSorted = this.sortByRole(entitiesModified);
+
+        return !!entitiesLastSavedSorted
+            .find((entityLastSaved, i) => this.isModified(entityLastSaved, entitiesModifiedSorted[i]));
+    }
+
+
+    // TODO: write tests
+    public sortByRole(examinantEntities: ExaminantEntity[]): ExaminantEntity[] {
+
+        if (!examinantEntities)
+            return [];
+
+        return [...examinantEntities]
+            .sort((examinant1, examinant2) => {
+                const examinant1Index = this.getExaminantSortIndexByRole(examinant1.role);
+                const examinant2Index = this.getExaminantSortIndexByRole(examinant2.role);
+
+                return examinant1Index - examinant2Index;
+            })
+    }
+
+
+    private getExaminantSortIndexByRole(role: ExaminantRole_Key): number {
+
+        return schoolSubjectKeysObj[role] ?? examinantRoleKeysObject[role] ?? -1;
     }
 }

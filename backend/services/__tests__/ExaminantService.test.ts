@@ -13,9 +13,9 @@ describe('isModified', () => {
             fullName: "name",
         }
         const examinant2: ExaminantEntity = {
-            id: 2, 
+            id: 1, 
             role: "history",
-            attendanceId: 1,
+            attendanceId: 2,
             fullName: "name",
         }
         
@@ -39,11 +39,6 @@ describe('isModified', () => {
         
         expect(examinantService.isModified(examinant1, examinant2)).toBe(false);
         
-        examinant2.id = 2;
-        expect(examinantService.isModified(examinant1, examinant2)).toBe(true);
-        examinant2.id = 1;
-        expect(examinantService.isModified(examinant1, examinant2)).toBe(false);
-
         examinant2.role = "music";
         expect(examinantService.isModified(examinant1, examinant2)).toBe(true);
         examinant2.role = "history";
