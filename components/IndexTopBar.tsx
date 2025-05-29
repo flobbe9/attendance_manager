@@ -1,16 +1,16 @@
 import HelperProps from "@/abstract/HelperProps";
+import { SchoolSubject_Key } from "@/abstract/SchoolSubject";
 import { IndexStyles } from "@/assets/styles/IndexStyles";
 import { IndexTopBarStyles } from "@/assets/styles/IndexTopBarStyles";
+import { AttendanceService } from "@/backend/services/AttendanceService";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { HISTORY_COLOR, MUSIC_COLOR } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext, useEffect, useState } from "react";
-import { ViewProps, ViewStyle } from "react-native";
+import { ColorValue, ViewProps, ViewStyle } from "react-native";
+import { GlobalAttendanceContext } from "./context/GlobalAttendanceContextProvider";
 import Flex from "./helpers/Flex";
 import HelperText from "./helpers/HelperText";
-import { GlobalAttendanceContext } from "./context/GlobalAttendanceContextProvider";
-import { log } from "@/utils/logUtils";
-import { useExaminantRepository } from "@/hooks/repositories/useExaminantRepository";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -25,83 +25,79 @@ export default function IndexTopBar({...props}: Props) {
 
     const { allAttendanceEntities } = useContext(GlobalAttendanceContext);
 
-    const { examinantRepository } = useExaminantRepository();
-
     const [numEducators, setNumEducators] = useState<number | null>(null);
+    const [numMusicExaminants, setNumMusicExaminants] = useState(0);
+    const [numHistoryExaminants, setNumHistoryExaminants] = useState(0);
 
     const componentName = "IndexTopBar";
     const { children, ...otherProps } = useDefaultProps(props, componentName, IndexTopBarStyles.component);
 
+    const attendanceService = new AttendanceService();
+
+
     useEffect(() => {
+        setNumEducators(countEducatorExaminants());
+        setNumMusicExaminants(countExaminantsWithSameSubject("music"));
+        setNumHistoryExaminants(countExaminantsWithSameSubject("history"));
+
     }, [allAttendanceEntities]);
 
-    useEffect(() => {
-        updateNumEducators();
-
-    }, []);
-
     
-    async function updateNumEducators(): Promise<void> {
+    /**
+     * @returns the number of attendance entities having at least one educator examinant
+     */
+    function countEducatorExaminants(): number {
 
-        setNumEducators(await examinantRepository.countByRole("educator") ?? null);
+        return allAttendanceEntities
+            .filter(attendanceEntity => 
+                attendanceService.hasExaminant(attendanceEntity, "educator"))
+            .length;
     }
 
 
-    // subject examinants
-        // find all examinants where attendance.school_subject == examinant role
+    /**
+     * @param schoolSubject to match attendanceEntity and examinants agains
+     * @returns the number of attendanceEntities with `schoolSubject` that also have at least one examinant with `role === schoolSubject`
+     */
+    function countExaminantsWithSameSubject(schoolSubject: SchoolSubject_Key): number {
+
+        if (!schoolSubject)
+            return NaN;
+
+        return allAttendanceEntities
+            .filter(attendanceEntity => 
+                attendanceEntity.schoolSubject === schoolSubject && // is attendance with that subject
+                attendanceService.hasExaminant(attendanceEntity, schoolSubject)) // has examinant for that subject
+            .length;
+    }
+
+
+    function ExaminantCount(props: {numExaminants: number, maxExamiants: number, color: ColorValue}) {
+
+        const {numExaminants, maxExamiants, color} = props;
+
+        return (
+            <Flex 
+                dynamicStyle={IndexTopBarStyles.ExaminantCount} 
+                alignItems="center"
+            >
+                <FontAwesome style={{color}} name="user" />
+                <HelperText>{numExaminants ?? '-'}/{maxExamiants}</HelperText>
+            </Flex>
+        )
+    }
+
 
     return ( 
         <Flex 
             justifyContent="flex-end" 
-            dynamicStyle={IndexStyles.statusBarContainer}
             {...otherProps}
         >
             <HelperText>Erledigt:</HelperText>
 
-            <Flex 
-                style={{
-                    marginStart: 10
-                }}
-                alignItems="center"
-            >
-                <FontAwesome
-                    style={{
-                        color: MUSIC_COLOR,
-                    }}
-                    name="user" 
-                />
-                <HelperText>1/9</HelperText>
-            </Flex>
-
-            <Flex 
-                style={{
-                    marginStart: 10
-                }}
-                alignItems="center"
-            >
-                <FontAwesome
-                    style={{
-                        color: HISTORY_COLOR,
-                    }}
-                    name="user" 
-                />
-                <HelperText>2/9</HelperText>
-            </Flex>
-
-            <Flex 
-                style={{
-                    marginStart: 10
-                }}
-                alignItems="center"
-            >
-                <FontAwesome
-                    style={{
-                        color: "black",
-                    }}
-                    name="user" 
-                />
-                <HelperText>{numEducators ?? '-'}/8</HelperText>
-            </Flex>
+            <ExaminantCount numExaminants={numMusicExaminants} maxExamiants={9} color={MUSIC_COLOR} />
+            <ExaminantCount numExaminants={numHistoryExaminants} maxExamiants={9} color={HISTORY_COLOR} />
+            <ExaminantCount numExaminants={numEducators} maxExamiants={8} color={"black"} />
         </Flex>
     )
 }

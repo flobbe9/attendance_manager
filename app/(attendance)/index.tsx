@@ -21,14 +21,13 @@ import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useSubjectColor } from "@/hooks/useSubjectColor";
-import { log, logDebug } from "@/utils/logUtils";
-import { BORDER_RADIUS } from "@/utils/styleConstants";
+import { logDebug } from "@/utils/logUtils";
+import { BORDER_RADIUS, FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext, useEffect, useState } from "react";
 import { ViewStyle } from "react-native";
-import { ActivityIndicator } from "react-native-paper";
 import DateInput from './../../components/(attendance)/DateInput';
-import { useDynamicStyle } from "@/hooks/useDynamicStyle";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 
 
 /**
@@ -53,6 +52,8 @@ export default function index() {
 
     const [areNotesVisible, setAreNotesVisible] = useState(false);
 
+    const { allStyles: {mb_2}} = useResponsiveStyles();
+
     const { animatedStyle: animatedArrowIconRotation } = useAnimatedStyle(
         [0, 180],
         ["0deg", "-180deg"],
@@ -66,8 +67,7 @@ export default function index() {
 
 
     useEffect(() => {
-        const attendanceEntityForId = initializeCurrentAttendanceEntity();
-        updateLastSavedAttendanceEntity(attendanceEntityForId);
+        updateLastSavedAttendanceEntity(initializeCurrentAttendanceEntity());
 
     }, []);
 
@@ -75,7 +75,7 @@ export default function index() {
     useEffect(() => {
         // case: last saved instance has been instantiated
         if (lastSavedAttendanceEntity && currentAttendanceEntity)
-            setModified(attendanceService.isModified(currentAttendanceEntity, lastSavedAttendanceEntity));
+            setModified(attendanceService.isModified(lastSavedAttendanceEntity, currentAttendanceEntity));
 
     }, [currentAttendanceEntity, lastSavedAttendanceEntity]);
 
@@ -89,11 +89,14 @@ export default function index() {
     }, [lastSavedAttendanceEntity, currentAttendanceEntity])
 
 
-    // case: no currentAttendanceEntity yet, should not happen
+    // case: no currentAttendanceEntity yet, should not happen though
     if (!currentAttendanceEntity)
         return (
-            <ScreenWrapper style={{...HelperStyles.fullHeight, ...HelperStyles.flexCenterCenter}}>
-                <ActivityIndicator animating={true} />
+            <ScreenWrapper
+                style={{...AttendanceStyles.suspenseContainer}}
+                contentContainerStyle={{...HelperStyles.centerNoFlex}}
+            >
+                <FontAwesome name="hourglass" size={FONT_SIZE} style={{...mb_2}} />
                 <HelperText>Lade Unterrichtsbesuch...</HelperText>
             </ScreenWrapper>
         );
@@ -101,7 +104,7 @@ export default function index() {
 
     function initializeCurrentAttendanceEntity(): AttendanceEntity | null {
 
-        let attendanceEntityForId;
+        let attendanceEntityForId: AttendanceEntity;
 
         if (currentAttendanceEntityId <= 0)
             attendanceEntityForId = AttendanceService.getEmptyInstance()

@@ -11,7 +11,6 @@ import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import IndexTopBar from "@/components/IndexTopBar";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import { getRandomString } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import { Link } from "expo-router";
@@ -66,9 +65,9 @@ export default function index() {
             return [];
 
         return attendanceEntities
-            .map(attendanceEntity => 
+            .map((attendanceEntity, i) => 
                 <AttendanceLink 
-                    key={getRandomString()} // make sure this is rerendered on screen enter 
+                    key={i}
                     attendanceEntity={attendanceEntity} 
                     onTouchStart={() => setCurrentAttendanceEntityId(attendanceEntity.id)}
                 />
@@ -100,7 +99,7 @@ export default function index() {
                 </HelperScrollView>
 
                 <Link 
-                    href={"/(attendance)"} 
+                    href={"/(attendance)"}  
                     asChild 
                     onPress={() => setCurrentAttendanceEntityId(-1)}
                 >
