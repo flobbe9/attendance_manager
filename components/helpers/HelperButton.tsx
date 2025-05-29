@@ -10,6 +10,7 @@ import { DynamicStyle } from "@/abstract/DynamicStyle";
 import { useDynamicStyle } from "@/hooks/useDynamicStyle";
 import { log } from "@/utils/logUtils";
 import { AnimatedFAB } from "react-native-paper";
+import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 
 
 export interface HelperButtonProps extends HelperProps<ViewStyle>, ViewProps {
@@ -53,11 +54,19 @@ export default forwardRef(function HelperButton(
 
     const { currentStyles: componentStyles, eventHandlers: containerEventHandlers } = useDynamicStyle(containerStyles);
 
+    const { animatedStyle: anmimatedOpacity } = useAnimatedStyle(
+        [50, 100],
+        [0.5, 1],
+        {
+            reverse: disabled || loading,
+            startReversed: !disabled && !loading
+        }
+    )
+
     function handlePress(event?: GestureResponderEvent): void {
 
         if (!disabled && !loading && onPress)
             onPress(event);
-
     }
 
     return (
@@ -83,7 +92,7 @@ export default forwardRef(function HelperButton(
                     ref={ref}
                     style={{
                         ...style as object,
-                        ...(disabled || loading ? HS.disabled : {})
+                        opacity: anmimatedOpacity
                     }}
                     {...otherProps}
                 >

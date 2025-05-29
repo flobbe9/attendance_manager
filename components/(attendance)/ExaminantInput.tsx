@@ -1,21 +1,20 @@
+import { Headmaster, HEADMASTERS } from "@/abstract/Headmaster";
 import HelperProps from "@/abstract/HelperProps";
+import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
 import { ExaminantInputStyles } from "@/assets/styles/ExaminantInputStyles";
+import { ExaminantEntity } from "@/backend/DbSchema";
+import { AttendanceService } from "@/backend/services/AttendanceService";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
-import React, { useContext, useEffect, useState } from "react";
-import { ViewProps, ViewStyle } from "react-native";
-import HelperText from "../helpers/HelperText";
-import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
-import { Headmaster, HEADMASTERS } from "@/abstract/Headmaster";
+import { CheckboxStatus, NO_SELECTION_LABEL } from "@/utils/constants";
 import { HISTORY_COLOR, MUSIC_COLOR } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
+import React, { useContext, useEffect, useState } from "react";
+import { ViewProps, ViewStyle } from "react-native";
+import { AttendanceContext } from "../context/AttendanceContextProvider";
 import Flex from "../helpers/Flex";
 import HelperSelect from "../helpers/HelperSelect";
-import { CheckboxStatus, NO_SELECTION_LABEL } from "@/utils/constants";
-import { AttendanceContext } from "../context/AttendanceContextProvider";
-import { ExaminantEntity } from "@/backend/DbSchema";
-import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
-import { AttendanceService } from "@/backend/services/AttendanceService";
+import HelperText from "../helpers/HelperText";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -28,8 +27,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function ExaminantInput({...props}: Props) {
 
-    const { currentAttendanceEntity } = useContext(GlobalAttendanceContext);
-    const { updateCurrentAttendanceEntity } = useContext(AttendanceContext);
+    const { updateCurrentAttendanceEntity, currentAttendanceEntity } = useContext(AttendanceContext);
 
     const [historyExaminantStatus, setHistoryExaminantStatus] = useState<CheckboxStatus>("indeterminate");
     const [musicExaminantStatus, setMusicExaminantStatus] = useState<CheckboxStatus>("indeterminate");
@@ -38,10 +36,14 @@ export default function ExaminantInput({...props}: Props) {
     const [isHeadmaster, setIsHeadMaster] = useState(false);
     const [selectedHeadmaster, setSelectedHeadMaster] = useState<Headmaster | typeof NO_SELECTION_LABEL>();
 
+    /** Indicates that all checkbox states have been initialized with `currentAttendanceEntity` values  */
+    const [initializedCheckboxes, setInitializedCheckboxes] = useState(false);
+
     const componentName = "ExaminantInput";
     const { children, ...otherProps } = useHelperProps(props, componentName, ExaminantInputStyles.component);
 
     const attendanceService = new AttendanceService();
+
 
     useEffect(() => {
         initializeStates();
@@ -50,7 +52,9 @@ export default function ExaminantInput({...props}: Props) {
 
 
     useEffect(() => {
-        handleStatusChange();
+        // case: states initialized already
+        if (initializedCheckboxes)
+            updateCurrentAttendanceEntityExaminants();
 
     }, [historyExaminantStatus, musicExaminantStatus, educatorExaminantStatus, isHeadmaster, selectedHeadmaster]);
 
@@ -60,14 +64,19 @@ export default function ExaminantInput({...props}: Props) {
         setHistoryExaminantStatus(attendanceService.hasExaminant(currentAttendanceEntity, "history") ? "checked" : "unchecked");
         setMusicExaminantStatus(attendanceService.hasExaminant(currentAttendanceEntity, "music") ? "checked" : "unchecked");
         setEducatorExaminantStatus(attendanceService.hasExaminant(currentAttendanceEntity, "educator") ? "checked" : "unchecked");
-        setIsHeadMaster(attendanceService.hasExaminant(currentAttendanceEntity, "headmaster"));
+        
+        const [headMasterExaminant, headMasterExaminantIndex] = attendanceService.getExaminantByRole(currentAttendanceEntity, "headmaster");
+        setIsHeadMaster(!!headMasterExaminant);
+        setSelectedHeadMaster(headMasterExaminant ? (headMasterExaminant.fullName as Headmaster | null) : NO_SELECTION_LABEL);
+
+        // call this last
+        setTimeout(() => {
+            setInitializedCheckboxes(true);
+        }, 500); // wait for other states to activate useEffect
     }
 
 
-    /**
-     * Update `currentAttendance` state
-     */
-    function handleStatusChange(): void {
+    function updateCurrentAttendanceEntityExaminants(): void {
 
         const examinants: ExaminantEntity[] = currentAttendanceEntity.examinants;
 
@@ -87,7 +96,7 @@ export default function ExaminantInput({...props}: Props) {
             attendanceService.removeExaminant(currentAttendanceEntity, "educator");
         
         if (isHeadmaster)
-            attendanceService.addExaminant(currentAttendanceEntity, {role: "headmaster", fullName: selectedHeadmaster === NO_SELECTION_LABEL ? undefined : selectedHeadmaster});
+            attendanceService.addOrUpdateExaminantByRole(currentAttendanceEntity, {role: "headmaster", fullName: selectedHeadmaster === NO_SELECTION_LABEL ? null : selectedHeadmaster});
         else if (!isHeadmaster)
             attendanceService.removeExaminant(currentAttendanceEntity, "headmaster");
 

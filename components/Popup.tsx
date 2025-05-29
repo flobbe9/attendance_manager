@@ -7,7 +7,8 @@ import HelperView from "@/components/helpers/HelperView";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import React, { ReactNode, useContext, useState } from "react";
+import { log } from "@/utils/logUtils";
+import React, { ReactNode, useContext, useEffect, useState } from "react";
 import { GestureResponderEvent, ViewProps, ViewStyle } from "react-native";
 
 
@@ -47,16 +48,34 @@ export default function Popup({
     const componentName = "Popup";
     const { children, style, ...otherProps } = useDefaultProps(props, componentName, PopupStyles.component);
 
-    const { animatedStyle } = useAnimatedStyle(
+    const { animatedStyle, animate } = useAnimatedStyle(
         [0, 100],
         [0, 1],
         {
             reverse: !visible,
-            onComplete: () => setComponentZIndex(visible ? 0 : -1)
-        }
+            animationDeps: null
+        },
     );
 
     const { allStyles: { pe_1 }, parseResponsiveStyleToStyle: pR} = useResponsiveStyles();
+
+
+    useEffect(() => {
+        handleFadeToggle();
+        
+    }, [visible]);
+
+
+    async function handleFadeToggle(): Promise<void> {
+
+        if (visible)
+            setComponentZIndex(0);
+
+        await animate(!visible);
+
+        if (!visible)
+            setComponentZIndex(-1);
+    }
 
 
     /**

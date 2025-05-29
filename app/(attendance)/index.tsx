@@ -1,13 +1,16 @@
-import DefaultProps from "@/abstract/DefaultProps";
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { SchoolclassMode } from "@/abstract/SchoolclassMode";
 import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
 import "@/assets/styles/AttendanceStyles.ts";
-import { AttendanceEntity } from "@/backend/entities/Attendance_Schema";
+import HelperStyles from "@/assets/styles/helperStyles";
+import { AttendanceEntity } from "@/backend/DbSchema";
+import { AttendanceService } from "@/backend/services/AttendanceService";
 import ExaminantInput from "@/components/(attendance)/ExaminantInput";
+import SchoolclassModeInput from "@/components/(attendance)/SchoolclassModeInput";
 import SchoolSubjectInput from "@/components/(attendance)/SchoolSubjectInput";
 import SchoolYearInput from "@/components/(attendance)/SchoolYearInput";
+import TopBar from "@/components/(attendance)/TopBar";
 import TopicInput from "@/components/(attendance)/TopicInput";
+import { AttendanceContext } from "@/components/context/AttendanceContextProvider";
 import { GlobalAttendanceContext } from "@/components/context/GlobalAttendanceContextProvider";
 import Flex from "@/components/helpers/Flex";
 import HelperButton from "@/components/helpers/HelperButton";
@@ -17,22 +20,15 @@ import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
-import { useDefaultProps } from "@/hooks/useDefaultProps";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { useSubjectColor } from "@/hooks/useSubjectColor";
-import { log } from "@/utils/logUtils";
-import { BORDER_RADIUS, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { log, logDebug } from "@/utils/logUtils";
+import { BORDER_RADIUS } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext, useEffect, useState } from "react";
-import { ViewProps, ViewStyle } from "react-native";
-import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
+import { ViewStyle } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
 import DateInput from './../../components/(attendance)/DateInput';
-import SchoolclassModeInput from "@/components/(attendance)/SchoolclassModeInput";
-
-
-interface Props extends DefaultProps<ViewStyle>, ViewProps {
-
-}
+import { useDynamicStyle } from "@/hooks/useDynamicStyle";
 
 
 /**
@@ -40,23 +36,20 @@ interface Props extends DefaultProps<ViewStyle>, ViewProps {
  * 
  * @since 0.0.1
  */
-export default function index(props: Props) {
+export default function index() {
 
+    const { currentAttendanceEntityId, allAttendanceEntities } = useContext(GlobalAttendanceContext);
+    const { 
+        currentAttendanceEntity, 
+        setCurrentAttendanceEntity, 
+        updateCurrentAttendanceEntity, 
+        lastSavedAttendanceEntity,
+        updateLastSavedAttendanceEntity,
+        setModified
+    } = useContext(AttendanceContext);
+    
 
-    const { currentAttendanceEntity, setCurrentAttendanceEntity } = useContext(GlobalAttendanceContext);
-    // get current attendance id from global state
-    // on load
-        // load current attendance
-        // if id null     
-            // just set to empty object
-        // pass attendance down to index context
-
-    // modified
-
-    // 
-
-    const { allStyles: { pe_2 }, parseResponsiveStyleToStyle: pr } = useResponsiveStyles();
-    const { transparentColor: subjectColor} = useSubjectColor(currentAttendanceEntity.schoolSubject, "rgb(240, 240, 240)");
+    const { transparentColor: subjectColor} = useSubjectColor(currentAttendanceEntity?.schoolSubject, "rgb(240, 240, 240)");
 
     const [areNotesVisible, setAreNotesVisible] = useState(false);
 
@@ -68,36 +61,76 @@ export default function index(props: Props) {
         }
     )
 
-    const componentName = "Attendance";
-    const { children, style, ...otherProps } = useDefaultProps(props, componentName, AttendanceStyles.component);
-
     const numHelperInputLines = 20;
+    const attendanceService = new AttendanceService();
 
 
     useEffect(() => {
-        log(currentAttendanceEntity.note)
-    }, [currentAttendanceEntity])
+        const attendanceEntityForId = initializeCurrentAttendanceEntity();
+        updateLastSavedAttendanceEntity(attendanceEntityForId);
 
-
-
-    function handleSavePress(): void {
+    }, []);
 
         
+    useEffect(() => {
+        // case: last saved instance has been instantiated
+        if (lastSavedAttendanceEntity && currentAttendanceEntity)
+            setModified(attendanceService.isModified(currentAttendanceEntity, lastSavedAttendanceEntity));
+
+    }, [currentAttendanceEntity, lastSavedAttendanceEntity]);
+
+
+    useEffect(() => {
+        // if (lastSavedAttendanceEntity && currentAttendanceEntity) {
+        //     log("last saved: ", lastSavedAttendanceEntity.examinants)
+        //     log("current: ", currentAttendanceEntity.examinants)
+        //     log("modified: ", new AttendanceService().isModified(lastSavedAttendanceEntity, currentAttendanceEntity))
+        // }
+    }, [lastSavedAttendanceEntity, currentAttendanceEntity])
+
+
+    // case: no currentAttendanceEntity yet, should not happen
+    if (!currentAttendanceEntity)
+        return (
+            <ScreenWrapper style={{...HelperStyles.fullHeight, ...HelperStyles.flexCenterCenter}}>
+                <ActivityIndicator animating={true} />
+                <HelperText>Lade Unterrichtsbesuch...</HelperText>
+            </ScreenWrapper>
+        );
+
+
+    function initializeCurrentAttendanceEntity(): AttendanceEntity | null {
+
+        let attendanceEntityForId;
+
+        if (currentAttendanceEntityId <= 0)
+            attendanceEntityForId = AttendanceService.getEmptyInstance()
+            
+        else
+            attendanceEntityForId = allAttendanceEntities
+               .find(attendanceEntity => attendanceEntity.id === currentAttendanceEntityId);
+
+        if (!attendanceEntityForId) {
+            logDebug("Failed to load current attendance entity for current id " + currentAttendanceEntityId);
+            return null;
+        }
+
+        setCurrentAttendanceEntity(attendanceEntityForId);
+
+        return attendanceEntityForId;
     }
 
 
-    function updateCurrentAttendanceEntity(prop: keyof AttendanceEntity, value: ValueOf<AttendanceEntity>): void {
-        
-        setCurrentAttendanceEntity({
-            ...currentAttendanceEntity,
-            [prop]: value
-        })
-    }
+
+
+
+
 
 
     // TODO: 
-        // confirm leave if unsaved changes
-        // component for each input
+        // clean up inline styles
+        // screen leave
+            // confirm leave if unsaved changes
         // validation
             // flash input as invalid (?)
                 // flash tooltip(?)
@@ -112,22 +145,21 @@ export default function index(props: Props) {
             // consider tablet
             // consider full screen
         // fix icons
+        // on change
+            // validate
+            // if valid
+                // update modified
+                    // compare all input values to last saved
+
 
     return (
         <ScreenWrapper 
             style={{
+                ...AttendanceStyles.component.default,
                 backgroundColor: subjectColor,
-                ...style as object
             }} 
-            {...otherProps}
         >
-            <Flex justifyContent="flex-end" dynamicStyle={AttendanceStyles.topBar}>
-                {/* Save button */}
-                <HelperButton dynamicStyle={AttendanceStyles.saveButton} onPress={handleSavePress}>
-                    <FontAwesome name="save" style={{...pr({pe_2})}} />
-                    <HelperText>Save</HelperText>
-                </HelperButton>
-            </Flex>
+            <TopBar />
 
             <HelperScrollView dynamicStyle={AttendanceStyles.scrollView}>
                 <SchoolSubjectInput dynamicStyle={AttendanceStyles.inputContainer} />
@@ -143,7 +175,7 @@ export default function index(props: Props) {
 
                 <ExaminantInput 
                     dynamicStyle={AttendanceStyles.inputContainer} 
-                    style={{zIndex: 2 /* for select container */}}
+                    style={{zIndex: 1 /* for select container */}}
                 />
 
                 <Flex justifyContent="center" dynamicStyle={AttendanceStyles.notesContainer}>

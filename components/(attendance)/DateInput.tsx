@@ -5,7 +5,6 @@ import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
-import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 import DatePicker from "../helpers/DatePicker";
 import HelperText from "../helpers/HelperText";
 
@@ -20,8 +19,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function DateInput({...props}: Props) {
 
-    const { currentAttendanceEntity } = useContext(GlobalAttendanceContext);
-    const { updateCurrentAttendanceEntity } = useContext(AttendanceContext);
+    const { updateCurrentAttendanceEntity, currentAttendanceEntity } = useContext(AttendanceContext);
 
     const componentName = "DateInput";
     const { children, ...otherProps } = useHelperProps(props, componentName);

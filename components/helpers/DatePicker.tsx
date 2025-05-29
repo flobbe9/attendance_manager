@@ -9,6 +9,8 @@ import { DatePickerModal } from "react-native-paper-dates";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 import HelperButton from "./HelperButton";
 import HelperText from "./HelperText";
+import { log } from "@/utils/logUtils";
+import { formatDateGermanNoTime } from "@/utils/projectUtils";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -44,9 +46,11 @@ export default forwardRef(function DatePicker(
 
     function DefaultChildren(): JSX.Element {
 
+        const dateString = date ?  formatDateGermanNoTime(date) :  'NA';
+
         return (
             <HelperButton dynamicStyle={buttonStyles}>
-                <HelperText>{`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}</HelperText>        
+                <HelperText>{dateString}</HelperText>        
             </HelperButton>
         );  
     }
@@ -77,6 +81,7 @@ export default forwardRef(function DatePicker(
     return (
         <Fragment>
             <DatePickerModal
+                startWeekOnMonday
                 locale={locale}
                 mode="single"
                 visible={isVisible}

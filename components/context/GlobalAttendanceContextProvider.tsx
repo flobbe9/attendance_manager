@@ -10,19 +10,14 @@ import { createContext, useState } from "react";
 export default function GlobalAttendanceContextProvider({children}) {
 
     const [attendanceEntities, setAttendanceEntities] = useState<AttendanceEntity[]>([]);
-    /** The attendance entity currently beeing edited. `undefined` if not on edit screen */
-    const [currentAttendanceEntity, setCurrentAttendanceEntity] = useState<AttendanceEntity | undefined>({
-        schoolSubject: undefined,
-        schoolclassMode: {
-            mode: "ownClass"
-        },
-        examinants: [],
-        schoolYear: undefined
-    });
-    
+    /** 
+     * The attendance entities' id currently beeing edited. Only meant for initializing the `currentAttendanceEntity`. 
+     * Set to 0 or negative num to indicate to initialize a new attendanceEntity
+     */
+    const [currentAttendanceEntityId, setCurrentAttendanceEntityId] = useState<number | null>(null);
 
     const context = {
-        currentAttendanceEntity, setCurrentAttendanceEntity,
+        currentAttendanceEntityId, setCurrentAttendanceEntityId,
         allAttendanceEntities: attendanceEntities, setAllAttendanceEntities: setAttendanceEntities
     }
     
@@ -35,8 +30,8 @@ export default function GlobalAttendanceContextProvider({children}) {
 
 
 export const GlobalAttendanceContext = createContext({
-    currentAttendanceEntity: {} as AttendanceEntity | undefined,
-    setCurrentAttendanceEntity: (currentAttendanceEntity: AttendanceEntity): void => {},
+    currentAttendanceEntityId: null as number | null, 
+    setCurrentAttendanceEntityId: (currentId: number | null): void => {},
     allAttendanceEntities: [] as AttendanceEntity[],
     setAllAttendanceEntities: (allAttendanceEntities: AttendanceEntity[]): void => {}
 });

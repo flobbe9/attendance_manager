@@ -1,8 +1,8 @@
 import { IndexStyles } from "@/assets/styles/IndexStyles";
 import { AttendanceEntity } from "@/backend/DbSchema";
 import AttendanceLink from "@/components/AttendanceLink";
-import { GlobalContext } from "@/components/context/GlobalContextProvider";
 import { GlobalAttendanceContext } from "@/components/context/GlobalAttendanceContextProvider";
+import { GlobalContext } from "@/components/context/GlobalContextProvider";
 import ExtendableButton from "@/components/helpers/ExtendableButton";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
 import HelperText from "@/components/helpers/HelperText";
@@ -11,7 +11,9 @@ import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import IndexTopBar from "@/components/IndexTopBar";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { getRandomString } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
 import { Link } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
@@ -22,22 +24,23 @@ import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
  */
 export default function index() {
 
-    const { toast, hideToast } = useContext(GlobalContext);
-    const { setCurrentAttendanceEntity, allAttendanceEntities, setAllAttendanceEntities } = useContext(GlobalAttendanceContext);
+    const { snackbar } = useContext(GlobalContext);
+    const { allAttendanceEntities, setAllAttendanceEntities, setCurrentAttendanceEntityId } = useContext(GlobalAttendanceContext);
 
     const [attendanceLinks, setAttendanceLinks] = useState<JSX.Element[]>([]);
     const [isExtended, setIsExtended] = useState(true);
 
     const { attendanceRespository } = useAttendanceRepository();
 
-    // TODO: warn if wrong obj name
     const { allStyles: {mt_5} } = useResponsiveStyles();
+
+    const isScreenInView = useIsFocused();
 
 
     useEffect(() => {
         loadAttendanceEntities();
 
-    }, []);
+    }, [isScreenInView]); // triggered on any child stack screen visit
 
 
     useEffect(() => {
@@ -63,11 +66,11 @@ export default function index() {
             return [];
 
         return attendanceEntities
-            .map((attendanceEntity, i) => 
+            .map(attendanceEntity => 
                 <AttendanceLink 
-                    key={i} 
+                    key={getRandomString()} // make sure this is rerendered on screen enter 
                     attendanceEntity={attendanceEntity} 
-                    onTouchEnd={() => setCurrentAttendanceEntity(attendanceEntity)}
+                    onTouchStart={() => setCurrentAttendanceEntityId(attendanceEntity.id)}
                 />
             );
     }
@@ -96,7 +99,11 @@ export default function index() {
                     {attendanceLinks}
                 </HelperScrollView>
 
-                {/* <Link href={"/(attendance)"} asChild> */}
+                <Link 
+                    href={"/(attendance)"} 
+                    asChild 
+                    onPress={() => setCurrentAttendanceEntityId(-1)}
+                >
                     <ExtendableButton 
                         isExtended={isExtended}
                         dynamicStyle={IndexStyles.addButton}
@@ -105,10 +112,10 @@ export default function index() {
                         extendedWidth={152}
                         label={<HelperText dynamicStyle={{...IndexStyles.addButtonLabel}} style={{color: "white"}}>Neuer UB</HelperText>}
                         ripple={{rippleBackground: "rgb(70, 70, 70)"}}
-                    >
-                        <FontAwesome name="plus" style={IndexStyles.buttonIcon} color="white" />
+                    > 
+                        <FontAwesome name="plus" style={{...IndexStyles.buttonIcon}} color="white" />
                     </ExtendableButton>
-                {/* </Link> */}
+                </Link>
             </HelperView>
         </ScreenWrapper>
     )

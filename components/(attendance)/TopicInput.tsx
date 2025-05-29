@@ -5,7 +5,6 @@ import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
-import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
 ;
@@ -21,8 +20,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function TopicInput({...props}: Props) {
 
-    const { currentAttendanceEntity } = useContext(GlobalAttendanceContext);
-    const { updateCurrentAttendanceEntity } = useContext(AttendanceContext);
+    const { updateCurrentAttendanceEntity, currentAttendanceEntity } = useContext(AttendanceContext);
 
     const componentName = "TopicInput";
     const { children, ...otherProps } = useHelperProps(props, componentName);

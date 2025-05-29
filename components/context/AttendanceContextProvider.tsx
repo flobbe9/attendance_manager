@@ -1,11 +1,8 @@
 import { AttendanceEntity } from "@/backend/DbSchema";
-import { AttendanceService } from "@/backend/services/AttendanceService";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
-import { log } from "@/utils/logUtils";
 import { cloneObj } from "@/utils/utils";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
-import { GlobalAttendanceContext } from "./GlobalAttendanceContextProvider";
 
 
 /**
@@ -15,42 +12,25 @@ import { GlobalAttendanceContext } from "./GlobalAttendanceContextProvider";
  * @since 0.0.1
  */
 export default function AttendanceContextProvider({children}) {
-    
-    const { currentAttendanceEntity, setCurrentAttendanceEntity } = useContext(GlobalAttendanceContext);
-    const { attendanceRespository } = useAttendanceRepository();
-    
+
+    /** The attendance entity currently beeing edited. Dont set an initial value */
+    const [currentAttendanceEntity, setCurrentAttendanceEntity] = useState<AttendanceEntity | undefined>();
     /** Expected to be initialized with `currentAttendanceEntity` on attendance screen render */
     const [lastSavedAttendanceEntity, setLastSavedAttendanceEntity] = useState<AttendanceEntity | undefined>();
+    
+    const { attendanceRespository } = useAttendanceRepository();
     
     /** Indicates whether `currentAttendanceEntity` has been modified compared to `lastSavedAttendanceEntity` */
     const [modified, setModified] = useState(false);
     
-    const attendanceService = new AttendanceService();
-    
     const context = {
         updateCurrentAttendanceEntity,
         
-        lastSavedAttendanceEntity, setLastSavedAttendanceEntity,
+        currentAttendanceEntity, setCurrentAttendanceEntity,
+        lastSavedAttendanceEntity, updateLastSavedAttendanceEntity,
         
         modified, setModified
     }
-    
-    useEffect(() => {
-        setLastSavedAttendanceEntity(cloneObj(currentAttendanceEntity));
-    
-    }, []);
-
-
-    useEffect(() => {
-        // case: last saved instance has been instantiated
-        log("current", currentAttendanceEntity)
-        
-        if (lastSavedAttendanceEntity) {
-            setModified(attendanceService.isModified(currentAttendanceEntity, lastSavedAttendanceEntity));
-            log("modified", attendanceService.isModified(currentAttendanceEntity, lastSavedAttendanceEntity))
-        }
-
-    }, [currentAttendanceEntity]);
 
  
     /**
@@ -78,6 +58,17 @@ export default function AttendanceContextProvider({children}) {
     }
 
 
+    /**
+     * Clones `attendanceEntity`, then updates state.
+     * 
+     * @param attendanceEntity to update the last saved state with.
+     */
+    function updateLastSavedAttendanceEntity(attendanceEntity: AttendanceEntity): void {
+
+        setLastSavedAttendanceEntity(cloneObj(attendanceEntity));
+    }
+
+
     return (
         <AttendanceContext.Provider value={context}>
             {children}
@@ -85,11 +76,15 @@ export default function AttendanceContextProvider({children}) {
 
     )
 }
+
+
 export const AttendanceContext = createContext({
     updateCurrentAttendanceEntity: <T extends ValueOf<AttendanceEntity>>(prop: keyof AttendanceEntity, value: T): void => {},
 
+    currentAttendanceEntity: undefined as AttendanceEntity | undefined, 
+    setCurrentAttendanceEntity: (attendanceEntity: AttendanceEntity): void => {},
     lastSavedAttendanceEntity: undefined as AttendanceEntity | undefined, 
-    setLastSavedAttendanceEntity: (attendanceEntity: AttendanceEntity | undefined): void => {},
+    updateLastSavedAttendanceEntity: (attendanceEntity: AttendanceEntity): void => {},
 
     modified: false as boolean,
     setModified: (modified: boolean): void => {}

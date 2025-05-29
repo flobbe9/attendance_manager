@@ -1,15 +1,14 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
-import { AttendanceContext } from "../context/AttendanceContextProvider";
-;
 import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
-import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
+import { AttendanceContext } from "../context/AttendanceContextProvider";
 import HelperInput from "../helpers/HelperInput";
 import HelperText from "../helpers/HelperText";
+;
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -22,8 +21,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function SchoolYearInput({...props}: Props) {
     
-    const { currentAttendanceEntity } = useContext(GlobalAttendanceContext);
-    const { updateCurrentAttendanceEntity } = useContext(AttendanceContext);
+    const { updateCurrentAttendanceEntity, currentAttendanceEntity } = useContext(AttendanceContext);
 
     const componentName = "SchoolYearInput";
     const { children, ...otherProps } = useHelperProps(props, componentName);

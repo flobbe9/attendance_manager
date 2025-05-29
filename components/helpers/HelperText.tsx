@@ -26,21 +26,23 @@ export default forwardRef(function HelperText(
     }: Props,
     ref: Ref<Text>
 ) {
+    const { children, ...otherProps } = useHelperProps(props, undefined, dynamicStyle, animatedDynamicStyles);
+    
+    const componentRef = useRef<Text>(null);
+    
+    useImperativeHandle(ref, () => componentRef.current!, []);
+    
+    
+    useEffect(() => {
+        if (rendered && onRender)
+            onRender();    
+        
+    }, []);    
+
 
     if (rendered === false)
         return <Fragment />;
 
-    const { children, ...otherProps } = useHelperProps(props, undefined, dynamicStyle, animatedDynamicStyles);
-
-    const componentRef = useRef<Text>(null);
-
-    useImperativeHandle(ref, () => componentRef.current!, []);
-
-    useEffect(() => {
-        if (onRender)
-            onRender();    
-
-    }, []);    
 
     return (
         <Animated.Text ref={componentRef} {...otherProps}>

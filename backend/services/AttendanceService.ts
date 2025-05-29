@@ -4,6 +4,8 @@ import { AbstractService } from "../abstract/AbstractService";
 import { AttendanceEntity, ExaminantEntity } from "../DbSchema";
 import { ExaminantService } from "./ExaminantService";
 import { SchoolclassModeService } from "./SchoolclassModeService";
+import { PartialRecord } from "@/abstract/PartialRecord";
+import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 
 
 /**
@@ -143,5 +145,23 @@ export class AttendanceService extends AbstractService<AttendanceEntity> {
         }
 
         return undefined;
+    }
+
+
+    /**
+     * @param fields to possibly override or just add to "empty" instance
+     * @returns new object (not actually instantiated) with only required fields and `fields`
+     */
+    public static getEmptyInstance(fields?: PartialRecord<keyof AttendanceEntity, ValueOf<AttendanceEntity>>): AttendanceEntity {
+
+        return {
+            schoolSubject: undefined,
+            schoolclassMode: {
+                mode: "ownClass"
+            },
+            examinants: [],
+            schoolYear: undefined,
+            ...(fields as any ?? {}) // cannot infer that key matches value
+        }
     }
 }

@@ -1,21 +1,17 @@
 import HelperProps from "@/abstract/HelperProps";
-import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
 import { TopBarStyles } from "@/assets/styles/TopBarStyles";
-import HelperView from "@/components/helpers/HelperView";
+import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useHelperProps } from "@/hooks/useHelperProps";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { logTrace } from "@/utils/logUtils";
 import { FontAwesome } from "@expo/vector-icons";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
+import { AttendanceContext } from "../context/AttendanceContextProvider";
+import { GlobalContext } from "../context/GlobalContextProvider";
 import Flex from "../helpers/Flex";
 import HelperButton from "../helpers/HelperButton";
 import HelperText from "../helpers/HelperText";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
-import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
-import { Button } from "react-native-paper";
-import { sleep } from "@/utils/utils";
-import { log } from "@/utils/logUtils";
-import { AttendanceContext } from "../context/AttendanceContextProvider";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -29,8 +25,9 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
 export default function TopBar({...props}: Props) {
 
     const { allStyles: { pe_2 }, parseResponsiveStyleToStyle: pr } = useResponsiveStyles();
-    const { currentAttendanceEntity, setCurrentAttendanceEntity } = useContext(GlobalAttendanceContext);
-    const { modified } = useContext(AttendanceContext);
+
+    const { popup, snackbar, toast } = useContext(GlobalContext);
+    const { modified, updateLastSavedAttendanceEntity, currentAttendanceEntity, setCurrentAttendanceEntity } = useContext(AttendanceContext);
     
     const { attendanceRespository } = useAttendanceRepository();
 
@@ -38,6 +35,10 @@ export default function TopBar({...props}: Props) {
     const { children, ...otherProps } = useHelperProps(props, componentName, TopBarStyles.component);
 
     
+    // TODO: 
+        // save button should not be enabled while required fields are missing (simply do "isValid"?)
+        // go back to index flashes
+            // propably cannot rerender links
     async function handleSavePress(): Promise<void> {
 
         // validate empty values
@@ -46,18 +47,29 @@ export default function TopBar({...props}: Props) {
 
         // if invalid
             // notify
-
         // else
-            // persist cascade
-            // notify
-            // notify db error, add instructions
-            // update state
-            // set last saved to current (should set modifed to false automatically)
+
+        const attendanceEntityResult = await attendanceRespository.persistCascade(currentAttendanceEntity);
+        if (!attendanceEntityResult) {
+            // TODO: 
+                // style
+            toast("Unerwarteter Fehler beim Speichern. Keine der letzten Änderungen wurde gespeichert. Versuche es nochmal oder kontaktiere den Support.")
+            return;
+        }
+
+        popup(
+            "Gespeichert",
+            {
+                icon: <FontAwesome name="save" />
+            }
+        );
+
+        logTrace("save attendance result: ", attendanceEntityResult)
+
+        setCurrentAttendanceEntity(attendanceEntityResult);
+        updateLastSavedAttendanceEntity(attendanceEntityResult);
     }
 
-    // save button
-        // disabled while not modified
-        // loading animation if takes longer
 
     return (
         <Flex justifyContent="flex-end" {...otherProps}>

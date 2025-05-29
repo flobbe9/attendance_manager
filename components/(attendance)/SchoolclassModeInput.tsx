@@ -1,21 +1,19 @@
+import { DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
 import { getSchoolclassModeBySchoolclassModeKey, getSchoolclassModeKeyBySchoolclassMode, SCHOOLCLASS_MODES, SchoolclassMode } from "@/abstract/SchoolclassMode";
+import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
+import HelperStyles from "@/assets/styles/helperStyles";
+import { SchoolclassModeEntity } from "@/backend/DbSchema";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { useContext, useEffect, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { RadioButton } from "react-native-paper";
-import HelperInput from "../helpers/HelperInput";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
-;
-import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 import Flex from "../helpers/Flex";
+import HelperInput from "../helpers/HelperInput";
 import HelperText from "../helpers/HelperText";
-import HelperStyles from "@/assets/styles/helperStyles";
-import { SchoolclassModeEntity } from "@/backend/DbSchema";
-import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
-import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { log } from "@/utils/logUtils";
+;
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -28,8 +26,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function SchoolclassModeInput({...props}: Props) {
 
-    const { currentAttendanceEntity } = useContext(GlobalAttendanceContext);
-    const { updateCurrentAttendanceEntity } = useContext(AttendanceContext);
+    const { updateCurrentAttendanceEntity, currentAttendanceEntity } = useContext(AttendanceContext);
 
     const [schoolclassModeRadioButtons, setSchoolclassModeRadioButtons] = useState<JSX.Element[]>([]); 
 
@@ -41,8 +38,8 @@ export default function SchoolclassModeInput({...props}: Props) {
         setSchoolclassModeRadioButtons(mapSchoolclassModeRadioButtons());
 
     }, []);
-        
-        
+
+
     function mapSchoolclassModeRadioButtons(): JSX.Element[] {
 
         return SCHOOLCLASS_MODES.map((mode, i) => (
@@ -63,7 +60,8 @@ export default function SchoolclassModeInput({...props}: Props) {
     function updateSchoolclassMode(mode: SchoolclassMode): void {
 
         updateCurrentAttendanceEntity<SchoolclassModeEntity>("schoolclassMode", {
-            mode: getSchoolclassModeKeyBySchoolclassMode(mode)
+            mode: getSchoolclassModeKeyBySchoolclassMode(mode),
+            fullName: currentAttendanceEntity.schoolclassMode.fullName // keep the name for state
         });
     }
 
@@ -90,7 +88,8 @@ export default function SchoolclassModeInput({...props}: Props) {
                 placeholder="Ausbildungslehrer"
                 rendered={currentAttendanceEntity.schoolclassMode.mode === "othersClass"}
                 containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
-                onChangeText={(value) => updateSchoolclassModeNote(value)}
+                value={currentAttendanceEntity.schoolclassMode.fullName}
+                onChangeText={updateSchoolclassModeNote}
             />
         </HelperView>
     )

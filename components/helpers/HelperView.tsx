@@ -32,7 +32,7 @@ export default forwardRef(function HelperView(
 
 
     useEffect(() => {
-        if (onRender)
+        if (rendered && onRender)
             onRender();    
 
     }, []);    

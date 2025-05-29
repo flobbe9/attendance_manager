@@ -15,6 +15,7 @@ import Br from "./helpers/Br";
 import Flex from "./helpers/Flex";
 import HelperText from "./helpers/HelperText";
 import P from "./helpers/P";
+import { formatDateGermanNoTime } from "@/utils/projectUtils";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -50,7 +51,7 @@ export default function AttendanceLink({
         if (!date)
             return "Noch kein Termin";
 
-        return `${date.getDate()}.${date.getMonth()}.${date.getFullYear()}`;
+        return formatDateGermanNoTime(date);
     }
 
 

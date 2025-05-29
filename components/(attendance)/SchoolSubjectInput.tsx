@@ -5,7 +5,6 @@ import { useDefaultProps } from "@/hooks/useDefaultProps";
 import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
-import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 import Flex from "../helpers/Flex";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
@@ -22,8 +21,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function SchoolSubjectInput({...props}: Props) {
 
-    const { currentAttendanceEntity } = useContext(GlobalAttendanceContext);
-    const { updateCurrentAttendanceEntity } = useContext(AttendanceContext);
+    const { updateCurrentAttendanceEntity, currentAttendanceEntity } = useContext(AttendanceContext);
 
     const componentName = "SchoolSubjectInput";
     const { children, ...otherProps } = useDefaultProps(props, componentName);
