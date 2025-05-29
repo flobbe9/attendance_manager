@@ -4,14 +4,14 @@ import HelperView from "@/components/helpers/HelperView";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useBackHandler } from "@/hooks/useBackHandler";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
+import { NO_SELECTION_LABEL } from "@/utils/constants";
 import { logError } from "@/utils/logUtils";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { Animated, Text, ViewProps, ViewStyle } from "react-native";
+import { ViewProps, ViewStyle } from "react-native";
 import HelperButton from "./HelperButton";
-import HelperText from "./HelperText";
 import HelperScrollView from "./HelperScrollView";
-import { NO_SELECTION_LABEL } from "@/utils/constants";
+import HelperText from "./HelperText";
 
 
 interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
@@ -138,7 +138,12 @@ export default function HelperSelect<OptionType>({
                     onPress={() => handleOptionPress(option)}
                     key={i}
                 >
-                    <HelperText dynamicStyle={HelperSelectStyles.optionButtonText}>{option as string}</HelperText>
+                    <HelperText 
+                        dynamicStyle={{...HelperSelectStyles.optionButtonText}}
+                    >
+                        {option as string}
+                    </HelperText>
+
                     {isOptionSelected(option) && multiselect && <FontAwesome name="check" style={HelperSelectStyles.optionButtonText.default} />}
                 </HelperButton>
             );

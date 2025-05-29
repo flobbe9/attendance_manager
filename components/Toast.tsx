@@ -7,6 +7,7 @@ import { Modal, Portal } from "react-native-paper";
 import HelperScrollView from "./helpers/HelperScrollView";
 import HelperText from "./helpers/HelperText";
 import ToastDefaultFooter from "./ToastDefaultFooter";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 
 export interface GlobalToastProps {
     /** Applied to outer container */
@@ -31,7 +32,8 @@ export interface GlobalToastProps {
     onCancel?: () => void
     visible: boolean,
     content: ReactNode,
-
+    /** For defining a custom footer */
+    children?: ReactNode
 }
 
 interface Props extends HelperProps<ViewStyle>, ViewProps, GlobalToastProps {
@@ -59,6 +61,8 @@ export default function Toast({
 
     const componentName = "Toast";
     const { children, style, ...otherProps } = useHelperProps(props, componentName, ToastStyles.component);
+
+    const { allStyles: { mt_2 } } = useResponsiveStyles();
 
 
     function handleDimsiss(): void { 
@@ -92,25 +96,21 @@ export default function Toast({
             <Modal 
                 visible={visible} 
                 contentContainerStyle={{
-                    ...ToastStyles.childrenContainer, 
                     ...style as object,
-                    ...outerStyle as object
+                    ...outerStyle as object,
                 }}
-                onDismiss={handleDimsiss}
+                onDismiss={handleDimsiss} 
                 {...otherProps}
             > 
-                <HelperScrollView style={childrenContainerStyle}>
+                <HelperScrollView dynamicStyle={ToastStyles.childrenContainer} style={childrenContainerStyle}>
                     {typeof content === "string" ? <HelperText>{content}</HelperText> : content}
                 </HelperScrollView> 
 
                 {children}
 
                 <ToastDefaultFooter 
+                    style={mt_2}
                     rendered={defaultFooter}
-                    dynamicStyle={ToastStyles.defaultFooter}
-                    style={{
-                        width: childrenContainerStyle.width
-                    }} 
                     onCancel={handleCancel}
                     onConfirm={handleConfirm}
                 />

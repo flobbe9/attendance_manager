@@ -1,16 +1,14 @@
+import { DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
 import { HelperButtonStyles } from "@/assets/styles/HelperButtonStyles";
 import HS from "@/assets/styles/helperStyles";
+import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
+import { useDynamicStyle } from "@/hooks/useDynamicStyle";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { forwardRef, Ref } from "react";
-import { ActivityIndicator, ActivityIndicatorIOSProps, ColorValue, GestureResponderEvent, Platform, TouchableNativeFeedback, View, ViewProps, ViewStyle } from "react-native";
+import { ActivityIndicator, ActivityIndicatorIOSProps, ColorValue, GestureResponderEvent, TouchableNativeFeedback, View, ViewProps, ViewStyle } from "react-native";
 import Flex from "./Flex";
 import HelperView from "./HelperView";
-import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { useDynamicStyle } from "@/hooks/useDynamicStyle";
-import { log } from "@/utils/logUtils";
-import { AnimatedFAB } from "react-native-paper";
-import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 
 
 export interface HelperButtonProps extends HelperProps<ViewStyle>, ViewProps {

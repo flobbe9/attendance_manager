@@ -25,13 +25,14 @@ export class SchoolclassModeRepository extends AbstractRepository<SchoolclassMod
     
     getOwnedEntities(entity: SchoolclassModeEntity): RelatedEntityDetail<SchoolclassModeEntity, any>[] {
 
-        return [{
-            repository: new TestRepository(this.db, this.sqliteDb),
-            column: {
-                name: "test",
-                value: entity?.test
-            },
-            relationType: EntityRelationType.ONE_TO_ONE
-        }];
+        // return [{
+        //     repository: new TestRepository(this.db, this.sqliteDb),
+        //     column: {
+        //         name: "test",
+        //         value: entity?.test
+        //     },
+        //     relationType: EntityRelationType.ONE_TO_ONE
+        // }];
+        return [];
     }
 }

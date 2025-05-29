@@ -1,9 +1,12 @@
+import HelperStyles from "@/assets/styles/helperStyles";
 import { IndexStyles } from "@/assets/styles/IndexStyles";
 import { AttendanceEntity } from "@/backend/DbSchema";
+import { AttendanceRepository } from "@/backend/repositories/AttendanceRepository";
 import AttendanceLink from "@/components/AttendanceLink";
 import { GlobalAttendanceContext } from "@/components/context/GlobalAttendanceContextProvider";
 import { GlobalContext } from "@/components/context/GlobalContextProvider";
 import ExtendableButton from "@/components/helpers/ExtendableButton";
+import Flex from "@/components/helpers/Flex";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
 import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
@@ -11,6 +14,7 @@ import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import IndexTopBar from "@/components/IndexTopBar";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import { Link } from "expo-router";
@@ -23,7 +27,6 @@ import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
  */
 export default function index() {
 
-    const { snackbar } = useContext(GlobalContext);
     const { allAttendanceEntities, setAllAttendanceEntities, setCurrentAttendanceEntityId } = useContext(GlobalAttendanceContext);
 
     const [attendanceLinks, setAttendanceLinks] = useState<JSX.Element[]>([]);
@@ -75,8 +78,6 @@ export default function index() {
     }
 
 
-    // TODO: consider max num and pageable?
-        // test how long 30 attendances take to load
     async function loadAttendanceEntities(): Promise<void> {
 
         const attendanceEntities = await attendanceRespository.selectCascade();
@@ -85,17 +86,29 @@ export default function index() {
     }
 
 
-    // display something if no attendances yet
-        // maybe large button or something
-
-
     return (
         <ScreenWrapper>
             <HelperView dynamicStyle={IndexStyles.component}>
                 <IndexTopBar />
 
-                <HelperScrollView onScroll={handleScroll} dynamicStyle={IndexStyles.linkContainer} style={{...mt_5 }}>
-                    {attendanceLinks}
+                <HelperScrollView 
+                    onScroll={handleScroll} 
+                    dynamicStyle={IndexStyles.linkContainer} 
+                    style={{...mt_5 }}
+                    childrenContainerStyle={{...HelperStyles.fullHeight}}
+                >
+                    {attendanceLinks.length ? 
+                        attendanceLinks : 
+                        <Flex 
+                            flexDirection="column" 
+                            justifyContent="center" 
+                            alignItems="center" 
+                            style={{...HelperStyles.fullHeight}}
+                        >
+                            <HelperText dynamicStyle={IndexStyles.emptyMessage}>😴</HelperText>
+                            <HelperText dynamicStyle={IndexStyles.emptyMessage}>Noch keine Unterrichtsbesuche...</HelperText>
+                        </Flex>
+                    }
                 </HelperScrollView>
 
                 <Link 

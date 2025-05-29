@@ -39,8 +39,7 @@ export class AttendanceRepository extends AbstractRepository<AttendanceEntity> {
             },
             relationType: EntityRelationType.ONE_TO_MANY,
             cascade: new Set([Cascade.INSERT, Cascade.UPDATE]),
-            orphanRemoval: true,
-            fetchType: FetchType.EAGER
+            orphanRemoval: true
         });
 
         relatedEntities.push({
@@ -50,7 +49,8 @@ export class AttendanceRepository extends AbstractRepository<AttendanceEntity> {
                 value: entity?.schoolclassMode
             },
             relationType: EntityRelationType.ONE_TO_ONE,
-            cascade: new Set([Cascade.INSERT, Cascade.UPDATE])
+            cascade: new Set([Cascade.INSERT, Cascade.UPDATE]),
+            orphanRemoval: true
         });
 
         return relatedEntities;

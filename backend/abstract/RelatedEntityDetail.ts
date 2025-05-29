@@ -22,7 +22,7 @@ export interface RelatedEntityDetail<ParentEntity extends AbstractEntity, E exte
     relationType: EntityRelationType,
     /** List of cascade behaiviours to apply when calling a "cascade" method on parent */
     cascade?: Set<Cascade>,
-    /** Indicates to delete this entity, should it be removed from one of it's owner's one-to-many list during a persist action. */
+    /** Indicates to delete this entity, should it be removed from one of it's owner's one-to-many list during a persist action. Default should be `false` */
     orphanRemoval?: boolean,
     /** Default is `EAGER` */
     fetchType?: FetchType

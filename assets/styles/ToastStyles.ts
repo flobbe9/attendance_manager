@@ -7,29 +7,22 @@ import HelperStyles from "./helperStyles";
 export class ToastStyles {
     static component: DynamicStyle<ViewStyle> = {
         default: {
-            position: "relative" // for toast footer to stay in bound
+            backgroundColor: "white",
+            borderRadius: BORDER_RADIUS,
+            ...HelperStyles.flexStartStart,
+            flexDirection: "column",
+            maxHeight: "80%",
+            maxWidth: "70%",
+            minHeight: 100,
+            minWidth: 100,
+            margin: "auto",
+            padding: 20,
         }
     }
-    
-    static childrenContainer: ViewStyle = {
-        backgroundColor: "white",
-        borderRadius: BORDER_RADIUS,
-        ...HelperStyles.flexStartStart,
-        flexDirection: "column",
-        maxHeight: "80%",
-        maxWidth: "90%",
-        minHeight: 100,
-        minWidth: 100,
-        margin: "auto",
-        padding: GLOBAL_SCREEN_PADDING,
-    }
 
-
-    static defaultFooter: DynamicStyle<ViewStyle> = {
+    static childrenContainer: DynamicStyle<ViewStyle> = {
         default: {
-            backgroundColor: this.childrenContainer.backgroundColor,
-            bottom: this.childrenContainer.padding,
-            right: this.childrenContainer.padding
+            ...HelperStyles.fullWidth
         }
     }
 }

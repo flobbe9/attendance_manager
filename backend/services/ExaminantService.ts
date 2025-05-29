@@ -2,7 +2,6 @@ import { ExaminantRole_Key, examinantRoleKeysObject } from "@/abstract/Examinant
 import { schoolSubjectKeysObj } from "@/abstract/SchoolSubject";
 import { AbstractService } from "../abstract/AbstractService";
 import { ExaminantEntity } from "../DbSchema";
-import { log } from "@/utils/logUtils";
 
 
 /**
@@ -23,7 +22,6 @@ export class ExaminantService extends AbstractService<ExaminantEntity> {
             entityLastSaved.attendanceId !== entityModified.attendanceId;
     }
     
-
 
     /**
      * @param entitiesLastSaved 
@@ -50,7 +48,12 @@ export class ExaminantService extends AbstractService<ExaminantEntity> {
     }
 
 
-    // TODO: write tests
+    /**
+     * See {@link ExaminantRole_Key} and {@link SchoolSubject_Key} for expected sort order.
+     * 
+     * @param examinantEntities to sort
+     * @returns sorted (unmodified) `examinantEntities` or an empty array
+     */
     public sortByRole(examinantEntities: ExaminantEntity[]): ExaminantEntity[] {
 
         if (!examinantEntities)

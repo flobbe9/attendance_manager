@@ -9,7 +9,7 @@ import { useHasComponentMounted } from "@/hooks/useHasComponentMounted";
 
 
 interface Props extends DefaultProps<ViewStyle>, ViewProps {
-
+    contentContainerStyle?: ViewStyle
 }
 
 

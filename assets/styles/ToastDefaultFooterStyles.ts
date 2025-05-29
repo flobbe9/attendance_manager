@@ -7,9 +7,7 @@ import { BORDER_RADIUS, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 export class ToastDefaultFooterStyles {
     static component: DynamicStyle<ViewStyle> = {
         default: {
-            bottom: GLOBAL_SCREEN_PADDING,
-            position: "absolute",
-            right: GLOBAL_SCREEN_PADDING,
+            ...HelperStyles.fullWidth
         }
     }
 

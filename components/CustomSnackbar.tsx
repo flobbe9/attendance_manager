@@ -26,7 +26,7 @@ interface Props extends CustomnSnackbarProps {
 export default function CustomSnackbar(
     {
         status = "info",
-        action = {label: ""},
+        action = {label: "Cancel"},
         ...props
     }: Props
 ) {

@@ -2,6 +2,7 @@
  * Make sure to be consistent with object value indices! 
  */
 
+/** Order is hardcoded in ExaminantService.test.js */
 export const schoolSubjectKeysObj = {"history": 0, "music": 1};
 export type SchoolSubject_Key = keyof typeof schoolSubjectKeysObj;
 export const SCHOOL_SUBJECT_KEYS: SchoolSubject_Key[] = Object.keys(schoolSubjectKeysObj) as SchoolSubject_Key[]; 

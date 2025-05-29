@@ -1,3 +1,5 @@
+import { ViewStyle } from "react-native";
+
 /** In ms */
 export const TRANSITION_DURATION = 200;
 
@@ -14,6 +16,7 @@ export const BORDER_RADIUS = 8;
 export const BORDER_WIDTH = 4;
 export const GLOBAL_SCREEN_PADDING = 10;
 export const FONT_SIZE = 20;
+export const FONT_SIZE_SMALLER = 15;
 
 /** Refers to bootstrap grid */
 export const SM_MIN_WIDTH = 576;
@@ -21,3 +24,8 @@ export const SM_MIN_WIDTH = 576;
 export const MD_MIN_WIDTH = 992;
 /** Refers to bootstrap grid */
 export const LG_MIN_WIDTH = 1200;
+
+/** Toast */
+export const TOAST_ERROR_OUTER_STYLES: ViewStyle = {
+    backgroundColor: "rgb(255, 179, 179)"
+}

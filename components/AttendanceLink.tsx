@@ -6,16 +6,17 @@ import { AttendanceEntity } from "@/backend/DbSchema";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { getSubjectColor, useSubjectColor } from "@/hooks/useSubjectColor";
+import { formatDateGermanNoTime } from "@/utils/projectUtils";
 import { FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import Br from "./helpers/Br";
 import Flex from "./helpers/Flex";
 import HelperText from "./helpers/HelperText";
 import P from "./helpers/P";
-import { formatDateGermanNoTime } from "@/utils/projectUtils";
+import { ExaminantService } from "@/backend/services/ExaminantService";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -31,7 +32,6 @@ export default function AttendanceLink({
     ...props
 }: Props) {
 
-    const [examinantIcons, setExaminantIcons] = useState<JSX.Element[]>([]);
     const { date, schoolSubject, examinants } = attendanceEntity;
     
     const {color: attendanceColor, transparentColor: attendanceColorTransparent} = useSubjectColor(schoolSubject);
@@ -39,12 +39,8 @@ export default function AttendanceLink({
     const componentName = "AttendanceLink";
     const { children, style, ...otherProps } = useHelperProps(props, componentName, AttendanceLinkStyles.component);
 
-
-    useEffect(() => {
-        setExaminantIcons(mapExaminantIcons());
-
-    }, []);
-
+    const examinantService = new ExaminantService();
+    
 
     function getDate(): string {
 
@@ -60,7 +56,7 @@ export default function AttendanceLink({
         if (!examinants)
             return [];
 
-        return examinants
+        return examinantService.sortByRole(examinants)
             .map((examinant, i) => 
                 <FontAwesome name="user" color={getSubjectColor(examinant.role)} size={FONT_SIZE} key={i} />);
     }
@@ -93,7 +89,8 @@ export default function AttendanceLink({
                     </HelperText>
                      
                     <Flex>
-                        {examinantIcons}
+                        {/* dont use a state or this wont update correctly */}
+                        {mapExaminantIcons()}
                     </Flex>
                 </Flex>
 

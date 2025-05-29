@@ -11,6 +11,7 @@ import { ColorValue, ViewProps, ViewStyle } from "react-native";
 import { GlobalAttendanceContext } from "./context/GlobalAttendanceContextProvider";
 import Flex from "./helpers/Flex";
 import HelperText from "./helpers/HelperText";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -33,6 +34,8 @@ export default function IndexTopBar({...props}: Props) {
     const { children, ...otherProps } = useDefaultProps(props, componentName, IndexTopBarStyles.component);
 
     const attendanceService = new AttendanceService();
+
+    const { allStyles: {me_1, me_2} } =  useResponsiveStyles();
 
 
     useEffect(() => {
@@ -81,8 +84,8 @@ export default function IndexTopBar({...props}: Props) {
                 dynamicStyle={IndexTopBarStyles.ExaminantCount} 
                 alignItems="center"
             >
-                <FontAwesome style={{color}} name="user" />
-                <HelperText>{numExaminants ?? '-'}/{maxExamiants}</HelperText>
+                <FontAwesome style={{color, ...IndexTopBarStyles.text, ...me_1, ...me_2}} name="user" />
+                <HelperText style={IndexTopBarStyles.text}>{numExaminants ?? '-'}/{maxExamiants}</HelperText>
             </Flex>
         )
     }
@@ -93,7 +96,7 @@ export default function IndexTopBar({...props}: Props) {
             justifyContent="flex-end" 
             {...otherProps}
         >
-            <HelperText>Erledigt:</HelperText>
+            <HelperText style={{...IndexTopBarStyles.text, ...me_2}}>Erledigt:</HelperText>
 
             <ExaminantCount numExaminants={numMusicExaminants} maxExamiants={9} color={MUSIC_COLOR} />
             <ExaminantCount numExaminants={numHistoryExaminants} maxExamiants={9} color={HISTORY_COLOR} />

@@ -6,36 +6,29 @@ import React from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import HelperButton from "./helpers/HelperButton";
 import HelperText from "./helpers/HelperText";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
-    onConfirm: () => void,
-    onCancel: () => void
+    onDimiss: () => void,
+    buttonStyles?: ViewStyle
 }
 
 
 /**
  * @since 0.0.1
  */
-export default function ToastDefaultFooter({onConfirm, onCancel, ...props}: Props) {
+export default function ToastDimissFooter({onDimiss, buttonStyles, ...props}: Props) {
 
-    const componentName = "ToastDefaultFooter";
+    const componentName = "ToastDismissFooter";
     const { children, ...otherProps } = useHelperProps(props, componentName, ToastDefaultFooterStyles.component);
 
-    const { allStyles: {me_2} } = useResponsiveStyles();
-
     return (
-        <Flex justifyContent="flex-end" alignItems="flex-end" {...otherProps}>
+        <Flex justifyContent="flex-end" alignItems="center" {...otherProps}>
             {children}
             
-            <HelperButton dynamicStyle={ToastDefaultFooterStyles.button} style={{...me_2}} onPress={onCancel}>
+            <HelperButton dynamicStyle={ToastDefaultFooterStyles.button} onPress={onDimiss} style={buttonStyles}>
                 <HelperText dynamicStyle={ToastDefaultFooterStyles.buttonChildren}>Cancel</HelperText>
             </HelperButton> 
- 
-            <HelperButton dynamicStyle={ToastDefaultFooterStyles.button} onPress={onConfirm}>  
-                <HelperText dynamicStyle={ToastDefaultFooterStyles.buttonChildren}>Confirm</HelperText> 
-            </HelperButton>
         </Flex>
     )
 }

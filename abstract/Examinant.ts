@@ -1,6 +1,6 @@
 import { SCHOOL_SUBJECTS, SchoolSubject_Key } from "./SchoolSubject";
 
-
+/** Order is hardcoded in ExaminantService.test.js */
 export const examinantRoleKeysObject = {
     "educator": SCHOOL_SUBJECTS.length,
     "headmaster": SCHOOL_SUBJECTS.length + 1

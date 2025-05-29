@@ -12,6 +12,8 @@ import { GlobalContext } from "../context/GlobalContextProvider";
 import Flex from "../helpers/Flex";
 import HelperButton from "../helpers/HelperButton";
 import HelperText from "../helpers/HelperText";
+import ToastDimissFooter from "../ToastDismissFooter";
+import { FONT_SIZE, FONT_SIZE_SMALLER, TOAST_ERROR_OUTER_STYLES } from "@/utils/styleConstants";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -24,9 +26,9 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function TopBar({...props}: Props) {
 
-    const { allStyles: { pe_2 }, parseResponsiveStyleToStyle: pr } = useResponsiveStyles();
+    const { allStyles: { pe_2, mt_5 }, parseResponsiveStyleToStyle: pr } = useResponsiveStyles();
 
-    const { popup, snackbar, toast } = useContext(GlobalContext);
+    const { popup, snackbar, toast, hideToast } = useContext(GlobalContext);
     const { modified, updateLastSavedAttendanceEntity, currentAttendanceEntity, setCurrentAttendanceEntity } = useContext(AttendanceContext);
     
     const { attendanceRespository } = useAttendanceRepository();
@@ -37,11 +39,9 @@ export default function TopBar({...props}: Props) {
     
     // TODO: 
         // save button should not be enabled while required fields are missing (simply do "isValid"?)
-        // go back to index flashes
-            // propably cannot rerender links
     async function handleSavePress(): Promise<void> {
 
-        // validate empty values
+        // validate empty values to prevent at least sql exceptions
 
         // validate all logic?
 
@@ -50,24 +50,55 @@ export default function TopBar({...props}: Props) {
         // else
 
         const attendanceEntityResult = await attendanceRespository.persistCascade(currentAttendanceEntity);
-        if (!attendanceEntityResult) {
-            // TODO: 
-                // style
-            toast("Unerwarteter Fehler beim Speichern. Keine der letzten Änderungen wurde gespeichert. Versuche es nochmal oder kontaktiere den Support.")
-            return;
-        }
+        if (!attendanceEntityResult)
+            return toastError();
 
-        popup(
-            "Gespeichert",
-            {
-                icon: <FontAwesome name="save" />
-            }
-        );
+        logTrace("save attendance result: ", attendanceEntityResult);
 
-        logTrace("save attendance result: ", attendanceEntityResult)
-
+        // update states
         setCurrentAttendanceEntity(attendanceEntityResult);
         updateLastSavedAttendanceEntity(attendanceEntityResult);
+
+        // notify success
+        setTimeout(() => {
+            popup(
+                "Gespeichert",
+                {
+                    icon: <FontAwesome name="save" />
+                }
+            );
+        }, 500); // wait for states to update to prevent popup flash
+    }
+
+
+    function toastError(): void {
+
+        const content = (
+            <HelperText
+                style={{fontSize: FONT_SIZE_SMALLER}}
+            >
+                Unerwarteter Fehler beim Speichern. Keine der letzten Änderungen wurde gespeichert. Versuche es nochmal oder kontaktiere den Support.
+            </HelperText>
+        );
+
+        const footer = (
+            <ToastDimissFooter 
+                buttonStyles={{
+                    backgroundColor: "white"
+                }} 
+                style={{...mt_5}} 
+                onDimiss={hideToast} 
+            />
+        );
+
+        toast(
+            content,
+            {
+                outerStyle: {...TOAST_ERROR_OUTER_STYLES},
+                defaultFooter: false,
+                children: footer
+            }
+        )
     }
 
 

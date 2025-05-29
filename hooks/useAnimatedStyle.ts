@@ -61,9 +61,15 @@ export function useAnimatedStyle(
     }, animationDeps);
 
 
-    function animate(reverse = false): void {
+    /**
+     * Start animating and resolve once animation is done.
+     * 
+     * @param reverse whether to animate in reverse (will reverse `inputRange`)
+     * @returns the animation object
+     */
+    async function animate(reverse = false): Promise<Animated.CompositeAnimation> {
 
-        Animated.timing(
+        const animation = Animated.timing(
             animatedValue,
             {
                 toValue: inputRange[reverse ? 0 : inputRange.length - 1],
@@ -71,7 +77,15 @@ export function useAnimatedStyle(
                 easing,
                 useNativeDriver: false
             }
-        ).start();
+        );
+        
+        animation.start();
+
+        return new Promise((res, rej) => {
+            setTimeout(() => {
+                res(animation);
+            }, duration);
+        })
     }
 
 

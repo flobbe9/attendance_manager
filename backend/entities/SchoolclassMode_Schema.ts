@@ -26,7 +26,7 @@ export const SchoolclassMode_Relations = relations(
     SchoolclassMode_Table,
     ({one}) => ({
         attendance: one(Attendance_Table),
-        test: one(Test_Table)
+        // test: one(Test_Table)
     })
 )
 
@@ -41,5 +41,5 @@ export class SchoolclassModeEntity extends AbstractEntity {
     /** Name of the teacher responsible for the attended class in case the mode is not "ownClass" */
     fullName?: string;
     attendanceId?: number;
-    test?: TestEntity
+    // test?: TestEntity
 }

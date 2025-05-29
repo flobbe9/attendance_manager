@@ -1,7 +1,7 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
 import { TextStyle, ViewStyle } from "react-native";
 import HS from "./helperStyles";
-import { BORDER_RADIUS, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { BORDER_RADIUS, FONT_SIZE, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import HelperStyles from "./helperStyles";
 
 
@@ -18,24 +18,22 @@ export class IndexStyles {
             padding: GLOBAL_SCREEN_PADDING,
         }
     }
+
+    static emptyMessage: DynamicStyle<TextStyle> = {
+        default: {
+            fontSize: FONT_SIZE
+        }
+    }
     
     static linkContainer: DynamicStyle<ViewStyle> = {
         default: {
-            ...HelperStyles.fitContent
+            ...HelperStyles.fullWidth
         }
     }
 
     static link: DynamicStyle<StyleType> = {
         default: {
             marginBottom: GLOBAL_SCREEN_PADDING
-        }
-    }
-
-    static statusBarContainer: DynamicStyle<ViewStyle> = {
-        default: {
-            position: "absolute", 
-            top: GLOBAL_SCREEN_PADDING,
-            ...HelperStyles.fullWidth
         }
     }
 
