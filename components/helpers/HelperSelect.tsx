@@ -7,8 +7,8 @@ import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { NO_SELECTION_LABEL } from "@/utils/constants";
 import { logError } from "@/utils/logUtils";
 import { FontAwesome } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
-import { ViewProps, ViewStyle } from "react-native";
+import React, { forwardRef, Ref, useEffect, useState } from "react";
+import { View, ViewProps, ViewStyle } from "react-native";
 import HelperButton from "./HelperButton";
 import HelperScrollView from "./HelperScrollView";
 import HelperText from "./HelperText";
@@ -40,16 +40,18 @@ interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
 /**
  * @since 0.0.1
  */
-export default function HelperSelect<OptionType>({
-    options,
-    selectedOptions,
-    setSelectedOptions,
-    optionsContainerHeight = 200,
-    optionsContainerScroll = true,
-    multiselect = false,
-    noSelectionLabel = NO_SELECTION_LABEL,
-    ...props
-}: Props<OptionType>) {
+export default forwardRef(function HelperSelect<OptionType>({
+        options,
+        selectedOptions,
+        setSelectedOptions,
+        optionsContainerHeight = 200,
+        optionsContainerScroll = true,
+        multiselect = false,
+        noSelectionLabel = NO_SELECTION_LABEL,
+        ...props
+    }: Props<OptionType>,
+    ref: Ref<View>
+) {
 
     const [optionElements, setOptionElements] = useState<JSX.Element[]>([]);
     const [areOptionsVisible, setAreOptionsVisible] = useState(false);
@@ -175,7 +177,7 @@ export default function HelperSelect<OptionType>({
 
 
     return (
-        <HelperView {...otherProps}>
+        <HelperView ref={ref} {...otherProps}>
             {children}
 
             <HelperButton 
@@ -201,4 +203,4 @@ export default function HelperSelect<OptionType>({
             </HelperView>
         </HelperView>
     )
-}
+})

@@ -3,12 +3,11 @@ import { TooltipStyles } from "@/assets/styles/TooltipStyles";
 import HelperView from "@/components/helpers/HelperView";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useHelperProps } from "@/hooks/useHelperProps";
-import { TRANSITION_DURATION } from "@/utils/styleConstants";
+import { useScreenTouch } from "@/hooks/useScreenTouch";
 import { isBooleanFalsy, isNumberFalsy } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
-import React, { useContext, useEffect, useState } from "react";
-import { ViewProps, ViewStyle } from "react-native";
-import { GlobalContext } from "../context/GlobalContextProvider";
+import React, { useEffect, useState } from "react";
+import { TextStyle, ViewProps, ViewStyle } from "react-native";
 import Flex from "./Flex";
 import HelperText from "./HelperText";
 
@@ -28,6 +27,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
      * Default is `5000`.
      */
     duration?: number,
+    iconStyle?: TextStyle
 }
 
 
@@ -44,12 +44,11 @@ export default function Tooltip(
         visible,
         setVisible,
         duration = 5000,
+        iconStyle = {},
         ...props
     }: Props
 ) {
 
-    const { globalBlur } = useContext(GlobalContext);
-    
     const iconSize = 20;
     const [visibleState, setVisibleState] = isBooleanFalsy(visible) || !setVisible ? useState(false) : [visible, setVisible];
     
@@ -78,10 +77,20 @@ export default function Tooltip(
     }, [visibleState]);
 
 
-    useEffect(() => {
-        setVisibleState(false);
+    useScreenTouch(() => {
+        hideTooltipOnScreenTouch();
+    });
 
-    }, [globalBlur])
+
+    function hideTooltipOnScreenTouch(): void {
+        
+        if (!visibleState)
+            return;
+
+        setTimeout(() => {
+            setVisibleState(false);
+        }, 100); // wait for icon press event to fire
+    }
 
 
     function handleIconPress(_event): void {
@@ -92,7 +101,7 @@ export default function Tooltip(
 
     return (
         <Flex alignItems="center" justifyContent="center" {...otherProps}>
-            <FontAwesome name="lightbulb-o" size={iconSize} style={TooltipStyles.icon} onPress={handleIconPress}/> 
+            <FontAwesome name="lightbulb-o" size={iconSize} style={{...TooltipStyles.icon, ...iconStyle}} onPress={handleIconPress}/> 
 
             <HelperView 
                 dynamicStyle={TooltipStyles.textContainer} 

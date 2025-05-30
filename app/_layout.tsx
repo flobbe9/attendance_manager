@@ -4,6 +4,8 @@ import CustomSqliteProvider from "@/components/CustomSqliteProvider";
 import GlobalComponentProvider from "@/components/GlobalComponentProvider";
 import { logErrorFiltered, logWarnFiltered } from "@/utils/logUtils";
 import { Stack } from "expo-router";
+import { ClickOutsideProvider } from "react-native-click-outside";
+import { Text, View } from "react-native";
 
 
 console.warn = logWarnFiltered;
@@ -21,16 +23,18 @@ export default function layout() {
         <CustomSqliteProvider>
             <GlobalContextProvider>
                 <GlobalAttendanceContextProvider>
-                    <GlobalComponentProvider>
-                        <Stack
-                            screenOptions={{
-                                headerShown: false, 
-                                orientation: "all", 
-                            }} 
-                            >
-                            {/* <Stack.Screen name="(attendance)" /> */}
-                        </Stack>
-                    </GlobalComponentProvider>
+                    <ClickOutsideProvider>
+                        <GlobalComponentProvider>
+                            <Stack
+                                screenOptions={{
+                                    headerShown: false, 
+                                    orientation: "all", 
+                                }} 
+                                >
+                                {/* <Stack.Screen name="(attendance)" /> */}
+                            </Stack>
+                        </GlobalComponentProvider>
+                    </ClickOutsideProvider>
                 </GlobalAttendanceContextProvider>
             </GlobalContextProvider>
         </CustomSqliteProvider>

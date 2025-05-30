@@ -14,9 +14,9 @@
   "jest": {
     "preset": "jest-expo",
     "testPathIgnorePatterns": [
-        "/node_modules/",
-        "/build/",
-        "/dist/"
+      "/node_modules/",
+      "/build/",
+      "/dist/"
     ]
   },
   "dependencies": {
@@ -41,6 +41,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "0.76.7",
+    "react-native-click-outside": "^0.1.1",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-paper": "^5.13.1",
     "react-native-paper-dates": "^0.22.40",

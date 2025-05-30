@@ -9,6 +9,7 @@ import Flex from "../helpers/Flex";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
 import Tooltip from "../helpers/Tooltip";
+import AttendanceInputTooltip from "./AttendanceInputTooltip";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -21,7 +22,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function SchoolSubjectInput({...props}: Props) {
 
-    const { updateCurrentAttendanceEntity, currentAttendanceEntity } = useContext(AttendanceContext);
+    const { updateCurrentAttendanceEntity, currentAttendanceEntity, handleInvalidAttendanceInput } = useContext(AttendanceContext);
 
     const componentName = "SchoolSubjectInput";
     const { children, ...otherProps } = useDefaultProps(props, componentName);
@@ -30,8 +31,10 @@ export default function SchoolSubjectInput({...props}: Props) {
     function handleSelect(value: SchoolSubject): void {
 
         updateCurrentAttendanceEntity("schoolSubject", value ? getSchoolSubjectKeyBySchoolSubject(value) : undefined);
+
+        handleInvalidAttendanceInput(value, "naaah");
     }
-    
+
 
     return (
         <HelperSelect 
@@ -44,9 +47,8 @@ export default function SchoolSubjectInput({...props}: Props) {
         >
             <Flex alignItems="center">
                 <HelperText dynamicStyle={AttendanceStyles.heading}>Fach</HelperText>
-                <Tooltip>
-                    8 UBs pro Fach
-                </Tooltip>
+
+                <AttendanceInputTooltip />
             </Flex>
             
             {children}

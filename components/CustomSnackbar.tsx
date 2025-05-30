@@ -1,18 +1,15 @@
 import { SnackbarStyles } from "@/assets/styles/SnackbarStyles";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
-import { BORDER_RADIUS, BORDER_WIDTH } from "@/utils/styleConstants";
 import { isBlank } from "@/utils/utils";
-import React, { useEffect, useState } from "react";
-import { ViewStyle } from "react-native";
+import React from "react";
 import { Portal, Snackbar, SnackbarProps } from "react-native-paper";
 
 
-export type CustomSnackbarStatus = "error" | "warn" | "info";
+export type CustomSnackbarStatus = "error" | "warn" | "info" | "default";
 
 export type CustomnSnackbarProps = SnackbarProps & { status: CustomSnackbarStatus };
 
 interface Props extends CustomnSnackbarProps {
-
 }
 
 
@@ -25,7 +22,7 @@ interface Props extends CustomnSnackbarProps {
  */
 export default function CustomSnackbar(
     {
-        status = "info",
+        status = "default",
         action = {label: "Cancel"},
         ...props
     }: Props
@@ -34,6 +31,7 @@ export default function CustomSnackbar(
     const componentName = "Snackbar";
     const { children, style, ...otherProps } = useDefaultProps(props, componentName, SnackbarStyles.component);
 
+    const { labelStyle, ...otherActions } = action;
 
     return (
         <Portal>
@@ -43,11 +41,12 @@ export default function CustomSnackbar(
                     ...SnackbarStyles[status],
                 }}
                 action={{
-                    ...action,
                     labelStyle: {
-                        ...(!isBlank(action.label) ? SnackbarStyles.label : {}),
-                        color: status !== "info" ? "black" : action.textColor
+                        ...(!isBlank(otherActions.label) ? SnackbarStyles.label : {}),
+                        color: status !== "default" ? "black" : otherActions.textColor,
+                        ...labelStyle as object
                     },
+                    ...otherActions,
                 }}
                 {...otherProps}
             >
