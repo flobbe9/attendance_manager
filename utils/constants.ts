@@ -29,3 +29,9 @@ export const DRIZZLE_DB_CONFIG: DrizzleConfig<Record<string, never>>  = {
 }
 
 export const NO_SELECTION_LABEL = "No selection";
+
+export const SQL_BLOB_SIZE = 65_535;
+
+/** Settings */
+/** Whether not to show a popup on invalid attendance input. Default shoujld be false */
+export const SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY = "dont_show_attendance_input_validation_error_popup";

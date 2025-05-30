@@ -47,7 +47,7 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
 
         toast,
         hideToast,
-        globalToastProps
+        globalToastProps,
     }
 
 
@@ -192,5 +192,5 @@ export const GlobalContext = createContext({
 
     toast: (content: ReactNode, globalToastProps: Omit<GlobalToastProps, "content" | "visible"> = {}): void => {},
     hideToast: (): void => {},
-    globalToastProps: {} as GlobalToastProps
+    globalToastProps: {} as GlobalToastProps,
 })

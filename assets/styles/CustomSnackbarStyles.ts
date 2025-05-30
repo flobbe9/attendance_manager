@@ -3,7 +3,7 @@ import { BORDER_RADIUS } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
 
 
-export class SnackbarStyles {
+export class CustomSnackbarStyles {
     static component: DynamicStyle<ViewStyle> = {
         default: {
         }

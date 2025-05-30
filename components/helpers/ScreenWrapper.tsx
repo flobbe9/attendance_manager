@@ -23,7 +23,7 @@ interface Props extends DefaultProps<ViewStyle>, ViewProps {
  */
 export default function ScreenWrapper({...props}: Props) {
 
-    const { globalScreenTouch, setGlobalScreenTouch, globalPopupProps, hideGlobalPopup } = useContext(GlobalContext);
+    const { globalScreenTouch, setGlobalScreenTouch } = useContext(GlobalContext);
 
     const componentName = "ScreenWrapper";
     const { children, ...otherProps } = useDefaultProps(props, componentName);

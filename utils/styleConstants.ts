@@ -33,6 +33,6 @@ export const TOAST_ERROR_OUTER_STYLES: ViewStyle = {
 
 /** Attendanceinput Tooltip */
 export const ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR = "black";
-export const ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR = "yellow";
+export const ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR = "orange";
 export const ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL = 100;
 export const ATTENDANCE_INPUT_TOOLTIP_ICON_NUM_FLASHES = 3;

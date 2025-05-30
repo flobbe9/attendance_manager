@@ -18,6 +18,8 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
 
 
 /**
+ * Children are the label.
+ * 
  * @since 0.0.1
  */
 export default forwardRef(function HelperCheckbox(

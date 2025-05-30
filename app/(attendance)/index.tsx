@@ -20,14 +20,16 @@ import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { useSubjectColor } from "@/hooks/useSubjectColor";
-import { logDebug } from "@/utils/logUtils";
+import { log, logDebug } from "@/utils/logUtils";
 import { BORDER_RADIUS, FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext, useEffect, useState } from "react";
 import { ViewStyle } from "react-native";
 import DateInput from './../../components/(attendance)/DateInput';
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { useIsFocused } from "@react-navigation/native";
+import { GlobalContext } from "@/components/context/GlobalContextProvider";
 
 
 /**
@@ -37,6 +39,7 @@ import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
  */
 export default function index() {
 
+    const { hideSnackbar } = useContext(GlobalContext);
     const { currentAttendanceEntityId, allAttendanceEntities } = useContext(GlobalAttendanceContext);
     const { 
         currentAttendanceEntity, 
@@ -64,6 +67,20 @@ export default function index() {
 
     const numHelperInputLines = 20;
     const attendanceService = new AttendanceService();
+
+    const isAttendanceScreenFocused = useIsFocused();
+
+
+    useEffect(() => {
+        return () => handleScreenLeave();
+        
+    }, [isAttendanceScreenFocused])
+
+
+    function handleScreenLeave(): void {
+
+        hideSnackbar();
+    }
 
 
     useEffect(() => {

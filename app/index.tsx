@@ -14,6 +14,7 @@ import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import IndexTopBar from "@/components/IndexTopBar";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { log } from "@/utils/logUtils";
 import { FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";

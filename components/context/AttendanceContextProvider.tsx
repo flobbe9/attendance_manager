@@ -1,21 +1,17 @@
 import { AttendanceEntity } from "@/backend/DbSchema";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
+import { useSettingsRepository } from "@/hooks/repositories/useSettingsRepository";
 import { useFlashState } from "@/hooks/useFlashState";
+import { ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL, ATTENDANCE_INPUT_TOOLTIP_ICON_NUM_FLASHES } from "@/utils/styleConstants";
 import { cloneObj } from "@/utils/utils";
-import { createContext, Fragment, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { ColorValue } from "react-native";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
-import { CustomSnackbarStatus } from "../CustomSnackbar";
-import B from "../helpers/B";
-import Br from "../helpers/Br";
-import HelperText from "../helpers/HelperText";
-import { GlobalContext } from "./GlobalContextProvider";
-import Flex from "../helpers/Flex";
-import { FontAwesome } from "@expo/vector-icons";
-import { ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL, FONT_SIZE_SMALLER } from "@/utils/styleConstants";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import HelperView from "../helpers/HelperView";
 import AttendanceInputErrorSnackbarContent from "../(attendance)/AttendanceInputErrorSnackbarContent";
+import { CustomSnackbarStatus } from "../CustomSnackbar";
+import { GlobalAttendanceContext } from "./GlobalAttendanceContextProvider";
+import { GlobalContext } from "./GlobalContextProvider";
+import { log } from "@/utils/logUtils";
 
 
 /**
@@ -27,13 +23,18 @@ import AttendanceInputErrorSnackbarContent from "../(attendance)/AttendanceInput
 export default function AttendanceContextProvider({children}) {
 
     const { snackbar } = useContext(GlobalContext);
+    const { dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup } = useContext(GlobalAttendanceContext);
 
     /** The attendance entity currently beeing edited. Dont set an initial value */
     const [currentAttendanceEntity, setCurrentAttendanceEntity] = useState<AttendanceEntity | undefined>();
     /** Expected to be initialized with `currentAttendanceEntity` on attendance screen render */
     const [lastSavedAttendanceEntity, setLastSavedAttendanceEntity] = useState<AttendanceEntity | undefined>();
+
+    /** Triggered when invalid input error popup is dismissed.  */
+    const [didDismissInvalidAttendanceInputErrorPopup, setDidDismissInvalidAttendanceInputErrorPopup] = useState(false);
     
     const { attendanceRespository } = useAttendanceRepository();
+    const { settingsRepository } = useSettingsRepository();
     
     /** Indicates whether `currentAttendanceEntity` has been modified compared to `lastSavedAttendanceEntity` */
     const [modified, setModified] = useState(false);
@@ -50,7 +51,7 @@ export default function AttendanceContextProvider({children}) {
         { 
             interval: 
             ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL, 
-            numFlashes: ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL
+            numFlashes: ATTENDANCE_INPUT_TOOLTIP_ICON_NUM_FLASHES
         }
     );
 
@@ -63,8 +64,14 @@ export default function AttendanceContextProvider({children}) {
         modified, setModified,
 
         handleInvalidAttendanceInput,
-        tooltipIconColor, setTooltipIconColor
+        tooltipIconColor, setTooltipIconColor,
     }
+
+
+    useEffect(() => {
+        handleInvalidAttendanceInputSnackbarDismiss();
+
+    }, [didDismissInvalidAttendanceInputErrorPopup]);
 
  
     /**
@@ -122,19 +129,38 @@ export default function AttendanceContextProvider({children}) {
 
         flash();
 
-        snackbar(
-            <AttendanceInputErrorSnackbarContent invalidValue={invalidValue} reason={reason} />,
-            snackbarStatus,
-            {
-                duration: Infinity,
-                action: {
-                    label: "Dismiss",
-                }
-            }
-        )
+        if (!dontShowInvalidInputErrorPopup) {
+            setDidDismissInvalidAttendanceInputErrorPopup(false);
+            snackbar(
+                <AttendanceInputErrorSnackbarContent 
+                invalidValue={invalidValue} 
+                reason={reason} 
+                />,
+                snackbarStatus,
+                {
+                    duration: Infinity,
+                    action: {
+                        label: "Dismiss",
+                    }
+                },
+                () => setDidDismissInvalidAttendanceInputErrorPopup(true)
+            )
+        }
 
         if (callback)
             callback();
+    }
+
+
+    async function handleInvalidAttendanceInputSnackbarDismiss() {
+
+        if (dontShowInvalidInputErrorPopup && didDismissInvalidAttendanceInputErrorPopup) {
+            await settingsRepository.updateDontShowAttendanceValidationErrorPopup(true);
+            setTimeout(() => 
+                snackbar("Präferenz gespeichert. Du kannst deine Auswahl unter 'Einstellungen' jederzeit ändern."), 
+                200
+            );
+        }
     }
 
 
@@ -159,5 +185,5 @@ export const AttendanceContext = createContext({
 
     handleInvalidAttendanceInput: (invalidValue: string | number, reason: string, callback?: () => void, status: CustomSnackbarStatus = 'info'): void => {},
     tooltipIconColor: "black" as ColorValue,
-    setTooltipIconColor: (color: ColorValue): void => {}
+    setTooltipIconColor: (color: ColorValue): void => {},
 });

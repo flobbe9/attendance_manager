@@ -43,6 +43,20 @@
       "when": 1747327844607,
       "tag": "0005_oval_talisman",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1748603964148,
+      "tag": "0006_medical_blue_shield",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1748604146276,
+      "tag": "0007_wandering_mentor",
+      "breakpoints": true
     }
   ]
 }

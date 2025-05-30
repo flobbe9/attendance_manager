@@ -1,5 +1,6 @@
 import { AttendanceEntity } from "@/backend/DbSchema";
-import { createContext, useState } from "react";
+import { useSettingsRepository } from "@/hooks/repositories/useSettingsRepository";
+import { createContext, useEffect, useState } from "react";
 
 
 /**
@@ -16,9 +17,26 @@ export default function GlobalAttendanceContextProvider({children}) {
      */
     const [currentAttendanceEntityId, setCurrentAttendanceEntityId] = useState<number | null>(null);
 
+    const [dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup] = useState(false);
+
+    const { settingsRepository } = useSettingsRepository();
+
     const context = {
         currentAttendanceEntityId, setCurrentAttendanceEntityId,
-        allAttendanceEntities: attendanceEntities, setAllAttendanceEntities: setAttendanceEntities
+        allAttendanceEntities: attendanceEntities, setAllAttendanceEntities: setAttendanceEntities,
+        dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup
+    }
+    
+
+    useEffect(() => {
+        initializedontShowInvalidInputErrorPopupState();
+
+    }, []);
+
+
+    async function initializedontShowInvalidInputErrorPopupState(): Promise<void> {
+
+        setDontShowInvalidInputErrorPopup(await settingsRepository.getDontShowAttendanceValidationErrorPopup());
     }
     
     return (
@@ -33,5 +51,8 @@ export const GlobalAttendanceContext = createContext({
     currentAttendanceEntityId: null as number | null, 
     setCurrentAttendanceEntityId: (currentId: number | null): void => {},
     allAttendanceEntities: [] as AttendanceEntity[],
-    setAllAttendanceEntities: (allAttendanceEntities: AttendanceEntity[]): void => {}
+    setAllAttendanceEntities: (allAttendanceEntities: AttendanceEntity[]): void => {},
+
+    dontShowInvalidInputErrorPopup: true as boolean, 
+    setDontShowInvalidInputErrorPopup: (isShow: boolean): void => {}
 });

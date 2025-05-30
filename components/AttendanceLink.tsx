@@ -17,6 +17,7 @@ import Flex from "./helpers/Flex";
 import HelperText from "./helpers/HelperText";
 import P from "./helpers/P";
 import { ExaminantService } from "@/backend/services/ExaminantService";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -40,6 +41,8 @@ export default function AttendanceLink({
     const { children, style, ...otherProps } = useHelperProps(props, componentName, AttendanceLinkStyles.component);
 
     const examinantService = new ExaminantService();
+
+    const { allStyles: { ms_1 }} = useResponsiveStyles();
     
 
     function getDate(): string {
@@ -56,9 +59,17 @@ export default function AttendanceLink({
         if (!examinants)
             return [];
 
-        return examinantService.sortByRole(examinants)
+        return examinantService
+            .sortByRole(examinants)
             .map((examinant, i) => 
-                <FontAwesome name="user" color={getSubjectColor(examinant.role)} size={FONT_SIZE} key={i} />);
+                <FontAwesome
+                    name={examinant.role === "headmaster" ? "graduation-cap" : "user"} 
+                    color={getSubjectColor(examinant.role)} 
+                    size={FONT_SIZE} 
+                    key={i} 
+                    style={{...ms_1}}
+                />
+            );
     }
 
     return (

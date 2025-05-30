@@ -5,6 +5,7 @@ import { RelatedEntityDetail } from "../abstract/RelatedEntityDetail";
 import { Settings_Table, SettingsEntity } from "../DbSchema";
 import { SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY } from "@/utils/constants";
 import { eq } from "drizzle-orm";
+import { log } from "@/utils/logUtils";
 
 
 /**
@@ -30,12 +31,20 @@ export class SettingsRepository extends AbstractRepository<SettingsEntity> {
     }
 
 
+    /**
+     * Update or insert db entry indicating whether not to show error popup on invalid attendance input.
+     * 
+     * @param dontShow 
+     */
     public async updateDontShowAttendanceValidationErrorPopup(dontShow: boolean): Promise<void> {
 
-        this.persistCascade({
-            key: SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY, 
-            value: dontShow ? "true" : "false"
-        });
+        this.updateOrInsert(
+            {
+                key: SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY, 
+                value: dontShow ? "true" : "false"
+            }, 
+            eq(Settings_Table.key, SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY)
+        );
     }
 
 

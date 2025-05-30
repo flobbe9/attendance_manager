@@ -1,4 +1,4 @@
-import { SnackbarStyles } from "@/assets/styles/SnackbarStyles";
+import { CustomSnackbarStyles } from "@/assets/styles/CustomSnackbarStyles";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { isBlank } from "@/utils/utils";
 import React from "react";
@@ -29,7 +29,7 @@ export default function CustomSnackbar(
 ) {
 
     const componentName = "Snackbar";
-    const { children, style, ...otherProps } = useDefaultProps(props, componentName, SnackbarStyles.component);
+    const { children, style, ...otherProps } = useDefaultProps(props, componentName, CustomSnackbarStyles.component);
 
     const { labelStyle, ...otherActions } = action;
 
@@ -38,11 +38,11 @@ export default function CustomSnackbar(
             <Snackbar
                 style={{
                     ...style as object,
-                    ...SnackbarStyles[status],
+                    ...CustomSnackbarStyles[status],
                 }}
                 action={{
                     labelStyle: {
-                        ...(!isBlank(otherActions.label) ? SnackbarStyles.label : {}),
+                        ...(!isBlank(otherActions.label) ? CustomSnackbarStyles.label : {}),
                         color: status !== "default" ? "black" : otherActions.textColor,
                         ...labelStyle as object
                     },
