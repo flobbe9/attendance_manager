@@ -1,5 +1,5 @@
 import { GlobalPopupProps } from "@/components/Popup";
-import { log, logWarn } from "@/utils/logUtils";
+import { logWarn } from "@/utils/logUtils";
 import { isAnyFalsy } from "@/utils/utils";
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { SnackbarProps } from "react-native-paper";
@@ -17,7 +17,7 @@ import { GlobalToastProps } from "../Toast";
 export default function GlobalContextProvider({children}: {children: ReactNode}) {
 
     /** Toggle state, meaning the boolean value does not represent any information but is just to be listened to with `useEffect` */
-    const [globalBlur, setGlobalBlur] = useState(false);
+    const [globalScreenTouch, setGlobalScreenTouch] = useState(false);
 
     const [globalSnackbarProps, setGlobalSnackbarProps] = useState<CustomnSnackbarProps>({
         status: "info",
@@ -35,16 +35,18 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
     });
 
     const context = {
-        globalBlur, setGlobalBlur,
+        globalScreenTouch, setGlobalScreenTouch,
 
         snackbar,
-        globalSnackbarProps, setGlobalSnackbarProps,
+        hideSnackbar,
+        globalSnackbarProps,
 
         popup,
         hideGlobalPopup,
-        globalPopupProps, setGlobalPopupProps,
+        globalPopupProps,
 
-        toast,hideToast,
+        toast,
+        hideToast,
         globalToastProps
     }
 
@@ -177,17 +179,16 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
 
 
 export const GlobalContext = createContext({
-    globalBlur: false, 
-    setGlobalBlur: (_globalBlur: boolean) => {},
+    globalScreenTouch: false, 
+    setGlobalScreenTouch: (_globalBlur: boolean) => {},
 
     snackbar: (message: React.ReactNode, status: CustomSnackbarStatus = "info", options?: Omit<SnackbarProps, "children" | "visible" | "onDismiss">, onDismiss?: () => void) => {},
     globalSnackbarProps: {} as CustomnSnackbarProps, 
-    setGlobalSnackbarProps: (props: CustomnSnackbarProps) => {},
+    hideSnackbar: (): void => {},
 
     popup: (message: ReactNode, options: Omit<GlobalPopupProps, "visible" | "message"> = {}) => {},
     hideGlobalPopup: (globalPopupProps: GlobalPopupProps) => {},
     globalPopupProps: {} as GlobalPopupProps,
-    setGlobalPopupProps: (props: GlobalPopupProps) => {},
 
     toast: (content: ReactNode, globalToastProps: Omit<GlobalToastProps, "content" | "visible"> = {}): void => {},
     hideToast: (): void => {},
