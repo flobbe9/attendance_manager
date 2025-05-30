@@ -6,6 +6,7 @@ import { integer, sqliteTable, SQLiteTableWithColumns, text } from "drizzle-orm/
 import AbstractEntity, { Abstract_Table } from "../abstract/Abstract_Schema";
 import { Examinant_Table, ExaminantEntity } from "./Examinant_Schema";
 import { SchoolclassMode_Table, SchoolclassModeEntity } from './SchoolclassMode_Schema';
+import { SQL_BLOB_SIZE } from "@/utils/constants";
 
 
 const ATTENDANCE_TABLE_NAME = "attendance";
@@ -22,8 +23,8 @@ export const Attendance_Table = sqliteTable(
         date: integer({ mode: 'timestamp' }),
         musicLessonTopic: text({enum: MUSIC_LESSON_TOPIC_KEYS as [MusicLessonTopic_Key]}),
         schoolYear: text({ enum: SCHOOL_YEARS as [SchoolYear]}).notNull(),
-        note: text(),
-        note2: text(),
+        note: text({ length: SQL_BLOB_SIZE }),
+        note2: text({ length: SQL_BLOB_SIZE }),
     }
 );
 

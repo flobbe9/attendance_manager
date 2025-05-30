@@ -2,12 +2,13 @@ import { ExaminantRole_Key, examinantRoleKeysObject } from "@/abstract/Examinant
 import { schoolSubjectKeysObj } from "@/abstract/SchoolSubject";
 import { AbstractService } from "../abstract/AbstractService";
 import { ExaminantEntity } from "../DbSchema";
+import { AbstractModifiableService } from "../abstract/AbstractModifiableService";
 
 
 /**
  * @since 0.0.1
  */
-export class ExaminantService extends AbstractService<ExaminantEntity> {
+export class ExaminantService extends AbstractModifiableService<ExaminantEntity> {
 
     public isModified(entityLastSaved: ExaminantEntity, entityModified: ExaminantEntity): boolean {
 
