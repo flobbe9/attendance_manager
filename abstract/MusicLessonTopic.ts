@@ -23,3 +23,11 @@ const musicLessonTopicValuesObj = {
 */
 export type MusicLessonTopic = keyof typeof musicLessonTopicValuesObj;
 export const MUSIC_LESSON_TOPICS: MusicLessonTopic[] = Object.keys(musicLessonTopicValuesObj) as MusicLessonTopic[]; 
+
+
+export function getMusicLessonTopicByMusicLessonTopicKey(musicLessonTopicKey: MusicLessonTopic_Key): MusicLessonTopic {
+
+    const musicLessonTopicKeyIndex = MUSIC_LESSON_TOPIC_KEYS.indexOf(musicLessonTopicKey);
+
+    return MUSIC_LESSON_TOPICS[musicLessonTopicKeyIndex];
+}

@@ -12,6 +12,7 @@ import TopBar from "@/components/(attendance)/TopBar";
 import TopicInput from "@/components/(attendance)/TopicInput";
 import { AttendanceContext } from "@/components/context/AttendanceContextProvider";
 import { GlobalAttendanceContext } from "@/components/context/GlobalAttendanceContextProvider";
+import { GlobalContext } from "@/components/context/GlobalContextProvider";
 import Flex from "@/components/helpers/Flex";
 import HelperButton from "@/components/helpers/HelperButton";
 import HelperInput from "@/components/helpers/HelperInput";
@@ -22,14 +23,13 @@ import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { useSubjectColor } from "@/hooks/useSubjectColor";
-import { log, logDebug } from "@/utils/logUtils";
+import { logDebug } from "@/utils/logUtils";
 import { BORDER_RADIUS, FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
 import React, { useContext, useEffect, useState } from "react";
 import { ViewStyle } from "react-native";
 import DateInput from './../../components/(attendance)/DateInput';
-import { useIsFocused } from "@react-navigation/native";
-import { GlobalContext } from "@/components/context/GlobalContextProvider";
 
 
 /**
@@ -72,38 +72,23 @@ export default function index() {
 
 
     useEffect(() => {
+        updateLastSavedAttendanceEntity(initializeCurrentAttendanceEntity());
+        
+    }, []);
+    
+    
+    useEffect(() => {
         return () => handleScreenLeave();
         
-    }, [isAttendanceScreenFocused])
-
-
-    function handleScreenLeave(): void {
-
-        hideSnackbar();
-    }
-
-
-    useEffect(() => {
-        updateLastSavedAttendanceEntity(initializeCurrentAttendanceEntity());
-
-    }, []);
-
-        
+    }, [isAttendanceScreenFocused]);
+    
+    
     useEffect(() => {
         // case: last saved instance has been instantiated
         if (lastSavedAttendanceEntity && currentAttendanceEntity)
             setModified(attendanceService.isModified(lastSavedAttendanceEntity, currentAttendanceEntity));
 
     }, [currentAttendanceEntity, lastSavedAttendanceEntity]);
-
-
-    useEffect(() => {
-        // if (lastSavedAttendanceEntity && currentAttendanceEntity) {
-        //     log("last saved: ", lastSavedAttendanceEntity.examinants)
-        //     log("current: ", currentAttendanceEntity.examinants)
-        //     log("modified: ", new AttendanceService().isModified(lastSavedAttendanceEntity, currentAttendanceEntity))
-        // }
-    }, [lastSavedAttendanceEntity, currentAttendanceEntity])
 
 
     // case: no currentAttendanceEntity yet, should not happen though
@@ -117,6 +102,12 @@ export default function index() {
                 <HelperText>Lade Unterrichtsbesuch...</HelperText>
             </ScreenWrapper>
         );
+
+
+    function handleScreenLeave(): void {
+
+        hideSnackbar();
+    }
 
 
     function initializeCurrentAttendanceEntity(): AttendanceEntity | null {

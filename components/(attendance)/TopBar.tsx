@@ -43,8 +43,6 @@ export default function TopBar({...props}: Props) {
 
         // validate empty values to prevent at least sql exceptions
 
-        // validate all logic?
-
         // if invalid
             // notify
         // else

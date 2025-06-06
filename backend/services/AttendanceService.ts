@@ -6,13 +6,14 @@ import { ExaminantService } from "./ExaminantService";
 import { SchoolclassModeService } from "./SchoolclassModeService";
 import { PartialRecord } from "@/abstract/PartialRecord";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
+import { log } from "@/utils/logUtils";
 
 
 /**
  * @since 0.0.1
  */
 export class AttendanceService extends AbstractService<AttendanceEntity> {
-    
+
     public isModified(entityLastSaved: AttendanceEntity, entityModified: AttendanceEntity): boolean {
 
         if (!entityLastSaved)
