@@ -42,7 +42,7 @@ export default function AttendanceLink({
 
     const examinantService = new ExaminantService();
 
-    const { allStyles: { ms_1 }} = useResponsiveStyles();
+    const { allStyles: { ms_1, col_4 }} = useResponsiveStyles();
     
 
     function getDate(): string {
@@ -87,6 +87,7 @@ export default function AttendanceLink({
                 <P dynamicStyle={AttendanceLinkStyles.heading}>{getSchoolSubjectBySchoolSubjectKey(schoolSubject)}</P>
                 <Br />
 
+                {/* Bottom row */}
                 <Flex 
                     style={{
                         justifyContent: "space-between", 
@@ -95,11 +96,16 @@ export default function AttendanceLink({
                 >
                     <HelperText 
                         dynamicStyle={AttendanceLinkStyles.subheading}
+                        style={{...col_4}}
                     >
                         {getDate()}
                     </HelperText>
-                     
-                    <Flex>
+
+                    <Flex justifyContent="flex-end" style={{...col_4}}> 
+                        <HelperText>Jahrgang {attendanceEntity.schoolYear || ''}</HelperText>
+                    </Flex>
+
+                    <Flex justifyContent="flex-end" style={{...col_4}}>
                         {/* dont use a state or this wont update correctly */}
                         {mapExaminantIcons()}
                     </Flex>

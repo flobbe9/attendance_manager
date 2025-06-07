@@ -23,7 +23,7 @@ export default function GlobalAttendanceContextProvider({children}) {
 
     const context = {
         currentAttendanceEntityId, setCurrentAttendanceEntityId,
-        allAttendanceEntities: attendanceEntities, setAllAttendanceEntities: setAttendanceEntities,
+        savedAttendanceEntities: attendanceEntities, setSavedAttendanceEntities: setAttendanceEntities,
         dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup
     }
     
@@ -50,8 +50,8 @@ export default function GlobalAttendanceContextProvider({children}) {
 export const GlobalAttendanceContext = createContext({
     currentAttendanceEntityId: null as number | null, 
     setCurrentAttendanceEntityId: (currentId: number | null): void => {},
-    allAttendanceEntities: [] as AttendanceEntity[],
-    setAllAttendanceEntities: (allAttendanceEntities: AttendanceEntity[]): void => {},
+    savedAttendanceEntities: [] as AttendanceEntity[],
+    setSavedAttendanceEntities: (savedAttendanceEntities: AttendanceEntity[]): void => {},
 
     dontShowInvalidInputErrorPopup: true as boolean, 
     setDontShowInvalidInputErrorPopup: (isShow: boolean): void => {}

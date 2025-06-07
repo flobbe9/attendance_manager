@@ -27,7 +27,7 @@ export class ExaminantService extends AbstractModifiableService<ExaminantEntity>
     /**
      * @param entitiesLastSaved 
      * @param entitiesModified 
-     * @returns true if only one list is falsy or the `length`s don't match or the order has changed or at least one entity {@link isModified} 
+     * @returns true if only one list is falsy or the `length`s don't match or at least one entity {@link isModified} 
      * compared to the entity at the same index of the other array
      */
     public areModified(entitiesLastSaved: ExaminantEntity[], entitiesModified: ExaminantEntity[]): boolean {

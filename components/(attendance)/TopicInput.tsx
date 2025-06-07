@@ -1,5 +1,5 @@
 import HelperProps from "@/abstract/HelperProps";
-import { MUSIC_LESSON_TOPICS, MusicLessonTopic } from "@/abstract/MusicLessonTopic";
+import { getMusicLessonTopicByMusicLessonTopicKey, getMusicLessonTopicKeyByMusicLessonTopic, MUSIC_LESSON_TOPICS, MusicLessonTopic } from "@/abstract/MusicLessonTopic";
 import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { useContext } from "react";
@@ -7,6 +7,7 @@ import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
+import { NO_SELECTION_LABEL } from "@/utils/constants";
 ;
 
 
@@ -26,12 +27,18 @@ export default function TopicInput({...props}: Props) {
     const { children, ...otherProps } = useHelperProps(props, componentName);
 
 
+    function handleOptionSelect(value: MusicLessonTopic) {
+
+        updateCurrentAttendanceEntity("musicLessonTopic", getMusicLessonTopicKeyByMusicLessonTopic(value));
+    }
+
+
     return (
         <HelperSelect 
             rendered={currentAttendanceEntity.schoolSubject === "music"}
-            options={MUSIC_LESSON_TOPICS}
-            selectedOptions={currentAttendanceEntity.musicLessonTopic}
-            setSelectedOptions={(value) => updateCurrentAttendanceEntity("musicLessonTopic", value as MusicLessonTopic)}
+            options={[NO_SELECTION_LABEL, ...MUSIC_LESSON_TOPICS]}
+            selectedOptions={getMusicLessonTopicByMusicLessonTopicKey(currentAttendanceEntity.musicLessonTopic)}
+            setSelectedOptions={handleOptionSelect}
             optionsContainerScroll={false}
             optionsContainerHeight={203}
             {...otherProps}

@@ -29,7 +29,7 @@ import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
  */
 export default function index() {
 
-    const { allAttendanceEntities, setAllAttendanceEntities, setCurrentAttendanceEntityId } = useContext(GlobalAttendanceContext);
+    const { savedAttendanceEntities, setSavedAttendanceEntities, setCurrentAttendanceEntityId } = useContext(GlobalAttendanceContext);
 
     const [attendanceLinks, setAttendanceLinks] = useState<JSX.Element[]>([]);
     const [isExtended, setIsExtended] = useState(true);
@@ -48,9 +48,9 @@ export default function index() {
 
 
     useEffect(() => {
-        setAttendanceLinks(mapAttendanceLinks(allAttendanceEntities));
+        setAttendanceLinks(mapAttendanceLinks(savedAttendanceEntities));
 
-    }, [allAttendanceEntities]);
+    }, [savedAttendanceEntities]);
 
     
     function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
@@ -84,7 +84,7 @@ export default function index() {
 
         const attendanceEntities = await attendanceRespository.selectCascade();
 
-        setAllAttendanceEntities(attendanceEntities ?? []);
+        setSavedAttendanceEntities(attendanceEntities ?? []);
     }
 
 

@@ -23,7 +23,7 @@ import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { useSubjectColor } from "@/hooks/useSubjectColor";
-import { logDebug } from "@/utils/logUtils";
+import { log, logDebug } from "@/utils/logUtils";
 import { BORDER_RADIUS, FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
@@ -40,7 +40,7 @@ import DateInput from './../../components/(attendance)/DateInput';
 export default function index() {
 
     const { hideSnackbar } = useContext(GlobalContext);
-    const { currentAttendanceEntityId, allAttendanceEntities } = useContext(GlobalAttendanceContext);
+    const { currentAttendanceEntityId, savedAttendanceEntities } = useContext(GlobalAttendanceContext);
     const { 
         currentAttendanceEntity, 
         setCurrentAttendanceEntity, 
@@ -118,7 +118,7 @@ export default function index() {
             attendanceEntityForId = AttendanceService.getEmptyInstance()
             
         else
-            attendanceEntityForId = allAttendanceEntities
+            attendanceEntityForId = savedAttendanceEntities
                .find(attendanceEntity => attendanceEntity.id === currentAttendanceEntityId);
 
         if (!attendanceEntityForId) {

@@ -53,3 +53,18 @@ export function defaultEquals<T>(val1: T, val2: T, considerDistintFalsyValues = 
 
     return val1 === val2;
 }
+
+
+/**
+ * @param val1 
+ * @param val2 
+ * @param considerDistintFalsyValues if `true` values are considered not equal if they have different falsy values, e.g. `null` and `undefined`. Default is `false`
+ * @returns `val1 === val2` but only if one of the values is falsy, else `true`
+ */
+export function defaultEqualsFalsy<T>(val1: T, val2: T, considerDistintFalsyValues = false): boolean {
+
+    if (!val1 || !val2)
+        return defaultEquals(val1, val2, considerDistintFalsyValues);
+
+    return true;
+}

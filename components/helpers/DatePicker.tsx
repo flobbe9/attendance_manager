@@ -3,14 +3,13 @@ import HelperProps from "@/abstract/HelperProps";
 import HS from "@/assets/styles/helperStyles";
 import HelperView from "@/components/helpers/HelperView";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
+import { formatDateGermanNoTime } from "@/utils/projectUtils";
 import React, { forwardRef, Fragment, Ref, useState } from "react";
 import { GestureResponderEvent, View, ViewProps, ViewStyle } from "react-native";
 import { DatePickerModal } from "react-native-paper-dates";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 import HelperButton from "./HelperButton";
 import HelperText from "./HelperText";
-import { log } from "@/utils/logUtils";
-import { formatDateGermanNoTime } from "@/utils/projectUtils";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -32,7 +31,7 @@ export default forwardRef(function DatePicker(
         date,
         setDate,
         locale = "de",
-        onTouchEnd,
+        onTouchStart,
         buttonStyles,
         ...props
     }: Props,
@@ -69,10 +68,10 @@ export default forwardRef(function DatePicker(
     }
 
 
-    function handleTouchEnd(event: GestureResponderEvent): void {
+    function handleTouchStart(event: GestureResponderEvent): void {
 
-        if (onTouchEnd)
-            onTouchEnd(event);
+        if (onTouchStart)
+            onTouchStart(event);
 
         setIsVisible(!isVisible);
     }
@@ -94,9 +93,9 @@ export default forwardRef(function DatePicker(
                 ref={ref}
                 style={{
                     ...HS.fitContent,
-                    ...style as object
+                    ...style as object,
                 }}
-                onTouchEnd={handleTouchEnd} 
+                onTouchStart={handleTouchStart} 
                 {...otherProps}
             >
                 {children ?? <DefaultChildren />}

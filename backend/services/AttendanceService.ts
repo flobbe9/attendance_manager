@@ -1,25 +1,22 @@
 import { ExaminantRole_Key } from "@/abstract/Examinant";
+import { PartialRecord } from "@/abstract/PartialRecord";
+import { defaultEqualsFalsy } from "@/utils/projectUtils";
 import { assertFalsyAndThrow, dateEquals } from "@/utils/utils";
-import { AbstractService } from "../abstract/AbstractService";
+import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
+import { AbstractModifiableService } from "../abstract/AbstractModifiableService";
 import { AttendanceEntity, ExaminantEntity } from "../DbSchema";
 import { ExaminantService } from "./ExaminantService";
 import { SchoolclassModeService } from "./SchoolclassModeService";
-import { PartialRecord } from "@/abstract/PartialRecord";
-import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
-import { log } from "@/utils/logUtils";
 
 
 /**
  * @since 0.0.1
  */
-export class AttendanceService extends AbstractService<AttendanceEntity> {
+export class AttendanceService extends AbstractModifiableService<AttendanceEntity> {
 
     public isModified(entityLastSaved: AttendanceEntity, entityModified: AttendanceEntity): boolean {
 
-        if (!entityLastSaved)
-            return !!entityModified;
-
-        if (!entityModified)
+        if (!defaultEqualsFalsy(entityLastSaved, entityModified))
             return true;
 
         const examinantService = new ExaminantService();

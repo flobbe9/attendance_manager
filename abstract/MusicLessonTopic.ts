@@ -31,3 +31,11 @@ export function getMusicLessonTopicByMusicLessonTopicKey(musicLessonTopicKey: Mu
 
     return MUSIC_LESSON_TOPICS[musicLessonTopicKeyIndex];
 }
+
+
+export function getMusicLessonTopicKeyByMusicLessonTopic(musicLessonTopic: MusicLessonTopic): MusicLessonTopic_Key {
+
+    const musicLessonTopicIndex = MUSIC_LESSON_TOPICS.indexOf(musicLessonTopic);
+
+    return MUSIC_LESSON_TOPIC_KEYS[musicLessonTopicIndex];
+}

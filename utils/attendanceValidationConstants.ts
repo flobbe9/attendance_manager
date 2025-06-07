@@ -9,7 +9,7 @@ export const NUM_REQUIRED_GUBS = 2;
 /** Describes what lesson topics need to covered how often and in which school year. For music subject */
 export const MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS: SchoolYearCondition[] = [
     {
-        topic: "sound",
+        lessonTopic: "sound",
         schoolYearRange: {
             min: "5",
             max: "10"
@@ -18,7 +18,7 @@ export const MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS: SchoolYearCondition[] = [
         maxAttendances: null
     },
     {
-        topic: "rhythm",
+        lessonTopic: "rhythm",
         schoolYearRange: {
             min: "5",
             max: "8"
@@ -27,7 +27,7 @@ export const MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS: SchoolYearCondition[] = [
         maxAttendances: null
     },
     {
-        topic: "structure",
+        lessonTopic: "structure",
         schoolYearRange: {
             min: "5",
             max: "13"
@@ -36,7 +36,7 @@ export const MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS: SchoolYearCondition[] = [
         maxAttendances: null
     },
     {
-        topic: "language",
+        lessonTopic: "language",
         schoolYearRange: {
             min: "5",
             max: "13"
@@ -45,7 +45,7 @@ export const MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS: SchoolYearCondition[] = [
         maxAttendances: null
     },
     {
-        topic: "history",
+        lessonTopic: "history",
         schoolYearRange: {
             min: "5",
             max: "13"

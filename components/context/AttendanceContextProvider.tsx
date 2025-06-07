@@ -4,14 +4,13 @@ import { useSettingsRepository } from "@/hooks/repositories/useSettingsRepositor
 import { useFlashState } from "@/hooks/useFlashState";
 import { ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL, ATTENDANCE_INPUT_TOOLTIP_ICON_NUM_FLASHES } from "@/utils/styleConstants";
 import { cloneObj } from "@/utils/utils";
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { ColorValue } from "react-native";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 import AttendanceInputErrorSnackbarContent from "../(attendance)/AttendanceInputErrorSnackbarContent";
 import { CustomSnackbarStatus } from "../CustomSnackbar";
 import { GlobalAttendanceContext } from "./GlobalAttendanceContextProvider";
 import { GlobalContext } from "./GlobalContextProvider";
-import { log } from "@/utils/logUtils";
 
 
 /**
@@ -39,6 +38,8 @@ export default function AttendanceContextProvider({children}) {
     /** Indicates whether `currentAttendanceEntity` has been modified compared to `lastSavedAttendanceEntity` */
     const [modified, setModified] = useState(false);
     
+    /** The attendance entity field name of an input which has last received an invalid value */
+    const [currentlyInvalidAttendanceInputKey, setCurrentlyInvalidAttendanceInputKey] = useState<keyof AttendanceEntity | undefined>()
     const { 
         flash: flashTooltipIcon, 
         flashOnce: flashTooltipIconOnce, 
@@ -65,6 +66,7 @@ export default function AttendanceContextProvider({children}) {
 
         handleInvalidAttendanceInput,
         tooltipIconColor, setTooltipIconColor,
+        currentlyInvalidAttendanceInputKey
     }
 
 
@@ -83,6 +85,7 @@ export default function AttendanceContextProvider({children}) {
      */
     function updateCurrentAttendanceEntity<T extends ValueOf<AttendanceEntity>>(attendanceEntityKey: keyof AttendanceEntity, attendancEntityValue: T): void {
 
+        // make sure to set the backreference
         if (typeof attendancEntityValue === "object") {
             if (Array.isArray(attendancEntityValue))
                 attendancEntityValue.forEach(ownedEntity => {
@@ -117,12 +120,20 @@ export default function AttendanceContextProvider({children}) {
      * 
      * @param invalidValue the invalid input value from attendance input
      * @param reason brief description about why this value is invalid
+     * @param invalidAttendanceInputKey the field name of {@link AttendanceEntity} for the invalid input
      * @param callback executed at the end of this method if specified
      * @param snackbarStatus default is 'info'
      */
-    async function handleInvalidAttendanceInput(invalidValue: string | number, reason: string, callback?: () => void, snackbarStatus: CustomSnackbarStatus = 'info'): Promise<void> {
+    async function handleInvalidAttendanceInput(
+        invalidValue: string | number, 
+        reason: string, 
+        invalidAttendanceInputKey: keyof AttendanceEntity,
+        callback?: () => void, 
+        snackbarStatus: CustomSnackbarStatus = 'info'
+    ): Promise<void> {
         
         const flash = async () => {
+            setCurrentlyInvalidAttendanceInputKey(invalidAttendanceInputKey);
             await flashTooltipIcon();
             flashTooltipIconOnce(ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR); // stick with error color
         }
@@ -133,8 +144,8 @@ export default function AttendanceContextProvider({children}) {
             setDidDismissInvalidAttendanceInputErrorPopup(false);
             snackbar(
                 <AttendanceInputErrorSnackbarContent 
-                invalidValue={invalidValue} 
-                reason={reason} 
+                    invalidValue={invalidValue} 
+                    reason={reason} 
                 />,
                 snackbarStatus,
                 {
@@ -183,7 +194,8 @@ export const AttendanceContext = createContext({
     modified: false as boolean,
     setModified: (modified: boolean): void => {},
 
-    handleInvalidAttendanceInput: (invalidValue: string | number, reason: string, callback?: () => void, status: CustomSnackbarStatus = 'info'): void => {},
+    handleInvalidAttendanceInput: (invalidValue: string | number, reason: string, invalidAttendanceInputKey: keyof AttendanceEntity, callback?: () => void, status: CustomSnackbarStatus = 'info'): void => {},
     tooltipIconColor: "black" as ColorValue,
     setTooltipIconColor: (color: ColorValue): void => {},
+    currentlyInvalidAttendanceInputKey: undefined as keyof AttendanceEntity | undefined
 });

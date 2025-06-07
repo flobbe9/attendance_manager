@@ -1,14 +1,15 @@
 import HelperProps from "@/abstract/HelperProps";
+import { AttendanceEntity } from "@/backend/DbSchema";
 import { useHelperProps } from "@/hooks/useHelperProps";
+import { ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR } from "@/utils/styleConstants";
 import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import Tooltip from "../helpers/Tooltip";
-import { ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR } from "@/utils/styleConstants";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
-
+    attendanceInputKey: keyof AttendanceEntity
 }
 
 
@@ -17,9 +18,9 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  * 
  * @since 0.0.1
  */
-export default function AttendanceInputTooltip({...props}: Props) {
+export default function AttendanceInputTooltip({attendanceInputKey, ...props}: Props) {
 
-    const { tooltipIconColor, setTooltipIconColor } = useContext(AttendanceContext);
+    const { tooltipIconColor, setTooltipIconColor, currentlyInvalidAttendanceInputKey } = useContext(AttendanceContext);
 
     const componentName = "AttendanceInputTooltip";
     const { children, ...otherProps } = useHelperProps(props, componentName);
@@ -27,7 +28,7 @@ export default function AttendanceInputTooltip({...props}: Props) {
     return (
         <Tooltip 
             iconStyle={{
-                color: tooltipIconColor
+                color: currentlyInvalidAttendanceInputKey === attendanceInputKey ?  tooltipIconColor : ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR
             }}
             onTouchStart={() => setTooltipIconColor(ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR)} // make sure to reset possible error style
             {...otherProps}

@@ -4,12 +4,14 @@ import { HelperInputStyles } from "@/assets/styles/HelperInputStyles";
 import HS from "@/assets/styles/helperStyles";
 import { useDynamicStyle } from "@/hooks/useDynamicStyle";
 import { useHelperProps } from "@/hooks/useHelperProps";
+import { logTrace } from "@/utils/logUtils";
 import React, { forwardRef, Fragment, Ref, useEffect, useImperativeHandle, useRef } from "react";
 import { Animated, NativeSyntheticEvent, TextInput, TextInputFocusEventData, TextInputProps, TextStyle, useAnimatedValue, ViewStyle } from "react-native";
 
 
 interface Props extends HelperProps<TextStyle>, TextInputProps {
     disabled?: boolean,
+    /** Automatically called in `onChangeText`. Make `onChangeText` throw in order to prevent this (will be handled gracefully) */
     setValue?: (value: string) => void,
     /** Applied to the outer most tag of this component. Should only be used for positioning and component dimensions. */
     containerStyles?: DynamicStyle<ViewStyle>
@@ -26,7 +28,7 @@ export default forwardRef(function HelperInput(
         containerStyles = {},
         setValue,
         onRender,
-        onChangeText: onChangeTextProps,
+        onChangeText: propsOnChangeText,
         ...props
     }: Props, 
     ref: Ref<TextInput>
@@ -60,8 +62,15 @@ export default forwardRef(function HelperInput(
 
     function onChangeText(value: string): void {
 
-        if (onChangeTextProps)
-            onChangeTextProps(value);
+        try {
+            if (propsOnChangeText)
+                propsOnChangeText(value);
+
+        // intended not to call setValue
+        } catch (e) {
+            logTrace(e.message)
+            return;
+        }
 
         if (setValue)
             setValue(value);

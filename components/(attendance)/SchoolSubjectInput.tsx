@@ -2,14 +2,14 @@ import HelperProps from "@/abstract/HelperProps";
 import { getSchoolSubjectBySchoolSubjectKey, getSchoolSubjectKeyBySchoolSubject, SCHOOL_SUBJECTS, SchoolSubject } from "@/abstract/SchoolSubject";
 import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import Flex from "../helpers/Flex";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
-import Tooltip from "../helpers/Tooltip";
 import AttendanceInputTooltip from "./AttendanceInputTooltip";
+import { log } from "@/utils/logUtils";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -22,7 +22,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function SchoolSubjectInput({...props}: Props) {
 
-    const { updateCurrentAttendanceEntity, currentAttendanceEntity, handleInvalidAttendanceInput } = useContext(AttendanceContext);
+    const { updateCurrentAttendanceEntity, currentAttendanceEntity } = useContext(AttendanceContext);
 
     const componentName = "SchoolSubjectInput";
     const { children, ...otherProps } = useDefaultProps(props, componentName);
@@ -31,8 +31,6 @@ export default function SchoolSubjectInput({...props}: Props) {
     function handleSelect(value: SchoolSubject): void {
 
         updateCurrentAttendanceEntity("schoolSubject", value ? getSchoolSubjectKeyBySchoolSubject(value) : undefined);
-
-        handleInvalidAttendanceInput(value, "naaah");
     }
 
 
@@ -48,7 +46,7 @@ export default function SchoolSubjectInput({...props}: Props) {
             <Flex alignItems="center">
                 <HelperText dynamicStyle={AttendanceStyles.heading}>Fach</HelperText>
 
-                <AttendanceInputTooltip />
+                <AttendanceInputTooltip attendanceInputKey="schoolSubject" />
             </Flex>
             
             {children}

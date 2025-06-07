@@ -24,7 +24,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function IndexTopBar({...props}: Props) {
 
-    const { allAttendanceEntities } = useContext(GlobalAttendanceContext);
+    const { savedAttendanceEntities } = useContext(GlobalAttendanceContext);
 
     const [numEducators, setNumEducators] = useState<number | null>(null);
     const [numMusicExaminants, setNumMusicExaminants] = useState(0);
@@ -43,7 +43,7 @@ export default function IndexTopBar({...props}: Props) {
         setNumMusicExaminants(countExaminantsWithSameSubject("music"));
         setNumHistoryExaminants(countExaminantsWithSameSubject("history"));
 
-    }, [allAttendanceEntities]);
+    }, [savedAttendanceEntities]);
 
     
     /**
@@ -51,7 +51,7 @@ export default function IndexTopBar({...props}: Props) {
      */
     function countEducatorExaminants(): number {
 
-        return allAttendanceEntities
+        return savedAttendanceEntities
             .filter(attendanceEntity => 
                 attendanceService.hasExaminant(attendanceEntity, "educator"))
             .length;
@@ -67,7 +67,7 @@ export default function IndexTopBar({...props}: Props) {
         if (!schoolSubject)
             return NaN;
 
-        return allAttendanceEntities
+        return savedAttendanceEntities
             .filter(attendanceEntity => 
                 attendanceEntity.schoolSubject === schoolSubject && // is attendance with that subject
                 attendanceService.hasExaminant(attendanceEntity, schoolSubject)) // has examinant for that subject

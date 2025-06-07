@@ -2,7 +2,7 @@ import HelperProps from "@/abstract/HelperProps";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import { FONT_SIZE_SMALLER } from "@/utils/styleConstants";
+import { ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR, FONT_SIZE_SMALLER } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
@@ -43,11 +43,11 @@ export default function AttendanceInputErrorSnackbarContent({
         <HelperView {...otherProps}>
             <Flex flexWrap="nowrap" alignItems="center">
                 <HelperView style={{...me_2}}>
-                    <FontAwesome name="info-circle" size={FONT_SIZE_SMALLER} />
+                    <FontAwesome name="info-circle" size={FONT_SIZE_SMALLER} color={ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR} />
                 </HelperView>
 
                 <B>
-                    '{invalidValue}' kann nicht ausgewählt werden
+                    '{invalidValue}' kann nicht ausgewählt werden.
                 </B>
             </Flex>
 
@@ -57,11 +57,13 @@ export default function AttendanceInputErrorSnackbarContent({
                 {reason}
             </HelperText>
 
+            <Br />
+
             <HelperText>
                 Um alle erlaubten Werte anzuzeigen, tippe auf die Glühbirne neben der Feldüberschrift. 
             </HelperText>
 
-            <Br />
+            <Br />                    
 
             <Flex alignItems="center">
                <HelperCheckbox checked={dontShowInvalidInputErrorPopup} setChecked={setDontShowInvalidInputErrorPopup}>

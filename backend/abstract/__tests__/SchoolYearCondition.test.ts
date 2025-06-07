@@ -26,7 +26,7 @@ describe("equalsSchoolYearCondition", () => {
                 min: "5",
                 max: "10"
             },
-            topic: "history"
+            lessonTopic: "history"
         }
 
         const schoolYearCondition2: SchoolYearCondition = {
@@ -36,7 +36,7 @@ describe("equalsSchoolYearCondition", () => {
                 min: "5",
                 max: "10"
             },
-            topic: "history"
+            lessonTopic: "history"
         }
 
         expect(equalsSchoolYearCondition(schoolYearCondition1, schoolYearCondition2)).toBe(true);
@@ -51,9 +51,9 @@ describe("equalsSchoolYearCondition", () => {
         schoolYearCondition1.maxAttendances--;
         expect(equalsSchoolYearCondition(schoolYearCondition1, schoolYearCondition2)).toBe(true);
         
-        schoolYearCondition1.topic = "language";
+        schoolYearCondition1.lessonTopic = "language";
         expect(equalsSchoolYearCondition(schoolYearCondition1, schoolYearCondition2)).toBe(false);
-        schoolYearCondition1.topic = schoolYearCondition2.topic;
+        schoolYearCondition1.lessonTopic = schoolYearCondition2.lessonTopic;
         expect(equalsSchoolYearCondition(schoolYearCondition1, schoolYearCondition2)).toBe(true);
 
         schoolYearCondition1.schoolYearRange.min = "6";

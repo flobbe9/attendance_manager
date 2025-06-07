@@ -1,25 +1,27 @@
 import { assertFalsyAndThrow } from "@/utils/utils";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 import { AttendanceEntity } from "../DbSchema";
-import { AbstractAttendanceValidator } from "./AbstractAttendanceValidator";
+import { AbstractAttendanceInputValidator } from "./AbstractAttendanceInputValidator";
 import { findSchoolYearConditionsBySchoolYearRange, SchoolYearCondition } from "./SchoolYearCondition";
 import { SchoolYear } from "@/abstract/SchoolYear";
 import { SchoolSubject_Key } from "@/abstract/SchoolSubject";
 import { getMusicLessonTopicByMusicLessonTopicKey } from "@/abstract/MusicLessonTopic";
+import { log, logDebug, logTrace } from "@/utils/logUtils";
+import { isWithinSchoolYearRange, schoolYearRangeToString } from "./SchoolYearRange";
 
 
 /**
  * @since latest
  */
-export abstract class AbstractSchoolYearValidator extends AbstractAttendanceValidator {
+export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInputValidator<SchoolYear> {
 
     /** The subject this validator is for. Should be a constant, set by implementing class.  */
     private schoolSubjectToValidateFor: SchoolSubject_Key;
 
 
-    constructor(currentAttendanceEntity: AttendanceEntity, allAttendanceEntities: AttendanceEntity[], schoolSubjectToValidateFor: SchoolSubject_Key) {
+    constructor(currentAttendanceEntity: AttendanceEntity, savedAttendanceEntities: AttendanceEntity[], schoolSubjectToValidateFor: SchoolSubject_Key) {
         
-        super(currentAttendanceEntity, allAttendanceEntities);
+        super(currentAttendanceEntity, savedAttendanceEntities);
 
         this.schoolSubjectToValidateFor = schoolSubjectToValidateFor;
     }
@@ -31,9 +33,6 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceVali
         // validate with context
         // vlaidate future
         // add to list
-
-
-    // getCurrentlyRequiredTopics
     
     
     /**
@@ -45,48 +44,46 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceVali
 
 
     /**
-     * Validate `schoolYear`s conditions that don't take other attendance fields or future selections into consideration.
-     * 
-     * Returned error message gives a brief reason why `schoolYear` is invalid. Wont list possible values. Will include the invalid value.
-     * 
      * @param allConstantSchoolYearConditions the constant list to compare saved attendances agains. See "attendanceValidationConstants.ts"
      * @param schoolYear to validate 
-     * @returns `null` if `schoolYear` is valid, an error message if invalid
-     * @throws if falsy params
+     * @returns `null` if `schoolYear` is valid or falsy, an error message if invalid
+     * @throws if conditions
      */
     public validateNonContextConditions(allConstantSchoolYearConditions: SchoolYearCondition[], schoolYear: SchoolYear): string | null {
 
-        assertFalsyAndThrow(allConstantSchoolYearConditions, schoolYear);
+        assertFalsyAndThrow(allConstantSchoolYearConditions);
 
-        if (this.getCurrentAttendance().schoolSubject !== this.schoolSubjectToValidateFor)
+        if (!schoolYear || this.getCurrentAttendance().schoolSubject !== this.schoolSubjectToValidateFor)
             return null;
 
         const schoolYearConditions = findSchoolYearConditionsBySchoolYearRange(schoolYear, allConstantSchoolYearConditions);
-        const numSavedAttendancesBySchoolYear = this.getAllAttendancesBySchoolSubject(this.schoolSubjectToValidateFor)
-            .filter(attendance => attendance.schoolYear === schoolYear)
-            .length;
 
-        for (const [schoolYearCondition, ] of schoolYearConditions)
-            if (numSavedAttendancesBySchoolYear === schoolYearCondition.maxAttendances)
-                return `Für Jahrgang '${schoolYear}' sind im ausgewählten Fach bereits die maximale Anzahl an UBs geplant (${schoolYearCondition.maxAttendances}x)`;
+        for (const [schoolYearCondition, ] of schoolYearConditions) {
+            // count saved attendances within this school year range
+            const numSavedAttendancesBySchoolYearRange = this.getSavedAttendancesBySchoolSubject(this.schoolSubjectToValidateFor)
+                .filter(attendance => isWithinSchoolYearRange(attendance.schoolYear, schoolYearCondition.schoolYearRange))
+                .length;
+
+            // case: range maxed out
+            if (numSavedAttendancesBySchoolYearRange === schoolYearCondition.maxAttendances)
+                return `Für die Jahrgänge '${schoolYearRangeToString(schoolYearCondition.schoolYearRange)}' sind im ausgewählten Fach bereits die maximale Anzahl an UBs geplant (${schoolYearCondition.maxAttendances}x).`;
+        }
 
         return null;
     }
 
-    
+
     /**
-     * Validate `schoolYear` only considering conditions that are related to other attendance fields (not including future selections).
-     * 
-     * @param allConstantSchoolYearConditions 
+     * @param allConstantSchoolYearConditions the constant list to compare saved attendances agains. See "attendanceValidationConstants.ts"
      * @param schoolYear to validate 
-     * @returns `null` if `schoolYear` is valid, an error message if invalid
-     * @throws if falsy params
+     * @returns `null` if `schoolYear` is valid or falsy, an error message if invalid
+     * @throws if conditions
      */
     public validateContextConditions(allConstantSchoolYearConditions: SchoolYearCondition[], schoolYear: SchoolYear): string | null {
+        
+        assertFalsyAndThrow(allConstantSchoolYearConditions);
 
-        assertFalsyAndThrow(allConstantSchoolYearConditions, schoolYear);
-
-        if (this.getCurrentAttendance().schoolSubject !== this.schoolSubjectToValidateFor)
+        if (!schoolYear || this.getCurrentAttendance().schoolSubject !== this.schoolSubjectToValidateFor)
             return null;
 
         const lessonTopic = this.getCurrentAttendance().musicLessonTopic;
@@ -101,7 +98,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceVali
             return null;
 
         const schoolYearConditionWithTopicMatch = schoolYearConditions
-            .find(([schoolYearCondition, ]) => schoolYearCondition.topic === lessonTopic)
+            .find(([schoolYearCondition, ]) => schoolYearCondition.lessonTopic === lessonTopic)
 
         if (!schoolYearConditionWithTopicMatch)
             return `Die Kombination aus Jahrgang '${schoolYear}' und Stundenthema '${getMusicLessonTopicByMusicLessonTopicKey(lessonTopic)}' ist nicht möglich.`;

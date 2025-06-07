@@ -3,7 +3,7 @@ import { equalsSchoolYearRange, isWithinSchoolYearRange, SchoolYearRange } from 
 import { SchoolSubject } from "@/abstract/SchoolSubject";
 import { SchoolYear } from "@/abstract/SchoolYear";
 import { assertFalsyAndThrow } from "@/utils/utils";
-import { defaultEquals } from "@/utils/projectUtils";
+import { defaultEquals, defaultEqualsFalsy } from "@/utils/projectUtils";
 
 
 /**
@@ -17,7 +17,7 @@ export interface SchoolYearCondition {
     maxAttendances: number | null;
     schoolYearRange: SchoolYearRange;
     /** Only relevant for subject `music` */
-    topic?: MusicLessonTopic_Key,
+    lessonTopic?: MusicLessonTopic_Key,
 }
 
 
@@ -42,6 +42,25 @@ export function findSchoolYearConditionsBySchoolYearRange(schoolYear: SchoolYear
 
 
 /**
+ * @param lessonTopic by which to search
+ * @param schoolYearConditions to look through
+ * @returns array of `[schoolYearConditions, schoolYearConditionIndex]` sothat `schoolYear` is within range of `condition.schoolYearRange`. Empty array if no match
+ */
+export function findSchoolYearConditionsByLessonTopic(lessonTopic: MusicLessonTopic_Key, schoolYearConditions: SchoolYearCondition[]): [SchoolYearCondition, number][] {
+
+    assertFalsyAndThrow(lessonTopic, schoolYearConditions);
+
+    const schoolYearConditionsAndIndices: [SchoolYearCondition, number][] = (schoolYearConditions
+        .map((schoolYearCondition, i) => 
+            [schoolYearCondition, i]) as [SchoolYearCondition, number][])
+        .filter(([schoolYearCondition, ]) => 
+            lessonTopic === schoolYearCondition.lessonTopic)
+
+    return schoolYearConditionsAndIndices;
+}
+
+
+/**
  * Dont consider distinct falsy values.
  * 
  * @param schoolYearCondition1 
@@ -50,12 +69,12 @@ export function findSchoolYearConditionsBySchoolYearRange(schoolYear: SchoolYear
  */
 export function equalsSchoolYearCondition(schoolYearCondition1: SchoolYearCondition, schoolYearCondition2: SchoolYearCondition): boolean {
 
-    if (!schoolYearCondition1 || !schoolYearCondition2)
-        return defaultEquals(schoolYearCondition1, schoolYearCondition2);
+    if (!defaultEqualsFalsy(schoolYearCondition1, schoolYearCondition2))
+        return false;
 
     return defaultEquals(schoolYearCondition1.minAttendances, schoolYearCondition2.minAttendances) &&
         defaultEquals(schoolYearCondition1.maxAttendances, schoolYearCondition2.maxAttendances) &&
-        defaultEquals(schoolYearCondition1.topic, schoolYearCondition2.topic) &&
+        defaultEquals(schoolYearCondition1.lessonTopic, schoolYearCondition2.lessonTopic) &&
         equalsSchoolYearRange(schoolYearCondition1.schoolYearRange, schoolYearCondition2.schoolYearRange);
 }
 
@@ -68,8 +87,8 @@ export function equalsSchoolYearCondition(schoolYearCondition1: SchoolYearCondit
  */
 export function equalsSchoolYearConditions(schoolYearConditions1: SchoolYearCondition[], schoolYearConditions2: SchoolYearCondition[]): boolean {
 
-    if (!schoolYearConditions1 || !schoolYearConditions2)
-        return defaultEquals(schoolYearConditions1, schoolYearConditions2);
+    if (!defaultEqualsFalsy(schoolYearConditions1, schoolYearConditions2))
+        return false;
 
     if (schoolYearConditions1.length !== schoolYearConditions2.length)
         return false;

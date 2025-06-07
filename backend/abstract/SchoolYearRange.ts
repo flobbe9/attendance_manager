@@ -12,6 +12,12 @@ export interface SchoolYearRange {
 }
 
 
+export function schoolYearRangeToString(schoolYearRange: SchoolYearRange): string {
+
+    return schoolYearRange ? `${schoolYearRange.min} - ${schoolYearRange.max}` : '';
+}
+
+
 /**
  * @param schoolYear to check
  * @param schoolYearRange 
