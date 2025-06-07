@@ -70,7 +70,7 @@ export default forwardRef(function HelperSelect<OptionType>({
         setSelectionButtonValue(getSelectionButtonValue());
         setOptionElements(mapOptions());
 
-    }, [selectedOptions]);
+    }, [selectedOptions, setSelectedOptions]);
 
 
     useEffect(() => {
