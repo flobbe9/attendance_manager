@@ -41,26 +41,24 @@ export abstract class AbstractAttendanceInputValidator<InputValueType extends Va
     /**
      * @returns new `savedAttendances` instance but with `currentAttendance` replacing it's id match
      */
-    public getSavedAttendnacesReplaceWithCurrent(): AttendanceEntity[] {
+    public getSavedAttendancesWithoutCurent(): AttendanceEntity[] {
 
         // case: current attendance not saved yet or no saved attendances
         if (!this.currentAttendance.id || !this.savedAttendances.length)
             return this.savedAttendances;
 
-        const savedCurrentAttendanceTouple = (this.savedAttendances
-            .map((savedAttendance, i) => [savedAttendance, i]) as [AttendanceEntity, number][])
-            .find(([savedAttendance, ]) => this.currentAttendance.id === savedAttendance.id);
+        const savedCurrentAttendanceIndex = this.savedAttendances.
+            findIndex(savedAttendance => 
+                this.currentAttendance.id === savedAttendance.id);
         
         // should not happen, if current is saved it should be among saved attendances
-        if (!savedCurrentAttendanceTouple) {
+        if (savedCurrentAttendanceIndex === -1) {
             logWarn("Failed to find saved current attendance among saved attendances. This should not happen.");
             return this.savedAttendances;
         }
 
         const savedAttendances = cloneObj(this.savedAttendances);
-        const [, savedCurrentAttendanceIndex] = savedCurrentAttendanceTouple;
-
-        savedAttendances[savedCurrentAttendanceIndex] = this.currentAttendance;
+        savedAttendances.splice(savedCurrentAttendanceIndex, 1);
 
         return savedAttendances;
     }
@@ -75,7 +73,7 @@ export abstract class AbstractAttendanceInputValidator<InputValueType extends Va
         if (!schoolSubject)
             return [];
 
-        return this.getSavedAttendnacesReplaceWithCurrent()
+        return this.getSavedAttendancesWithoutCurent()
             .filter(attendanceEntity => attendanceEntity.schoolSubject === schoolSubject);
     }
 

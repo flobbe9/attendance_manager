@@ -339,7 +339,7 @@ describe("validateContextConditions", () => {
 })
 
 
-describe("getAllAttendnacesReplaceWithCurrent", () => {
+describe("getSavedAttendancesWithoutCurent", () => {
 
     test("Current attendance not saved, should not return different saved attendances", () => {
         const savedAttendances: AttendanceEntity[] = [
@@ -359,7 +359,7 @@ describe("getAllAttendnacesReplaceWithCurrent", () => {
             }
         ]
         const currentAttendance: AttendanceEntity = {
-            schoolSubject: "music", // different
+            schoolSubject: "history",
             schoolYear: "5",
             examinants: [],
             schoolclassMode: null
@@ -368,7 +368,8 @@ describe("getAllAttendnacesReplaceWithCurrent", () => {
 
         const validator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
 
-        expect(attendanceService.areModified(savedAttendances, validator.getSavedAttendnacesReplaceWithCurrent())).toBe(false);
+        expect(attendanceService.areModified(savedAttendances, validator.getSavedAttendancesWithoutCurent())).toBe(false);
+        expect(validator.getSavedAttendancesWithoutCurent().length).toBe(savedAttendances.length);
     })
 
 
@@ -391,7 +392,7 @@ describe("getAllAttendnacesReplaceWithCurrent", () => {
         ]
         const currentAttendance: AttendanceEntity = {
             id: 1,
-            schoolSubject: "music", // different
+            schoolSubject: "history", // different
             schoolYear: "5",
             examinants: [],
             schoolclassMode: null
@@ -400,7 +401,8 @@ describe("getAllAttendnacesReplaceWithCurrent", () => {
 
         const validator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
 
-        expect(attendanceService.areModified(savedAttendances, validator.getSavedAttendnacesReplaceWithCurrent())).toBe(true);
+        expect(attendanceService.areModified(savedAttendances, validator.getSavedAttendancesWithoutCurent())).toBe(true);
+        expect(validator.getSavedAttendancesWithoutCurent().length).toBe(savedAttendances.length - 1);
     })
 
 
@@ -417,7 +419,7 @@ describe("getAllAttendnacesReplaceWithCurrent", () => {
 
         const validator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
 
-        expect(validator.getSavedAttendnacesReplaceWithCurrent().length).toBe(0);
+        expect(validator.getSavedAttendancesWithoutCurent().length).toBe(0);
     })
 })
 

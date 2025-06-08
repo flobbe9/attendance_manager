@@ -21,8 +21,8 @@ import { GlobalContext } from "./GlobalContextProvider";
  */
 export default function AttendanceContextProvider({children}) {
 
-    const { snackbar } = useContext(GlobalContext);
-    const { dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup } = useContext(GlobalAttendanceContext);
+    const { snackbar, hideSnackbar } = useContext(GlobalContext);
+    const { dontShowInvalidInputErrorPopup } = useContext(GlobalAttendanceContext);
 
     /** The attendance entity currently beeing edited. Dont set an initial value */
     const [currentAttendanceEntity, setCurrentAttendanceEntity] = useState<AttendanceEntity | undefined>();
@@ -65,6 +65,8 @@ export default function AttendanceContextProvider({children}) {
         modified, setModified,
 
         handleInvalidAttendanceInput,
+        resetInvalidAttendanceInputErrorStyles,
+        
         tooltipIconColor, setTooltipIconColor,
         currentlyInvalidAttendanceInputKey
     }
@@ -163,7 +165,7 @@ export default function AttendanceContextProvider({children}) {
     }
 
 
-    async function handleInvalidAttendanceInputSnackbarDismiss() {
+    async function handleInvalidAttendanceInputSnackbarDismiss(): Promise<void> {
 
         if (dontShowInvalidInputErrorPopup && didDismissInvalidAttendanceInputErrorPopup) {
             await settingsRepository.updateDontShowAttendanceValidationErrorPopup(true);
@@ -172,6 +174,13 @@ export default function AttendanceContextProvider({children}) {
                 200
             );
         }
+    }
+
+
+    function resetInvalidAttendanceInputErrorStyles(): void {
+
+        setTooltipIconColor(ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR);
+        hideSnackbar();
     }
 
 
@@ -195,6 +204,8 @@ export const AttendanceContext = createContext({
     setModified: (modified: boolean): void => {},
 
     handleInvalidAttendanceInput: (invalidValue: string | number, reason: string, invalidAttendanceInputKey: keyof AttendanceEntity, callback?: () => void, status: CustomSnackbarStatus = 'info'): void => {},
+    resetInvalidAttendanceInputErrorStyles: (): void => {},
+
     tooltipIconColor: "black" as ColorValue,
     setTooltipIconColor: (color: ColorValue): void => {},
     currentlyInvalidAttendanceInputKey: undefined as keyof AttendanceEntity | undefined

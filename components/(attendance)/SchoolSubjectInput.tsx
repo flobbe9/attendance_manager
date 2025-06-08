@@ -31,6 +31,10 @@ export default function SchoolSubjectInput({...props}: Props) {
     function handleSelect(value: SchoolSubject): void {
 
         updateCurrentAttendanceEntity("schoolSubject", value ? getSchoolSubjectKeyBySchoolSubject(value) : undefined);
+
+        // TODO: 
+            // switching to music will show topic which might cause an error
+                // consider unsetting topic if music is selected from history
     }
 
 

@@ -16,7 +16,7 @@ import { isBlank } from "@/utils/utils";
 import { logDebug } from "@/utils/logUtils";
 import Flex from "../helpers/Flex";
 import AttendanceInputTooltip from "./AttendanceInputTooltip";
-;
+import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceInputValidatorBuilder";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -29,29 +29,24 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function SchoolYearInput({...props}: Props) {
     
-    const { hideSnackbar } = useContext(GlobalContext);
     const { savedAttendanceEntities } = useContext(GlobalAttendanceContext);
-    const { updateCurrentAttendanceEntity, currentAttendanceEntity, handleInvalidAttendanceInput } = useContext(AttendanceContext);
+    const { updateCurrentAttendanceEntity, currentAttendanceEntity, handleInvalidAttendanceInput, resetInvalidAttendanceInputErrorStyles } = useContext(AttendanceContext);
     
-    // TODO: 
-        // validator 
-        // .builder(current, all)
-        // .subject
-        // .build
-            // returns right instance
-    const validator = new MusicSchoolYearValidator(currentAttendanceEntity, savedAttendanceEntities);
+    const validator = AttendanceInputValidatorBuilder
+        .builder(currentAttendanceEntity, savedAttendanceEntities)
+        .schoolSubject(currentAttendanceEntity.schoolSubject)
+        .inputType("schoolYear")
+        .build();
 
     const componentName = "SchoolYearInput";
     const { children, ...otherProps } = useHelperProps(props, componentName);
 
 
     // TODO:
-        // make save button validate required
+        // make save button 
+            // validate required
             // validate schoolyear again since putting in 1 is possible now
-        // reset error styles 
-            // on save
-            // on valid input
-            // on screen leave
+            // reset error styles 
 
 
     /**
@@ -68,23 +63,22 @@ export default function SchoolYearInput({...props}: Props) {
 
             // case: still invalid, leave value unchanged
             if (!mightBecomeSchoolYear(value))
-                throw new Error(`Ungültiges Schuljahr ${value}`);
+                throw new Error(`Invalid schoolYear ${value}`);
         }
 
         let errorMessage = validator.validate(value as SchoolYear);
         
+        // case: invalid
         if (errorMessage != null) {
             handleInvalidAttendanceInput(value, errorMessage, "schoolYear");
             throw new Error(errorMessage);
 
-        } else {
-            // TODO: make this more generic?
-                // reset error styles too
-            hideSnackbar();
-        }
+        // case: valid
+        } else
+            resetInvalidAttendanceInputErrorStyles();
 
+        // set value here, dont set it in helperinput
         handleSetValue(value);
-
         throw new Error();
     }
 
