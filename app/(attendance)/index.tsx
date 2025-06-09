@@ -30,6 +30,7 @@ import { useIsFocused } from "@react-navigation/native";
 import React, { useContext, useEffect, useState } from "react";
 import { ViewStyle } from "react-native";
 import DateInput from './../../components/(attendance)/DateInput';
+import { Divider } from "react-native-paper";
 
 
 /**
@@ -167,10 +168,12 @@ export default function index() {
         <ScreenWrapper 
             style={{
                 ...AttendanceStyles.component.default,
-                backgroundColor: subjectColor,
+                backgroundColor: subjectColor, 
             }} 
         >
             <TopBar />
+            
+            <Divider style={{...mb_2}} />
 
             <HelperScrollView dynamicStyle={AttendanceStyles.scrollView}>
                 <SchoolSubjectInput dynamicStyle={AttendanceStyles.inputContainer} />
