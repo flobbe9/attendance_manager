@@ -9,6 +9,8 @@ import m0004 from './0004_bizarre_leopardon.sql';
 import m0005 from './0005_oval_talisman.sql';
 import m0006 from './0006_medical_blue_shield.sql';
 import m0007 from './0007_wandering_mentor.sql';
+import m0008 from './0008_military_sharon_carter.sql';
+import m0009 from './0009_cool_lockheed.sql';
 
   export default {
     journal,
@@ -20,7 +22,9 @@ m0003,
 m0004,
 m0005,
 m0006,
-m0007
+m0007,
+m0008,
+m0009
     }
   }
   
