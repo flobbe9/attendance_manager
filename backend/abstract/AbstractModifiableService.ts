@@ -28,8 +28,9 @@ export abstract class AbstractModifiableService<T extends AbstractEntity> extend
      */
     public areModified(entitiesLastSaved: T[], entitiesModified: T[]): boolean {
 
-        if (!defaultEqualsFalsy(entitiesLastSaved, entitiesModified))
-            return false;
+        const equalsFalsy = defaultEqualsFalsy(entitiesLastSaved, entitiesModified);
+        if (equalsFalsy !== null)
+            return equalsFalsy;
         
         if (entitiesLastSaved.length !== entitiesModified.length)
             return true;

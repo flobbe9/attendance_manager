@@ -15,7 +15,8 @@ export const MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS: SchoolYearCondition[] = [
             max: "10"
         },
         minAttendances: 1,
-        maxAttendances: null
+        maxAttendances: null,
+        attendanceCount: 0
     },
     {
         lessonTopic: "rhythm",
@@ -24,7 +25,8 @@ export const MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS: SchoolYearCondition[] = [
             max: "8"
         },
         minAttendances: 2,
-        maxAttendances: null
+        maxAttendances: null,
+        attendanceCount: 0
     },
     {
         lessonTopic: "structure",
@@ -33,7 +35,8 @@ export const MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS: SchoolYearCondition[] = [
             max: "13"
         },
         minAttendances: 1,
-        maxAttendances: null
+        maxAttendances: null,
+        attendanceCount: 0
     },
     {
         lessonTopic: "language",
@@ -42,7 +45,8 @@ export const MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS: SchoolYearCondition[] = [
             max: "13"
         },
         minAttendances: 1,
-        maxAttendances: null
+        maxAttendances: null,
+        attendanceCount: 0
     },
     {
         lessonTopic: "history",
@@ -51,7 +55,8 @@ export const MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS: SchoolYearCondition[] = [
             max: "13"
         },
         minAttendances: 1,
-        maxAttendances: null
+        maxAttendances: null,
+        attendanceCount: 0
     }
 ]
 
@@ -63,7 +68,8 @@ export const MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
             max: "6"
         },
         minAttendances: 1,
-        maxAttendances: 2
+        maxAttendances: 2,
+        attendanceCount: 0
     },
     {
         schoolYearRange: {
@@ -71,7 +77,8 @@ export const MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
             max: "8"
         },
         minAttendances: 1,
-        maxAttendances: 2
+        maxAttendances: 2,
+        attendanceCount: 0
     },
     {
         schoolYearRange: {
@@ -79,7 +86,8 @@ export const MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
             max: "10"
         },
         minAttendances: 1,
-        maxAttendances: 2
+        maxAttendances: 2,
+        attendanceCount: 0
     },
     {
         schoolYearRange: {
@@ -87,7 +95,8 @@ export const MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
             max: "11"
         },
         minAttendances: 1,
-        maxAttendances: 3
+        maxAttendances: 3,
+        attendanceCount: 0
     },
     {
         schoolYearRange: {
@@ -95,7 +104,8 @@ export const MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
             max: "13"
         },
         minAttendances: 2,
-        maxAttendances: 4
+        maxAttendances: 4,
+        attendanceCount: 0
     },
     // Sekundarstufe 1 (sek1)
     {
@@ -104,7 +114,8 @@ export const MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
             max: "10"
         },
         minAttendances: 4,
-        maxAttendances: 5
+        maxAttendances: 5,
+        attendanceCount: 0
     },
     // Sekundarstufe 2 (sek2)
     {
@@ -113,7 +124,56 @@ export const MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
             max: "13"
         },
         minAttendances: 4,
-        maxAttendances: 5
+        maxAttendances: 5,
+        attendanceCount: 0
+    },
+]
+
+export const MUSIC_SCHOOL_YEAR_CONDITIONS_NO_SEK: SchoolYearCondition[] = [
+    {
+        schoolYearRange: {
+            min: "5",
+            max: "6"
+        },
+        minAttendances: 1,
+        maxAttendances: 2,
+        attendanceCount: 0
+    },
+    {
+        schoolYearRange: {
+            min: "7",
+            max: "8"
+        },
+        minAttendances: 1,
+        maxAttendances: 2,
+        attendanceCount: 0
+    },
+    {
+        schoolYearRange: {
+            min: "9",
+            max: "10"
+        },
+        minAttendances: 1,
+        maxAttendances: 2,
+        attendanceCount: 0
+    },
+    {
+        schoolYearRange: {
+            min: "11",
+            max: "11"
+        },
+        minAttendances: 1,
+        maxAttendances: 3,
+        attendanceCount: 0
+    },
+    {
+        schoolYearRange: {
+            min: "12",
+            max: "13"
+        },
+        minAttendances: 2,
+        maxAttendances: 4,
+        attendanceCount: 0
     },
 ]
 
@@ -131,7 +191,8 @@ export const HISTORY_SCHOOL_YEAR_CONDITIONS_VARIANT_1: SchoolYearCondition[] = [
             max: "6"
         },
         minAttendances: 2,
-        maxAttendances: 2
+        maxAttendances: 2,
+        attendanceCount: 0
     },
     {
         schoolYearRange: {
@@ -139,7 +200,8 @@ export const HISTORY_SCHOOL_YEAR_CONDITIONS_VARIANT_1: SchoolYearCondition[] = [
             max: "8"
         },
         minAttendances: 2,
-        maxAttendances: 2
+        maxAttendances: 2,
+        attendanceCount: 0
     },
     {
         schoolYearRange: {
@@ -147,7 +209,8 @@ export const HISTORY_SCHOOL_YEAR_CONDITIONS_VARIANT_1: SchoolYearCondition[] = [
             max: "10"
         },
         minAttendances: 2,
-        maxAttendances: 2
+        maxAttendances: 2,
+        attendanceCount: 0
     },
     {
         schoolYearRange: {
@@ -155,7 +218,8 @@ export const HISTORY_SCHOOL_YEAR_CONDITIONS_VARIANT_1: SchoolYearCondition[] = [
             max: "11"
         },
         minAttendances: 1,
-        maxAttendances: 1
+        maxAttendances: 1,
+        attendanceCount: 0
     },
     {
         schoolYearRange: {
@@ -163,7 +227,8 @@ export const HISTORY_SCHOOL_YEAR_CONDITIONS_VARIANT_1: SchoolYearCondition[] = [
             max: "13"
         },
         minAttendances: 2,
-        maxAttendances: 2
+        maxAttendances: 2,
+        attendanceCount: 0
     },
 ]
 
@@ -181,7 +246,8 @@ export const HISTORY_SCHOOL_YEAR_CONDITIONS_VARIANT_2: SchoolYearCondition[] = [
             max: "6"
         },
         minAttendances: 2,
-        maxAttendances: 2
+        maxAttendances: 2,
+        attendanceCount: 0
     },
     {
         schoolYearRange: {
@@ -189,7 +255,8 @@ export const HISTORY_SCHOOL_YEAR_CONDITIONS_VARIANT_2: SchoolYearCondition[] = [
             max: "10"
         },
         minAttendances: 3,
-        maxAttendances: 3
+        maxAttendances: 3,
+        attendanceCount: 0
     },
     {
         schoolYearRange: {
@@ -197,7 +264,8 @@ export const HISTORY_SCHOOL_YEAR_CONDITIONS_VARIANT_2: SchoolYearCondition[] = [
             max: "11"
         },
         minAttendances: 1,
-        maxAttendances: 1
+        maxAttendances: 1,
+        attendanceCount: 0
     },
     {
         schoolYearRange: {
@@ -205,7 +273,8 @@ export const HISTORY_SCHOOL_YEAR_CONDITIONS_VARIANT_2: SchoolYearCondition[] = [
             max: "13"
         },
         minAttendances: 3,
-        maxAttendances: 3
+        maxAttendances: 3,
+        attendanceCount: 0
     },
 ]
 
@@ -220,7 +289,8 @@ export const GUB_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
             max: "10"
         },
         minAttendances: 1,
-        maxAttendances: 1
+        maxAttendances: 1,
+        attendanceCount: 0
     },
     {
         schoolYearRange: {
@@ -228,6 +298,7 @@ export const GUB_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
             max: "13"
         },
         minAttendances: 1,
-        maxAttendances: 1
+        maxAttendances: 1,
+        attendanceCount: 0
     }
 ]

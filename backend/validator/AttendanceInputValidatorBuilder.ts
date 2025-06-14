@@ -89,8 +89,9 @@ export class AttendanceInputValidatorBuilder {
             case "history":
                 return new MusicSchoolYearValidator(AttendanceInputValidatorBuilder.currentAttendance, AttendanceInputValidatorBuilder.savedAttendances);
             
-            default:
-                throw new Error(`No validator implementation found for schoolSubject ${this._schoolSubject}`);
+                // TODO
+            // default:
+            //     throw new Error(`No validator implementation found for schoolSubject ${this._schoolSubject}`);
         }
     }
 }

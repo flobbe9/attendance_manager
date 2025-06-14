@@ -33,7 +33,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function TopBar({...props}: Props) {
 
-    const { allStyles: { pe_2, mt_5, col_6 }, parseResponsiveStyleToStyle: pr } = useResponsiveStyles();
+    const { allStyles: { mt_5, col_6 }, parseResponsiveStyleToStyle: pr } = useResponsiveStyles();
 
     const { popup, snackbar, toast, hideToast } = useContext(GlobalContext);
     const { 
@@ -53,6 +53,9 @@ export default function TopBar({...props}: Props) {
     
     // TODO: 
         // save button should not be enabled while required fields are missing (simply do "isValid"?)
+        // validate required
+        // validate schoolyear again since putting in 1 is possible now
+        // reset error styles 
     async function handleSavePress(): Promise<void> {
 
         // validate empty values to prevent at least sql exceptions

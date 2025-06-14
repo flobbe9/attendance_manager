@@ -1,17 +1,21 @@
-import { SchoolYear } from "@/abstract/SchoolYear";
+import { isSchoolYear, SchoolYear } from "@/abstract/SchoolYear";
 import { assertFalsyAndThrow, cloneObj } from "@/utils/utils";
 import { AbstractSchoolYearValidator } from "../abstract/AbstractSchoolYearValidator";
-import { findSchoolYearConditionsByLessonTopic, findSchoolYearConditionsBySchoolYearRange, SchoolYearCondition } from "../abstract/SchoolYearCondition";
+import { destructSchoolYearConditions, findSchoolYearConditionsByLessonTopic, findSchoolYearConditionsBySchoolYearRange, SchoolYearCondition, sortSchoolYearConditionsByRangeSize } from "../abstract/SchoolYearCondition";
 import { AttendanceEntity } from "../DbSchema";
-import { logDebug } from "@/utils/logUtils";
-import { MUSIC_SCHOOL_YEAR_CONDITIONS, MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS } from "@/utils/attendanceValidationConstants";
+import { log, logDebug } from "@/utils/logUtils";
+import { MUSIC_SCHOOL_YEAR_CONDITIONS, MUSIC_SCHOOL_YEAR_CONDITIONS_NO_SEK, MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS } from "@/utils/attendanceValidationConstants";
+import { isSchoolYearRangeOverlap, isWithinSchoolYearRange, schoolYearRangeToString } from "../abstract/SchoolYearRange";
+import { AttendanceService } from "../services/AttendanceService";
+import { getMusicLessonTopicByMusicLessonTopicKey } from "@/abstract/MusicLessonTopic";
 
 
 /**
  * @since latest
  */
 export class MusicSchoolYearValidator extends AbstractSchoolYearValidator {
-    
+
+
     constructor(currentAttendanceEntity: AttendanceEntity, savedAttendanceEntities: AttendanceEntity[]) {
         
         super(currentAttendanceEntity, savedAttendanceEntities, "music");
@@ -30,21 +34,26 @@ export class MusicSchoolYearValidator extends AbstractSchoolYearValidator {
      * in order to match the requirement
      * @throws if falsy params
      */
-    public getCurrentlyRequiredSchoolYearConditions(constantSchoolYearConditions: SchoolYearCondition[]): SchoolYearCondition[] {
+    public getCurrentlyUnsatisfiedSchoolYearConditions(constantSchoolYearConditions: SchoolYearCondition[]): SchoolYearCondition[] {
 
         assertFalsyAndThrow(constantSchoolYearConditions);
 
-        const currentlyRequiredSchoolYearConditions = cloneObj(constantSchoolYearConditions);
+        const currentlyUnsatisfiedSchoolYearConditions = cloneObj(constantSchoolYearConditions);
 
-        this.getSavedAttendances()
+        // get relevant saved attendances
+        const attendanceService = new AttendanceService();
+        let savedAttendances = this.getSavedAttendancesWithOrWithoutCurrent(true);
+        savedAttendances = attendanceService.findAllByExaminant(savedAttendances, "music");
+        
+        savedAttendances
             .forEach(savedAttendance => {
-                const matchingSchoolYearConditionTouples = findSchoolYearConditionsBySchoolYearRange(savedAttendance.schoolYear, currentlyRequiredSchoolYearConditions);
+                const matchingSchoolYearConditionTouples = findSchoolYearConditionsBySchoolYearRange(savedAttendance.schoolYear, currentlyUnsatisfiedSchoolYearConditions);
 
                 // "subtract" saved attendance conditions from constant conditions
-                this.decreaseSchoolYearConditions(matchingSchoolYearConditionTouples, currentlyRequiredSchoolYearConditions);
+                this.decreaseSchoolYearConditions(matchingSchoolYearConditionTouples, currentlyUnsatisfiedSchoolYearConditions);
             })
 
-        return currentlyRequiredSchoolYearConditions;
+        return currentlyUnsatisfiedSchoolYearConditions;
     }
 
 
@@ -53,25 +62,33 @@ export class MusicSchoolYearValidator extends AbstractSchoolYearValidator {
      * @returns list of conditions with lesson topics that haven't met their required number of attendances yet
      * @throws if falsy params
      */
-    public getCurrentlyRequiredLessonTopics(constantSchoolYearConditions: SchoolYearCondition[]): SchoolYearCondition[] {
+    public getCurrentlyUnsatisfiedLessonTopicConditions(constantSchoolYearConditions: SchoolYearCondition[]): SchoolYearCondition[] {
 
         assertFalsyAndThrow(constantSchoolYearConditions);
 
-        const currentlyRequiredSchoolYearConditions = cloneObj(constantSchoolYearConditions);
+        const currentlyUnsatisfiedSchoolYearConditions = cloneObj(constantSchoolYearConditions);
 
-        this.getSavedAttendances()
-            .forEach(savedAttendance => {
-                const matchingSchoolYearConditionTouples = findSchoolYearConditionsByLessonTopic(savedAttendance.musicLessonTopic, currentlyRequiredSchoolYearConditions);
+        // get relevant saved attendances
+        const attendanceService = new AttendanceService();
+        let savedAttendances = this.getSavedAttendancesWithOrWithoutCurrent(true);
+        savedAttendances = attendanceService.findAllByExaminant(savedAttendances, "music");
+
+        savedAttendances
+            .forEach(savedAttendance => {                
+                const matchingSchoolYearConditionTouples = findSchoolYearConditionsByLessonTopic(savedAttendance.musicLessonTopic, currentlyUnsatisfiedSchoolYearConditions);
 
                 // "subtract" saved attendance conditions from constant conditions
-                this.decreaseSchoolYearConditions(matchingSchoolYearConditionTouples, currentlyRequiredSchoolYearConditions);
+                this.decreaseSchoolYearConditions(matchingSchoolYearConditionTouples, currentlyUnsatisfiedSchoolYearConditions);
             })
 
-        return currentlyRequiredSchoolYearConditions;
+        return currentlyUnsatisfiedSchoolYearConditions;
     }
 
 
     public validate(schoolYear: SchoolYear): string | null {
+
+        if (!this.shouldInputBeValidated(schoolYear))
+            return null;
         
         let errorMessage: string = null;
 
@@ -87,19 +104,80 @@ export class MusicSchoolYearValidator extends AbstractSchoolYearValidator {
 
         logDebug("context schoolyear valid", schoolYear)
 
-        // validatefuture
+        if ((errorMessage = this.validateFuture(schoolYear)) != null)
+            return errorMessage;        
+
+        logDebug("future valid", schoolYear)
+        logDebug('')
+
+        return errorMessage;
+    }
+
+    
+    // ** assuming that topic conditions have no max value
+        // gub
+    public validateFuture(schoolYear: SchoolYear): string | null {
+
+        if (!this.shouldInputBeValidated(schoolYear))
+            return null;
+
+        const prevSchoolYear = this.getCurrentAttendance().schoolYear;
+        // pretend value has been selected
+        this.getCurrentAttendance().schoolYear = schoolYear;
+
+        let currentlyUnsatisfiedTopicConditions = this.getCurrentlyUnsatisfiedLessonTopicConditions(MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS);
+        currentlyUnsatisfiedTopicConditions = destructSchoolYearConditions(currentlyUnsatisfiedTopicConditions);
+        sortSchoolYearConditionsByRangeSize(currentlyUnsatisfiedTopicConditions);
+
+        const schoolYearConditionsWithCount =  this.getSchoolYearConditionsWithCount(
+            MUSIC_SCHOOL_YEAR_CONDITIONS_NO_SEK, 
+            (savedAttendance, condition) => 
+                isWithinSchoolYearRange(savedAttendance.schoolYear, condition.schoolYearRange));
+        sortSchoolYearConditionsByRangeSize(schoolYearConditionsWithCount);
+
+        logDebug("required topics", currentlyUnsatisfiedTopicConditions.map(c => c.lessonTopic))
+        logDebug("current school year counts", schoolYearConditionsWithCount.map(c => `${schoolYearRangeToString(c.schoolYearRange)}; ${c.attendanceCount}`))
+
+        try {
+            // match up all unsatisfied topics 
+            currentlyUnsatisfiedTopicConditions
+                .forEach(unsatisfiedTopicCondition => {
+                    let hasConditionSchoolYearMatch = false;
+
+                    schoolYearConditionsWithCount
+                        .forEach(schoolYearConditionWithCount => {
+                            if (schoolYearConditionWithCount.attendanceCount < schoolYearConditionWithCount.maxAttendances && 
+                                isSchoolYearRangeOverlap(unsatisfiedTopicCondition.schoolYearRange, schoolYearConditionWithCount.schoolYearRange)) {
+                                logDebug("count up", schoolYearRangeToString(schoolYearConditionWithCount.schoolYearRange))
+                                schoolYearConditionWithCount.attendanceCount++;
+                                hasConditionSchoolYearMatch = true;
+                            }
+                        })
+
+                    // case: topic does not match with any schoolyear left
+                    if (!hasConditionSchoolYearMatch)
+                        throw new Error(`Das Stundenthema '${getMusicLessonTopicByMusicLessonTopicKey(unsatisfiedTopicCondition.lessonTopic)}' wird mit dieser Auswahl nicht seine Mindestanzahl an UBs erreichen können.`);
+                })
+
+        } catch (e) {
+            return e.message ?? '';
+            
+        } finally {
+            // reset value
+            this.getCurrentAttendance().schoolYear = prevSchoolYear;
+        }
 
         return null;
     }
 
 
     /**
-     * Decrease (and modify) `currentlyRequiredSchoolYearConditions` `minAttendances` or remove the condition if `minAttendances` becomes 0.
+     * Decrease (and modify) `currentlyUnsatisfiedSchoolYearConditions` `minAttendances` or remove the condition if `minAttendances` becomes 0.
      *  
-     * @param schoolYearConditionTouples to decrease or remove from `currentlyRequiredSchoolYearConditions` 
-     * @param currentlyRequiredSchoolYearConditions to update conditions in
+     * @param schoolYearConditionTouples to decrease or remove from `currentlyUnsatisfiedSchoolYearConditions` 
+     * @param currentlyUnsatisfiedSchoolYearConditions to update conditions in
      */
-    private decreaseSchoolYearConditions(schoolYearConditionTouples: [SchoolYearCondition, number][], currentlyRequiredSchoolYearConditions: SchoolYearCondition[]): void {
+    private decreaseSchoolYearConditions(schoolYearConditionTouples: [SchoolYearCondition, number][], currentlyUnsatisfiedSchoolYearConditions: SchoolYearCondition[]): void {
 
         schoolYearConditionTouples
             // sort in reverse for condition indices not to change when removing conditions
@@ -112,7 +190,7 @@ export class MusicSchoolYearValidator extends AbstractSchoolYearValidator {
                 // case: meeting required amount with this attendance
                 if (!matchingSchoolYearCondition.minAttendances || matchingSchoolYearCondition.minAttendances === 1)
                     // remove from conditions array
-                    currentlyRequiredSchoolYearConditions.splice(matchingSchoolYearConditionIndex, 1);
+                    currentlyUnsatisfiedSchoolYearConditions.splice(matchingSchoolYearConditionIndex, 1);
                 
                 else 
                     matchingSchoolYearCondition.minAttendances--;

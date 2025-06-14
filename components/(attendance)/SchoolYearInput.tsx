@@ -42,13 +42,6 @@ export default function SchoolYearInput({...props}: Props) {
     const { children, ...otherProps } = useHelperProps(props, componentName);
 
 
-    // TODO:
-        // make save button 
-            // validate required
-            // validate schoolyear again since putting in 1 is possible now
-            // reset error styles 
-
-
     /**
      * Attempt to fix `value` if invalid, then validate and possibly handle invalid `value`. Always throw error to prevent
      * default `HelperSelect` `setValue` call.

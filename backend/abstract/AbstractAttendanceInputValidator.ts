@@ -1,8 +1,9 @@
 import { SchoolSubject_Key } from '@/abstract/SchoolSubject';
+import { logWarn } from '@/utils/logUtils';
+import { cloneObj } from '@/utils/utils';
 import { ValueOf } from 'react-native-gesture-handler/lib/typescript/typeUtils';
 import { AttendanceEntity } from "../DbSchema";
-import { cloneObj } from '@/utils/utils';
-import { logWarn } from '@/utils/logUtils';
+import { AttendanceService } from '../services/AttendanceService';
 
 
 /**
@@ -18,11 +19,14 @@ export abstract class AbstractAttendanceInputValidator<InputValueType extends Va
     /** All saved attendances from db */
     private savedAttendances: AttendanceEntity[];    
 
+    public attendanceService: AttendanceService;
+
     
     constructor(currentAttendanceEntity: AttendanceEntity, savedAttendanceEntities: AttendanceEntity[]) {
         
         this.currentAttendance = currentAttendanceEntity;
         this.savedAttendances = savedAttendanceEntities;
+        this.attendanceService = new AttendanceService();
     }
 
 
@@ -41,7 +45,7 @@ export abstract class AbstractAttendanceInputValidator<InputValueType extends Va
     /**
      * @returns new `savedAttendances` instance but with `currentAttendance` replacing it's id match
      */
-    public getSavedAttendancesWithoutCurent(): AttendanceEntity[] {
+    public getSavedAttendancesWithoutCurrent(): AttendanceEntity[] {
 
         // case: current attendance not saved yet or no saved attendances
         if (!this.currentAttendance.id || !this.savedAttendances.length)
@@ -65,16 +69,43 @@ export abstract class AbstractAttendanceInputValidator<InputValueType extends Va
 
 
     /**
+     * @returns `savedAttendances` with `currentAttendances` appended but only if it has not been saved yet
+     */
+    public getSavedAttendancesWithUnsavedCurrent(): AttendanceEntity[] {
+
+        if (!this.currentAttendance || this.currentAttendance.id || !this.savedAttendances)
+            return this.savedAttendances;
+
+        return [...this.savedAttendances, this.currentAttendance];
+    }
+
+
+    /**
      * @param schoolSubject 
+     * @param includeCurrent whether to include current if unsaved (`true`), remove it if saved (`false`) or just return unmodified `savedAttendances` (`null`).
+     * Default is `false`
      * @returns saved attendances with `schoolSubject` possibly replacing the `currentAttendance` id match
      */
-    protected getSavedAttendancesBySchoolSubject(schoolSubject: SchoolSubject_Key): AttendanceEntity[] {
+    protected getSavedAttendancesBySchoolSubject(schoolSubject: SchoolSubject_Key, includeCurrent: boolean | null = false): AttendanceEntity[] {
 
         if (!schoolSubject)
             return [];
 
-        return this.getSavedAttendancesWithoutCurent()
+        return this.getSavedAttendancesWithOrWithoutCurrent(includeCurrent)
             .filter(attendanceEntity => attendanceEntity.schoolSubject === schoolSubject);
+    }
+
+
+    /**
+     * @param includeCurrent whether to include current if unsaved (`true`), remove it if saved (`false`) or just return unmodified `savedAttendances` (`null`)
+     * @returns 
+     */
+    protected getSavedAttendancesWithOrWithoutCurrent(includeCurrent: boolean | null): AttendanceEntity[] {
+
+        if (includeCurrent === null)
+            return this.savedAttendances;
+
+        return includeCurrent ? this.getSavedAttendancesWithUnsavedCurrent() : this.getSavedAttendancesWithoutCurrent();
     }
 
 
@@ -110,7 +141,15 @@ export abstract class AbstractAttendanceInputValidator<InputValueType extends Va
     public abstract validateContextConditions(constantConditions: any, inputValue: InputValueType): string | null;
 
 
-    // validate future
+    /**
+     * Go through unsatisfied conditions and make sure at least on combination of future attendances exists sothat those conditions can be met.
+     * 
+     * Wont force staying within the minimum amount of attendances.
+     * 
+     * @param inputValue that was last passed by user. It is assumed at this point that it has been validated with and without context
+     * @returns `null` if all requirements are still satisfiable, an error message if not
+     */
+    public abstract validateFuture(inputValue: InputValueType): string | null;
 
 
     /**
@@ -121,4 +160,11 @@ export abstract class AbstractAttendanceInputValidator<InputValueType extends Va
      * @returns `null` if `inputValue` is valid or falsy, an error message if invalid
      */
     public abstract validate(inputValue: InputValueType): string | null;
+
+
+    /**
+     * @param inputValue to validate
+     * @returns `true` if should validate on input change
+     */
+    public abstract shouldInputBeValidated(inputValue: InputValueType): boolean;
 }

@@ -27,7 +27,7 @@ export class IndexStyles {
     
     static linkContainer: DynamicStyle<ViewStyle> = {
         default: {
-            ...HelperStyles.fullWidth
+            ...HelperStyles.fullWidth,
         }
     }
 

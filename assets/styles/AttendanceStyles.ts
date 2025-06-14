@@ -22,7 +22,8 @@ export class AttendanceStyles {
     static scrollView: DynamicStyle<ViewStyle> = {
         default: {
             marginTop: GLOBAL_SCREEN_PADDING,
-            marginBottom: 40 // more than padding sothat keyboard does not cover bottom input
+            marginBottom: 40, // more than padding sothat keyboard does not cover bottom input
+            minHeight: "100%"
         }
     }
     

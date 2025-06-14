@@ -1,5 +1,5 @@
 import { SchoolYear } from "@/abstract/SchoolYear";
-import { isWithinSchoolYearRange, SchoolYearRange } from "../SchoolYearRange"
+import { isSchoolYearRangeOverlap, isWithinSchoolYearRange, SchoolYearRange } from "../SchoolYearRange"
 import { isStringFalsy } from "@/utils/utils";
 import { parseNumOrReturnNull, parseNumOrThrow } from "@/utils/projectUtils";
 
@@ -82,5 +82,76 @@ describe("isWithingSchoolYearRange", () => {
 
         expect(isWithinSchoolYearRange(schoolYearRange.min, schoolYearRange, false)).toBe(false);
         expect(isWithinSchoolYearRange(schoolYearRange.max, schoolYearRange, false)).toBe(false);
+    })
+})
+
+
+describe("isSchoolYearRangeOverlap", () => {
+    test("Should throw if falsy params", () => {
+        const validSchoolYearRange: SchoolYearRange = {
+            min: "5",
+            max: "10"
+        }
+
+        expect(() => isSchoolYearRangeOverlap(null, validSchoolYearRange)).toThrow();
+        expect(() => isSchoolYearRangeOverlap(validSchoolYearRange, null)).toThrow();
+        expect(() => isSchoolYearRangeOverlap(validSchoolYearRange, validSchoolYearRange)).not.toThrow();
+    })
+
+
+    test("Range 1 completely contained withing range 2", () => {
+        const range1: SchoolYearRange = {
+            min: "7",
+            max: "9"
+        }
+        const range2: SchoolYearRange = {
+            min: "5",
+            max: "10"
+        }
+
+        expect(isSchoolYearRangeOverlap(range1, range2, true)).toBe(true);
+        expect(isSchoolYearRangeOverlap(range1, range2, false)).toBe(true);
+        
+        // swap params
+        expect(isSchoolYearRangeOverlap(range2, range1, true)).toBe(true);
+        expect(isSchoolYearRangeOverlap(range2, range1, false)).toBe(true);
+    })
+
+
+    test("Range 1 partially contained withing range 2", () => {
+        const range1: SchoolYearRange = {
+            min: "7",
+            max: "9"
+        }
+        const range2: SchoolYearRange = {
+            min: "8",
+            max: "10"
+        }
+
+        expect(isSchoolYearRangeOverlap(range1, range2, true)).toBe(true);
+        expect(isSchoolYearRangeOverlap(range1, range2, false)).toBe(true);
+        
+        // swap params
+        expect(isSchoolYearRangeOverlap(range2, range1, true)).toBe(true);
+        expect(isSchoolYearRangeOverlap(range2, range1, false)).toBe(true);
+    })
+
+
+    test("Range 1 on edge of range 2", () => {
+        const range1: SchoolYearRange = {
+            min: "7",
+            max: "9"
+        }
+        const range2: SchoolYearRange = {
+            min: "9",
+            max: "10"
+        }
+
+        expect(isSchoolYearRangeOverlap(range1, range2, true)).toBe(true);
+        expect(isSchoolYearRangeOverlap(range1, range2, false)).toBe(false);
+        
+        // swap params
+        expect(isSchoolYearRangeOverlap(range2, range1, true)).toBe(true);
+        expect(isSchoolYearRangeOverlap(range2, range1, false)).toBe(false);
     })
 })

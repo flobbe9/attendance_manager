@@ -1,9 +1,10 @@
 import { MusicLessonTopic_Key } from "@/abstract/MusicLessonTopic";
-import { equalsSchoolYearRange, isWithinSchoolYearRange, SchoolYearRange } from "./SchoolYearRange";
+import { compareSchoolYearRangeSizes, equalsSchoolYearRange, getSchoolYearRangeSize, isWithinSchoolYearRange, SchoolYearRange } from "./SchoolYearRange";
 import { SchoolSubject } from "@/abstract/SchoolSubject";
 import { SchoolYear } from "@/abstract/SchoolYear";
-import { assertFalsyAndThrow } from "@/utils/utils";
+import { assertFalsyAndThrow, cloneObj, isNumberFalsy, isStringFalsy } from "@/utils/utils";
 import { defaultEquals, defaultEqualsFalsy } from "@/utils/projectUtils";
+import { log } from "@/utils/logUtils";
 
 
 /**
@@ -18,6 +19,8 @@ export interface SchoolYearCondition {
     schoolYearRange: SchoolYearRange;
     /** Only relevant for subject `music` */
     lessonTopic?: MusicLessonTopic_Key,
+    /** The number of saved attendances that match this condition. This count can be used during validation e.g. */
+    attendanceCount?: number
 }
 
 
@@ -61,6 +64,23 @@ export function findSchoolYearConditionsByLessonTopic(lessonTopic: MusicLessonTo
 
 
 /**
+ * @param schoolYearConditions to sort
+ * @returns modified `schoolYearConditions` sorted by range size in ascending order
+ * @throws if falsy param
+ * @see {@link getSchoolYearRangeSize}
+ * @see {@link compareSchoolYearRangeSizes}
+ */
+export function sortSchoolYearConditionsByRangeSize(schoolYearConditions: SchoolYearCondition[]): SchoolYearCondition[] {
+
+    assertFalsyAndThrow(schoolYearConditions);
+
+    return schoolYearConditions
+        .sort((condition1, condition2) => 
+            compareSchoolYearRangeSizes(condition1.schoolYearRange, condition2.schoolYearRange));
+}
+
+
+/**
  * Dont consider distinct falsy values.
  * 
  * @param schoolYearCondition1 
@@ -69,12 +89,14 @@ export function findSchoolYearConditionsByLessonTopic(lessonTopic: MusicLessonTo
  */
 export function equalsSchoolYearCondition(schoolYearCondition1: SchoolYearCondition, schoolYearCondition2: SchoolYearCondition): boolean {
 
-    if (!defaultEqualsFalsy(schoolYearCondition1, schoolYearCondition2))
-        return false;
+    const equalsFalsy = defaultEqualsFalsy(schoolYearCondition1, schoolYearCondition2);
+    if (equalsFalsy !== null)
+        return equalsFalsy;
 
     return defaultEquals(schoolYearCondition1.minAttendances, schoolYearCondition2.minAttendances) &&
         defaultEquals(schoolYearCondition1.maxAttendances, schoolYearCondition2.maxAttendances) &&
         defaultEquals(schoolYearCondition1.lessonTopic, schoolYearCondition2.lessonTopic) &&
+        defaultEquals(schoolYearCondition1.attendanceCount, schoolYearCondition2.attendanceCount) &&
         equalsSchoolYearRange(schoolYearCondition1.schoolYearRange, schoolYearCondition2.schoolYearRange);
 }
 
@@ -86,9 +108,10 @@ export function equalsSchoolYearCondition(schoolYearCondition1: SchoolYearCondit
  * @see {@link equalsSchoolYearCondition}
  */
 export function equalsSchoolYearConditions(schoolYearConditions1: SchoolYearCondition[], schoolYearConditions2: SchoolYearCondition[]): boolean {
-
-    if (!defaultEqualsFalsy(schoolYearConditions1, schoolYearConditions2))
-        return false;
+    
+    const equalsFalsy = defaultEqualsFalsy(schoolYearConditions1, schoolYearConditions2);
+    if (equalsFalsy !== null)
+        return equalsFalsy;
 
     if (schoolYearConditions1.length !== schoolYearConditions2.length)
         return false;
@@ -96,4 +119,39 @@ export function equalsSchoolYearConditions(schoolYearConditions1: SchoolYearCond
     return !schoolYearConditions1
         .find((schoolYearCondition1, i) => 
             !equalsSchoolYearCondition(schoolYearCondition1, schoolYearConditions2[i]));
+}
+
+
+/**
+ * Pushes a condition for every `minAttendances`. E.g. Will convert a condition with `minAttendances === 3` into 3 equal conditions,
+ * each with `minAttendances === 1`.
+ * 
+ * @param schoolYearConditions to destruct (wont be modified)
+ * @returns list of schoolyear conditions, each with `minAttendances === 1`
+ */
+export function destructSchoolYearConditions(schoolYearConditions: SchoolYearCondition[]): SchoolYearCondition[] {
+
+    assertFalsyAndThrow(schoolYearConditions);
+
+    const clonedSchoolYearConditions = cloneObj(schoolYearConditions);
+    const destructedSchoolYearConditions: SchoolYearCondition[] = [];
+
+    clonedSchoolYearConditions
+        .forEach(schoolYearCondition => {
+            // case: no required amount, nothing to destruct
+            if (isNumberFalsy(schoolYearCondition.minAttendances)) {
+                destructedSchoolYearConditions.push(schoolYearCondition);
+                return;
+            }
+
+            for (let i = 0; i < schoolYearCondition.minAttendances; i++) {
+                // set minAttendances to 1
+                const destructedSchoolYearCondition = cloneObj(schoolYearCondition);
+                destructedSchoolYearCondition.minAttendances = 1;
+
+                destructedSchoolYearConditions.push(destructedSchoolYearCondition);
+            }
+        })
+
+    return destructedSchoolYearConditions;
 }

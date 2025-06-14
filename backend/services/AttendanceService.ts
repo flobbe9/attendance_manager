@@ -16,8 +16,9 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
 
     public isModified(entityLastSaved: AttendanceEntity, entityModified: AttendanceEntity): boolean {
 
-        if (!defaultEqualsFalsy(entityLastSaved, entityModified))
-            return true;
+        const equalsFalsy = defaultEqualsFalsy(entityLastSaved, entityModified);
+        if (equalsFalsy !== null)
+            return equalsFalsy;
 
         const examinantService = new ExaminantService();
         const schoolclassModeService = new SchoolclassModeService();
@@ -161,5 +162,15 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
             schoolYear: undefined,
             ...(fields as any ?? {}) // cannot infer that key matches value
         }
+    }
+
+
+    public findAllByExaminant(attendanceEntities: AttendanceEntity[], role: ExaminantRole_Key): AttendanceEntity[] {
+
+        assertFalsyAndThrow(attendanceEntities, role);
+
+        return attendanceEntities
+            .filter(attendanceEntitiy =>
+                this.hasExaminant(attendanceEntitiy, role));
     }
 }
