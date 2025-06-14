@@ -1,5 +1,5 @@
 import Popup from "@/components/Popup";
-import React, { useContext } from "react";
+import React, { Fragment, ReactNode, useContext } from "react";
 import { Provider } from "react-native-paper";
 import { GlobalContext } from "./context/GlobalContextProvider";
 import CustomSnackbar from "./CustomSnackbar";
@@ -15,7 +15,7 @@ import { useScreenTouch } from "@/hooks/useScreenTouch";
  * 
  * @since 0.0.1
  */
-export default function GlobalComponentProvider({children}) {
+export default function GlobalComponentProvider({children}: {children: ReactNode}) {
 
     const { 
         globalSnackbarProps, 
@@ -41,9 +41,10 @@ export default function GlobalComponentProvider({children}) {
         hideGlobalPopup(globalPopupProps);
     });
     
-
+    
     return (
-        <Provider> {/** for react-native-paper */}
+        /** for react-native-paper */
+        <Provider> 
             {children}
 
             <Toast hideToast={hideToast} onTouchStart={handleTouchStart} {...globalToastProps} />

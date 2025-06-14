@@ -135,7 +135,7 @@ export default function index() {
 
 
 
-
+    // 
 
 
 
@@ -178,66 +178,69 @@ export default function index() {
             <HelperScrollView dynamicStyle={AttendanceStyles.scrollView}>
                 <SchoolSubjectInput dynamicStyle={AttendanceStyles.inputContainer} />
 
-                <DateInput dynamicStyle={AttendanceStyles.inputContainer} />
+                {/* Post select subject */}
+                <HelperView rendered={!!currentAttendanceEntity.schoolSubject}>
+                    <DateInput dynamicStyle={AttendanceStyles.inputContainer} />
 
-                <SchoolYearInput dynamicStyle={AttendanceStyles.inputContainer} />
+                    <SchoolYearInput dynamicStyle={AttendanceStyles.inputContainer} />
 
-                <TopicInput 
-                    dynamicStyle={AttendanceStyles.inputContainer}
-                    style={{zIndex: 2}} // needs to be higher than next sibling
-                />
+                    <TopicInput 
+                        dynamicStyle={AttendanceStyles.inputContainer}
+                        style={{zIndex: 2}} // needs to be higher than next sibling
+                    />
 
-                <ExaminantInput 
-                    dynamicStyle={AttendanceStyles.inputContainer} 
-                    style={{zIndex: 1 /* for select container */}}
-                />
+                    <ExaminantInput 
+                        dynamicStyle={AttendanceStyles.inputContainer} 
+                        style={{zIndex: 1 /* for select container */}}
+                    />
 
-                <Flex justifyContent="center" dynamicStyle={AttendanceStyles.notesContainer}>
-                    {/* Toggle notes */}
-                    <HelperButton 
-                        disableFlex={true} 
-                        style={{borderRadius: BORDER_RADIUS, width: 100}} 
-                        onPress={() => setAreNotesVisible(!areNotesVisible)}
-                    >
-                        <HelperText>Mehr</HelperText>
-                        <HelperView
-                            style={{
-                                transform: [{rotate: animatedArrowIconRotation}]
-                            }} 
+                    <Flex justifyContent="center" dynamicStyle={AttendanceStyles.notesContainer}>
+                        {/* Toggle notes */}
+                        <HelperButton 
+                            disableFlex={true} 
+                            style={{borderRadius: BORDER_RADIUS, width: 100}} 
+                            onPress={() => setAreNotesVisible(!areNotesVisible)}
                         >
-                            <FontAwesome name={"chevron-down"} size={20} />
+                            <HelperText>Mehr</HelperText>
+                            <HelperView
+                                style={{
+                                    transform: [{rotate: animatedArrowIconRotation}]
+                                }} 
+                            >
+                                <FontAwesome name={"chevron-down"} size={20} />
+                            </HelperView>
+                        </HelperButton>
+                    </Flex>
+
+                    <HelperView rendered={areNotesVisible}>
+                        {/* Note */}
+                        <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
+                            <HelperInput 
+                                multiline
+                                numberOfLines={numHelperInputLines}
+                                placeholder="Thema"
+                                dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
+                                containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
+                                value={currentAttendanceEntity.note}
+                                setValue={(value) => updateCurrentAttendanceEntity("note", value)}
+                            />
                         </HelperView>
-                    </HelperButton>
-                </Flex>
 
-                <HelperView rendered={areNotesVisible}>
-                    {/* Note */}
-                    <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
-                        <HelperInput 
-                            multiline
-                            numberOfLines={numHelperInputLines}
-                            placeholder="Thema"
-                            dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
-                            containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
-                            value={currentAttendanceEntity.note}
-                            setValue={(value) => updateCurrentAttendanceEntity("note", value)}
-                        />
+                        {/* Note2 */}
+                        <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
+                            <HelperInput 
+                                multiline
+                                numberOfLines={numHelperInputLines}
+                                placeholder="Lerngruppe"
+                                dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
+                                containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
+                                value={currentAttendanceEntity.note2}
+                                setValue={(value) => updateCurrentAttendanceEntity("note2", value)}
+                            />
+                        </HelperView>
+
+                        <SchoolclassModeInput dynamicStyle={AttendanceStyles.inputContainer} />
                     </HelperView>
-
-                    {/* Note2 */}
-                    <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
-                        <HelperInput 
-                            multiline
-                            numberOfLines={numHelperInputLines}
-                            placeholder="Lerngruppe"
-                            dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
-                            containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
-                            value={currentAttendanceEntity.note2}
-                            setValue={(value) => updateCurrentAttendanceEntity("note2", value)}
-                        />
-                    </HelperView>
-
-                    <SchoolclassModeInput dynamicStyle={AttendanceStyles.inputContainer} />
                 </HelperView>
             </HelperScrollView>
         </ScreenWrapper>

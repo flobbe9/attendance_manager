@@ -25,23 +25,23 @@ export default forwardRef(function HelperScrollView(
     }: Props,
     ref: Ref<ScrollView>
 ) {
+    const { children, ...otherProps } = useHelperProps(props, undefined, dynamicStyle, animatedDynamicStyles);
+    
+    const componentRef = useRef<ScrollView>(null);
+    
+    useImperativeHandle(ref, () => componentRef.current!, []);
+    
+    
+    useEffect(() => {
+        if (onRender && rendered)
+            onRender();    
+        
+    }, []);
+    
 
     if (rendered === false)
         return <Fragment />;
 
-    const { children, ...otherProps } = useHelperProps(props, undefined, dynamicStyle, animatedDynamicStyles);
-
-    const componentRef = useRef<ScrollView>(null);
-
-    useImperativeHandle(ref, () => componentRef.current!, []);
-
-
-    useEffect(() => {
-        if (onRender)
-            onRender();    
-
-    }, []);
-    
 
     return (
         <Animated.ScrollView ref={componentRef} contentContainerStyle={childrenContainerStyle} {...otherProps}>

@@ -102,7 +102,7 @@ export default function AttendanceLink({
                     </HelperText>
 
                     <Flex justifyContent="flex-end" style={{...col_4}}> 
-                        <HelperText>Jahrgang {attendanceEntity.schoolYear || ''}</HelperText>
+                        <HelperText>J. {attendanceEntity.schoolYear || ''} {` | ${attendanceEntity.musicLessonTopic ?? ' - '}`}</HelperText>
                     </Flex>
 
                     <Flex justifyContent="flex-end" style={{...col_4}}>

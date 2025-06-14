@@ -93,26 +93,30 @@ export default function index() {
             <HelperView dynamicStyle={IndexStyles.component}>
                 <IndexTopBar />
 
+                {/* Links */}
                 <HelperScrollView 
                     onScroll={handleScroll} 
                     dynamicStyle={IndexStyles.linkContainer} 
-                    style={{...mt_5 }}
-                    childrenContainerStyle={{...HelperStyles.fullHeight}}
+                    style={{ ...mt_5 }}
+                    childrenContainerStyle={{paddingBottom: 50}}
+                    rendered={!!attendanceLinks.length}
                 >
-                    {attendanceLinks.length ? 
-                        attendanceLinks : 
-                        <Flex 
-                            flexDirection="column" 
-                            justifyContent="center" 
-                            alignItems="center" 
-                            style={{...HelperStyles.fullHeight}}
-                        >
-                            <HelperText dynamicStyle={IndexStyles.emptyMessage}>😴</HelperText>
-                            <HelperText dynamicStyle={IndexStyles.emptyMessage}>Noch keine Unterrichtsbesuche...</HelperText>
-                        </Flex>
-                    }
+                    {attendanceLinks}
                 </HelperScrollView>
+                
+                {/* Empty message */}
+                <Flex 
+                    flexDirection="column" 
+                    justifyContent="center" 
+                    alignItems="center" 
+                    style={{...HelperStyles.fullHeight}}
+                    rendered={!attendanceLinks.length}
+                >
+                    <HelperText dynamicStyle={IndexStyles.emptyMessage}>😴</HelperText>
+                    <HelperText dynamicStyle={IndexStyles.emptyMessage}>Noch keine Unterrichtsbesuche...</HelperText>
+                </Flex>
 
+                {/* Add button */}
                 <Link 
                     href={"/(attendance)"}  
                     asChild 
