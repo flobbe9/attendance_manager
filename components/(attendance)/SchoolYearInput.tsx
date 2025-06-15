@@ -2,21 +2,18 @@ import { DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
 import { mightBecomeSchoolYear, SchoolYear } from "@/abstract/SchoolYear";
 import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
-import { MusicSchoolYearValidator } from "@/backend/validator/MusicSchoolYearValidator";
+import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceInputValidatorBuilder";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
+import { isBlank } from "@/utils/utils";
 import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
-import { GlobalContext } from "../context/GlobalContextProvider";
+import Flex from "../helpers/Flex";
 import HelperInput from "../helpers/HelperInput";
 import HelperText from "../helpers/HelperText";
-import { isBlank } from "@/utils/utils";
-import { logDebug } from "@/utils/logUtils";
-import Flex from "../helpers/Flex";
 import AttendanceInputTooltip from "./AttendanceInputTooltip";
-import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceInputValidatorBuilder";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {

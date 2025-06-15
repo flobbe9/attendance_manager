@@ -1,13 +1,13 @@
-import { isSchoolYear, SchoolYear } from "@/abstract/SchoolYear";
+import { getMusicLessonTopicByMusicLessonTopicKey } from "@/abstract/MusicLessonTopic";
+import { SchoolYear } from "@/abstract/SchoolYear";
+import { MUSIC_SCHOOL_YEAR_CONDITIONS, MUSIC_SCHOOL_YEAR_CONDITIONS_NO_SEK, MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS } from "@/utils/attendanceValidationConstants";
+import { logDebug } from "@/utils/logUtils";
 import { assertFalsyAndThrow, cloneObj } from "@/utils/utils";
 import { AbstractSchoolYearValidator } from "../abstract/AbstractSchoolYearValidator";
 import { destructSchoolYearConditions, findSchoolYearConditionsByLessonTopic, findSchoolYearConditionsBySchoolYearRange, SchoolYearCondition, sortSchoolYearConditionsByRangeSize } from "../abstract/SchoolYearCondition";
-import { AttendanceEntity } from "../DbSchema";
-import { log, logDebug } from "@/utils/logUtils";
-import { MUSIC_SCHOOL_YEAR_CONDITIONS, MUSIC_SCHOOL_YEAR_CONDITIONS_NO_SEK, MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS } from "@/utils/attendanceValidationConstants";
 import { isSchoolYearRangeOverlap, isWithinSchoolYearRange, schoolYearRangeToString } from "../abstract/SchoolYearRange";
+import { AttendanceEntity } from "../DbSchema";
 import { AttendanceService } from "../services/AttendanceService";
-import { getMusicLessonTopicByMusicLessonTopicKey } from "@/abstract/MusicLessonTopic";
 
 
 /**

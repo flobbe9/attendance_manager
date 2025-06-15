@@ -69,20 +69,31 @@ export abstract class AbstractAttendanceInputValidator<InputValueType extends Va
 
 
     /**
-     * @returns `savedAttendances` with `currentAttendances` appended but only if it has not been saved yet
+     * @returns `savedAttendances` with `currentAttendance` appended / replaced (only if both not falsy)
      */
     public getSavedAttendancesWithUnsavedCurrent(): AttendanceEntity[] {
 
-        if (!this.currentAttendance || this.currentAttendance.id || !this.savedAttendances)
+        if (!this.currentAttendance || !this.savedAttendances)
             return this.savedAttendances;
 
-        return [...this.savedAttendances, this.currentAttendance];
+        const savedCurrentAttendanceIndex = this.savedAttendances.
+            findIndex(savedAttendance => 
+                this.currentAttendance.id === savedAttendance.id);
+        
+        // case: current is unsaved
+        if (savedCurrentAttendanceIndex === -1)
+            return [...this.savedAttendances, this.currentAttendance];
+
+        const savedAttendances = cloneObj(this.savedAttendances);
+        savedAttendances.splice(savedCurrentAttendanceIndex, 1, this.currentAttendance);
+
+        return savedAttendances;
     }
 
 
     /**
      * @param schoolSubject 
-     * @param includeCurrent whether to include current if unsaved (`true`), remove it if saved (`false`) or just return unmodified `savedAttendances` (`null`).
+     * @param includeCurrent whether to include current if unsaved (`true`), remove it if saved (`false`) or just return unmodified `savedAttendances` (`null`)
      * Default is `false`
      * @returns saved attendances with `schoolSubject` possibly replacing the `currentAttendance` id match
      */

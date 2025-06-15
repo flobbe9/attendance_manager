@@ -618,7 +618,7 @@ describe("getSavedAttendancesWithUnsavedCurrent", () => {
         
         // with id
         let validator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
-        expect(attendanceService.areModified(savedAttendances, validator.getSavedAttendancesWithUnsavedCurrent())).toBe(false);
+        expect(attendanceService.areModified(savedAttendances, validator.getSavedAttendancesWithUnsavedCurrent())).toBe(true);
 
         // without id
         currentAttendance.id = null;

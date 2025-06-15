@@ -9,12 +9,11 @@ export class TooltipStyles {
         default: {
             position: "relative",
             zIndex: 1,
-            ...HelperStyles.fitContent
         }
     }
 
     static icon: TextStyle = {
-        padding: GLOBAL_SCREEN_PADDING,
+        paddingHorizontal: GLOBAL_SCREEN_PADDING,
     }
 
     static textContainer: DynamicStyle<ViewStyle> = {
