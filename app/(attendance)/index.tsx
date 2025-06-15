@@ -133,12 +133,6 @@ export default function index() {
     }
 
 
-
-
-    // 
-
-
-
     // TODO: 
         // clean up inline styles
         // screen leave

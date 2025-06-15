@@ -43,7 +43,7 @@ export default function SchoolSubjectInput({...props}: Props) {
             options={SCHOOL_SUBJECTS}
             selectedOptions={getSchoolSubjectBySchoolSubjectKey(currentAttendanceEntity.schoolSubject)}
             setSelectedOptions={handleSelect}
-            optionsContainerScroll={false}
+            optionsContainerScroll={!currentAttendanceEntity.schoolSubject} // should be position relative while bottom most element in scrollview, but absolute while not
             optionsContainerHeight={81}
             {...otherProps}
         >

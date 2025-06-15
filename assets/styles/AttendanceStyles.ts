@@ -23,7 +23,6 @@ export class AttendanceStyles {
         default: {
             marginTop: GLOBAL_SCREEN_PADDING,
             marginBottom: 40, // more than padding sothat keyboard does not cover bottom input
-            minHeight: "100%"
         }
     }
     

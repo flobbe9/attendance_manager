@@ -96,7 +96,7 @@ export default function TopBar({...props}: Props) {
                 <B>UB löschen</B>
                 <Br />
 
-                <HelperText>Bist du sicher? Der UB kann nicht wiederhergestellt werden!</HelperText>, 
+                <HelperText>Bist du sicher? Der UB kann nicht wiederhergestellt werden!</HelperText>
             </HelperView>,
             {
                 onConfirm: async () => {

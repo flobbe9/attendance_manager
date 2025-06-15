@@ -8,6 +8,7 @@ import HelperScrollView from "./helpers/HelperScrollView";
 import HelperText from "./helpers/HelperText";
 import ToastDefaultFooter from "./ToastDefaultFooter";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import HelperReactChildren from "./helpers/HelperReactChildren";
 
 export interface GlobalToastProps {
     /** Applied to outer container */
@@ -90,6 +91,7 @@ export default function Toast({
         if (hideOnDismiss)
             hideToast();
     }
+    
 
     return (
         <Portal>
@@ -103,10 +105,12 @@ export default function Toast({
                 {...otherProps}
             > 
                 <HelperScrollView dynamicStyle={ToastStyles.childrenContainer} style={childrenContainerStyle}>
-                    {typeof content === "string" ? <HelperText>{content}</HelperText> : content}
+                    <HelperReactChildren>{content}</HelperReactChildren>
                 </HelperScrollView> 
 
-                {children}
+                <HelperReactChildren>
+                    {children}
+                </HelperReactChildren>
 
                 <ToastDefaultFooter 
                     style={mt_2}
