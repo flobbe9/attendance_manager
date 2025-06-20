@@ -5,6 +5,8 @@ import { cloneObj } from "@/utils/utils";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import { isWithinSchoolYearRange } from "@/backend/abstract/SchoolYearRange";
 import { SchoolYear } from "@/abstract/SchoolYear";
+import { HistorySchoolYearValidator } from "../HistorySchoolYearValidator";
+import { AbstractSchoolYearValidator } from "@/backend/abstract/AbstractSchoolYearValidator";
 
 describe("getCurrentlyUnsatisfiedSchoolYearConditions", () => {
     test("Should remove conditions with falsy min value", () => {
@@ -564,7 +566,7 @@ describe("getSchoolYearConditionsWithCount", () => {
 })
 
 
-describe("getSavedAttendancesWithUnsavedCurrent", () => {
+describe("getSavedAttendancesWithCurrent", () => {
     test("Should not modify savedAttendances", () => {
         let savedAttendances: AttendanceEntity[] = [
             {
@@ -588,11 +590,11 @@ describe("getSavedAttendancesWithUnsavedCurrent", () => {
         
         // falsy
         let validator = new MusicSchoolYearValidator(null, savedAttendances);
-        expect(attendanceService.areModified(savedAttendances, validator.getSavedAttendancesWithUnsavedCurrent())).toBe(false);
+        expect(attendanceService.areModified(savedAttendances, validator.getSavedAttendancesWithCurrent())).toBe(false);
         
         // falsy
         validator = new MusicSchoolYearValidator(currentAttendance, null);        
-        expect(attendanceService.areModified(savedAttendances, validator.getSavedAttendancesWithUnsavedCurrent())).toBe(false);
+        expect(attendanceService.areModified(savedAttendances, validator.getSavedAttendancesWithCurrent())).toBe(false);
     })
 
     test("Should add current to savedAttendances", () => {
@@ -618,12 +620,12 @@ describe("getSavedAttendancesWithUnsavedCurrent", () => {
         
         // with id
         let validator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
-        expect(attendanceService.areModified(savedAttendances, validator.getSavedAttendancesWithUnsavedCurrent())).toBe(true);
+        expect(attendanceService.areModified(savedAttendances, validator.getSavedAttendancesWithCurrent())).toBe(true);
 
         // without id
         currentAttendance.id = null;
         validator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
-        expect(attendanceService.areModified(savedAttendances, validator.getSavedAttendancesWithUnsavedCurrent())).toBe(true);
+        expect(attendanceService.areModified(savedAttendances, validator.getSavedAttendancesWithCurrent())).toBe(true);
     })
 })
 
@@ -676,6 +678,364 @@ describe("shouldInputBeValidated", () => {
 
         clonedCurrentAttendance.examinants = [{role: "music"}];
         expect(validator.shouldInputBeValidated("5")).toBe(true);
+    })
+})
+
+
+describe("validateGubs", () => {
+    // dont validate if not a gub
+    test("Should be valid if current is not a gub", () => {
+        const currentAttendance: AttendanceEntity = {
+            id: 3,
+            schoolSubject: "music",
+            schoolYear: "5",
+            examinants: [
+                {
+                    role: "music"
+                },
+                {
+                    role: "educator"
+                }
+            ],
+            schoolclassMode: null
+        }
+        const savedAttendances: AttendanceEntity[] = [
+            {
+                id: 1,
+                schoolSubject: "music",
+                schoolYear: "5",
+                examinants: [
+                    {
+                        role: "music"
+                    },
+                    {
+                        role: "educator"
+                    },
+                    {
+                        role: "history"
+                    }
+                ],
+                schoolclassMode: null
+            },
+            {
+                id: 2,
+                schoolSubject: "history",
+                schoolYear: "12",
+                examinants: [
+                    {
+                        role: "history"
+                    },
+                    {
+                        role: "educator"
+                    },
+                    {
+                        role: "history"
+                    }
+                ],
+                schoolclassMode: null
+            },
+            {
+                id: 4,
+                schoolSubject: "history",
+                schoolYear: "12",
+                examinants: [
+                    {
+                        role: "history"
+                    },
+                    {
+                        role: "educator"
+                    }
+                ],
+                schoolclassMode: null
+            }
+        ]
+        const validator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
+
+        // valid even thoug all gubs are planned
+        expect(validator.validateGubs(currentAttendance.schoolYear)).toBe(null);
+    });
+
+    test("validateGubTotal - should be invalid if max num gubs is saved already", () => {
+        const currentAttendance: AttendanceEntity = {
+            id: 3,
+            schoolSubject: "music",
+            schoolYear: "5",
+            examinants: [
+                {
+                    role: "music"
+                },
+                {
+                    role: "educator"
+                },
+                {
+                    role: "history"
+                }
+            ],
+            schoolclassMode: null
+        }
+        const savedAttendances: AttendanceEntity[] = [
+            {
+                id: 1,
+                schoolSubject: currentAttendance.schoolSubject,
+                schoolYear: currentAttendance.schoolYear,
+                examinants: [
+                    {
+                        role: "music"
+                    },
+                    {
+                        role: "educator"
+                    },
+                    {
+                        role: "history"
+                    }
+                ],
+                schoolclassMode: null
+            },
+            {
+                id: 2,
+                schoolSubject: "history",
+                schoolYear: "12",
+                examinants: [
+                    {
+                        role: "history"
+                    },
+                    {
+                        role: "educator"
+                    },
+                    {
+                        role: "history"
+                    }
+                ],
+                schoolclassMode: null
+            },
+            {
+                id: 4,
+                schoolSubject: "history",
+                schoolYear: "12",
+                examinants: [
+                    {
+                        role: "history"
+                    },
+                    {
+                        role: "educator"
+                    }
+                ],
+                schoolclassMode: null
+            }
+        ]
+        const validator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
+
+        expect(validator.validateGubs(currentAttendance.schoolYear)).not.toBeNull();
+
+        // max not reached
+        savedAttendances.splice(0, 1);
+        expect(validator.validateGubs(currentAttendance.schoolYear)).toBeNull();
+    })
+    
+    test("validateGubTotal - should be invalid if max num gubs is saved already", () => {
+        const currentAttendance: AttendanceEntity = {
+            id: 3,
+            schoolSubject: "music",
+            schoolYear: "5",
+            examinants: [
+                {
+                    role: "music"
+                },
+                {
+                    role: "educator"
+                },
+                {
+                    role: "history"
+                }
+            ],
+            schoolclassMode: null
+        }
+        const savedAttendances: AttendanceEntity[] = [
+            {
+                id: 1,
+                schoolSubject: currentAttendance.schoolSubject,
+                schoolYear: currentAttendance.schoolYear,
+                examinants: [
+                    {
+                        role: "music"
+                    },
+                    {
+                        role: "educator"
+                    },
+                    {
+                        role: "history"
+                    }
+                ],
+                schoolclassMode: null
+            },
+            {
+                id: 2,
+                schoolSubject: "history",
+                schoolYear: "12",
+                examinants: [
+                    {
+                        role: "history"
+                    },
+                    {
+                        role: "educator"
+                    },
+                    {
+                        role: "history"
+                    }
+                ],
+                schoolclassMode: null
+            },
+            {
+                id: 4,
+                schoolSubject: "history",
+                schoolYear: "12",
+                examinants: [
+                    {
+                        role: "history"
+                    },
+                    {
+                        role: "educator"
+                    }
+                ],
+                schoolclassMode: null
+            }
+        ]
+        const validator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
+
+        expect(validator.validateGubs(currentAttendance.schoolYear)).not.toBeNull();
+        expect(validator.validateGubs("10")).not.toBeNull();
+
+        // max not reached
+        savedAttendances.splice(0, 1);
+        expect(validator.validateGubs(currentAttendance.schoolYear)).toBeNull();
+        expect(validator.validateGubs(null)).toBeNull();
+        expect(validator.validateGubs("10")).toBeNull();
+    })
+
+    test("validateGubSubjectSchoolYearConditions - should be invalid if same gub subject is saved already", () => {
+        const currentAttendance: AttendanceEntity = {
+            id: 3,
+            schoolSubject: "music",
+            schoolYear: "5",
+            examinants: [
+                {
+                    role: "music"
+                },
+                {
+                    role: "educator"
+                },
+                {
+                    role: "history"
+                }
+            ],
+            schoolclassMode: null
+        }
+        const savedAttendances: AttendanceEntity[] = [
+            {
+                id: 1,
+                schoolSubject: "music", // same as current
+                schoolYear: "12", // not the same year condition
+                examinants: [
+                    {
+                        role: "music"
+                    },
+                    {
+                        role: "educator"
+                    },
+                    {
+                        role: "history"
+                    }
+                ],
+                schoolclassMode: null
+            },
+            {
+                id: 4,
+                schoolSubject: "history",
+                schoolYear: "12",
+                examinants: [
+                    {
+                        role: "history"
+                    },
+                    {
+                        role: "educator"
+                    }
+                ],
+                schoolclassMode: null
+            }
+        ]
+        let validator: AbstractSchoolYearValidator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
+
+        expect(validator.validateGubs(currentAttendance.schoolYear)).not.toBeNull();
+
+        expect(validator.validateGubs(null)).toBeNull();
+
+        // different subject
+        currentAttendance.schoolSubject = "history";
+        validator = new HistorySchoolYearValidator(currentAttendance, savedAttendances);
+        expect(validator.validateGubs(currentAttendance.schoolYear)).toBeNull();
+    })
+
+    test("validateGubSchoolYearConditions - should be invalid if same gub subject is saved already", () => {
+        const currentAttendance: AttendanceEntity = {
+            id: 3,
+            schoolSubject: "music",
+            schoolYear: "5",
+            examinants: [
+                {
+                    role: "music"
+                },
+                {
+                    role: "educator"
+                },
+                {
+                    role: "history"
+                }
+            ],
+            schoolclassMode: null
+        }
+        const savedAttendances: AttendanceEntity[] = [
+            {
+                id: 1,
+                schoolSubject: "history", // different than current
+                schoolYear: "8", // same year condition
+                examinants: [
+                    {
+                        role: "music"
+                    },
+                    {
+                        role: "educator"
+                    },
+                    {
+                        role: "history"
+                    }
+                ],
+                schoolclassMode: null
+            },
+            {
+                id: 4,
+                schoolSubject: "history",
+                schoolYear: "12",
+                examinants: [
+                    {
+                        role: "history"
+                    },
+                    {
+                        role: "educator"
+                    }
+                ],
+                schoolclassMode: null
+            }
+        ]
+        let validator: AbstractSchoolYearValidator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
+
+        expect(validator.validateGubs(currentAttendance.schoolYear)).not.toBeNull();
+        
+        expect(validator.validateGubs(null)).toBeNull();
+
+        // different schoolyear condition
+        currentAttendance.schoolYear = "12";
+        validator = new HistorySchoolYearValidator(currentAttendance, savedAttendances);
+        expect(validator.validateGubs(currentAttendance.schoolYear)).toBeNull();
     })
 })
 

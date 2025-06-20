@@ -1,3 +1,4 @@
+import { SchoolSubject_Key } from "@/abstract/SchoolSubject";
 import { SchoolYearCondition } from "@/backend/abstract/SchoolYearCondition";
 
 /** Only counts if the music examinant is present. The one required GUB is included in this */
@@ -280,7 +281,7 @@ export const HISTORY_SCHOOL_YEAR_CONDITIONS_VARIANT_2: SchoolYearCondition[] = [
 
 
 /**
- * One for each subject.
+ * One for each subject (that's hardcoded).
  */
 export const GUB_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
     {
@@ -302,3 +303,44 @@ export const GUB_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
         attendanceCount: 0
     }
 ]
+
+export function getTotalRequiredGubs(): number {
+    return GUB_SCHOOL_YEAR_CONDITIONS
+        .map(condition => condition.minAttendances)
+        .reduce((prev, cur) => prev + cur);
+}
+
+export const GUB_MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
+    {
+        minAttendances: 1,
+        maxAttendances: 1,
+        schoolYearRange: {
+            min: "5",
+            max: "13"
+        },
+        attendanceCount: 0
+    }
+]
+
+export const GUB_HISTORY_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
+    {
+        minAttendances: 1,
+        maxAttendances: 1,
+        schoolYearRange: {
+            min: "5",
+            max: "13"
+        },
+        attendanceCount: 0
+    }
+]
+
+export function getGubSubjectSchoolYearConditionsBySubject(schoolSubject: SchoolSubject_Key): SchoolYearCondition[] {
+
+    if (schoolSubject === "music")
+        return GUB_MUSIC_SCHOOL_YEAR_CONDITIONS;
+
+    if (schoolSubject === "history")
+         return GUB_HISTORY_SCHOOL_YEAR_CONDITIONS;
+
+    return [];
+}

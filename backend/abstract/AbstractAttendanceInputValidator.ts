@@ -71,7 +71,7 @@ export abstract class AbstractAttendanceInputValidator<InputValueType extends Va
     /**
      * @returns `savedAttendances` with `currentAttendance` appended / replaced (only if both not falsy)
      */
-    public getSavedAttendancesWithUnsavedCurrent(): AttendanceEntity[] {
+    public getSavedAttendancesWithCurrent(): AttendanceEntity[] {
 
         if (!this.currentAttendance || !this.savedAttendances)
             return this.savedAttendances;
@@ -93,7 +93,7 @@ export abstract class AbstractAttendanceInputValidator<InputValueType extends Va
 
     /**
      * @param schoolSubject 
-     * @param includeCurrent whether to include current if unsaved (`true`), remove it if saved (`false`) or just return unmodified `savedAttendances` (`null`)
+     * @param includeCurrent whether to include current (`true`), remove it if saved (`false`) or just return unmodified `savedAttendances` (`null`)
      * Default is `false`
      * @returns saved attendances with `schoolSubject` possibly replacing the `currentAttendance` id match
      */
@@ -108,7 +108,7 @@ export abstract class AbstractAttendanceInputValidator<InputValueType extends Va
 
 
     /**
-     * @param includeCurrent whether to include current if unsaved (`true`), remove it if saved (`false`) or just return unmodified `savedAttendances` (`null`)
+     * @param includeCurrent whether to include current (`true`), remove it if saved (`false`) or just return unmodified `savedAttendances` (`null`)
      * @returns 
      */
     protected getSavedAttendancesWithOrWithoutCurrent(includeCurrent: boolean | null): AttendanceEntity[] {
@@ -116,7 +116,7 @@ export abstract class AbstractAttendanceInputValidator<InputValueType extends Va
         if (includeCurrent === null)
             return this.savedAttendances;
 
-        return includeCurrent ? this.getSavedAttendancesWithUnsavedCurrent() : this.getSavedAttendancesWithoutCurrent();
+        return includeCurrent ? this.getSavedAttendancesWithCurrent() : this.getSavedAttendancesWithoutCurrent();
     }
 
 

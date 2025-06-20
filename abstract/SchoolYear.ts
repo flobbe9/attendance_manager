@@ -27,6 +27,10 @@ export function isSchoolYear(value: string): value is SchoolYear {
 }
 
 
+/**
+ * @param value to check 
+ * @returns `true` if `value` might become a valid `schoolYear` after appending characters
+ */
 export function mightBecomeSchoolYear(value: string): boolean {
 
     return isEmpty(value) || 

@@ -15,18 +15,13 @@ import { AttendanceService } from "../services/AttendanceService";
  */
 export class MusicSchoolYearValidator extends AbstractSchoolYearValidator {
 
-
     constructor(currentAttendanceEntity: AttendanceEntity, savedAttendanceEntities: AttendanceEntity[]) {
-        
         super(currentAttendanceEntity, savedAttendanceEntities, "music");
     }
     
-    
     public getValidValues(): SchoolYear[] {
-
         return [];
     }
-
 
     /**
      * @param constantSchoolYearConditions the list of conditions to compare saved attendances against
@@ -116,12 +111,14 @@ export class MusicSchoolYearValidator extends AbstractSchoolYearValidator {
     
     // ** assuming that topic conditions have no max value
         // gub
+        // handle invalid attendances during iteration
+            // get condition methods
     public validateFuture(schoolYear: SchoolYear): string | null {
 
         if (!this.shouldInputBeValidated(schoolYear))
             return null;
 
-        const prevSchoolYear = this.getCurrentAttendance().schoolYear;
+        const prevSchoolYear = this.getCurrentAttendance().schoolYear; 
         // pretend value has been selected
         this.getCurrentAttendance().schoolYear = schoolYear;
 
@@ -129,29 +126,26 @@ export class MusicSchoolYearValidator extends AbstractSchoolYearValidator {
         currentlyUnsatisfiedTopicConditions = destructSchoolYearConditions(currentlyUnsatisfiedTopicConditions);
         sortSchoolYearConditionsByRangeSize(currentlyUnsatisfiedTopicConditions);
 
-        const schoolYearConditionsWithCount =  this.getSchoolYearConditionsWithCount(
-            MUSIC_SCHOOL_YEAR_CONDITIONS_NO_SEK, 
-            (savedAttendance, condition) => 
-                isWithinSchoolYearRange(savedAttendance.schoolYear, condition.schoolYearRange));
+        const schoolYearConditionsWithCount =  this.getSchoolYearConditionsWithCountMatchRange(MUSIC_SCHOOL_YEAR_CONDITIONS_NO_SEK);
         sortSchoolYearConditionsByRangeSize(schoolYearConditionsWithCount);
 
         logDebug("required topics", currentlyUnsatisfiedTopicConditions.map(c => c.lessonTopic))
         logDebug("current school year counts", schoolYearConditionsWithCount.map(c => `${schoolYearRangeToString(c.schoolYearRange)}; ${c.attendanceCount}`))
 
         try {
-            // match up all unsatisfied topics 
+            // find topics that wont satisfy their conditions
             currentlyUnsatisfiedTopicConditions
                 .forEach(unsatisfiedTopicCondition => {
-                    let hasConditionSchoolYearMatch = false;
-
-                    schoolYearConditionsWithCount
-                        .forEach(schoolYearConditionWithCount => {
-                            if (schoolYearConditionWithCount.attendanceCount < schoolYearConditionWithCount.maxAttendances && 
-                                isSchoolYearRangeOverlap(unsatisfiedTopicCondition.schoolYearRange, schoolYearConditionWithCount.schoolYearRange)) {
-                                logDebug("count up", schoolYearRangeToString(schoolYearConditionWithCount.schoolYearRange))
+                    let hasConditionSchoolYearMatch = !!schoolYearConditionsWithCount
+                        .find(schoolYearConditionWithCount => {
+                            const doesTopicMatchSchoolYear = 
+                                schoolYearConditionWithCount.attendanceCount < schoolYearConditionWithCount.maxAttendances && 
+                                isSchoolYearRangeOverlap(unsatisfiedTopicCondition.schoolYearRange, schoolYearConditionWithCount.schoolYearRange);
+                            
+                            if (doesTopicMatchSchoolYear)
                                 schoolYearConditionWithCount.attendanceCount++;
-                                hasConditionSchoolYearMatch = true;
-                            }
+
+                            return doesTopicMatchSchoolYear;
                         })
 
                     // case: topic does not match with any schoolyear left

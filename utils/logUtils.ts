@@ -22,7 +22,7 @@ export function logTrace(message?: string, ...optionalParams: any[]): void {
 }
 
 
-export function logDebug(message?: string, ...optionalParams: any[]): void {
+export function logDebug(message?: string | number | boolean, ...optionalParams: any[]): void {
 
     if (!isDebugLogLevel())
         return;

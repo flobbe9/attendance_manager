@@ -173,4 +173,22 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
             .filter(attendanceEntitiy =>
                 this.hasExaminant(attendanceEntitiy, role));
     }
+
+
+    /**
+     * @param attendanceEntity to check
+     * @returns `true` if `attendanceEntity` is considered a gub
+     * @throws if falsy param
+     */
+    public isGub(attendanceEntity: AttendanceEntity): boolean {
+
+        assertFalsyAndThrow(attendanceEntity);
+
+        if (!attendanceEntity.examinants)
+            return false;
+
+        return this.hasExaminant(attendanceEntity, "educator") && 
+            this.hasExaminant(attendanceEntity, "history") &&
+            this.hasExaminant(attendanceEntity, "music");
+    }
 }

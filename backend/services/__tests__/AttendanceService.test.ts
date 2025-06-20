@@ -250,3 +250,128 @@ describe('isModified', () => {
         expect(attendanceService.isModified(attendance1, attendance2)).toBe(false);
     })
 })
+
+describe("isGub", () => {
+    test("Should throw if falsy pram", () => {
+        const attendanceService = new AttendanceService();
+
+        expect(() => attendanceService.isGub(null)).toThrow();
+        expect(() => attendanceService.isGub(undefined)).toThrow();
+    })
+
+    test("Should return false if falsy examinants", () => {
+        const attendanceEntity: AttendanceEntity = {
+            id: 1,
+            schoolSubject: "history",
+            schoolYear: "5",
+            examinants: null,
+            schoolclassMode: null
+        }
+
+        const attendanceService = new AttendanceService();
+
+        expect(attendanceService.isGub(attendanceEntity)).toBe(false);
+    })
+
+    test("Should return make combinations work", () => {
+        const attendanceEntity: AttendanceEntity = {
+            id: 1,
+            schoolSubject: "history",
+            schoolYear: "5",
+            examinants: [],
+            schoolclassMode: null
+        }
+
+        const attendanceService = new AttendanceService();
+
+        expect(attendanceService.isGub(attendanceEntity)).toBe(false);
+
+        attendanceEntity.examinants = [
+            {
+                role: "history"
+            }
+        ];
+        expect(attendanceService.isGub(attendanceEntity)).toBe(false);
+
+        attendanceEntity.examinants = [
+            {
+                role: "music"
+            },
+            {
+                role: "educator"
+            }
+        ];
+        expect(attendanceService.isGub(attendanceEntity)).toBe(false);
+
+        // correct number but wrong role
+        attendanceEntity.examinants = [
+            {
+                role: "music"
+            },
+            {
+                role: "educator"
+            },
+            {
+                role: "headmaster"
+            }
+        ];
+        expect(attendanceService.isGub(attendanceEntity)).toBe(false);
+
+        // correct number but wrong role
+        attendanceEntity.examinants = [
+            {
+                role: "music"
+            },
+            {
+                role: "history"
+            },
+            {
+                role: "headmaster"
+            }
+        ];
+        expect(attendanceService.isGub(attendanceEntity)).toBe(false);
+
+        // correct number but wrong role
+        attendanceEntity.examinants = [
+            {
+                role: "educator"
+            },
+            {
+                role: "history"
+            },
+            {
+                role: "headmaster"
+            }
+        ];
+        expect(attendanceService.isGub(attendanceEntity)).toBe(false);
+
+        attendanceEntity.examinants = [
+            {
+                role: "educator"
+            },
+            {
+                role: "history"
+            },
+            {
+                role: "music"
+            }
+        ];
+        expect(attendanceService.isGub(attendanceEntity)).toBe(true);
+
+        attendanceEntity.examinants = [
+            {
+                role: "educator"
+            },
+            {
+                role: "history"
+            },
+            {
+                role: "music"
+            },
+            {
+                role: "headmaster"
+            }
+        ];
+        expect(attendanceService.isGub(attendanceEntity)).toBe(true);
+    })
+})

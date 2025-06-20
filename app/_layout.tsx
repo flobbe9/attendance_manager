@@ -29,7 +29,7 @@ export default function layout() {
                                 screenOptions={{
                                     headerShown: false, 
                                     orientation: "all", 
-                                }} 
+                                }}
                                 >
                                 {/* <Stack.Screen name="(attendance)" /> */}
                             </Stack>
