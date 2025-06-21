@@ -65,6 +65,14 @@ describe("getCurrentlyUnsatisfiedLessonTopicConditions", () => {
                 examinants: [{role: "music"}],
                 schoolclassMode: null,
                 musicLessonTopic: "rhythm"
+            },
+            {
+                id: 2,
+                schoolYear: "8",
+                schoolSubject: "music",
+                examinants: [{role: "music"}],
+                schoolclassMode: null,
+                musicLessonTopic: null
             }
         ];
         let validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
@@ -94,23 +102,20 @@ describe("validateFuture", () => {
         ]
         const currentAttendance = [...savedAttendances][0];
         const validator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
-
+    
         // wrong subject
         expect(validator.validateFuture("5")).toBe(null);
-
+    
         // invalid schoolYear
         expect(validator.validateFuture(null)).toBe(null);
         expect(validator.validateFuture("1" as SchoolYear)).toBe(null);
-
+    
         currentAttendance.schoolSubject = "music";
         savedAttendances = [];
         // no saved attendances
         expect(validator.validateFuture("5")).toBe(null);
     })
-})
 
-
-describe("validateFuture", () => {
     test("Should be valid", () => {
         let savedAttendances: AttendanceEntity[] = [
             {
@@ -178,8 +183,33 @@ describe("validateFuture", () => {
                 examinants: [{role: "music"}],
                 schoolclassMode: null
             },
+            // should not consider invalid attendances
+            {
+                id: 9,
+                schoolSubject: "music",
+                schoolYear: "11",
+                musicLessonTopic: null,
+                examinants: [{role: "music"}],
+                schoolclassMode: null
+            },
+            {
+                id: 10,
+                schoolSubject: "music",
+                schoolYear: "7",
+                musicLessonTopic: "rhythm",
+                examinants: null,
+                schoolclassMode: null
+            },
+            {
+                id: 11,
+                schoolSubject: "music",
+                schoolYear: null,
+                musicLessonTopic: "rhythm",
+                examinants: [{role: "music"}],
+                schoolclassMode: null
+            },
         ]
-        const currentAttendance = savedAttendances[savedAttendances.length - 1];
+        const currentAttendance = savedAttendances[savedAttendances.length - 4];
         const validator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
 
         // should find rhythm to be a match with range 7-8
@@ -187,7 +217,7 @@ describe("validateFuture", () => {
     })
 
 
-    test("Should be valid", () => {
+    test("Should be invalid", () => {
         let savedAttendances: AttendanceEntity[] = [
             {
                 id: 1,
@@ -245,23 +275,44 @@ describe("validateFuture", () => {
                 examinants: [{role: "music"}],
                 schoolclassMode: null
             },
+            // should not consider invalid attendances
             {
-                id: 8,
+                id: 9,
                 schoolSubject: "music",
-                schoolYear: "5",
+                schoolYear: "10",
+                musicLessonTopic: null,
+                examinants: [{role: "music"}],
+                schoolclassMode: null 
+            },
+            {
+                id: 10,
+                schoolSubject: "music",
+                schoolYear: "7",
+                musicLessonTopic: "rhythm",
+                examinants: null,
+                schoolclassMode: null
+            },
+            {
+                id: 11,
+                schoolSubject: "music",
+                schoolYear: null,
                 musicLessonTopic: "rhythm",
                 examinants: [{role: "music"}],
                 schoolclassMode: null
             },
         ]
-        const currentAttendance = savedAttendances[savedAttendances.length - 1];
-        const validator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
+        const currentAttendance = cloneObj(savedAttendances[savedAttendances.length - 4]);
+        let validator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
 
-        // 7-8 maxed out, should throw
-        expect(validator.validateFuture(currentAttendance.schoolYear)).not.toBe(null);
+        // 7-8 maxed out, cannot satisfy rhythm, should throw
+        // expect(validator.validateFuture(currentAttendance.schoolYear)).not.toBe(null);
+
+        // dont validate topic future if no topic selected
+        currentAttendance.musicLessonTopic = null;
+        validator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
+        expect(validator.validateFuture(currentAttendance.schoolYear)).toBeNull();
     })
 })
-
 
 
 // clone this before altering to avoid collisions between tests

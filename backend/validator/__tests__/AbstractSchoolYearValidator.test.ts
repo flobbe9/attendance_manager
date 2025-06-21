@@ -78,6 +78,23 @@ describe("getCurrentlyUnsatisfiedSchoolYearConditions", () => {
         // should have decreased condition
         expect(unsatisfiedConditions1[4].minAttendances).toBe(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS[4].minAttendances - 1);
     });
+
+    test("Should not modify conditions if attendance.schoolYear is falsy", () => {
+        let savedAttendances: AttendanceEntity[] = [
+            {
+                id: 1,
+                schoolYear: null,
+                schoolSubject: "music",
+                examinants: [{role: "music"}],
+                schoolclassMode: null,
+                musicLessonTopic: null
+            }
+        ];
+        let validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
+        const unsatisfiedConditions1 = validator.getCurrentlyUnsatisfiedSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS);
+
+        expect(equalsSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, unsatisfiedConditions1)).toBe(true);
+    })
 })
 
 
@@ -1095,7 +1112,8 @@ const MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
         },
         minAttendances: 4,
         maxAttendances: 5,
-        attendanceCount: 0
+        attendanceCount: 0,
+        isSchoolYearRangeNotDistinct: true
     },
     // Sekundarstufe 2 (sek2)
     {
@@ -1105,7 +1123,8 @@ const MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
         },
         minAttendances: 4,
         maxAttendances: 5,
-        attendanceCount: 0
+        attendanceCount: 0,
+        isSchoolYearRangeNotDistinct: true
     },
 ]
 

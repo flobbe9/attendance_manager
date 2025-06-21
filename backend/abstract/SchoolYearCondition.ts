@@ -20,7 +20,12 @@ export interface SchoolYearCondition {
     /** Only relevant for subject `music` */
     lessonTopic?: MusicLessonTopic_Key,
     /** The number of saved attendances that match this condition. This count can be used during validation e.g. */
-    attendanceCount?: number
+    attendanceCount?: number,
+    /** 
+     * Indicates that this range has an overlap with other condition ranges in a condition list, e.g. for sek1 and sek2 conditions. 
+     * Assume `false` if not specified 
+     */
+    isSchoolYearRangeNotDistinct?: boolean
 }
 
 
@@ -28,11 +33,14 @@ export interface SchoolYearCondition {
  * @param schoolYear by which to search
  * @param schoolYearConditions to look through
  * @param includeEdges see {@link isWithinSchoolYearRange}
- * @returns array of `[schoolYearConditions, schoolYearConditionIndex]` sothat `schoolYear` is within range of `condition.schoolYearRange`. Empty array if no match
+ * @returns array of `[schoolYearConditions, schoolYearConditionIndex]` sothat `schoolYear` is within range of `condition.schoolYearRange`. Empty array if no match or `schoolYear` is falsy
  */
 export function findSchoolYearConditionsBySchoolYearRange(schoolYear: SchoolYear, schoolYearConditions: SchoolYearCondition[], includeEdges = true): [SchoolYearCondition, number][] {
 
-    assertFalsyAndThrow(schoolYear, schoolYearConditions);
+    assertFalsyAndThrow(schoolYearConditions);
+
+    if (!schoolYear)
+        return [];
 
     const schoolYearConditionsAndIndices: [SchoolYearCondition, number][] = (schoolYearConditions
         .map((schoolYearCondition, i) => 
@@ -45,18 +53,19 @@ export function findSchoolYearConditionsBySchoolYearRange(schoolYear: SchoolYear
 
 
 /**
- * @param lessonTopic by which to search
+ * @param lessonTopic by which to search. If falsy, use {@link defaultEqualsFalsy()} as comparetor
  * @param schoolYearConditions to look through
  * @returns array of `[schoolYearConditions, schoolYearConditionIndex]` sothat `schoolYear` is within range of `condition.schoolYearRange`. Empty array if no match
  */
 export function findSchoolYearConditionsByLessonTopic(lessonTopic: MusicLessonTopic_Key, schoolYearConditions: SchoolYearCondition[]): [SchoolYearCondition, number][] {
 
-    assertFalsyAndThrow(lessonTopic, schoolYearConditions);
+    assertFalsyAndThrow(schoolYearConditions);
 
     const schoolYearConditionsAndIndices: [SchoolYearCondition, number][] = (schoolYearConditions
         .map((schoolYearCondition, i) => 
             [schoolYearCondition, i]) as [SchoolYearCondition, number][])
         .filter(([schoolYearCondition, ]) => 
+            defaultEqualsFalsy(lessonTopic, schoolYearCondition.lessonTopic) || 
             lessonTopic === schoolYearCondition.lessonTopic)
 
     return schoolYearConditionsAndIndices;
@@ -154,4 +163,14 @@ export function destructSchoolYearConditions(schoolYearConditions: SchoolYearCon
         })
 
     return destructedSchoolYearConditions;
+}
+
+/**
+ * @param schoolYearCondition to check
+ * @returns `true` if this condition's `attendanceCount` is higher (not equal) than it's max attendance value 
+ */
+export function isSchoolYearConditionExceedingMax(schoolYearCondition: SchoolYearCondition): boolean {
+    return !isNumberFalsy(schoolYearCondition.attendanceCount) && 
+        !isNumberFalsy(schoolYearCondition.maxAttendances) && 
+        schoolYearCondition.attendanceCount > schoolYearCondition.maxAttendances;
 }

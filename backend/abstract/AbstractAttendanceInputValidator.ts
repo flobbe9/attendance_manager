@@ -43,7 +43,7 @@ export abstract class AbstractAttendanceInputValidator<InputValueType extends Va
 
 
     /**
-     * @returns new `savedAttendances` instance but with `currentAttendance` replacing it's id match
+     * @returns new `savedAttendances` instance but without `currentAttendance`s id match
      */
     public getSavedAttendancesWithoutCurrent(): AttendanceEntity[] {
 

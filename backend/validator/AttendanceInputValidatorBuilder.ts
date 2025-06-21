@@ -6,6 +6,7 @@ import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 import { SchoolYear } from "@/abstract/SchoolYear";
 import { assertFalsyAndThrow } from "@/utils/utils";
 import { AbstractSchoolYearValidator } from "../abstract/AbstractSchoolYearValidator";
+import { HistorySchoolYearValidator } from "./HistorySchoolYearValidator";
 
 
 /**
@@ -85,13 +86,11 @@ export class AttendanceInputValidatorBuilder {
             case "music":
                 return new MusicSchoolYearValidator(AttendanceInputValidatorBuilder.currentAttendance, AttendanceInputValidatorBuilder.savedAttendances);
             
-            // TODO
             case "history":
-                return new MusicSchoolYearValidator(AttendanceInputValidatorBuilder.currentAttendance, AttendanceInputValidatorBuilder.savedAttendances);
+                return new HistorySchoolYearValidator(AttendanceInputValidatorBuilder.currentAttendance, AttendanceInputValidatorBuilder.savedAttendances);
             
-                // TODO
-            // default:
-            //     throw new Error(`No validator implementation found for schoolSubject ${this._schoolSubject}`);
+            default:
+                throw new Error(`No validator implementation found for schoolSubject ${this._schoolSubject}`);
         }
     }
 }

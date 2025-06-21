@@ -1,12 +1,13 @@
 import { ExaminantRole_Key } from "@/abstract/Examinant";
 import { PartialRecord } from "@/abstract/PartialRecord";
 import { defaultEqualsFalsy } from "@/utils/projectUtils";
-import { assertFalsyAndThrow, dateEquals } from "@/utils/utils";
+import { assertFalsyAndThrow, dateEquals, isBlank } from "@/utils/utils";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 import { AbstractModifiableService } from "../abstract/AbstractModifiableService";
 import { AttendanceEntity, ExaminantEntity } from "../DbSchema";
 import { ExaminantService } from "./ExaminantService";
 import { SchoolclassModeService } from "./SchoolclassModeService";
+import { NO_SELECTION_LABEL } from "@/utils/constants";
 
 
 /**
@@ -45,7 +46,7 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
         assertFalsyAndThrow(attendanceEntity, role);
 
         if (!attendanceEntity.examinants)
-            return;
+            return [null, -1];
 
         let examinantIndex = -1;
         const examinant = attendanceEntity.examinants
@@ -166,7 +167,6 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
 
 
     public findAllByExaminant(attendanceEntities: AttendanceEntity[], role: ExaminantRole_Key): AttendanceEntity[] {
-
         assertFalsyAndThrow(attendanceEntities, role);
 
         return attendanceEntities
@@ -174,14 +174,12 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
                 this.hasExaminant(attendanceEntitiy, role));
     }
 
-
     /**
      * @param attendanceEntity to check
      * @returns `true` if `attendanceEntity` is considered a gub
      * @throws if falsy param
      */
     public isGub(attendanceEntity: AttendanceEntity): boolean {
-
         assertFalsyAndThrow(attendanceEntity);
 
         if (!attendanceEntity.examinants)
@@ -190,5 +188,16 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
         return this.hasExaminant(attendanceEntity, "educator") && 
             this.hasExaminant(attendanceEntity, "history") &&
             this.hasExaminant(attendanceEntity, "music");
+    }
+
+    /**
+     * Indicates whether `value` can be considered "filled out". In other words, if `value` is not "unselected" or blank.
+     * 
+     * @param value of the select input
+     * @param noSelectionLabel to consider as "unselected". Default is {@link NO_SELECTION_LABEL}
+     * @returns `true` if `value` equals the {@link NO_SELECTION_LABEL} or is blank
+     */
+    public isSelectInputFilledOut(value: string, noSelectionLabel = NO_SELECTION_LABEL): boolean {
+        return !(value === noSelectionLabel || isBlank(value));
     }
 }

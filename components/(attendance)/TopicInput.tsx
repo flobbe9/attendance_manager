@@ -40,7 +40,7 @@ export default function TopicInput({...props}: Props) {
             selectedOptions={getMusicLessonTopicByMusicLessonTopicKey(currentAttendanceEntity.musicLessonTopic)}
             setSelectedOptions={handleOptionSelect}
             optionsContainerScroll={false}
-            optionsContainerHeight={244}
+            optionsContainerHeight={243}
             {...otherProps}
         >
             <HelperText dynamicStyle={AttendanceStyles.heading}>Stundenthema</HelperText>

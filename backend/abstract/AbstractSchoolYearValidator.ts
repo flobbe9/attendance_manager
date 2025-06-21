@@ -92,15 +92,18 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
      * See {@link getSchoolYearConditionsWithCount}. Count up all condtions where the saved attendance schoolYear is within the condition's schoolYearRange.
      * 
      * @param constantSchoolYearConditions to count up (wont be modified)
+     * @param includeCurrent whether to include current (`true`), remove it if saved (`false`) or just return unmodified `savedAttendances` (`null`). Default is `true`
      * @returns `constantSchoolYearConditions` with updated `attendanceCount`
      * @throws if falsy params
      */
-    protected getSchoolYearConditionsWithCountMatchRange(constantSchoolYearConditions: SchoolYearCondition[]): SchoolYearCondition[] {
+    protected getSchoolYearConditionsWithCountMatchRange(constantSchoolYearConditions: SchoolYearCondition[], includeCurrent: null | boolean = true): SchoolYearCondition[] {
 
         return this.getSchoolYearConditionsWithCount(
             constantSchoolYearConditions, 
             (savedAttendance, condition) => 
-                isWithinSchoolYearRange(savedAttendance.schoolYear, condition.schoolYearRange)
+                isSchoolYear(savedAttendance.schoolYear) && 
+                isWithinSchoolYearRange(savedAttendance.schoolYear, condition.schoolYearRange),
+            includeCurrent
         );
     }
 
@@ -117,13 +120,6 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
             return null;
 
         assertFalsyAndThrow(allConstantSchoolYearConditions);
-
-        // should be validated
-            // truthy input
-            // right schoolsubject ((assume truthy))
-            // has matching examinant
-        if (!schoolYear || this.getCurrentAttendance().schoolSubject !== this.schoolSubjectToValidateFor)
-            return null;
 
         const schoolYearConditions = findSchoolYearConditionsBySchoolYearRange(schoolYear, allConstantSchoolYearConditions);
         const attendanceService = new AttendanceService();
@@ -310,6 +306,10 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
         return null;
     }
 
+    /**
+     * @param inputValue 
+     * @returns `true` if inputValue is a schoolYear, the current subject matches the one to validate for and has a matching examinant
+     */
     public shouldInputBeValidated(inputValue: SchoolYear): boolean {
         return isSchoolYear(inputValue) && 
             this.getCurrentAttendance().schoolSubject === this.schoolSubjectToValidateFor && 

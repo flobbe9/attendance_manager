@@ -68,7 +68,9 @@ export default forwardRef(function HelperInput(
 
         // intended not to call setValue
         } catch (e) {
-            logTrace(e.message)
+            if (e.message)
+                logTrace(e.message)
+
             return;
         }
 
@@ -101,14 +103,14 @@ export default forwardRef(function HelperInput(
                 ref={componentRef}
                 editable={!disabled}
                 selectTextOnFocus={!disabled}
-                onChangeText={onChangeText}
-                onFocus={onFocus}
-                onBlur={onBlur}
                 style={{
                     ...(disabled ? HS.disabled : {}),
                     ...style as object,
                 }}
                 returnKeyType={otherProps.multiline ? "none" : "default"}
+                onChangeText={onChangeText}
+                onFocus={onFocus}
+                onBlur={onBlur}
                 {...otherProps}
             />
 

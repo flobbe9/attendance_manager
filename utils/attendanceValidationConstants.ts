@@ -116,7 +116,8 @@ export const MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
         },
         minAttendances: 4,
         maxAttendances: 5,
-        attendanceCount: 0
+        attendanceCount: 0,
+        isSchoolYearRangeNotDistinct: true
     },
     // Sekundarstufe 2 (sek2)
     {
@@ -126,55 +127,8 @@ export const MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
         },
         minAttendances: 4,
         maxAttendances: 5,
-        attendanceCount: 0
-    },
-]
-
-export const MUSIC_SCHOOL_YEAR_CONDITIONS_NO_SEK: SchoolYearCondition[] = [
-    {
-        schoolYearRange: {
-            min: "5",
-            max: "6"
-        },
-        minAttendances: 1,
-        maxAttendances: 2,
-        attendanceCount: 0
-    },
-    {
-        schoolYearRange: {
-            min: "7",
-            max: "8"
-        },
-        minAttendances: 1,
-        maxAttendances: 2,
-        attendanceCount: 0
-    },
-    {
-        schoolYearRange: {
-            min: "9",
-            max: "10"
-        },
-        minAttendances: 1,
-        maxAttendances: 2,
-        attendanceCount: 0
-    },
-    {
-        schoolYearRange: {
-            min: "11",
-            max: "11"
-        },
-        minAttendances: 1,
-        maxAttendances: 3,
-        attendanceCount: 0
-    },
-    {
-        schoolYearRange: {
-            min: "12",
-            max: "13"
-        },
-        minAttendances: 2,
-        maxAttendances: 4,
-        attendanceCount: 0
+        attendanceCount: 0,
+        isSchoolYearRangeNotDistinct: true
     },
 ]
 

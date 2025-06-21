@@ -101,7 +101,7 @@ export default function SchoolYearInput({...props}: Props) {
             </Flex>
 
             <HelperInput 
-                value={currentAttendanceEntity.schoolYear}
+                value={currentAttendanceEntity.schoolYear ?? ""}
                 setValue={handleSetValue}
                 placeholder="5 - 13"
                 keyboardType="numeric"

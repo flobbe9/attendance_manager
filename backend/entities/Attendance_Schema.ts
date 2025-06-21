@@ -22,7 +22,7 @@ export const Attendance_Table = sqliteTable(
         schoolSubject: text({ enum: SCHOOL_SUBJECT_KEYS as [SchoolSubject_Key]}).notNull(),
         date: integer({ mode: 'timestamp' }),
         musicLessonTopic: text({enum: MUSIC_LESSON_TOPIC_KEYS as [MusicLessonTopic_Key]}),
-        schoolYear: text({ enum: SCHOOL_YEARS as [SchoolYear]}).notNull(),
+        schoolYear: text({ enum: SCHOOL_YEARS as [SchoolYear]}),
         note: text({ length: SQL_BLOB_SIZE }),
         note2: text({ length: SQL_BLOB_SIZE }),
     }
