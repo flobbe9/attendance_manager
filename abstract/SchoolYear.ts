@@ -1,4 +1,4 @@
-import { isBlank, isEmpty } from "@/utils/utils";
+import { isEmpty } from "@/utils/utils";
 
 export const schoolYearObj = {
     "5": "sek1",

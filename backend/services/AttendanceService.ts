@@ -8,6 +8,7 @@ import { AttendanceEntity, ExaminantEntity } from "../DbSchema";
 import { ExaminantService } from "./ExaminantService";
 import { SchoolclassModeService } from "./SchoolclassModeService";
 import { NO_SELECTION_LABEL } from "@/utils/constants";
+import { SchoolSubject_Key, schoolSubjectKeysObj } from "@/abstract/SchoolSubject";
 
 
 /**
@@ -172,6 +173,19 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
         return attendanceEntities
             .filter(attendanceEntitiy =>
                 this.hasExaminant(attendanceEntitiy, role));
+    }
+
+    /**
+     * @param attendanceEntities to search through
+     * @param roleAndSchoolSubject `schoolSubject` to match attendances with
+     * @returns filtered list of `attendanceEntities` that have both and examinant with role `roleAndSchoolSubject` and 
+     * `schoolSubject` that equals `roleAndSchoolSubject`
+     */
+    public findAllByExaminantAndSchoolSubject(attendanceEntities: AttendanceEntity[], roleAndSchoolSubject: SchoolSubject_Key): AttendanceEntity[] {
+        assertFalsyAndThrow(attendanceEntities, roleAndSchoolSubject);
+
+        return this.findAllByExaminant(attendanceEntities, roleAndSchoolSubject)
+            .filter(attendanceEntity => attendanceEntity.schoolSubject === roleAndSchoolSubject);
     }
 
     /**

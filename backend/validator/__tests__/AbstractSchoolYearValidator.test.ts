@@ -1,12 +1,12 @@
-import { equalsSchoolYearConditions, findSchoolYearConditionsBySchoolYearRange, SchoolYearCondition } from "@/backend/abstract/SchoolYearCondition";
-import { AttendanceEntity } from "@/backend/DbSchema";
-import { MusicSchoolYearValidator } from "../MusicSchoolYearValidator";
-import { cloneObj } from "@/utils/utils";
-import { AttendanceService } from "@/backend/services/AttendanceService";
-import { isWithinSchoolYearRange } from "@/backend/abstract/SchoolYearRange";
 import { SchoolYear } from "@/abstract/SchoolYear";
-import { HistorySchoolYearValidator } from "../HistorySchoolYearValidator";
 import { AbstractSchoolYearValidator } from "@/backend/abstract/AbstractSchoolYearValidator";
+import { equalsSchoolYearConditions, findSchoolYearConditionsBySchoolYearRange, SchoolYearCondition } from "@/backend/abstract/SchoolYearCondition";
+import { isWithinSchoolYearRange } from "@/backend/abstract/SchoolYearRange";
+import { AttendanceEntity } from "@/backend/DbSchema";
+import { AttendanceService } from "@/backend/services/AttendanceService";
+import { cloneObj } from "@/utils/utils";
+import { HistorySchoolYearValidator } from "../HistorySchoolYearValidator";
+import { MusicSchoolYearValidator } from "../MusicSchoolYearValidator";
 
 describe("getCurrentlyUnsatisfiedSchoolYearConditions", () => {
     test("Should remove conditions with falsy min value", () => {
@@ -50,11 +50,53 @@ describe("getCurrentlyUnsatisfiedSchoolYearConditions", () => {
             }
         ];
         let validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
-        const unsatisfiedConditions1 = validator.getCurrentlyUnsatisfiedSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS);
+        let unsatisfiedConditions1 = validator.getCurrentlyUnsatisfiedSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS);
 
         expect(equalsSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, unsatisfiedConditions1)).toBe(false);
         // should have removed 7-8 range condition
         expect(unsatisfiedConditions1.length).toBe(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS.length - 1);
+    })
+
+    test("Should not consider saved attendances that don't have matching subject and examinant", () => {
+        let savedAttendances: AttendanceEntity[] = [
+            {
+                schoolYear: "12",
+                schoolSubject: "history", // does not match examinant
+                examinants: [{role: "music"}],
+                schoolclassMode: null,
+                musicLessonTopic: null
+            },
+            {
+                schoolYear: "13",
+                schoolSubject: "music", 
+                examinants: [{role: "history"}], // does not match subject
+                schoolclassMode: null,
+                musicLessonTopic: null
+            }
+        ];
+        let validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
+        let unsatisfiedConditions1 = validator.getCurrentlyUnsatisfiedSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS);
+
+        // should not change any count
+        expect(equalsSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, unsatisfiedConditions1)).toBe(true);
+        
+        // make subject match
+        savedAttendances[0].schoolSubject = "music";
+        validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
+        unsatisfiedConditions1 = validator.getCurrentlyUnsatisfiedSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS);
+        expect(equalsSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, unsatisfiedConditions1)).toBe(false);
+        
+        // change back
+        savedAttendances[0].schoolSubject = "history";
+        validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
+        unsatisfiedConditions1 = validator.getCurrentlyUnsatisfiedSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS);
+        expect(equalsSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, unsatisfiedConditions1)).toBe(true);
+
+        // make examinant match
+        savedAttendances[1].examinants[0].role = "music";
+        validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
+        unsatisfiedConditions1 = validator.getCurrentlyUnsatisfiedSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS);
+        expect(equalsSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, unsatisfiedConditions1)).toBe(false);
     })
 
     test("Should not remove conditions if min value != 0", () => {
@@ -103,6 +145,7 @@ describe("validateNonContextConditions", () => {
         const schoolYear = "5";
         let savedAttendances: AttendanceEntity[] = [
             {
+                id: 1,
                 schoolYear: "5",
                 schoolSubject: "music",
                 examinants: [{role: "music"}],
@@ -110,8 +153,23 @@ describe("validateNonContextConditions", () => {
                 musicLessonTopic: null
             }
         ];
-        const validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
+        let validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
+        expect(validator.validateNonContextConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, schoolYear)).toBeNull();
 
+        savedAttendances.push({
+            id: 2,
+            schoolSubject: "history",
+            schoolYear: "5",
+            examinants: [{"role": "music"}],
+            schoolclassMode: null,
+            musicLessonTopic: null
+        })
+        validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
+        expect(validator.validateNonContextConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, schoolYear)).toBeNull();
+
+        savedAttendances[1].schoolSubject = "music";
+        savedAttendances[1].examinants[0].role = "history";
+        validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
         expect(validator.validateNonContextConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, schoolYear)).toBeNull();
     });
 
@@ -120,22 +178,40 @@ describe("validateNonContextConditions", () => {
         const schoolYear = "5";
         let savedAttendances: AttendanceEntity[] = [
             {
+                id: 1,
                 schoolYear: "5",
-                schoolSubject: "music",
-                examinants: [{role: "music"}],
-                schoolclassMode: null,
-                musicLessonTopic: null
-            },
-            {
-                schoolYear: "6",
                 schoolSubject: "music",
                 examinants: [{role: "music"}],
                 schoolclassMode: null,
                 musicLessonTopic: null
             }
         ];
-        const validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
-
+        const currentAttendanceEntity: AttendanceEntity = {
+            id: 2,
+            schoolYear: "6",
+            schoolSubject: "music",
+            examinants: [{role: "music"}],
+            schoolclassMode: null,
+            musicLessonTopic: null
+        }
+        let validator = new MusicSchoolYearValidator(currentAttendanceEntity, savedAttendances);
+        
+        // should be valid with count equals max
+        expect(validator.validateNonContextConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, schoolYear)).toBeNull();
+        
+        // should be invalid with count exceeding max
+        savedAttendances.push(
+            {
+                id: 3,
+                schoolYear: "6",
+                schoolSubject: "music",
+                examinants: [{role: "music"}],
+                schoolclassMode: null,
+                musicLessonTopic: null
+            }
+        );
+        validator = new MusicSchoolYearValidator(currentAttendanceEntity, savedAttendances);
+        // should have maxed out range 5-6
         expect(validator.validateNonContextConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, schoolYear)).not.toBeNull();
     });
 
@@ -202,6 +278,7 @@ describe("validateNonContextConditions", () => {
         const schoolYear = "5";
         let savedAttendances: AttendanceEntity[] = [
             {
+                id: 1,
                 schoolYear: "5",
                 schoolSubject: "history",
                 examinants: [{role: "music"}],
@@ -209,13 +286,15 @@ describe("validateNonContextConditions", () => {
                 musicLessonTopic: null
             },
             {
+                id: 2,
                 schoolYear: "5",
                 schoolSubject: "music",
-                examinants: [{role: "history"}],
+                examinants: [{role: "music"}],
                 schoolclassMode: null,
                 musicLessonTopic: null
             },
             {
+                id: 3,
                 schoolYear: "5",
                 schoolSubject: "music",
                 examinants: [{role: "music"}],
@@ -238,6 +317,7 @@ describe("validateNonContextConditions", () => {
         const schoolYear = "5";
         let savedAttendances: AttendanceEntity[] = [
             {
+                id: 1,
                 schoolYear: "5",
                 schoolSubject: "music",
                 examinants: [{role: "music"}],
@@ -245,6 +325,7 @@ describe("validateNonContextConditions", () => {
                 musicLessonTopic: null
             },
             {
+                id: 2,
                 schoolYear: "5",
                 schoolSubject: "music",
                 examinants: [{role: "music"}],
@@ -262,12 +343,12 @@ describe("validateNonContextConditions", () => {
         }
         const validator = new MusicSchoolYearValidator(currentAttendanceEntity, savedAttendances);
 
-
         expect(validator.validateNonContextConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, schoolYear)).toBeNull();
 
         currentAttendanceEntity.schoolSubject = null;
         expect(validator.validateNonContextConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, schoolYear)).toBeNull();
 
+        
         // max out year 5 music attendaces
         currentAttendanceEntity.schoolSubject = "music";
         expect(validator.validateNonContextConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, schoolYear)).not.toBeNull();
@@ -579,6 +660,52 @@ describe("getSchoolYearConditionsWithCount", () => {
         expect(conditionsWithCount[0].attendanceCount).toBe(1);
         expect(conditionsWithCount[1].attendanceCount).toBe(0);
         expect(conditionsWithCount[3].attendanceCount).toBe(1);
+    });
+
+    test("Should not consider saved attendances that don't have matching subject and examinant", () => {
+        let savedAttendances: AttendanceEntity[] = [
+            {
+                schoolYear: "12",
+                schoolSubject: "history", // does not match examinant
+                examinants: [{role: "music"}],
+                schoolclassMode: null,
+                musicLessonTopic: null
+            },
+            {
+                schoolYear: "13",
+                schoolSubject: "music", 
+                examinants: [{role: "history"}], // does not match subject
+                schoolclassMode: null,
+                musicLessonTopic: null
+            }
+        ];
+        const countCondition = (savedAttendance: AttendanceEntity, condition: SchoolYearCondition): boolean => {
+            return isWithinSchoolYearRange(savedAttendance.schoolYear, condition.schoolYearRange);
+        }
+
+        let validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
+        let unsatisfiedConditions1 = validator.getSchoolYearConditionsWithCount(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, countCondition);
+
+        // should not change any count
+        expect(equalsSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, unsatisfiedConditions1)).toBe(true);
+        
+        // make subject match
+        savedAttendances[0].schoolSubject = "music";
+        validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
+        unsatisfiedConditions1 = validator.getSchoolYearConditionsWithCount(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, countCondition);
+        expect(equalsSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, unsatisfiedConditions1)).toBe(false);
+        
+        // change back
+        savedAttendances[0].schoolSubject = "history";
+        validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
+        unsatisfiedConditions1 = validator.getSchoolYearConditionsWithCount(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, countCondition);
+        expect(equalsSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, unsatisfiedConditions1)).toBe(true);
+
+        // make examinant match
+        savedAttendances[1].examinants[0].role = "music";
+        validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
+        unsatisfiedConditions1 = validator.getSchoolYearConditionsWithCount(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, countCondition);
+        expect(equalsSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS, unsatisfiedConditions1)).toBe(false);
     })
 })
 

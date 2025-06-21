@@ -35,7 +35,6 @@ describe("getCurrentlyUnsatisfiedLessonTopicConditions", () => {
         expect(unsatisfiedConditions1.length).toBe(mockConditions.length - 2);
     })
 
-
     test("Should remove conditions with min value == 0", () => {
         let savedAttendances: AttendanceEntity[] = [
             {
@@ -85,6 +84,50 @@ describe("getCurrentlyUnsatisfiedLessonTopicConditions", () => {
         // should have decreased condition
         expect(unsatisfiedConditions1[1].minAttendances).toBe(MOCK_MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS[1].minAttendances - 1);
     });
+
+    test("Should not consider saved attendances that don't have matching subject and examinant", () => {
+        let savedAttendances: AttendanceEntity[] = [
+            {
+                id: 1,
+                schoolYear: "10",
+                schoolSubject: "history", // does not match examinant
+                examinants: [{role: "music"}],
+                schoolclassMode: null,
+                musicLessonTopic: "rhythm"
+            },
+            {
+                id: 2,
+                schoolYear: "9",
+                schoolSubject: "music", 
+                examinants: [{role: "history"}], // does not match subject
+                schoolclassMode: null,
+                musicLessonTopic: "rhythm"
+            }
+        ];
+        let validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
+        let unsatisfiedConditions1 = validator.getCurrentlyUnsatisfiedSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS);
+
+        // should not change any count
+        expect(equalsSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS, unsatisfiedConditions1)).toBe(true);
+        
+        // make subject match
+        savedAttendances[0].schoolSubject = "music";
+        validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
+        unsatisfiedConditions1 = validator.getCurrentlyUnsatisfiedSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS);
+        expect(equalsSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS, unsatisfiedConditions1)).toBe(false);
+        
+        // change back
+        savedAttendances[0].schoolSubject = "history";
+        validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
+        unsatisfiedConditions1 = validator.getCurrentlyUnsatisfiedSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS);
+        expect(equalsSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS, unsatisfiedConditions1)).toBe(true);
+
+        // make examinant match
+        savedAttendances[1].examinants[0].role = "music";
+        validator = new MusicSchoolYearValidator(savedAttendances[0], savedAttendances);
+        unsatisfiedConditions1 = validator.getCurrentlyUnsatisfiedSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS);
+        expect(equalsSchoolYearConditions(MOCK_MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS, unsatisfiedConditions1)).toBe(false);
+    })
 })
 
 

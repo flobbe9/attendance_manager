@@ -1,11 +1,10 @@
-import GlobalContextProvider from "@/components/context/GlobalContextProvider";
 import GlobalAttendanceContextProvider from "@/components/context/GlobalAttendanceContextProvider";
+import GlobalContextProvider from "@/components/context/GlobalContextProvider";
 import CustomSqliteProvider from "@/components/CustomSqliteProvider";
 import GlobalComponentProvider from "@/components/GlobalComponentProvider";
 import { logErrorFiltered, logWarnFiltered } from "@/utils/logUtils";
 import { Stack } from "expo-router";
 import { ClickOutsideProvider } from "react-native-click-outside";
-import { Text, View } from "react-native";
 
 
 console.warn = logWarnFiltered;
@@ -27,8 +26,7 @@ export default function layout() {
                         <GlobalComponentProvider>
                             <Stack
                                 screenOptions={{
-                                    headerShown: false, 
-                                    orientation: "all", 
+                                    headerShown: false
                                 }}
                                 >
                                 {/* <Stack.Screen name="(attendance)" /> */}
