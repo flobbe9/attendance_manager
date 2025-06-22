@@ -1,10 +1,11 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
 import { ViewStyle } from "react-native";
 import HS from "./helperStyles";
+import { DEFAULT_BUTTON_PADDING } from './../../utils/styleConstants';
 
 type StyleType = ViewStyle;
 
-const padding = 10;
+const padding = DEFAULT_BUTTON_PADDING;
 
 export class HelperButtonStyles {
     static component: DynamicStyle<StyleType> = {

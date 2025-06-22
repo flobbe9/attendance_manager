@@ -1,8 +1,7 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { FONT_SIZE, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
 import HelperStyles from "./helperStyles";
-
 
 export class TooltipStyles {
     static component: DynamicStyle<ViewStyle> = {
@@ -12,8 +11,11 @@ export class TooltipStyles {
         }
     }
 
-    static icon: TextStyle = {
-        paddingHorizontal: GLOBAL_SCREEN_PADDING,
+    static iconButton: DynamicStyle<ViewStyle> = {
+        default: {
+            backgroundColor: "transparent",
+            borderRadius: "100%",
+        }
     }
 
     static textContainer: DynamicStyle<ViewStyle> = {

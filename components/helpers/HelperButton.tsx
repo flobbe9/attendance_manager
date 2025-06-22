@@ -62,7 +62,6 @@ export default forwardRef(function HelperButton(
     )
 
     function handlePress(event?: GestureResponderEvent): void {
-
         if (!disabled && !loading && onPress)
             onPress(event);
     }

@@ -17,6 +17,8 @@ export const BORDER_WIDTH = 4;
 export const GLOBAL_SCREEN_PADDING = 10;
 export const FONT_SIZE = 20;
 export const FONT_SIZE_SMALLER = 15;
+export const FONT_SIZE_LARGER = 25;
+export const DEFAULT_BUTTON_PADDING = 10;
 
 /** Refers to bootstrap grid */
 export const SM_MIN_WIDTH = 576;
