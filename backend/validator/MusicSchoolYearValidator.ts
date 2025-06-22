@@ -8,6 +8,7 @@ import { destructSchoolYearConditions, findSchoolYearConditionsByLessonTopic, is
 import { SchoolYearConditionOptions } from "../abstract/SchoolYearConditionOptions";
 import { isSchoolYearRangeOverlap, schoolYearRangeToString } from "../abstract/SchoolYearRange";
 import { AttendanceEntity } from "../DbSchema";
+
 /**
  * @since latest
  */
@@ -67,17 +68,17 @@ export class MusicSchoolYearValidator extends AbstractSchoolYearValidator {
 
         logDebug("validate schoolyear", schoolYear)
 
-        if ((errorMessage = this.validateNonContextConditions(MUSIC_SCHOOL_YEAR_CONDITIONS, schoolYear)) != null)
+        if ((errorMessage = this.validateNonContextConditions(MUSIC_SCHOOL_YEAR_CONDITIONS, schoolYear)) !== null)
             return errorMessage;
         
         logDebug("non context schoolyear valid", schoolYear)
 
-        if ((errorMessage = this.validateContextConditions(MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS, schoolYear)) != null)
+        if ((errorMessage = this.validateContextConditions(MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS, schoolYear)) !== null)
             return errorMessage;
 
         logDebug("context schoolyear valid", schoolYear)
 
-        if ((errorMessage = this.validateFuture(schoolYear)) != null)
+        if ((errorMessage = this.validateFuture(schoolYear)) !== null)
             return errorMessage;        
 
         logDebug("future valid", schoolYear)

@@ -28,7 +28,12 @@ export class Dao<E extends AbstractEntity> {
         this.table = table;
     }
 
-
+    /**
+     * Will attempt to insert (but never update) `values`.
+     * 
+     * @param values to insert
+     * @returns saved result or `null` if error
+     */
     public async insert(values: E): Promise<E | null> {
 
         try {
@@ -57,6 +62,9 @@ export class Dao<E extends AbstractEntity> {
 
     /**
      * Update all entities matching `where`.
+     * 
+     * Notice that setting a field value to `undefined` or removing it completely from the entity will not
+     * be considered as setting the value to `null`. Instead the value wont be modified at all.
      * 
      * @param values to insert. Object may be incomplete, will only update what's given
      * @param where to identify the row(s) to update. If not specified, `values.id` is used as `where` 
