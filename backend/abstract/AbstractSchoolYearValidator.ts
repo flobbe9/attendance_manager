@@ -135,14 +135,13 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
         assertFalsyAndThrow(allConstantSchoolYearConditions);
 
         const schoolYearConditionsWithCount = this.getSchoolYearConditionsWithCountMatchRange(
-            allConstantSchoolYearConditions, 
+            findSchoolYearConditionsBySchoolYearRange(schoolYear, allConstantSchoolYearConditions).map(([condition, ]) => condition), 
             { includeCurrentAttendanceEntity: false });
 
-        for (const schoolYearConditionWithCount of schoolYearConditionsWithCount) {
+        for (const schoolYearConditionWithCount of schoolYearConditionsWithCount)
             // case: range maxed out
             if (schoolYearConditionWithCount.attendanceCount >= schoolYearConditionWithCount.maxAttendances)
                 return `Für die Jahrgänge '${schoolYearRangeToString(schoolYearConditionWithCount.schoolYearRange)}' sind im ausgewählten Fach bereits die maximale Anzahl an UBs geplant (${schoolYearConditionWithCount.maxAttendances}x).`;
-        }
 
         return null;
     }
