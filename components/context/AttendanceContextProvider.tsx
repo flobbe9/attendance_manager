@@ -3,7 +3,7 @@ import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepos
 import { useSettingsRepository } from "@/hooks/repositories/useSettingsRepository";
 import { useFlashState } from "@/hooks/useFlashState";
 import { ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL, ATTENDANCE_INPUT_TOOLTIP_ICON_NUM_FLASHES } from "@/utils/styleConstants";
-import { cloneObj } from "@/utils/utils";
+import { cloneObj, isAnyFalsy } from "@/utils/utils";
 import { createContext, useContext, useEffect, useState } from "react";
 import { ColorValue } from "react-native";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
@@ -11,7 +11,8 @@ import AttendanceInputErrorSnackbarContent from "../(attendance)/AttendanceInput
 import { CustomSnackbarStatus } from "../CustomSnackbar";
 import { GlobalAttendanceContext } from "./GlobalAttendanceContextProvider";
 import { GlobalContext } from "./GlobalContextProvider";
-
+import { log } from "@/utils/logUtils";
+import { AbstractRepository } from "@/backend/abstract/AbstractRepository";
 
 /**
  * Context available to all attendance edit sepcific screens of /(attendance).
@@ -71,12 +72,10 @@ export default function AttendanceContextProvider({children}) {
         currentlyInvalidAttendanceInputKey
     }
 
-
     useEffect(() => {
         handleInvalidAttendanceInputSnackbarDismiss();
 
     }, [didDismissInvalidAttendanceInputErrorPopup]);
-
  
     /**
      * Update value of `attendancEntityKey` for `currentAttendanceEntity` and update the `currentAttendanceEntity` state. If `value` is an
@@ -86,23 +85,26 @@ export default function AttendanceContextProvider({children}) {
      * @param attendancEntityValue the input value, any value of attendance entity props
      */
     function updateCurrentAttendanceEntity<T extends ValueOf<AttendanceEntity>>(attendanceEntityKey: keyof AttendanceEntity, attendancEntityValue: T): void {
-
         // make sure to set the backreference
-        if (typeof attendancEntityValue === "object") {
+        if (!isAnyFalsy(attendancEntityValue) && typeof attendancEntityValue === "object") {
             if (Array.isArray(attendancEntityValue))
                 attendancEntityValue.forEach(ownedEntity => {
-                    ownedEntity[attendanceRespository.getBackReferenceColumnName()] = currentAttendanceEntity.id;
+                    if (!isAnyFalsy(ownedEntity) && typeof ownedEntity === "object")
+                        ownedEntity[attendanceRespository.getBackReferenceColumnName()] = currentAttendanceEntity.id;
                 })
             else
                 attendancEntityValue[attendanceRespository.getBackReferenceColumnName()] = currentAttendanceEntity.id;
         }
+
+        // set undefined values to null for db update to modify all values
+        const fixedCurrentAttendanceEntity = AbstractRepository.fixEmptyColumnValues(currentAttendanceEntity);
+        const fixedAttendanceEntityValue = AbstractRepository.fixEmptyColumnValue(attendancEntityValue);
         
         setCurrentAttendanceEntity({
-            ...currentAttendanceEntity,
-            [attendanceEntityKey]: attendancEntityValue
+            ...fixedCurrentAttendanceEntity,
+            [attendanceEntityKey]: fixedAttendanceEntityValue
         })
     }
-
 
     /**
      * Clones `attendanceEntity`, then updates state.
@@ -110,10 +112,8 @@ export default function AttendanceContextProvider({children}) {
      * @param attendanceEntity to update the last saved state with.
      */
     function updateLastSavedAttendanceEntity(attendanceEntity: AttendanceEntity): void {
-
         setLastSavedAttendanceEntity(cloneObj(attendanceEntity));
     }
-    
 
     /**
      * Call this on input value change if value is invalid.
@@ -133,7 +133,6 @@ export default function AttendanceContextProvider({children}) {
         callback?: () => void, 
         snackbarStatus: CustomSnackbarStatus = 'info'
     ): Promise<void> {
-        
         const flash = async () => {
             setCurrentlyInvalidAttendanceInputKey(invalidAttendanceInputKey);
             await flashTooltipIcon();
@@ -164,9 +163,7 @@ export default function AttendanceContextProvider({children}) {
             callback();
     }
 
-
     async function handleInvalidAttendanceInputSnackbarDismiss(): Promise<void> {
-
         if (dontShowInvalidInputErrorPopup && didDismissInvalidAttendanceInputErrorPopup) {
             await settingsRepository.updateDontShowAttendanceValidationErrorPopup(true);
             setTimeout(() => 
@@ -176,13 +173,10 @@ export default function AttendanceContextProvider({children}) {
         }
     }
 
-
     function resetInvalidAttendanceInputErrorStyles(): void {
-
         setTooltipIconColor(ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR);
         hideSnackbar();
     }
-
 
     return (
         <AttendanceContext.Provider value={context}>

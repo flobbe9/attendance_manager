@@ -1,4 +1,4 @@
-import { logDebug, logError, logTrace } from "@/utils/logUtils";
+import { log, logDebug, logError, logTrace } from "@/utils/logUtils";
 import { assertFalsyAndThrow, isAnyFalsy } from "@/utils/utils";
 import { and, eq, notInArray, SQL } from "drizzle-orm";
 import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
@@ -186,7 +186,6 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
         backReferenceValue: any,
         currentTransaction?: DbTransaction
     ): Promise<RE | null> {
-
         assertFalsyAndThrow(relatedEntity, relatedEntityRepository);
         
         if (!isAnyFalsy(backReferenceValue))
@@ -198,7 +197,6 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
         return await relatedEntityRepository.persistCascade(relatedEntity, currentTransaction);
     }
 
-
     /**
      * Delete related entities that should no longer be related to entity `E` with `id` (not in `newRelatedEntityDetail.column.value`), consider `orphanRemoval` is `true`.
      * 
@@ -206,7 +204,6 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
      * @param newRelatedEntityDetail contains new related entities that existing ones will be checked against
      */
     private async handleOrphanRemoval<RE extends AbstractEntity>(id: number, newRelatedEntityDetail: RelatedEntityDetail<E, RE>): Promise<void> {
-
         assertFalsyAndThrow(id);
 
         if (!newRelatedEntityDetail || 
@@ -236,7 +233,6 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
         );
     }
 
-
     /**
      * Indicates whether `relatedValues` should have cascade applied if parent is persisted (insert or update).
      * Predicts the type of persist operation and checks if the matching cascade type is present.
@@ -246,7 +242,6 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
      * @returns `true` if the persist operation may be executed 
      */
     private async isCascadeWhenPersist<RE extends AbstractEntity>(relatedValues: RE, cascade: Set<Cascade> | undefined): Promise<boolean> {
-
         assertFalsyAndThrow(relatedValues);
 
         // case: no cascade specified at all
@@ -257,5 +252,45 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
 
         return (!!valuesExist && cascade.has(Cascade.UPDATE)) ||
                 (!valuesExist && cascade.has(Cascade.INSERT));
+    }
+
+    /**
+     * Iterate all fields of `entity` including related entities' fields and change `undefined` values to `null`. This does not include
+     * missing properties (which would also be considered `undefined`).
+     * 
+     * This is for database update method to modify falsy column values. `undefined` values will be ignored by db, `null` values wont.
+     * 
+     * @param entity to fix values for
+     * @returns modified `entity` or just `entity` if is falsy)
+     */
+    public static fixEmptyColumnValues<E extends AbstractEntity>(entity: E): E {
+        if (!entity)
+            return entity;
+
+        Object.entries(entity)
+            .forEach(([key, value]) => {
+                if (value === undefined)
+                    entity[key] = AbstractRepository.fixEmptyColumnValue(value);
+
+                else if (typeof value === "object" && !isAnyFalsy(value))
+                    if (Array.isArray(value))
+                        value.forEach(nestedEntity => this.fixEmptyColumnValues(nestedEntity));
+                    else
+                        this.fixEmptyColumnValues(value);
+            })
+
+        return entity;
+    }
+
+    /**
+     * @param value to fix (not modified)
+     * @returns null or `value`
+     * @see {@link fixEmptyColumnValues}
+     */
+    public static fixEmptyColumnValue<T>(value: T): T {
+        if (value === undefined)
+            return null;
+
+        return value;
     }
 }
