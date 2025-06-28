@@ -1,5 +1,5 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { FONT_SIZE_LARGER, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
 
 
@@ -9,19 +9,26 @@ export class ExaminantInputStyles {
 
         }
     }
-
     
-    static iconContainer: DynamicStyle<ViewStyle> = {
+    static checkboxContainer: DynamicStyle<ViewStyle> = {
         default: {
-            marginRight: 10,
+            marginRight: 30,
             marginTop: GLOBAL_SCREEN_PADDING + 5  // The padding a <List.Accordion> element has, which I can't get rid of
         }
     }
+
+    static checkbox: DynamicStyle<ViewStyle> = {
+        default: {
+            flexWrap: "nowrap"
+        }
+    }
+
+    static checkboxIcon: TextStyle = {
+        fontSize: FONT_SIZE_LARGER
+    }
     
     static icon: TextStyle = {
-        fontSize: 30,
+        fontSize: FONT_SIZE_LARGER + 10,
         flexShrink: 0,
-        marginRight: 5,
-        marginTop: 15
     }
 }

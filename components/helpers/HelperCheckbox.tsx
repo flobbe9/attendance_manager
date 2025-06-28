@@ -6,11 +6,13 @@ import React, { forwardRef, Ref } from "react";
 import { TextStyle, View, ViewProps, ViewStyle } from "react-native";
 import Flex from "./Flex";
 import HelperView from "./HelperView";
+import HelperReactChildren from "./HelperReactChildren";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
     checked: boolean,
     setChecked: (checked: boolean) => void,
+    /** Applied to the checkbox icon (the square and the square with checkmark) */
     iconStyle?: TextStyle,
     /** How to align children relative to checkbox icon. Default is "right" */
     labelAlign?: "right" | "left",
@@ -32,7 +34,6 @@ export default forwardRef(function HelperCheckbox(
     }: Props,
     ref: Ref<View>
 ) {
-
     const componentName = "HelperCheckbox";
     const { children, ...otherProps } = useHelperProps(props, componentName);
 
@@ -45,7 +46,7 @@ export default forwardRef(function HelperCheckbox(
             onTouchStart={() => setChecked(!checked)}
             {...otherProps}
         >
-            {labelAlign === "left" && children}
+            <HelperReactChildren rendered={labelAlign === "left"}>{children}</HelperReactChildren>
 
             <HelperView
                 style={{ 
@@ -59,7 +60,7 @@ export default forwardRef(function HelperCheckbox(
                 />
             </HelperView>
 
-            {labelAlign === "right" && children}
+            <HelperReactChildren rendered={labelAlign === "right"}>{children}</HelperReactChildren>
         </Flex>
     )
 })

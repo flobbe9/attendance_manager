@@ -1,3 +1,4 @@
+import { ExaminantRole_Key } from "@/abstract/Examinant";
 import { Headmaster, HEADMASTERS } from "@/abstract/Headmaster";
 import HelperProps from "@/abstract/HelperProps";
 import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
@@ -6,35 +7,33 @@ import { ExaminantEntity } from "@/backend/DbSchema";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
+import { getSubjectColor } from "@/hooks/useSubjectColor";
 import { CheckboxStatus, NO_SELECTION_LABEL } from "@/utils/constants";
-import { HISTORY_COLOR, MUSIC_COLOR } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext, useEffect, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import Flex from "../helpers/Flex";
+import HelperCheckbox from "../helpers/HelperCheckbox";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
-
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 
 }
 
-
 /**
  * @since 0.0.1
  */
 export default function ExaminantInput({...props}: Props) {
-
     const { updateCurrentAttendanceEntity, currentAttendanceEntity } = useContext(AttendanceContext);
 
     const [historyExaminantStatus, setHistoryExaminantStatus] = useState<CheckboxStatus>("indeterminate");
     const [musicExaminantStatus, setMusicExaminantStatus] = useState<CheckboxStatus>("indeterminate");
     const [educatorExaminantStatus, setEducatorExaminantStatus] = useState<CheckboxStatus>("indeterminate");
+    const [headmasterStatus, setHeadmasterStatus] = useState<CheckboxStatus>("indeterminate");
     
-    const [isHeadmaster, setIsHeadMaster] = useState(false);
-    const [selectedHeadmaster, setSelectedHeadMaster] = useState<Headmaster | typeof NO_SELECTION_LABEL>();
+    const [selectedHeadmaster, setSelectedHeadmaster] = useState<Headmaster | typeof NO_SELECTION_LABEL>();
 
     /** Indicates that all checkbox states have been initialized with `currentAttendanceEntity` values  */
     const [initializedCheckboxes, setInitializedCheckboxes] = useState(false);
@@ -44,30 +43,24 @@ export default function ExaminantInput({...props}: Props) {
 
     const attendanceService = new AttendanceService();
 
-
     useEffect(() => {
         initializeStates();
-
     }, []);
-
 
     useEffect(() => {
         // case: states initialized already
         if (initializedCheckboxes)
             updateCurrentAttendanceEntityExaminants();
-
-    }, [historyExaminantStatus, musicExaminantStatus, educatorExaminantStatus, isHeadmaster, selectedHeadmaster]);
-
+    }, [historyExaminantStatus, musicExaminantStatus, educatorExaminantStatus, headmasterStatus, selectedHeadmaster]);
 
     function initializeStates(): void {
-
         setHistoryExaminantStatus(attendanceService.hasExaminant(currentAttendanceEntity, "history") ? "checked" : "unchecked");
         setMusicExaminantStatus(attendanceService.hasExaminant(currentAttendanceEntity, "music") ? "checked" : "unchecked");
         setEducatorExaminantStatus(attendanceService.hasExaminant(currentAttendanceEntity, "educator") ? "checked" : "unchecked");
-        
-        const [headMasterExaminant, headMasterExaminantIndex] = attendanceService.getExaminantByRole(currentAttendanceEntity, "headmaster");
-        setIsHeadMaster(!!headMasterExaminant);
-        setSelectedHeadMaster(headMasterExaminant ? (headMasterExaminant.fullName as Headmaster | null) : NO_SELECTION_LABEL);
+
+        const [headmasterExaminant, ] = attendanceService.getExaminantByRole(currentAttendanceEntity, "headmaster");
+        setHeadmasterStatus(!!headmasterExaminant ? "checked" : "unchecked");
+        setSelectedHeadmaster(headmasterExaminant ? (headmasterExaminant.fullName as Headmaster | null) : NO_SELECTION_LABEL);
 
         // call this last
         setTimeout(() => {
@@ -77,7 +70,6 @@ export default function ExaminantInput({...props}: Props) {
 
 
     function updateCurrentAttendanceEntityExaminants(): void {
-
         const examinants: ExaminantEntity[] = currentAttendanceEntity.examinants;
 
         if (historyExaminantStatus === "checked")
@@ -95,75 +87,90 @@ export default function ExaminantInput({...props}: Props) {
         else if (educatorExaminantStatus === "unchecked")
             attendanceService.removeExaminant(currentAttendanceEntity, "educator");
         
-        if (isHeadmaster)
+        if (headmasterStatus === "checked")
             attendanceService.addOrUpdateExaminantByRole(currentAttendanceEntity, {role: "headmaster", fullName: selectedHeadmaster === NO_SELECTION_LABEL ? null : selectedHeadmaster});
-        else if (!isHeadmaster)
+        else if (headmasterStatus === "unchecked")
             attendanceService.removeExaminant(currentAttendanceEntity, "headmaster");
 
         updateCurrentAttendanceEntity("examinants", examinants);
     }
 
 
+    function CheckboxWithExaminantIcon(props: {
+        checkedStatus: CheckboxStatus, 
+        setCheckedStatus: (status: CheckboxStatus) => void,
+        iconName?: string,
+        role: ExaminantRole_Key
+    }) {
+        const { checkedStatus, setCheckedStatus, iconName = "user", role } = props;
+
+        return (
+            <HelperView dynamicStyle={ExaminantInputStyles.checkboxContainer}>
+                <HelperCheckbox 
+                    checked={checkedStatus === "checked"}
+                    setChecked={(checked) => setCheckedStatus(checked ? "checked" : "unchecked")} 
+                    dynamicStyle={ExaminantInputStyles.checkbox}
+                    iconStyle={ExaminantInputStyles.checkboxIcon}
+                >
+                    <FontAwesome
+                        name={iconName as any} 
+                        color={getSubjectColor(role)} 
+                        style={{...ExaminantInputStyles.icon}}
+                    />
+                </HelperCheckbox>
+            </HelperView>
+        )
+    }
+
     return (
         <HelperView {...otherProps}>
             <HelperText dynamicStyle={AttendanceStyles.heading} style={{marginBottom: 0}}>Anwesende Prüfer</HelperText>
 
-            <Flex flexWrap="nowrap">
+            <Flex>
                 {/* Subjects */}
-                <HelperView dynamicStyle={ExaminantInputStyles.iconContainer}>
-                    <FontAwesome 
-                        name={historyExaminantStatus === "checked" ? "user" : "user-o"} 
-                        color={HISTORY_COLOR} 
-                        style={{...ExaminantInputStyles.icon, fontSize: historyExaminantStatus === "checked" ? 35 : 30}}
-                        onPress={(e) => setHistoryExaminantStatus(historyExaminantStatus === "checked" ? "unchecked" : "checked")}
-                    />
-                </HelperView>
+                <CheckboxWithExaminantIcon 
+                    checkedStatus={musicExaminantStatus}
+                    setCheckedStatus={setMusicExaminantStatus}
+                    role="music"
+                />
 
-                <HelperView dynamicStyle={ExaminantInputStyles.iconContainer}>
-                    <FontAwesome 
-                        name={musicExaminantStatus === "checked" ? "user" : "user-o"}
-                        color={MUSIC_COLOR}
-                        style={{...ExaminantInputStyles.icon, fontSize: musicExaminantStatus === "checked" ? 35 : 30}}
-                        onPress={(e) => setMusicExaminantStatus(musicExaminantStatus === "checked" ? "unchecked" : "checked")}
-                    />
-                </HelperView>
+                <CheckboxWithExaminantIcon 
+                    checkedStatus={historyExaminantStatus}
+                    setCheckedStatus={setHistoryExaminantStatus}
+                    role="history"
+                />
 
-                <HelperView dynamicStyle={ExaminantInputStyles.iconContainer}>
-                    <FontAwesome
-                        name={educatorExaminantStatus === "checked" ? "user" : "user-o"} 
-                        color={"black"} 
-                        style={{...ExaminantInputStyles.icon, fontSize: educatorExaminantStatus === "checked" ? 35 : 30}}
-                        onPress={(e) => setEducatorExaminantStatus(educatorExaminantStatus === "checked" ? "unchecked" : "checked")}
-                    />
-                </HelperView>
+                <CheckboxWithExaminantIcon 
+                    checkedStatus={educatorExaminantStatus}
+                    setCheckedStatus={setEducatorExaminantStatus}
+                    role="educator"
+                />
+            </Flex>
     
-                {/* Headmaster */}
-                <Flex 
-                    flexWrap="nowrap" 
-                    alignItems="flex-start" 
-                    flexShrink={1} 
-                    style={{marginLeft: 20}} 
-                    dynamicStyle={ExaminantInputStyles.iconContainer}
+            {/* Headmaster */}
+            <Flex 
+                alignItems="flex-start" 
+                flexShrink={1} 
+                style={{marginTop: 20}}
+            >
+                <CheckboxWithExaminantIcon 
+                    checkedStatus={headmasterStatus}
+                    setCheckedStatus={setHeadmasterStatus}
+                    role="headmaster"
+                    iconName="graduation-cap"
+                />
+                
+                <HelperSelect  
+                    style={{flexShrink: 1}}
+                    rendered={headmasterStatus === "checked"}
+                    options={[NO_SELECTION_LABEL, ...HEADMASTERS] as (Headmaster | typeof NO_SELECTION_LABEL)[]} 
+                    selectedOptions={selectedHeadmaster}
+                    setSelectedOptions={setSelectedHeadmaster} 
+                    optionsContainerHeight={121}
+                    optionsContainerScroll={false}
                 >
-                    <FontAwesome
-                        name={isHeadmaster ? "user-plus" : "user-o"} 
-                        color={"black"} 
-                        style={{...ExaminantInputStyles.icon, fontSize: isHeadmaster ? 32 : 30}}
-                        onPress={(e) => setIsHeadMaster(!isHeadmaster)}
-                    />
-                    
-                    <HelperSelect  
-                        style={{flexShrink: 1}}
-                        rendered={isHeadmaster}
-                        options={[NO_SELECTION_LABEL, ...HEADMASTERS] as (Headmaster | typeof NO_SELECTION_LABEL)[]} 
-                        selectedOptions={selectedHeadmaster}
-                        setSelectedOptions={setSelectedHeadMaster} 
-                        optionsContainerHeight={121}
-                        optionsContainerScroll={false}
-                    >
-                        <HelperText>Schulleitung</HelperText>
-                    </HelperSelect>
-                </Flex>
+                    <HelperText>Schulleitung</HelperText>
+                </HelperSelect>
             </Flex>
         </HelperView>
     )
