@@ -5,7 +5,7 @@ import { TextStyle, ViewStyle } from "react-native";
 export class AttendanceInputTooltipStyles {
     static component: DynamicStyle<ViewStyle> = {
         default: {
-            marginStart: 10
+            // marginStart: 10,
         }
     }
 
@@ -13,15 +13,13 @@ export class AttendanceInputTooltipStyles {
         fontSize: FONT_SIZE_LARGER,
     }
 
-    static buttonContainer: DynamicStyle<ViewStyle> = {
-        default: {
-            // marginStart: 10
-        }
-    }
-
     static button: ViewStyle = {
         // make button a square
         height: FONT_SIZE_LARGER + 20,
         width: FONT_SIZE_LARGER + 20
+    }
+
+    static textContainerStyles: ViewStyle = {
+        backgroundColor: "rgb(197, 197, 197)",
     }
 }

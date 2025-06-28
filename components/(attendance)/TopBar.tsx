@@ -35,7 +35,7 @@ export default function TopBar({...props}: Props) {
 
     const { allStyles: { mt_5, col_6 }, parseResponsiveStyleToStyle: pr } = useResponsiveStyles();
 
-    const { popup, snackbar, toast, hideToast } = useContext(GlobalContext);
+    const { popup, toast, hideToast } = useContext(GlobalContext);
     const { 
         modified, 
         updateLastSavedAttendanceEntity, 
@@ -57,7 +57,6 @@ export default function TopBar({...props}: Props) {
         // validate schoolyear again since putting in 1 is possible now
         // reset error styles 
     async function handleSavePress(): Promise<void> {
-
         // validate empty values to prevent at least sql exceptions
 
         // if invalid
@@ -85,9 +84,7 @@ export default function TopBar({...props}: Props) {
         }, 500); // wait for states to update to prevent popup flash
     }
 
-
     function handleDeletePress(): void {
-
         if (isNumberFalsy(currentAttendanceEntity.id))
             return;
 
@@ -116,7 +113,6 @@ export default function TopBar({...props}: Props) {
     }
 
     function toastError(heading: string, errorMessage: string): void {
-
         const content = (
             <HelperView>
                 <B>{heading}</B>
@@ -149,7 +145,6 @@ export default function TopBar({...props}: Props) {
             }
         )
     }
-
 
     return (
         <Flex flexWrap="nowrap" {...otherProps}>

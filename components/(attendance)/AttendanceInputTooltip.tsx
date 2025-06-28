@@ -7,9 +7,10 @@ import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import Tooltip from "../helpers/Tooltip";
+import { useDeviceOrientation } from "@/hooks/useDeviceOrientation";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
-    attendanceInputKey: keyof AttendanceEntity
+    attendanceInputKey: keyof AttendanceEntity,
 }
 
 /**
@@ -24,6 +25,8 @@ export default function AttendanceInputTooltip({attendanceInputKey, ...props}: P
     const componentName = "AttendanceInputTooltip";
     const { children, ...otherProps } = useHelperProps(props, componentName, AttendanceInputTooltipStyles.component);
 
+    const orientation = useDeviceOrientation();
+
     return (
         <Tooltip 
             iconStyle={{
@@ -32,12 +35,13 @@ export default function AttendanceInputTooltip({attendanceInputKey, ...props}: P
             }}
             iconAlign="right"
             buttonStyles={{
-                containerStyles: {
-                    ...AttendanceInputTooltipStyles.buttonContainer
-                },
                 style: {
                     ...AttendanceInputTooltipStyles.button
-                },
+                }
+            }}
+            textContainerStyles={{
+                ...AttendanceInputTooltipStyles.textContainerStyles,
+                maxWidth: orientation === "landscape" ? 400 : 200
             }}
             onTouchStart={() => setTooltipIconColor(ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR)} // make sure to reset possible error style
             {...otherProps}

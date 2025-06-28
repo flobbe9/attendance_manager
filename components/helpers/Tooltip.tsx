@@ -15,6 +15,7 @@ import { logDebug } from "@/utils/logUtils";
 import { DEFAULT_BUTTON_PADDING, FONT_SIZE } from "@/utils/styleConstants";
 import HelperStyles from "@/assets/styles/helperStyles";
 import { DynamicStyle } from "@/abstract/DynamicStyle";
+import HelperReactChildren from "./HelperReactChildren";
 
 
 export type TooltipIconAlign = "top" | "bottom" | "left" | "right";
@@ -36,6 +37,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
     duration?: number,
     iconStyle?: TextStyle,
     buttonStyles?: { containerStyles?: DynamicStyle<ViewStyle>, style?: ViewStyle }
+    textContainerStyles?: ViewStyle
 }
 
 /**
@@ -48,12 +50,13 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
 export default function Tooltip(
     {
         iconAlign = "left",
-        textContainerAdditionalOffset = 0,
+        textContainerAdditionalOffset = 5,
         visible,
         setVisible,
         duration = 5000,
         iconStyle = {},
         buttonStyles = {},
+        textContainerStyles = {},
         ...props
     }: Props
 ) {
@@ -102,7 +105,7 @@ export default function Tooltip(
      * @returns the amount to move the text container
      */
     function getTextContainerOffset(): number {
-        return (DEFAULT_BUTTON_PADDING * 2) + (iconStyle.fontSize ?? FONT_SIZE) + (textContainerAdditionalOffset ?? 0);
+        return (DEFAULT_BUTTON_PADDING * 2) + (iconStyle.fontSize ?? FONT_SIZE) + textContainerAdditionalOffset;
     }
 
     /**
@@ -143,15 +146,22 @@ export default function Tooltip(
             </HelperButton>
 
             <HelperView 
-                dynamicStyle={TooltipStyles.textContainer} 
                 style={{
+                    position: "absolute",
                     [getTextContainerPositionKey()]: getTextContainerOffset(),
-                    opacity: animatedTextContainerOpacity
                 }}
             >
-                <HelperText dynamicStyle={TooltipStyles.text}>
-                    {children}
-                </HelperText>
+                <HelperView 
+                    dynamicStyle={TooltipStyles.textContainer} 
+                    style={{
+                        ...textContainerStyles,
+                        opacity: animatedTextContainerOpacity,
+                    }}
+                >
+                    <HelperReactChildren dynamicStyle={TooltipStyles.text}>
+                        {children}
+                    </HelperReactChildren>
+                </HelperView>
             </HelperView>
         </Flex>
     )

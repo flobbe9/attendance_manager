@@ -1,6 +1,6 @@
 import { getMusicLessonTopicByMusicLessonTopicKey } from "@/abstract/MusicLessonTopic";
 import { getSchoolSubjectBySchoolSubjectKey, SchoolSubject_Key } from "@/abstract/SchoolSubject";
-import { isSchoolYear, SchoolYear } from "@/abstract/SchoolYear";
+import { isSchoolYear, SCHOOL_YEARS, SchoolYear } from "@/abstract/SchoolYear";
 import { getGubSubjectSchoolYearConditionsBySubject, getTotalRequiredGubs, GUB_SCHOOL_YEAR_CONDITIONS } from "@/utils/attendanceValidationConstants";
 import { assertFalsyAndThrow, cloneObj } from "@/utils/utils";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
@@ -14,24 +14,24 @@ import { isWithinSchoolYearRange, schoolYearRangeToString } from "./SchoolYearRa
  * @since latest
  */
 export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInputValidator<SchoolYear> {
-
     /** The subject this validator is for. Should be a constant, set by implementing class.  */
     private schoolSubjectToValidateFor: SchoolSubject_Key;
 
-
     constructor(currentAttendanceEntity: AttendanceEntity, savedAttendanceEntities: AttendanceEntity[], schoolSubjectToValidateFor: SchoolSubject_Key) {
-        
         super(currentAttendanceEntity, savedAttendanceEntities);
 
         this.schoolSubjectToValidateFor = schoolSubjectToValidateFor;
     }
 
-    public abstract getValidValues(): ValueOf<AttendanceEntity>[];
-    // iterate left over values
-        // validate simple
-        // validate with context
-        // vlaidate future
-        // add to list
+    /**
+     * Validate all possible school year values (non-context, context and future) and return the valid ones.
+     * 
+     * @returns all school years valid at this moment or an empty array
+     */
+    public getValidValues(): ValueOf<AttendanceEntity>[] {
+        return SCHOOL_YEARS
+            .filter(schoolYear => this.validate(schoolYear) === null);
+    }
     
     /**
      * @param allConstantSchoolYearConditions the constant list to compare saved attendances agains. See "attendanceValidationConstants.ts"

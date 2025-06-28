@@ -26,7 +26,8 @@ export default function layout() {
                         <GlobalComponentProvider>
                             <Stack
                                 screenOptions={{
-                                    headerShown: false
+                                    headerShown: false,
+                                    orientation: "default"
                                 }}
                                 >
                                 {/* <Stack.Screen name="(attendance)" /> */}

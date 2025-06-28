@@ -18,11 +18,6 @@ export class MusicSchoolYearValidator extends AbstractSchoolYearValidator {
         super(currentAttendanceEntity, savedAttendanceEntities, "music");
     }
     
-    public getValidValues(): SchoolYear[] {
-        return [];
-    }
-
-
     /**
      * @param constantSchoolYearConditions the list of conditions to compare saved attendances against
      * @param options Default for includeCurrentAttendanceEntity is `true`. See {@link SchoolYearConditionOptions}

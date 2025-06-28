@@ -17,10 +17,6 @@ export class HistorySchoolYearValidator extends AbstractSchoolYearValidator {
         super(currentAttendanceEntity, savedAttendanceEntities, "history");
     }
 
-    public getValidValues(): ValueOf<AttendanceEntity>[] {
-        return [];
-    }
-
     public validateFuture(inputValue: SchoolYear): string | null {
         // not implemented
         return null;
@@ -94,7 +90,6 @@ export class HistorySchoolYearValidator extends AbstractSchoolYearValidator {
                     
                 // case: both variants invalid
                 if (errorMessageVariant2 !== null)
-                    // TODO: improove error message 
                     return this.concatErrorMessages(errorMessageVariant1, errorMessageVariant2);
             }
 
