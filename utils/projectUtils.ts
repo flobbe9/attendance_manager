@@ -1,7 +1,6 @@
 import { assertFalsyAndThrow, isAnyFalsy } from "./utils";
 
 export function formatDateGermanNoTime(date: Date): string {
-
     if (!date)
         return '-';
 

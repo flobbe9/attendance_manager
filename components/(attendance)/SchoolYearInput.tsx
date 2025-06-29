@@ -38,7 +38,6 @@ export default function SchoolYearInput({...props}: Props) {
 
     const validator = AttendanceInputValidatorBuilder
         .builder(currentAttendanceEntity, savedAttendanceEntities)
-        .schoolSubject(currentAttendanceEntity.schoolSubject)
         .inputType("schoolYear")
         .build();
 

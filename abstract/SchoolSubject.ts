@@ -15,11 +15,9 @@ export type SchoolSubject = keyof typeof schoolSubjectValuesObj;
 export const SCHOOL_SUBJECTS: SchoolSubject[] = Object.keys(schoolSubjectValuesObj) as SchoolSubject[]; 
 
 export function getSchoolSubjectBySchoolSubjectKey(key: SchoolSubject_Key): SchoolSubject {
-
     return SCHOOL_SUBJECTS[SCHOOL_SUBJECT_KEYS.indexOf(key)];
 }
 
 export function getSchoolSubjectKeyBySchoolSubject(schoolSubject: SchoolSubject): SchoolSubject_Key {
-
     return SCHOOL_SUBJECT_KEYS[SCHOOL_SUBJECTS.indexOf(schoolSubject)];
 }

@@ -10,14 +10,18 @@ import { DatePickerModal } from "react-native-paper-dates";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 import HelperButton from "./HelperButton";
 import HelperText from "./HelperText";
+import { logTrace } from "@/utils/logUtils";
 
+export type DatePickerValue = {startDate: CalendarDate; endDate: CalendarDate} & {date: CalendarDate} & {dates: Date[]};
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
     date: CalendarDate
     setDate: (date: CalendarDate) => void,
     /** Default is "de". Remember to register locales in "GlobalContextProvider.tsx" before adding more. See also https://web-ridge.github.io/react-native-paper-dates/docs/intro/ */
     locale?: "de" | "en",
-    buttonStyles?: DynamicStyle<ViewStyle>
+    buttonStyles?: DynamicStyle<ViewStyle>,
+    /** May throw an error to prevent setting `date` state. Will dismiss regardless */
+    onConfirm?:  (params: DatePickerValue) => void
 }
 
 
@@ -32,6 +36,7 @@ export default forwardRef(function DatePicker(
         setDate,
         locale = "de",
         onTouchStart,
+        onConfirm,
         buttonStyles,
         ...props
     }: Props,
@@ -54,22 +59,31 @@ export default forwardRef(function DatePicker(
         );  
     }
 
-
     function handleDismiss(): void {
-
         setIsVisible(false);
     }
 
+    function handleConfirm(params: DatePickerValue): void {
+        try {
+            if (onConfirm)
+                onConfirm(params);
 
-    function handleConfirm(params: {startDate: CalendarDate; endDate: CalendarDate} & {date: CalendarDate} & {dates: Date[]}): void {
+        // intended to cancel confirm
+        } catch (e) {
+            if (e.message)
+                logTrace(e.message)
+            
+            return;
+
+        } finally {
+            handleDismiss();
+        }
 
         setDate(params.date);
-        setIsVisible(false);
     }
 
 
     function handleTouchStart(event: GestureResponderEvent): void {
-
         if (onTouchStart)
             onTouchStart(event);
 

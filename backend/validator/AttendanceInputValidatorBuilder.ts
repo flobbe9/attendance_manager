@@ -1,12 +1,10 @@
-import { SchoolSubject_Key } from "@/abstract/SchoolSubject";
+import { assertFalsyAndThrow } from "@/utils/utils";
 import { AttendanceEntity } from "../DbSchema";
 import { AbstractAttendanceInputValidator } from "../abstract/AbstractAttendanceInputValidator";
-import { MusicSchoolYearValidator } from "./MusicSchoolYearValidator";
-import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
-import { SchoolYear } from "@/abstract/SchoolYear";
-import { assertFalsyAndThrow } from "@/utils/utils";
 import { AbstractSchoolYearValidator } from "../abstract/AbstractSchoolYearValidator";
 import { HistorySchoolYearValidator } from "./HistorySchoolYearValidator";
+import { MusicSchoolYearValidator } from "./MusicSchoolYearValidator";
+import { DateValidator } from "./DateValidator";
 
 
 /**
@@ -15,48 +13,32 @@ import { HistorySchoolYearValidator } from "./HistorySchoolYearValidator";
 export class AttendanceInputValidatorBuilder {
 
     /** The attendance entity currently beeing edited. Expected to keep beeing updated like a state */
-    private static currentAttendance: AttendanceEntity;
+    private currentAttendance: AttendanceEntity;
     
     /** All saved attendances from db */
-    private static savedAttendances: AttendanceEntity[];    
+    private savedAttendances: AttendanceEntity[];    
     
     /** Will determine the input to validate */
-    private static attendanceInputKey: keyof AttendanceEntity;
-
-    private _schoolSubject: SchoolSubject_Key;
-
-
+    private attendanceInputKey: keyof AttendanceEntity;
 
     private constructor() {
-            
         // use builder() instead
     }
-    
     
     public static builder(
         currentAttendanceEntity: AttendanceEntity, 
         savedAttendanceEntities: AttendanceEntity[], 
-        
     ): AttendanceInputValidatorBuilder {
-       
-        this.currentAttendance = currentAttendanceEntity;
-        this.savedAttendances = savedAttendanceEntities;
+        const newInstance = new AttendanceInputValidatorBuilder();
+        newInstance.currentAttendance = currentAttendanceEntity;
+        newInstance.savedAttendances = savedAttendanceEntities;
 
-        return new AttendanceInputValidatorBuilder();
+        return newInstance;
     }
-
-
-    public schoolSubject(schoolSubject: SchoolSubject_Key): AttendanceInputValidatorBuilder {
-
-        this._schoolSubject = schoolSubject;
-
-        return this;
-    }
-
 
     public inputType(attendanceInputKey: keyof AttendanceEntity): AttendanceInputValidatorBuilder {
 
-        AttendanceInputValidatorBuilder.attendanceInputKey = attendanceInputKey;
+        this.attendanceInputKey = attendanceInputKey;
 
         return this;
     }
@@ -68,29 +50,33 @@ export class AttendanceInputValidatorBuilder {
      */
     public build(): AbstractAttendanceInputValidator<any> {
 
-        switch (AttendanceInputValidatorBuilder.attendanceInputKey) {
+        switch (this.attendanceInputKey) {
             case "schoolYear":
                 return this.buildSchoolYearValidator();
+                
+            case "date":
+                return new DateValidator(this.currentAttendance, this.savedAttendances);
 
             default:
-                throw new Error(`No validator implemented for input ${AttendanceInputValidatorBuilder.attendanceInputKey}`);
+                throw new Error(`No validator implemented for input ${this.attendanceInputKey}`);
         }
     }
     
     
     private buildSchoolYearValidator(): AbstractSchoolYearValidator {
+        assertFalsyAndThrow(this.currentAttendance, this.savedAttendances);
         
-        assertFalsyAndThrow(AttendanceInputValidatorBuilder.currentAttendance, AttendanceInputValidatorBuilder.savedAttendances);
-        
-        switch (this._schoolSubject) {
+        const schoolSubject = this.currentAttendance.schoolSubject;
+
+        switch (schoolSubject) {
             case "music":
-                return new MusicSchoolYearValidator(AttendanceInputValidatorBuilder.currentAttendance, AttendanceInputValidatorBuilder.savedAttendances);
+                return new MusicSchoolYearValidator(this.currentAttendance, this.savedAttendances);
             
             case "history":
-                return new HistorySchoolYearValidator(AttendanceInputValidatorBuilder.currentAttendance, AttendanceInputValidatorBuilder.savedAttendances);
-            
+                return new HistorySchoolYearValidator(this.currentAttendance, this.savedAttendances);
+
             default:
-                throw new Error(`No validator implementation found for schoolSubject ${this._schoolSubject}`);
+                throw new Error(`No validator implementation found for schoolSubject ${schoolSubject}`);
         }
     }
 }
