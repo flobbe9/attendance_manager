@@ -1,7 +1,6 @@
 import { AbstractRepository } from "@/backend/abstract/AbstractRepository";
 import { AttendanceEntity } from "@/backend/DbSchema";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
-import { useSettingsRepository } from "@/hooks/repositories/useSettingsRepository";
 import { useFlashState } from "@/hooks/useFlashState";
 import { SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY } from "@/utils/constants";
 import { ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL, ATTENDANCE_INPUT_TOOLTIP_ICON_NUM_FLASHES } from "@/utils/styleConstants";
@@ -13,7 +12,6 @@ import AttendanceInputErrorSnackbarContent from "../(attendance)/AttendanceInput
 import { CustomSnackbarStatus } from "../CustomSnackbar";
 import { GlobalAttendanceContext } from "./GlobalAttendanceContextProvider";
 import { GlobalContext } from "./GlobalContextProvider";
-import { logDebug } from "@/utils/logUtils";
 
 /**
  * Context available to all attendance edit sepcific screens of /(attendance).
@@ -23,7 +21,7 @@ import { logDebug } from "@/utils/logUtils";
  */
 export default function AttendanceContextProvider({children}) {
     const { snackbar, hideSnackbar } = useContext(GlobalContext);
-    const { dontShowInvalidInputErrorPopup } = useContext(GlobalAttendanceContext);
+    const { dontShowInvalidInputErrorPopup, handleDontShowAgainDismiss } = useContext(GlobalAttendanceContext);
 
     /** The attendance entity currently beeing edited. Dont set an initial value */
     const [currentAttendanceEntity, setCurrentAttendanceEntity] = useState<AttendanceEntity | undefined>();
@@ -34,7 +32,6 @@ export default function AttendanceContextProvider({children}) {
     const [didDismissInvalidAttendanceInputErrorPopup, setDidDismissInvalidAttendanceInputErrorPopup] = useState(false);
     
     const { attendanceRespository } = useAttendanceRepository();
-    const { settingsRepository } = useSettingsRepository();
     
     /** Indicates whether `currentAttendanceEntity` has been modified compared to `lastSavedAttendanceEntity` */
     const [modified, setModified] = useState(false);
@@ -73,7 +70,11 @@ export default function AttendanceContextProvider({children}) {
     }
 
     useEffect(() => {
-        handleInvalidAttendanceInputSnackbarDismiss();
+        handleDontShowAgainDismiss(
+            dontShowInvalidInputErrorPopup, 
+            [didDismissInvalidAttendanceInputErrorPopup, setDidDismissInvalidAttendanceInputErrorPopup], 
+            SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY
+        );
     }, [didDismissInvalidAttendanceInputErrorPopup]);
  
     /**
@@ -171,7 +172,6 @@ export default function AttendanceContextProvider({children}) {
         flash();
 
         if (!dontShowInvalidInputErrorPopup) {
-            setDidDismissInvalidAttendanceInputErrorPopup(false);
             snackbar(
                 <AttendanceInputErrorSnackbarContent 
                     invalidValue={invalidValue} 
@@ -190,16 +190,6 @@ export default function AttendanceContextProvider({children}) {
 
         if (callback)
             callback();
-    }
-
-    async function handleInvalidAttendanceInputSnackbarDismiss(): Promise<void> {
-        if (dontShowInvalidInputErrorPopup && didDismissInvalidAttendanceInputErrorPopup) {
-            await settingsRepository.updateValue(SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY, "true");
-            setTimeout(() => 
-                snackbar("Präferenz gespeichert. Du kannst deine Auswahl unter 'Einstellungen' jederzeit ändern."), 
-                200
-            );
-        }
     }
 
     function resetInvalidAttendanceInputErrorStyles(): void {

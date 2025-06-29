@@ -1,4 +1,4 @@
-import { SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY, SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY } from "@/utils/constants";
+import { assertFalsyAndThrow } from "@/utils/utils";
 import { eq } from "drizzle-orm";
 import { SQLiteDatabase } from "expo-sqlite";
 import { AbstractRepository } from "../abstract/AbstractRepository";
@@ -13,22 +13,16 @@ import { Settings_Table, SettingsEntity } from "../DbSchema";
 export class SettingsRepository extends AbstractRepository<SettingsEntity> {
 
     constructor(db: Db, sqliteDb: SQLiteDatabase) {
-
         super(db, sqliteDb, Settings_Table);
     }
     
-
     getBackReferenceColumnName(): string {
-        
         return "settingsId";
     }
 
-
     getOwnedEntities(entity?: SettingsEntity): RelatedEntityDetail<SettingsEntity, any>[] {
-        
         return [];
     }
-
 
     /**
      * Update or insert db entry with `key`
@@ -37,7 +31,6 @@ export class SettingsRepository extends AbstractRepository<SettingsEntity> {
      * @param value
      */
     public async updateValue(key: string, value: string | null): Promise<void> {
-
         this.updateOrInsert(
             {
                 key: key,
@@ -47,32 +40,21 @@ export class SettingsRepository extends AbstractRepository<SettingsEntity> {
         );
     }
 
-
     /**
-     * @returns the value for {@link SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY} or `false` if result is `null`
+     * Load the value of a setting expected to be "true" or "false". Does handle unexpected value gracefully.
+     * 
+     * @param settingsKey `key` column value for the boolean setting
+     * @param defaultValue to return should `settingsKey` not exist. Default is `false`
+     * @returns `value === "true"` or `defaultValue`
+     * @throws if `settingsKey` is falsy
      */
-    public async getDontShowAttendanceValidationErrorPopup(): Promise<boolean> {
+    public async loadBooleanSetting(settingsKey: string, defaultValue = false): Promise<boolean> {
+        assertFalsyAndThrow(settingsKey);
 
-        const result = await this.select(eq(Settings_Table.key, SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY));
-
+        const result = await this.select(eq(Settings_Table.key, settingsKey));
         if (result.length)
             return result[0].value === "true";
 
-        return false; 
-    }
-
-    
-
-    /**
-     * @returns the value for {@link SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY} or `false` if result is `null`
-     */
-    public async getDontConfirmSchoolSubjectChange(): Promise<boolean> {
-
-        const result = await this.select(eq(Settings_Table.key, SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY));
-
-        if (result.length)
-            return result[0].value === "true";
-
-        return false; 
+        return defaultValue; 
     }
 }

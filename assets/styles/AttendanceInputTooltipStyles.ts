@@ -5,7 +5,6 @@ import { TextStyle, ViewStyle } from "react-native";
 export class AttendanceInputTooltipStyles {
     static component: DynamicStyle<ViewStyle> = {
         default: {
-            // marginStart: 10,
         }
     }
 

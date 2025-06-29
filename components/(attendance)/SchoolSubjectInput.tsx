@@ -1,7 +1,6 @@
 import HelperProps from "@/abstract/HelperProps";
 import { getSchoolSubjectBySchoolSubjectKey, getSchoolSubjectKeyBySchoolSubject, SCHOOL_SUBJECTS, SchoolSubject } from "@/abstract/SchoolSubject";
 import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
-import { useSettingsRepository } from "@/hooks/repositories/useSettingsRepository";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY } from "@/utils/constants";
 import React, { useContext, useEffect, useState } from "react";
@@ -12,9 +11,7 @@ import { GlobalContext } from "../context/GlobalContextProvider";
 import Flex from "../helpers/Flex";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
-import AttendanceInputTooltip from "./AttendanceInputTooltip";
 import DontConfirmSchoolSubjectChangeContent from "./DontConfirmSchoolSubjectChangeContent";
-import { ExaminantEntity } from "@/backend/DbSchema";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -22,18 +19,16 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {}
  * @since 0.0.1
  */
 export default function SchoolSubjectInput({...props}: Props) {
-    const { toast, snackbar } = useContext(GlobalContext);
-    const { dontConfirmSchoolSubjectChange } = useContext(GlobalAttendanceContext);
+    const { toast } = useContext(GlobalContext);
+    const { dontConfirmSchoolSubjectChange, handleDontShowAgainDismiss } = useContext(GlobalAttendanceContext);
     const { updateCurrentAttendanceEntity, currentAttendanceEntity } = useContext(AttendanceContext);
 
     /** Triggered when invalid input error popup is dismissed.  */
     const [didDismissConfirmChangeToast, setDidDismissConfirmChangeToast] = useState(false);
     
     useEffect(() => {
-        handleConfirmChangeToastDismiss();
+        handleDontShowAgainDismiss(dontConfirmSchoolSubjectChange, [didDismissConfirmChangeToast, setDidDismissConfirmChangeToast], SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY);
     }, [didDismissConfirmChangeToast]);
-
-    const { settingsRepository } = useSettingsRepository();
 
     const componentName = "SchoolSubjectInput";
     const { children, ...otherProps } = useDefaultProps(props, componentName);
@@ -57,7 +52,7 @@ export default function SchoolSubjectInput({...props}: Props) {
             ]));
         }
         
-        if (!dontConfirmSchoolSubjectChange)
+        if (!dontConfirmSchoolSubjectChange) {
             toast(
                 <DontConfirmSchoolSubjectChangeContent />,
                 {
@@ -65,20 +60,9 @@ export default function SchoolSubjectInput({...props}: Props) {
                     onDismiss: () => setDidDismissConfirmChangeToast(true)
                 }
             );
-
-        else
+            
+        } else
             handleConfirm();
-    }
-
-    // TODO: make remember choice checkbox more abstract?
-    async function handleConfirmChangeToastDismiss() {
-        if (dontConfirmSchoolSubjectChange && didDismissConfirmChangeToast) {
-            await settingsRepository.updateValue(SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY, "true");
-            setTimeout(() => 
-                snackbar("Präferenz gespeichert. Du kannst deine Auswahl unter 'Einstellungen' jederzeit ändern."), 
-                200
-            );
-        }
     }
     
     return (
@@ -92,8 +76,6 @@ export default function SchoolSubjectInput({...props}: Props) {
         >
             <Flex alignItems="center">
                 <HelperText dynamicStyle={AttendanceStyles.heading}>Fach</HelperText>
-
-                <AttendanceInputTooltip attendanceInputKey="schoolSubject" />
             </Flex>
             
             {children}
