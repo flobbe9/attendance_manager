@@ -182,7 +182,7 @@ export default forwardRef(function HelperSelect<OptionType>({
 
             <HelperButton 
                 dynamicStyle={HelperSelectStyles.selectionButton}
-                onTouchStart={() => setAreOptionsVisible(!areOptionsVisible)}
+                onPress={() => setAreOptionsVisible(!areOptionsVisible)}
             >
                 <HelperText dynamicStyle={HelperSelectStyles.selectionButtonValue} style={{opacity: selectionButtonValue === noSelectionLabel ? 0.5 : 1}}>
                     {selectionButtonValue}

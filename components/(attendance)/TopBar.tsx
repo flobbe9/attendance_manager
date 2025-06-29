@@ -22,11 +22,8 @@ import ToastDimissFooter from "../ToastDismissFooter";
 import { eq } from "drizzle-orm";
 import { Attendance_Table } from "@/backend/DbSchema";
 
-
 interface Props extends HelperProps<ViewStyle>, ViewProps {
-
 }
-
 
 /**
  * @since 0.0.1

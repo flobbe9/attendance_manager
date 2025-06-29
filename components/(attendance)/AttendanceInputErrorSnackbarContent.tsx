@@ -65,11 +65,9 @@ export default function AttendanceInputErrorSnackbarContent({
 
             <Br />                    
 
-            <Flex alignItems="center">
-               <HelperCheckbox checked={dontShowInvalidInputErrorPopup} setChecked={setDontShowInvalidInputErrorPopup}>
-                    <HelperText>Nicht mehr anzeigen</HelperText>
-                </HelperCheckbox>
-            </Flex>
+            <HelperCheckbox checked={dontShowInvalidInputErrorPopup} setChecked={setDontShowInvalidInputErrorPopup}>
+                <HelperText>Nicht mehr anzeigen</HelperText>
+            </HelperCheckbox>
 
             {children}
         </HelperView>

@@ -1,7 +1,9 @@
+import { AbstractRepository } from "@/backend/abstract/AbstractRepository";
 import { AttendanceEntity } from "@/backend/DbSchema";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useSettingsRepository } from "@/hooks/repositories/useSettingsRepository";
 import { useFlashState } from "@/hooks/useFlashState";
+import { SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY } from "@/utils/constants";
 import { ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL, ATTENDANCE_INPUT_TOOLTIP_ICON_NUM_FLASHES } from "@/utils/styleConstants";
 import { cloneObj, isAnyFalsy } from "@/utils/utils";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -11,8 +13,7 @@ import AttendanceInputErrorSnackbarContent from "../(attendance)/AttendanceInput
 import { CustomSnackbarStatus } from "../CustomSnackbar";
 import { GlobalAttendanceContext } from "./GlobalAttendanceContextProvider";
 import { GlobalContext } from "./GlobalContextProvider";
-import { log } from "@/utils/logUtils";
-import { AbstractRepository } from "@/backend/abstract/AbstractRepository";
+import { logDebug } from "@/utils/logUtils";
 
 /**
  * Context available to all attendance edit sepcific screens of /(attendance).
@@ -21,7 +22,6 @@ import { AbstractRepository } from "@/backend/abstract/AbstractRepository";
  * @since 0.0.1
  */
 export default function AttendanceContextProvider({children}) {
-
     const { snackbar, hideSnackbar } = useContext(GlobalContext);
     const { dontShowInvalidInputErrorPopup } = useContext(GlobalAttendanceContext);
 
@@ -74,17 +74,16 @@ export default function AttendanceContextProvider({children}) {
 
     useEffect(() => {
         handleInvalidAttendanceInputSnackbarDismiss();
-
     }, [didDismissInvalidAttendanceInputErrorPopup]);
  
     /**
-     * Update value of `attendancEntityKey` for `currentAttendanceEntity` and update the `currentAttendanceEntity` state. If `value` is an
-     * object also set the backreference assuming `getBackReferenceColumnName`.
+     * Prepare value of `attendancEntityKey` for `currentAttendanceEntity`. 
      * 
-     * @param attendanceEntityKey column name of attendance entity
+     * If `value` is an object also set the backreference assuming `getBackReferenceColumnName`.
+     * 
      * @param attendancEntityValue the input value, any value of attendance entity props
      */
-    function updateCurrentAttendanceEntity<T extends ValueOf<AttendanceEntity>>(attendanceEntityKey: keyof AttendanceEntity, attendancEntityValue: T): void {
+    function prepareCurrentAttendanceEntityUpdate<T extends ValueOf<AttendanceEntity>>(attendancEntityValue: T): T {
         // make sure to set the backreference
         if (!isAnyFalsy(attendancEntityValue) && typeof attendancEntityValue === "object") {
             if (Array.isArray(attendancEntityValue))
@@ -96,13 +95,43 @@ export default function AttendanceContextProvider({children}) {
                 attendancEntityValue[attendanceRespository.getBackReferenceColumnName()] = currentAttendanceEntity.id;
         }
 
-        // set undefined values to null for db update to modify all values
-        const fixedCurrentAttendanceEntity = AbstractRepository.fixEmptyColumnValues(currentAttendanceEntity);
-        const fixedAttendanceEntityValue = AbstractRepository.fixEmptyColumnValue(attendancEntityValue);
-        
+        return attendancEntityValue;
+    }
+
+    /**
+     * Update the `currentAttendanceEntity` state. 
+     * 
+     * Set `undefined` values to `null` in order for db update function to work properly.
+     * 
+     * @param attendanceEntityKey column name of attendance entity
+     * @param attendancEntityValue the input value, any value of attendance entity props
+     * @see {@link prepareCurrentAttendanceEntityUpdate()}
+     */
+    function updateCurrentAttendanceEntity<T extends ValueOf<AttendanceEntity>>(keyValues: Map<keyof AttendanceEntity, T> | [keyof AttendanceEntity, T]): void {
+        if (!keyValues)
+            return;
+
+        let updatedAttendanceEntity: AttendanceEntity = currentAttendanceEntity;
+
+        if (Array.isArray(keyValues)) {
+            updatedAttendanceEntity = {
+                ...updatedAttendanceEntity,
+                [keyValues[0]]: prepareCurrentAttendanceEntityUpdate(keyValues[1])
+            }
+
+        } else {
+            keyValues
+                .forEach((value, key) =>
+                    updatedAttendanceEntity = {
+                        ...updatedAttendanceEntity,
+                        [key]: prepareCurrentAttendanceEntityUpdate(value)
+                    })
+        }
+
+        updatedAttendanceEntity = AbstractRepository.fixEmptyColumnValues(updatedAttendanceEntity);
+
         setCurrentAttendanceEntity({
-            ...fixedCurrentAttendanceEntity,
-            [attendanceEntityKey]: fixedAttendanceEntityValue
+            ...updatedAttendanceEntity,
         })
     }
 
@@ -165,7 +194,7 @@ export default function AttendanceContextProvider({children}) {
 
     async function handleInvalidAttendanceInputSnackbarDismiss(): Promise<void> {
         if (dontShowInvalidInputErrorPopup && didDismissInvalidAttendanceInputErrorPopup) {
-            await settingsRepository.updateDontShowAttendanceValidationErrorPopup(true);
+            await settingsRepository.updateValue(SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY, "true");
             setTimeout(() => 
                 snackbar("Präferenz gespeichert. Du kannst deine Auswahl unter 'Einstellungen' jederzeit ändern."), 
                 200
@@ -187,7 +216,7 @@ export default function AttendanceContextProvider({children}) {
 
 
 export const AttendanceContext = createContext({
-    updateCurrentAttendanceEntity: <T extends ValueOf<AttendanceEntity>>(prop: keyof AttendanceEntity, value: T): void => {},
+    updateCurrentAttendanceEntity: <T extends ValueOf<AttendanceEntity>>(keyValues: Map<keyof AttendanceEntity, T> | [keyof AttendanceEntity, T]): void => {},
 
     currentAttendanceEntity: undefined as AttendanceEntity | undefined, 
     setCurrentAttendanceEntity: (attendanceEntity: AttendanceEntity): void => {},

@@ -18,25 +18,25 @@ export default function GlobalAttendanceContextProvider({children}) {
     const [currentAttendanceEntityId, setCurrentAttendanceEntityId] = useState<number | null>(null);
 
     const [dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup] = useState(false);
+    const [dontConfirmSchoolSubjectChange, setDontConfirmSchoolSubjectChange] = useState(false);
 
     const { settingsRepository } = useSettingsRepository();
 
     const context = {
         currentAttendanceEntityId, setCurrentAttendanceEntityId,
         savedAttendanceEntities: attendanceEntities, setSavedAttendanceEntities: setAttendanceEntities,
-        dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup
+        dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup,
+        dontConfirmSchoolSubjectChange, setDontConfirmSchoolSubjectChange
     }
-    
 
     useEffect(() => {
         initializedontShowInvalidInputErrorPopupState();
-
     }, []);
 
 
     async function initializedontShowInvalidInputErrorPopupState(): Promise<void> {
-
         setDontShowInvalidInputErrorPopup(await settingsRepository.getDontShowAttendanceValidationErrorPopup());
+        setDontConfirmSchoolSubjectChange(await settingsRepository.getDontConfirmSchoolSubjectChange());
     }
     
     return (
@@ -53,6 +53,9 @@ export const GlobalAttendanceContext = createContext({
     savedAttendanceEntities: [] as AttendanceEntity[],
     setSavedAttendanceEntities: (savedAttendanceEntities: AttendanceEntity[]): void => {},
 
-    dontShowInvalidInputErrorPopup: true as boolean, 
-    setDontShowInvalidInputErrorPopup: (isShow: boolean): void => {}
+    dontShowInvalidInputErrorPopup: false as boolean, 
+    setDontShowInvalidInputErrorPopup: (isShow: boolean): void => {},
+    
+    dontConfirmSchoolSubjectChange: false as boolean, 
+    setDontConfirmSchoolSubjectChange: (isConfirm: boolean): void => {}
 });

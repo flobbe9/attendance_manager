@@ -104,7 +104,6 @@ export class Dao<E extends AbstractEntity> {
      * @returns inserted / updated value(s) or `null` if error
      */
     public async updateOrInsert(values: E, where?: SQL): Promise<E | E[] | null> {
-
         assertFalsyAndThrow(values);
 
         // case: no where, fallback to values.id

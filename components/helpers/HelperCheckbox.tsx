@@ -1,12 +1,13 @@
 import HelperProps from "@/abstract/HelperProps";
+import { HelperCheckboxStyles } from "@/assets/styles/HelperCheckboxStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { FONT_SIZE } from "@/utils/styleConstants";
 import FontAwesome from "@expo/vector-icons/build/FontAwesome";
 import React, { forwardRef, Ref } from "react";
 import { TextStyle, View, ViewProps, ViewStyle } from "react-native";
-import Flex from "./Flex";
-import HelperView from "./HelperView";
+import HelperButton from "./HelperButton";
 import HelperReactChildren from "./HelperReactChildren";
+import HelperView from "./HelperView";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -35,14 +36,18 @@ export default forwardRef(function HelperCheckbox(
     ref: Ref<View>
 ) {
     const componentName = "HelperCheckbox";
-    const { children, ...otherProps } = useHelperProps(props, componentName);
+    const { children, style, ...otherProps } = useHelperProps(props, componentName, HelperCheckboxStyles.component);
 
     const defaultFontSize = FONT_SIZE;
 
     return (
-         <Flex
+        <HelperButton
             ref={ref}
-            alignItems="center"
+            style={{
+                backgroundColor: "transparent",
+                ...style as object,
+            }}
+            ripple={null}
             onTouchStart={() => setChecked(!checked)}
             {...otherProps}
         >
@@ -61,6 +66,6 @@ export default forwardRef(function HelperCheckbox(
             </HelperView>
 
             <HelperReactChildren rendered={labelAlign === "right"}>{children}</HelperReactChildren>
-        </Flex>
+        </HelperButton>
     )
 })

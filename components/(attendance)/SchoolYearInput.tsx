@@ -94,7 +94,7 @@ export default function SchoolYearInput({...props}: Props) {
     }
 
     function handleSetValue(value: string): void {
-        updateCurrentAttendanceEntity("schoolYear", value);
+        updateCurrentAttendanceEntity(["schoolYear", value]);
     }
 
     function generateTooltipValue(): ReactNode {

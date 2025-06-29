@@ -43,7 +43,6 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
      * @throws if params are falsy
      */
     public getExaminantByRole(attendanceEntity: AttendanceEntity, role: ExaminantRole_Key): [ExaminantEntity | null, number] | undefined {
-
         assertFalsyAndThrow(attendanceEntity, role);
 
         if (!attendanceEntity.examinants)
@@ -72,7 +71,6 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
      * @throws if params are falsy
      */
     public hasExaminant(attendanceEntity: AttendanceEntity, role: ExaminantRole_Key): boolean {
-
         assertFalsyAndThrow(attendanceEntity, role);
 
         return !!this.getExaminantByRole(attendanceEntity, role)[0];

@@ -100,14 +100,12 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
      * @return persisted values exactly as now present in db table. Include saved related entites. `null` if error
      */
     public async persistCascade(values: E, currentTransaction?: DbTransaction): Promise<E | null> {
-        
         if (!values)
             return null;
 
         const transaction = currentTransaction ?? new DbTransaction(this.sqliteDb);
 
         const transactionCallback = async () => {
-
             // save owning entity
             let owningEntityResult = await super.updateOrInsert(values);
             // case: was update, returned an array with 1 element
@@ -242,10 +240,8 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
      * @returns `true` if the persist operation may be executed 
      */
     private async isCascadeWhenPersist<RE extends AbstractEntity>(relatedValues: RE, cascade: Set<Cascade> | undefined): Promise<boolean> {
-        assertFalsyAndThrow(relatedValues);
-
         // case: no cascade specified at all
-        if (!cascade || !cascade.size)
+        if (!relatedValues || !cascade || !cascade.size)
             return false;
 
         let valuesExist = !!relatedValues.id && await this.existsById(relatedValues.id);

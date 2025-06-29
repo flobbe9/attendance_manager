@@ -9,6 +9,7 @@ import HelperText from "./helpers/HelperText";
 import ToastDefaultFooter from "./ToastDefaultFooter";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import HelperReactChildren from "./helpers/HelperReactChildren";
+import { logDebug } from "@/utils/logUtils";
 
 export interface GlobalToastProps {
     /** Applied to outer container */
@@ -31,6 +32,8 @@ export interface GlobalToastProps {
     onConfirm?: () => void,
     /** See {@link ToastDefaultFooter}. Only works for `defaultFooter`. Hides toast, defined or not */
     onCancel?: () => void
+    /** Called when toast closes, no matter how. */
+    onDismiss?: () => void,
     visible: boolean,
     content: ReactNode,
     /** For defining a custom footer */
@@ -57,6 +60,7 @@ export default function Toast({
     hideToast,
     onCancel,
     onConfirm,
+    onDismiss,
     ...props
 }: Props) {
 
@@ -65,34 +69,28 @@ export default function Toast({
 
     const { allStyles: { mt_2 } } = useResponsiveStyles();
 
-
     function handleDimsiss(): void { 
+        if (onDismiss)
+            onDismiss();
 
         if (hideOnDismiss)
             hideToast();
     }
 
-
     function handleCancel(): void {
-
         if (onCancel)
             onCancel();
 
-        if (hideOnDismiss)
-            hideToast();
+        handleDimsiss();
     }
 
-
     function handleConfirm(): void {
-
         if (onConfirm)
             onConfirm();
 
-        if (hideOnDismiss)
-            hideToast();
+        handleDimsiss();
     }
     
-
     return (
         <Portal>
             <Modal 

@@ -29,18 +29,13 @@ export default function GlobalComponentProvider({children}: {children: ReactNode
         setGlobalScreenTouch,
     } = useContext(GlobalContext);
 
-
     function handleTouchStart(_event): void {
-        
         setGlobalScreenTouch(!globalScreenTouch);
     }
 
-    
     useScreenTouch(() => {
-        
         hideGlobalPopup(globalPopupProps);
     });
-    
     
     return (
         /** for react-native-paper */

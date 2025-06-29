@@ -1,11 +1,10 @@
+import { SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY, SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY } from "@/utils/constants";
+import { eq } from "drizzle-orm";
 import { SQLiteDatabase } from "expo-sqlite";
 import { AbstractRepository } from "../abstract/AbstractRepository";
 import { Db } from "../abstract/Db";
 import { RelatedEntityDetail } from "../abstract/RelatedEntityDetail";
 import { Settings_Table, SettingsEntity } from "../DbSchema";
-import { SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY } from "@/utils/constants";
-import { eq } from "drizzle-orm";
-import { log } from "@/utils/logUtils";
 
 
 /**
@@ -32,24 +31,25 @@ export class SettingsRepository extends AbstractRepository<SettingsEntity> {
 
 
     /**
-     * Update or insert db entry indicating whether not to show error popup on invalid attendance input.
+     * Update or insert db entry with `key`
      * 
-     * @param dontShow 
+     * @param key match case-sensitively
+     * @param value
      */
-    public async updateDontShowAttendanceValidationErrorPopup(dontShow: boolean): Promise<void> {
+    public async updateValue(key: string, value: string | null): Promise<void> {
 
         this.updateOrInsert(
             {
-                key: SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY, 
-                value: dontShow ? "true" : "false"
+                key: key,
+                value: value
             }, 
-            eq(Settings_Table.key, SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY)
+            eq(Settings_Table.key, key)
         );
     }
 
 
     /**
-     * @returns the value for {@link SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY} or `true` if result is `null`
+     * @returns the value for {@link SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY} or `false` if result is `null`
      */
     public async getDontShowAttendanceValidationErrorPopup(): Promise<boolean> {
 
@@ -58,6 +58,21 @@ export class SettingsRepository extends AbstractRepository<SettingsEntity> {
         if (result.length)
             return result[0].value === "true";
 
-        return false; // show popup if nothing else specified
+        return false; 
+    }
+
+    
+
+    /**
+     * @returns the value for {@link SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY} or `false` if result is `null`
+     */
+    public async getDontConfirmSchoolSubjectChange(): Promise<boolean> {
+
+        const result = await this.select(eq(Settings_Table.key, SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY));
+
+        if (result.length)
+            return result[0].value === "true";
+
+        return false; 
     }
 }

@@ -21,7 +21,7 @@ export default function TopicInput({...props}: Props) {
     const { children, ...otherProps } = useHelperProps(props, componentName);
 
     function handleOptionSelect(value: MusicLessonTopic) {
-        updateCurrentAttendanceEntity("musicLessonTopic", getMusicLessonTopicKeyByMusicLessonTopic(value));
+        updateCurrentAttendanceEntity(["musicLessonTopic", getMusicLessonTopicKeyByMusicLessonTopic(value)]);
     }
 
     return (

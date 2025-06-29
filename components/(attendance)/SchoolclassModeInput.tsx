@@ -25,7 +25,6 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  * @since 0.0.1
  */
 export default function SchoolclassModeInput({...props}: Props) {
-
     const { updateCurrentAttendanceEntity, currentAttendanceEntity } = useContext(AttendanceContext);
 
     const [schoolclassModeRadioButtons, setSchoolclassModeRadioButtons] = useState<JSX.Element[]>([]); 
@@ -33,12 +32,10 @@ export default function SchoolclassModeInput({...props}: Props) {
     const componentName = "SchoolclassModeInput";
     const { children, ...otherProps } = useHelperProps(props, componentName);
 
-
     useEffect(() => {
         setSchoolclassModeRadioButtons(mapSchoolclassModeRadioButtons());
 
     }, []);
-
 
     function mapSchoolclassModeRadioButtons(): JSX.Element[] {
 
@@ -56,24 +53,25 @@ export default function SchoolclassModeInput({...props}: Props) {
         ));
     }
 
-
     function updateSchoolclassMode(mode: SchoolclassMode): void {
-
-        updateCurrentAttendanceEntity<SchoolclassModeEntity>("schoolclassMode", {
-            mode: getSchoolclassModeKeyBySchoolclassMode(mode),
-            fullName: currentAttendanceEntity.schoolclassMode.fullName // keep the name for state
-        });
+        updateCurrentAttendanceEntity<SchoolclassModeEntity>([
+            "schoolclassMode", 
+            {
+                mode: getSchoolclassModeKeyBySchoolclassMode(mode),
+                fullName: currentAttendanceEntity.schoolclassMode.fullName // keep the name for state
+            }
+        ]);
     }
-
 
     function updateSchoolclassModeNote(fullName: string): void {
-
-        updateCurrentAttendanceEntity<SchoolclassModeEntity>("schoolclassMode", {
-            ...currentAttendanceEntity.schoolclassMode,
-            fullName
-        })
+        updateCurrentAttendanceEntity<SchoolclassModeEntity>([
+            "schoolclassMode", 
+            {
+                ...currentAttendanceEntity.schoolclassMode,
+                fullName
+            }
+        ])
     }
-
 
     return (
         <HelperView {...otherProps}>

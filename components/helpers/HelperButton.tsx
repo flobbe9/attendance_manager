@@ -8,6 +8,7 @@ import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { forwardRef, Ref } from "react";
 import { ActivityIndicator, ActivityIndicatorIOSProps, ColorValue, GestureResponderEvent, TouchableNativeFeedback, View, ViewProps, ViewStyle } from "react-native";
 import Flex from "./Flex";
+import HelperReactChildren from "./HelperReactChildren";
 import HelperView from "./HelperView";
 
 
@@ -36,12 +37,10 @@ export default forwardRef(function HelperButton(
     {
         disabled,
         ripple,
-        containerStyles,
         disableFlex = false,
         loading = false,
         loadingProps = {},
         onPress,
-        onLayout,
         ...props
     }: HelperButtonProps,
     ref: Ref<View>
@@ -50,7 +49,7 @@ export default forwardRef(function HelperButton(
     const componentName = "HelperButton";
     const { children, style, ...otherProps } = useHelperProps(props, componentName, HelperButtonStyles.component);
 
-    const { currentStyles: componentStyles, eventHandlers: containerEventHandlers } = useDynamicStyle(containerStyles);
+    const { currentStyles: containerStyles, eventHandlers: containerEventHandlers } = useDynamicStyle(props.containerStyles);
 
     const { animatedStyle: anmimatedOpacity } = useAnimatedStyle(
         [50, 100],
@@ -73,9 +72,8 @@ export default forwardRef(function HelperButton(
                 borderRadius: (style as ViewStyle).borderRadius, 
                 overflow: "hidden",
                 ...HS.fitContent,
-                ...componentStyles,
+                ...containerStyles,
             }}
-            onLayout={onLayout}
             {...containerEventHandlers}
         >
             <TouchableNativeFeedback 
@@ -102,7 +100,7 @@ export default forwardRef(function HelperButton(
                         />
                     }
                     
-                    {children}
+                    <HelperReactChildren>{children}</HelperReactChildren>
                 </Flex>
             </TouchableNativeFeedback>
         </HelperView>

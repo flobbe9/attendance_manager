@@ -17,6 +17,7 @@ import Flex from "../helpers/Flex";
 import HelperCheckbox from "../helpers/HelperCheckbox";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
+import { logDebug } from "@/utils/logUtils";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 
@@ -45,7 +46,7 @@ export default function ExaminantInput({...props}: Props) {
 
     useEffect(() => {
         initializeStates();
-    }, []);
+    }, [currentAttendanceEntity.schoolSubject]); // on render and subject change, when all examinant statuses are reset
 
     useEffect(() => {
         // case: states initialized already
@@ -67,7 +68,6 @@ export default function ExaminantInput({...props}: Props) {
             setInitializedCheckboxes(true);
         }, 500); // wait for other states to activate useEffect
     }
-
 
     function updateCurrentAttendanceEntityExaminants(): void {
         const examinants: ExaminantEntity[] = currentAttendanceEntity.examinants;
@@ -92,9 +92,8 @@ export default function ExaminantInput({...props}: Props) {
         else if (headmasterStatus === "unchecked")
             attendanceService.removeExaminant(currentAttendanceEntity, "headmaster");
 
-        updateCurrentAttendanceEntity("examinants", examinants);
+        updateCurrentAttendanceEntity(["examinants", examinants]);
     }
-
 
     function CheckboxWithExaminantIcon(props: {
         checkedStatus: CheckboxStatus, 
