@@ -5,6 +5,7 @@ import { AbstractSchoolYearValidator } from "../abstract/AbstractSchoolYearValid
 import { HistorySchoolYearValidator } from "./HistorySchoolYearValidator";
 import { MusicSchoolYearValidator } from "./MusicSchoolYearValidator";
 import { DateValidator } from "./DateValidator";
+import { LessonTopicValidator } from "./LessonTopicValidator";
 
 
 /**
@@ -56,6 +57,9 @@ export class AttendanceInputValidatorBuilder {
                 
             case "date":
                 return new DateValidator(this.currentAttendance, this.savedAttendances);
+
+            case "musicLessonTopic":
+                return new LessonTopicValidator(this.currentAttendance, this.savedAttendances);
 
             default:
                 throw new Error(`No validator implemented for input ${this.attendanceInputKey}`);

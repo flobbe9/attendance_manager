@@ -1,8 +1,7 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { BORDER_RADIUS, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
-import HS from "./helperStyles";
-import HelperStyles from "./helperStyles";
+import { default as HelperStyles, default as HS } from "./helperStyles";
 
 
 export class AttendanceStyles {
@@ -21,7 +20,6 @@ export class AttendanceStyles {
 
     static scrollView: DynamicStyle<ViewStyle> = {
         default: {
-            marginTop: GLOBAL_SCREEN_PADDING,
             marginBottom: 40, // more than padding sothat keyboard does not cover bottom input
         }
     }

@@ -32,6 +32,11 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
         return SCHOOL_YEARS
             .filter(schoolYear => this.validate(schoolYear) === null);
     }
+
+    public getInvalidValues(): ValueOf<AttendanceEntity>[] {
+        // not needed right now
+        return [];
+    }
     
     /**
      * @param allConstantSchoolYearConditions the constant list to compare saved attendances agains. See "attendanceValidationConstants.ts"

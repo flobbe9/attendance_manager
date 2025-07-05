@@ -216,7 +216,7 @@ export default function index() {
                                 dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
                                 containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
                                 value={currentAttendanceEntity.note}
-                                setValue={(value) => updateCurrentAttendanceEntity("note", value)}
+                                setValue={(value) => updateCurrentAttendanceEntity(["note", value])}
                             />
                         </HelperView>
 
@@ -229,7 +229,7 @@ export default function index() {
                                 dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
                                 containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
                                 value={currentAttendanceEntity.note2}
-                                setValue={(value) => updateCurrentAttendanceEntity("note2", value)}
+                                setValue={(value) => updateCurrentAttendanceEntity(["note2", value])}
                             />
                         </HelperView>
 

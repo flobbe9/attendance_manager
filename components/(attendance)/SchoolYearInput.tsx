@@ -21,11 +21,9 @@ import { HistorySchoolYearValidator } from "@/backend/validator/HistorySchoolYea
 import P from "../helpers/P";
 import B from "../helpers/B";
 
-
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 
 }
-
 
 /**
  * @since 0.0.1
@@ -34,8 +32,6 @@ export default function SchoolYearInput({...props}: Props) {
     const { savedAttendanceEntities } = useContext(GlobalAttendanceContext);
     const { updateCurrentAttendanceEntity, currentAttendanceEntity, handleInvalidAttendanceInput, resetInvalidAttendanceInputErrorStyles } = useContext(AttendanceContext);
     
-    const [tooltipValue, setTooltipValue] = useState<ReactNode>("");
-
     const validator = AttendanceInputValidatorBuilder
         .builder(currentAttendanceEntity, savedAttendanceEntities)
         .inputType("schoolYear")
@@ -43,10 +39,6 @@ export default function SchoolYearInput({...props}: Props) {
 
     const componentName = "SchoolYearInput";
     const { children, ...otherProps } = useHelperProps(props, componentName);
-
-    useEffect(() => {
-        setTooltipValue(generateTooltipValue());
-    }, [currentAttendanceEntity])
 
     /**
      * Attempt to fix `value` if invalid, then validate and possibly handle invalid `value`. Always throw error to prevent
@@ -96,37 +88,12 @@ export default function SchoolYearInput({...props}: Props) {
         updateCurrentAttendanceEntity(["schoolYear", value]);
     }
 
-    function generateTooltipValue(): ReactNode {
-        const values = validator.getValidValues();
-
-        if (!values || !values.length) {
-            if (!isSchoolYear(currentAttendanceEntity.schoolYear) && !currentAttendanceEntity.musicLessonTopic)
-                return "Alle Werte haben ihre maximal Anzahl erreicht.";
-         
-            return "Keine Schuljahrauswahl möglich in Kombination mit den restlichen Werten.";
-        }
-
-        const validValuesReduced = ((validator.getValidValues() as string[]))
-            .reduce((prev, cur) => `${prev}, ${cur}`);
-
-        return (
-            <HelperView>
-                <B>Erlaubte Werte:</B>
-                <HelperText>
-                    {validValuesReduced}
-                </HelperText>
-            </HelperView>
-        );
-    }
-
     return (
         <HelperView {...otherProps}>
             <Flex alignItems="center" style={{zIndex: 1}}>
                 <HelperText dynamicStyle={AttendanceStyles.heading}>Jahrgang</HelperText>
 
-                <AttendanceInputTooltip attendanceInputKey="schoolYear">
-                    {tooltipValue}
-                </AttendanceInputTooltip>
+                <AttendanceInputTooltip attendanceInputKey="schoolYear" validator={validator}/>
             </Flex>
 
             <HelperInput 

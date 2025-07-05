@@ -120,14 +120,15 @@ export default function AttendanceContextProvider({children}) {
                 [keyValues[0]]: prepareCurrentAttendanceEntityUpdate(keyValues[1])
             }
 
-        } else {
+        } else if (keyValues instanceof Map) {
             keyValues
                 .forEach((value, key) =>
                     updatedAttendanceEntity = {
                         ...updatedAttendanceEntity,
                         [key]: prepareCurrentAttendanceEntityUpdate(value)
                     })
-        }
+        } else 
+            throw new Error(`Invalid type of 'keyValues' '${typeof keyValues}'`);
 
         updatedAttendanceEntity = AbstractRepository.fixEmptyColumnValues(updatedAttendanceEntity);
 

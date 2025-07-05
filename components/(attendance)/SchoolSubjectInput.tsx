@@ -12,6 +12,7 @@ import Flex from "../helpers/Flex";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
 import DontConfirmSchoolSubjectChangeContent from "./DontConfirmSchoolSubjectChangeContent";
+import { AttendanceService } from "@/backend/services/AttendanceService";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -22,6 +23,8 @@ export default function SchoolSubjectInput({...props}: Props) {
     const { toast } = useContext(GlobalContext);
     const { dontConfirmSchoolSubjectChange, handleDontShowAgainDismiss } = useContext(GlobalAttendanceContext);
     const { updateCurrentAttendanceEntity, currentAttendanceEntity } = useContext(AttendanceContext);
+
+    const attendanceService = new AttendanceService();
 
     /** Triggered when invalid input error popup is dismissed.  */
     const [didDismissConfirmChangeToast, setDidDismissConfirmChangeToast] = useState(false);
@@ -51,8 +54,9 @@ export default function SchoolSubjectInput({...props}: Props) {
                 ["date", null]
             ]));
         }
-        
-        if (!dontConfirmSchoolSubjectChange) {
+
+        // selected not to confirm or don't have a previous subject (therefore no subject "change")
+        if (!dontConfirmSchoolSubjectChange && attendanceService.isSelectInputFilledOut(currentAttendanceEntity.schoolSubject)) {
             toast(
                 <DontConfirmSchoolSubjectChangeContent />,
                 {

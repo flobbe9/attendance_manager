@@ -1,6 +1,7 @@
+import { SchoolSubject_Key } from "@/abstract/SchoolSubject"
 import { AttendanceEntity } from "@/backend/DbSchema"
-import { DateValidator } from "../DateValidator"
 import { dateEquals } from "@/utils/utils"
+import { DateValidator } from "../DateValidator"
 
 describe("validateContextConditions", () => {
     test("Should not validate", () => {
@@ -220,5 +221,119 @@ describe("validateContextConditions", () => {
         savedAttendances[0].date = null;
 
         expect(validator.validateContextConditions([], currentAttendanceEntity.date)).toBeNull();        
+    })
+})
+
+describe("getInvalidValues", () => {
+    // falsy examinants, return empty set
+    test("Should be empty if falsy current examinants", () => {
+        const currentAttendanceEntity: AttendanceEntity = {
+            id: 1,
+            schoolSubject: "history",
+            schoolYear: "5",
+            examinants: null,
+            schoolclassMode: null,
+            musicLessonTopic: null,
+            date: new Date()
+        }
+
+        const savedAttendances: AttendanceEntity[] = [
+            {
+                id: 3,
+                schoolSubject: "history",
+                schoolYear: "5",
+                examinants: [
+                    {
+                        role: "history",
+                        fullName: "jose"
+                    }
+                ],
+                schoolclassMode: null,
+                musicLessonTopic: null,
+                date: new Date()
+            },
+            {
+                id: 2,
+                schoolSubject: "music",
+                schoolYear: "10",
+                examinants: [
+                    {
+                        role: "music",
+                        fullName: "peter"
+                    }
+                ],
+                schoolclassMode: null,
+                musicLessonTopic: null,
+                date: new Date()
+            }
+        ]
+        const validator = new DateValidator(currentAttendanceEntity, savedAttendances);
+
+        expect(currentAttendanceEntity.examinants).toBeFalsy();
+        expect(validator.getInvalidValues().length).toBe(0);
+    })
+
+    test("Should find invalid dates with matching examinant regardless of subject", () => {
+        const invalidDate = new Date();
+        const validDate = new Date(0);
+
+        const currentAttendanceEntity: AttendanceEntity = {
+            id: 1,
+            schoolSubject: "history",
+            schoolYear: "5",
+            examinants: [
+                {
+                    role: "music"
+                }
+            ],
+            schoolclassMode: null,
+            musicLessonTopic: null,
+            date: validDate
+        }
+
+        const savedAttendances: AttendanceEntity[] = [
+            {
+                id: 3,
+                schoolSubject: "music",
+                schoolYear: "5",
+                examinants: [
+                    {
+                        role: "history",
+                        fullName: "jose"
+                    }
+                ],
+                schoolclassMode: null,
+                musicLessonTopic: null,
+                date: validDate
+            },
+            {
+                id: 2,
+                schoolSubject: "history",
+                schoolYear: "10",
+                examinants: [
+                    {
+                        role: currentAttendanceEntity.examinants[0].role,
+                        fullName: "peter"
+                    }
+                ],
+                schoolclassMode: null,
+                musicLessonTopic: null,
+                date: invalidDate
+            }
+        ];
+        const validator = new DateValidator(currentAttendanceEntity, savedAttendances);
+
+        expect(dateEquals(validDate, invalidDate)).toBe(false);
+        
+        // different school subject
+        expect(savedAttendances[1].schoolSubject).not.toEqual(savedAttendances[1].examinants[0].role);
+        expect(validator.getInvalidValues().length).toBe(1);
+        expect(dateEquals(validator.getInvalidValues()[0] as Date, invalidDate)).toBe(true);
+
+        // same school subject
+        savedAttendances[1].schoolSubject = savedAttendances[1].examinants[0].role as SchoolSubject_Key;
+        expect(savedAttendances[1].schoolSubject).toEqual(savedAttendances[1].examinants[0].role);
+        expect(validator.getInvalidValues().length).toBe(1);
+        expect(dateEquals(validator.getInvalidValues()[0] as Date, invalidDate)).toBe(true);
     })
 })

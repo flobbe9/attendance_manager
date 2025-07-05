@@ -4,14 +4,15 @@ import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceI
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { formatDateGermanNoTime } from "@/utils/projectUtils";
 import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 import DatePicker, { DatePickerValue } from "../helpers/DatePicker";
+import Flex from "../helpers/Flex";
 import HelperText from "../helpers/HelperText";
-import { formatDateGermanNoTime } from "@/utils/projectUtils";
-import { logDebug } from "@/utils/logUtils";
+import AttendanceInputTooltip from "./AttendanceInputTooltip";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 
@@ -36,8 +37,6 @@ export default function DateInput({...props}: Props) {
 
     function handleConfirm(params: DatePickerValue): void {
         const date = params.date;
-
-        logDebug("set date", date.getDate());
         const errorMessage = validator.validate(date);
 
         // case: valid
@@ -58,8 +57,17 @@ export default function DateInput({...props}: Props) {
     
     return (
         <HelperView dynamicStyle={AttendanceStyles.inputContainer} style={{...style as object, ...mb_2}} {...otherProps}>
-            <HelperText dynamicStyle={AttendanceStyles.heading}>Datum</HelperText>
-            
+            <Flex alignItems="center">
+                <HelperText dynamicStyle={AttendanceStyles.heading}>Datum</HelperText>
+
+                <AttendanceInputTooltip 
+                    attendanceInputKey="date"
+                    validator={validator}
+                    useInvalidValues
+                    valueToStringPretty={(value) => `${formatDateGermanNoTime(value as Date)}`}
+                />
+            </Flex>
+
             <DatePicker 
                 date={currentAttendanceEntity.date} 
                 setDate={(date) => updateCurrentAttendanceEntity(["date", date])}

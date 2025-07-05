@@ -6,11 +6,33 @@ import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 import { AbstractAttendanceInputValidator } from "../abstract/AbstractAttendanceInputValidator";
 import { AttendanceEntity } from "../DbSchema";
 
-
 export class DateValidator extends AbstractAttendanceInputValidator<Date> {
     public getValidValues(): ValueOf<AttendanceEntity>[] {
         // not implemented, use getInvalidValues() instead
         return [];
+    }
+
+    /**
+     * @returns list of invalid dates that should not be selectable
+     */
+    public getInvalidValues(): ValueOf<AttendanceEntity>[] {
+        const invalidValues = new Set<Date>();
+
+        // find all dates where the a current examinant is already planned
+        if (this.getCurrentAttendance().examinants) {
+            const savedAttendances = this.getSavedAttendancesWithoutCurrent();
+
+            this.getCurrentAttendance().examinants
+                .forEach(examinantEntity => {
+                    this.attendanceService.findAllByExaminant(savedAttendances, examinantEntity.role)
+                        .forEach(savedAttendance => {
+                            if (savedAttendance.date)
+                                invalidValues.add(savedAttendance.date);
+                        });
+                })
+        }
+
+        return [...invalidValues];
     }
 
     public validateNonContextConditions(constantConditions: any, inputValue: Date): string | null {
@@ -74,6 +96,7 @@ export class DateValidator extends AbstractAttendanceInputValidator<Date> {
         if ((errorMessage = this.validateFuture(inputValue)) !== null)
             return errorMessage;
         logDebug("date - future valid")
+        logDebug();
          
         return errorMessage;
     }
