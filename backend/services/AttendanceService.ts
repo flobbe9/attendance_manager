@@ -37,10 +37,9 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
 
 
     /**
-     * @param attendanceEntity to get examinant from
-     * @param role of the searched examinant
      * @returns `[examinant, examinantIndex]` of first ocurrence with `role` or `[null, -1]`
      * @throws if params are falsy
+     * @see `ExaminantService.findExaminant`
      */
     public getExaminantByRole(attendanceEntity: AttendanceEntity, role: ExaminantRole_Key): [ExaminantEntity | null, number] | undefined {
         assertFalsyAndThrow(attendanceEntity, role);
@@ -48,18 +47,7 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
         if (!attendanceEntity.examinants)
             return [null, -1];
 
-        let examinantIndex = -1;
-        const examinant = attendanceEntity.examinants
-            .find((examinant, i) => {
-                if (examinant.role === role) {
-                    examinantIndex = i;
-                    return true;
-                }
-                
-                return false;
-            });
-
-        return examinant ? [examinant, examinantIndex] : [null, -1];
+        return new ExaminantService().findExaminant(attendanceEntity.examinants, role);
     }
 
 

@@ -286,7 +286,7 @@ export const GUB_HISTORY_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
         },
         attendanceCount: 0
     }
-]
+];
 
 export function getGubSubjectSchoolYearConditionsBySubject(schoolSubject: SchoolSubject_Key): SchoolYearCondition[] {
 
@@ -298,3 +298,26 @@ export function getGubSubjectSchoolYearConditionsBySubject(schoolSubject: School
 
     return [];
 }
+
+export const EXAMINANT_CONDITIONS: SchoolYearCondition[] = [
+    {
+        minAttendances: 3,
+        maxAttendances: 4,
+        schoolYearRange: {
+            min: "5",
+            max: "10"
+        },
+        attendanceCount: 0,
+        examinantRole: "educator",
+    },
+    {
+        minAttendances: 3,
+        maxAttendances: 4,
+        schoolYearRange: {
+            min: "11",
+            max: "13"
+        },
+        attendanceCount: 0,
+        examinantRole: "educator",
+    }
+]

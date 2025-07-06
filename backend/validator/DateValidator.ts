@@ -1,5 +1,5 @@
 import { ExaminantRole_Key, getExamiantRoleByExaminantRoleKey } from "@/abstract/Examinant";
-import { logDebug } from "@/utils/logUtils";
+import { logTrace } from "@/utils/logUtils";
 import { formatDateGermanNoTime } from "@/utils/projectUtils";
 import { dateEquals } from "@/utils/utils";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
@@ -84,19 +84,19 @@ export class DateValidator extends AbstractAttendanceInputValidator<Date> {
 
         let errorMessage: string = null;
 
-        logDebug("validate date", formatDateGermanNoTime(inputValue));
+        logTrace("validate date", formatDateGermanNoTime(inputValue));
         if ((errorMessage = this.validateNonContextConditions([], inputValue)) !== null)
             return errorMessage;
-        logDebug("date - non context valid")
+        logTrace("date - non context valid")
 
         if ((errorMessage = this.validateContextConditions([], inputValue)) !== null)
             return errorMessage;
-        logDebug("date - context valid")
+        logTrace("date - context valid")
 
         if ((errorMessage = this.validateFuture(inputValue)) !== null)
             return errorMessage;
-        logDebug("date - future valid")
-        logDebug();
+        logTrace("date - future valid")
+        logTrace();
          
         return errorMessage;
     }

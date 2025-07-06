@@ -3,6 +3,7 @@ import { schoolSubjectKeysObj } from "@/abstract/SchoolSubject";
 import { AbstractService } from "../abstract/AbstractService";
 import { ExaminantEntity } from "../DbSchema";
 import { AbstractModifiableService } from "../abstract/AbstractModifiableService";
+import { assertFalsyAndThrow } from "@/utils/utils";
 
 
 /**
@@ -11,7 +12,6 @@ import { AbstractModifiableService } from "../abstract/AbstractModifiableService
 export class ExaminantService extends AbstractModifiableService<ExaminantEntity> {
 
     public isModified(entityLastSaved: ExaminantEntity, entityModified: ExaminantEntity): boolean {
-
         if (!entityLastSaved)
             return !!entityModified;
 
@@ -31,7 +31,6 @@ export class ExaminantService extends AbstractModifiableService<ExaminantEntity>
      * compared to the entity at the same index of the other array
      */
     public areModified(entitiesLastSaved: ExaminantEntity[], entitiesModified: ExaminantEntity[]): boolean {
-
         if (!entitiesLastSaved)
             return !!entitiesModified;
 
@@ -56,7 +55,6 @@ export class ExaminantService extends AbstractModifiableService<ExaminantEntity>
      * @returns sorted (unmodified) `examinantEntities` or an empty array
      */
     public sortByRole(examinantEntities: ExaminantEntity[]): ExaminantEntity[] {
-
         if (!examinantEntities)
             return [];
 
@@ -69,9 +67,30 @@ export class ExaminantService extends AbstractModifiableService<ExaminantEntity>
             })
     }
 
-
     private getExaminantSortIndexByRole(role: ExaminantRole_Key): number {
-
         return schoolSubjectKeysObj[role] ?? examinantRoleKeysObject[role] ?? -1;
+    }
+    
+    /**
+     * @param examinantEntities to get examinant from
+     * @param examinantRole of the searched examinant
+     * @returns `[examinant, examinantIndex]` of first ocurrence with `role` or `[null, -1]`
+     * @throws if `examinantEntities` is falsy
+     */
+    public findExaminant(examinantEntities: ExaminantEntity[], examinantRole: ExaminantRole_Key): [ExaminantEntity, number] {
+        assertFalsyAndThrow(examinantEntities);
+
+        let examinantIndex = -1;
+        const examinant = examinantEntities
+            .find((examinant, i) => {
+                if (examinant.role === examinantRole) {
+                    examinantIndex = i;
+                    return true;
+                }
+                
+                return false;
+            });
+
+        return examinant ? [examinant, examinantIndex] : [null, -1];
     }
 }

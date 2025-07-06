@@ -78,7 +78,8 @@ export default forwardRef(function HelperButton(
         >
             <TouchableNativeFeedback 
                 onPress={handlePress} 
-                background={ripple === null || disabled || loading ? null : TouchableNativeFeedback.Ripple(ripple?.rippleBackground, false)}
+                disabled={disabled}
+                background={ripple === null || loading ? null : TouchableNativeFeedback.Ripple(ripple?.rippleBackground, false)}
             >
                 <Flex
                     justifyContent="center"

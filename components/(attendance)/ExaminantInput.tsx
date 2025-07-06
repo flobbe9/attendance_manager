@@ -1,4 +1,4 @@
-import { ExaminantRole_Key } from "@/abstract/Examinant";
+import { ExaminantRole_Key, getExamiantRoleByExaminantRoleKey } from "@/abstract/Examinant";
 import { Headmaster, HEADMASTERS } from "@/abstract/Headmaster";
 import HelperProps from "@/abstract/HelperProps";
 import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
@@ -18,6 +18,11 @@ import HelperCheckbox from "../helpers/HelperCheckbox";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
 import { logDebug } from "@/utils/logUtils";
+import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceInputValidatorBuilder";
+import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
+import { cloneObj, isBlank } from "@/utils/utils";
+import AttendanceInputTooltip from "./AttendanceInputTooltip";
+import { ExaminantService } from "@/backend/services/ExaminantService";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 
@@ -27,7 +32,8 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  * @since 0.0.1
  */
 export default function ExaminantInput({...props}: Props) {
-    const { updateCurrentAttendanceEntity, currentAttendanceEntity } = useContext(AttendanceContext);
+    const { savedAttendanceEntities } = useContext(GlobalAttendanceContext);
+    const { updateCurrentAttendanceEntity, currentAttendanceEntity, handleInvalidAttendanceInput } = useContext(AttendanceContext);
 
     const [historyExaminantStatus, setHistoryExaminantStatus] = useState<CheckboxStatus>("indeterminate");
     const [musicExaminantStatus, setMusicExaminantStatus] = useState<CheckboxStatus>("indeterminate");
@@ -39,10 +45,23 @@ export default function ExaminantInput({...props}: Props) {
     /** Indicates that all checkbox states have been initialized with `currentAttendanceEntity` values  */
     const [initializedCheckboxes, setInitializedCheckboxes] = useState(false);
 
+    const [validValues, setValidValues] = useState<ExaminantEntity[][]>([]);
+
+    const examinantService = new ExaminantService();
+    const validator = AttendanceInputValidatorBuilder
+        .builder(currentAttendanceEntity, savedAttendanceEntities)
+        .inputType("examinants")
+        .build();
+
     const componentName = "ExaminantInput";
     const { children, ...otherProps } = useHelperProps(props, componentName, ExaminantInputStyles.component);
 
     const attendanceService = new AttendanceService();
+
+    useEffect(() => {
+        setValidValues(validator.getValidValues() as ExaminantEntity[][]);
+    }, [currentAttendanceEntity])
+
 
     useEffect(() => {
         initializeStates();
@@ -70,13 +89,13 @@ export default function ExaminantInput({...props}: Props) {
     }
 
     function updateCurrentAttendanceEntityExaminants(): void {
-        const examinants: ExaminantEntity[] = currentAttendanceEntity.examinants;
-
+        const originalExaminants = cloneObj(currentAttendanceEntity.examinants);
+        
         if (historyExaminantStatus === "checked")
             attendanceService.addExaminantByRole(currentAttendanceEntity, "history");
         else if (historyExaminantStatus === "unchecked")
             attendanceService.removeExaminant(currentAttendanceEntity, "history");
-
+        
         if (musicExaminantStatus === "checked")
             attendanceService.addExaminantByRole(currentAttendanceEntity, "music");
         else if (musicExaminantStatus === "unchecked")
@@ -92,16 +111,34 @@ export default function ExaminantInput({...props}: Props) {
         else if (headmasterStatus === "unchecked")
             attendanceService.removeExaminant(currentAttendanceEntity, "headmaster");
 
-        updateCurrentAttendanceEntity(["examinants", examinants]);
+        const errorMessage = validator.validate(currentAttendanceEntity.examinants);
+    
+        if (!isBlank(errorMessage)) {
+            handleInvalidAttendanceInput(
+                currentAttendanceEntity.examinants
+                    .map(examinantEntity => getExamiantRoleByExaminantRoleKey(examinantEntity.role) as string)
+                    .reduce((prev, cur) => `${prev}, ${cur}`),
+                errorMessage,
+                "examinants"
+            );
+
+            // reset entity
+            currentAttendanceEntity.examinants = originalExaminants;
+            // reset checkboxes
+            initializeStates();
+
+        } else
+            updateCurrentAttendanceEntity(["examinants", currentAttendanceEntity.examinants]);
     }
 
     function CheckboxWithExaminantIcon(props: {
         checkedStatus: CheckboxStatus, 
         setCheckedStatus: (status: CheckboxStatus) => void,
         iconName?: string,
-        role: ExaminantRole_Key
+        role: ExaminantRole_Key,
+        disabled?: boolean
     }) {
-        const { checkedStatus, setCheckedStatus, iconName = "user", role } = props;
+        const { checkedStatus, setCheckedStatus, iconName = "user", role, disabled = false } = props;
 
         return (
             <HelperView dynamicStyle={ExaminantInputStyles.checkboxContainer}>
@@ -110,6 +147,7 @@ export default function ExaminantInput({...props}: Props) {
                     setChecked={(checked) => setCheckedStatus(checked ? "checked" : "unchecked")} 
                     dynamicStyle={ExaminantInputStyles.checkbox}
                     iconStyle={ExaminantInputStyles.checkboxIcon}
+                    disabled={disabled}
                 >
                     <FontAwesome
                         name={iconName as any} 
@@ -123,7 +161,17 @@ export default function ExaminantInput({...props}: Props) {
 
     return (
         <HelperView {...otherProps}>
-            <HelperText dynamicStyle={AttendanceStyles.heading} style={{marginBottom: 0}}>Anwesende Prüfer</HelperText>
+            {/* one higher than parent or 1 */}
+            <Flex alignItems="center" style={{zIndex: (((otherProps.style as ViewStyle).zIndex) ?? 0) + 1}}>
+                <HelperText dynamicStyle={AttendanceStyles.heading} style={{marginBottom: 0}}>Anwesende Prüfer</HelperText>
+
+                <AttendanceInputTooltip 
+                    values={validValues}
+                    attendanceInputKey={"examinants"} 
+                    validator={validator}                        
+                    valueToStringPretty={(value: ExaminantEntity[]) => getExamiantRoleByExaminantRoleKey(value[0].role)}
+                />
+            </Flex>
 
             <Flex>
                 {/* Subjects */}
@@ -131,18 +179,21 @@ export default function ExaminantInput({...props}: Props) {
                     checkedStatus={musicExaminantStatus}
                     setCheckedStatus={setMusicExaminantStatus}
                     role="music"
+                    disabled={musicExaminantStatus === "unchecked" && !examinantService.findExaminant(validValues.flat(), "music")[0]}
                 />
 
                 <CheckboxWithExaminantIcon 
                     checkedStatus={historyExaminantStatus}
                     setCheckedStatus={setHistoryExaminantStatus}
                     role="history"
+                    disabled={historyExaminantStatus === "unchecked" && !examinantService.findExaminant(validValues.flat(), "history")[0]}
                 />
 
                 <CheckboxWithExaminantIcon 
                     checkedStatus={educatorExaminantStatus}
                     setCheckedStatus={setEducatorExaminantStatus}
                     role="educator"
+                    disabled={educatorExaminantStatus === "unchecked" && !examinantService.findExaminant(validValues.flat(), "educator")[0]}
                 />
             </Flex>
     
@@ -158,7 +209,7 @@ export default function ExaminantInput({...props}: Props) {
                     role="headmaster"
                     iconName="graduation-cap"
                 />
-                
+
                 <HelperSelect  
                     style={{flexShrink: 1}}
                     rendered={headmasterStatus === "checked"}

@@ -5,7 +5,7 @@ import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { formatDateGermanNoTime } from "@/utils/projectUtils";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
@@ -13,6 +13,7 @@ import DatePicker, { DatePickerValue } from "../helpers/DatePicker";
 import Flex from "../helpers/Flex";
 import HelperText from "../helpers/HelperText";
 import AttendanceInputTooltip from "./AttendanceInputTooltip";
+import B from "../helpers/B";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 
@@ -27,6 +28,8 @@ export default function DateInput({...props}: Props) {
 
     const { allStyles: { mb_2 } } = useResponsiveStyles();
 
+    const [invalidValues, setInvalidValues] = useState<Date[]>([]);
+
     const validator = AttendanceInputValidatorBuilder
         .builder(currentAttendanceEntity, savedAttendanceEntities)
         .inputType("date")
@@ -34,6 +37,10 @@ export default function DateInput({...props}: Props) {
 
     const componentName = "DateInput";
     const { children, style, ...otherProps } = useHelperProps(props, componentName);
+
+    useEffect(() => {
+        setInvalidValues(validator.getInvalidValues() as Date[]);
+    }, [currentAttendanceEntity])
 
     function handleConfirm(params: DatePickerValue): void {
         const date = params.date;
@@ -61,9 +68,11 @@ export default function DateInput({...props}: Props) {
                 <HelperText dynamicStyle={AttendanceStyles.heading}>Datum</HelperText>
 
                 <AttendanceInputTooltip 
+                    values={invalidValues}
                     attendanceInputKey="date"
                     validator={validator}
-                    useInvalidValues
+                    emptyMessage="Alle Werte erlaubt."
+                    heading={<B>Invalide Werte:</B>}
                     valueToStringPretty={(value) => `${formatDateGermanNoTime(value as Date)}`}
                 />
             </Flex>

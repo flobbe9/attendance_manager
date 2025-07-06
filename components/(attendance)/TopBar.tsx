@@ -165,7 +165,6 @@ export default function TopBar({...props}: Props) {
                         }} 
                         size={FONT_SIZE}
                     />
-                    {/* <HelperText dynamicStyle={TopBarStyles.saveButtonChildren}>Save</HelperText> */}
                 </HelperButton>
             </Flex>
         </Flex>

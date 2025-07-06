@@ -5,7 +5,7 @@ import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceI
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { NO_SELECTION_LABEL } from "@/utils/constants";
 import { isBlank } from "@/utils/utils";
-import React, { Fragment, useContext } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
@@ -14,6 +14,7 @@ import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
 import AttendanceInputTooltip from "./AttendanceInputTooltip";
 import { logDebug } from "@/utils/logUtils";
+import { AttendanceService } from "@/backend/services/AttendanceService";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -24,6 +25,8 @@ export default function TopicInput({...props}: Props) {
     const { savedAttendanceEntities } = useContext(GlobalAttendanceContext);
     const { updateCurrentAttendanceEntity, currentAttendanceEntity, handleInvalidAttendanceInput } = useContext(AttendanceContext);
 
+    const [validValues, setValidValues] = useState<MusicLessonTopic_Key[]>([]);
+
     const validator = AttendanceInputValidatorBuilder
         .builder(currentAttendanceEntity, savedAttendanceEntities)
         .inputType("musicLessonTopic")
@@ -31,6 +34,10 @@ export default function TopicInput({...props}: Props) {
 
     const componentName = "TopicInput";
     const { children, ...otherProps } = useHelperProps(props, componentName);
+
+    useEffect(() => {
+        setValidValues(validator.getValidValues() as MusicLessonTopic_Key[]);
+    }, [currentAttendanceEntity])
 
     function handleOptionSelect(value: MusicLessonTopic): void {
         if (validator.shouldInputBeValidated(getMusicLessonTopicKeyByMusicLessonTopic(value))) {
@@ -72,7 +79,7 @@ export default function TopicInput({...props}: Props) {
                     valueToStringPretty={formatTooltipLessonTopic}
                     textContainerStyles={{maxWidth: 300}}
                     position="top"
-                    
+                    values={validValues}
                 />
             </Flex>
 
@@ -81,6 +88,9 @@ export default function TopicInput({...props}: Props) {
                 options={[NO_SELECTION_LABEL, ...MUSIC_LESSON_TOPICS]}
                 selectedOptions={getMusicLessonTopicByMusicLessonTopicKey(currentAttendanceEntity.musicLessonTopic)}
                 setSelectedOptions={handleOptionSelect}
+                disabledCondition={(optionValue) => 
+                    !validValues.includes(getMusicLessonTopicKeyByMusicLessonTopic(optionValue as MusicLessonTopic)) &&
+                    new AttendanceService().isSelectInputFilledOut(optionValue as string)}
                 optionsContainerScroll={false}
                 optionsContainerHeight={243}
                 {...otherProps}

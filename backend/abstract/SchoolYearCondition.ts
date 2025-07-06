@@ -5,6 +5,7 @@ import { SchoolYear } from "@/abstract/SchoolYear";
 import { assertFalsyAndThrow, cloneObj, isNumberFalsy, isStringFalsy } from "@/utils/utils";
 import { defaultEquals, defaultEqualsFalsy } from "@/utils/projectUtils";
 import { log } from "@/utils/logUtils";
+import { ExaminantRole_Key } from "@/abstract/Examinant";
 
 
 /**
@@ -19,6 +20,7 @@ export interface SchoolYearCondition {
     schoolYearRange: SchoolYearRange;
     /** Only relevant for subject `music` */
     lessonTopic?: MusicLessonTopic_Key,
+    examinantRole?: ExaminantRole_Key,
     /** The number of saved attendances that match this condition. This count can be used during validation e.g. */
     attendanceCount?: number,
     /** 

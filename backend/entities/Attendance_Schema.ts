@@ -44,7 +44,7 @@ export class AttendanceEntity extends AbstractEntity {
     /** Date of the attendance */
     date?: Date;
     schoolYear: SchoolYear;
-    /** Only mandatory if ```schoolSubject``` is "Musik" */
+    /** Only mandatory if `schoolSubject` is "Musik" */
     musicLessonTopic?: MusicLessonTopic_Key;
     /** Cannot be empty */
     examinants: ExaminantEntity[];

@@ -32,6 +32,8 @@ export default function SchoolYearInput({...props}: Props) {
     const { savedAttendanceEntities } = useContext(GlobalAttendanceContext);
     const { updateCurrentAttendanceEntity, currentAttendanceEntity, handleInvalidAttendanceInput, resetInvalidAttendanceInputErrorStyles } = useContext(AttendanceContext);
     
+    const [validValues, setValidValues] = useState<SchoolYear[]>([]);
+    
     const validator = AttendanceInputValidatorBuilder
         .builder(currentAttendanceEntity, savedAttendanceEntities)
         .inputType("schoolYear")
@@ -39,6 +41,10 @@ export default function SchoolYearInput({...props}: Props) {
 
     const componentName = "SchoolYearInput";
     const { children, ...otherProps } = useHelperProps(props, componentName);
+
+    useEffect(() => {
+        setValidValues(validator.getValidValues() as SchoolYear[]);
+    }, [currentAttendanceEntity])
 
     /**
      * Attempt to fix `value` if invalid, then validate and possibly handle invalid `value`. Always throw error to prevent
@@ -93,7 +99,7 @@ export default function SchoolYearInput({...props}: Props) {
             <Flex alignItems="center" style={{zIndex: 1}}>
                 <HelperText dynamicStyle={AttendanceStyles.heading}>Jahrgang</HelperText>
 
-                <AttendanceInputTooltip attendanceInputKey="schoolYear" validator={validator}/>
+                <AttendanceInputTooltip values={validValues} attendanceInputKey="schoolYear" validator={validator}/>
             </Flex>
 
             <HelperInput 

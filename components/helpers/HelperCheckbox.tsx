@@ -4,7 +4,7 @@ import { useHelperProps } from "@/hooks/useHelperProps";
 import { FONT_SIZE } from "@/utils/styleConstants";
 import FontAwesome from "@expo/vector-icons/build/FontAwesome";
 import React, { forwardRef, Ref } from "react";
-import { TextStyle, View, ViewProps, ViewStyle } from "react-native";
+import { GestureResponderEvent, TextStyle, View, ViewProps, ViewStyle } from "react-native";
 import HelperButton from "./HelperButton";
 import HelperReactChildren from "./HelperReactChildren";
 import HelperView from "./HelperView";
@@ -17,6 +17,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
     iconStyle?: TextStyle,
     /** How to align children relative to checkbox icon. Default is "right" */
     labelAlign?: "right" | "left",
+    disabled?
 }
 
 
@@ -31,6 +32,8 @@ export default forwardRef(function HelperCheckbox(
         setChecked,
         iconStyle = {},
         labelAlign = "right",
+        disabled = false,
+        onTouchStart,
         ...props
     }: Props,
     ref: Ref<View>
@@ -40,6 +43,16 @@ export default forwardRef(function HelperCheckbox(
 
     const defaultFontSize = FONT_SIZE;
 
+    function handleTouchStart(event: GestureResponderEvent): void {
+        if (disabled)
+            return;
+        
+        if (onTouchStart)
+            onTouchStart(event);
+
+        setChecked(!checked);
+    }
+
     return (
         <HelperButton
             ref={ref}
@@ -48,7 +61,8 @@ export default forwardRef(function HelperCheckbox(
                 ...style as object,
             }}
             ripple={null}
-            onTouchStart={() => setChecked(!checked)}
+            disabled={disabled}
+            onTouchStart={handleTouchStart}
             {...otherProps}
         >
             <HelperReactChildren rendered={labelAlign === "left"}>{children}</HelperReactChildren>

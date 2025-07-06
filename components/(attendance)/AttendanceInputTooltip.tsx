@@ -14,19 +14,15 @@ import HelperText from "../helpers/HelperText";
 import Tooltip, { TooltipProps } from "../helpers/Tooltip";
 
 interface Props<InputType extends keyof AttendanceEntity> extends TooltipProps {
+    values: ValueOf<AttendanceEntity>[],
     attendanceInputKey: keyof AttendanceEntity,
-    validator: AbstractAttendanceInputValidator<InputType>,
+    validator: AbstractAttendanceInputValidator<InputType>, // comment out
     /** Displayed when `valueList` is empty. Has a generic default that should fit any input field. */
     emptyMessage?: string,
     /** Displayed above `valueList`. Default is `<B>Erlaubte Werte:</B>` */
     heading?: ReactNode,
     /** For updating the tooltip text. Default is `[currentAttendanceEntity]` */
     deps?: DependencyList
-    /** 
-     * Whether to display the invalid values for the input instead of the valid ones. 
-     * Will adjust default messages as well if `true`. Default is `false`
-     */
-    useInvalidValues?: boolean,
     /** 
      * Called when listing valid / invalid values. Should return a pretty string represenation
      * that's meant for the user. Default is `(value) => value.toString()`.
@@ -40,11 +36,11 @@ interface Props<InputType extends keyof AttendanceEntity> extends TooltipProps {
  * @since 0.0.1
  */
 export default function AttendanceInputTooltip<InputType extends keyof AttendanceEntity>({
+    values,
     attendanceInputKey, 
     validator,
-    useInvalidValues = false,
-    emptyMessage = useInvalidValues ? "Alle Werte erlaubt." : "Keine Auswahl möglich in Kombination mit den restlichen Werten.",
-    heading = <B>{useInvalidValues ? 'Invalide' : 'Erlaubte'} Werte:</B>,
+    emptyMessage = "Keine Auswahl möglich in Kombination mit den restlichen Werten.",
+    heading = <B>Erlaubte Werte:</B>,
     deps,
     textContainerStyles,
     buttonStyles,
@@ -67,8 +63,6 @@ export default function AttendanceInputTooltip<InputType extends keyof Attendanc
     }, [deps ?? currentAttendanceEntity])
 
     function generateTooltipText(): ReactNode {
-        const values = useInvalidValues ? validator.getInvalidValues() : validator.getValidValues();
-
         if (!values || !values.length)
             return emptyMessage;
 
