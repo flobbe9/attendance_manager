@@ -1,5 +1,6 @@
 import { GlobalContext } from "@/components/context/GlobalContextProvider";
 import { useContext, useEffect } from "react";
+import { useHasComponentMounted } from "./useHasComponentMounted";
 
 
 /**
@@ -12,8 +13,10 @@ export function useScreenTouch(callback: () => void): void {
 
     const { globalScreenTouch } = useContext(GlobalContext);
 
+    const hasMounted = useHasComponentMounted();
 
     useEffect(() => {
-        callback();
+        if (hasMounted)
+            callback();
     }, [globalScreenTouch])
 }

@@ -174,8 +174,9 @@ export abstract class AbstractAttendanceInputValidator<InputValueType extends Va
 
 
     /**
-     * Validate `inputValue` calling all validation methods of this class. Will throw if `inputValue` is falsy, validate "required" 
-     * conditions before.
+     * Validate `inputValue` calling all validation methods of this class. 
+     * 
+     * Should not handle invalid, meaning no toasts or popups. Also dont throw
      * 
      * @param inputValue to validate 
      * @returns `null` if `inputValue` is valid or falsy, an error message if invalid

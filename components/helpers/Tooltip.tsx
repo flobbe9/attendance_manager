@@ -1,33 +1,28 @@
+import { DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
 import { TooltipStyles } from "@/assets/styles/TooltipStyles";
 import HelperView from "@/components/helpers/HelperView";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
+import { useHasComponentMounted } from "@/hooks/useHasComponentMounted";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { useScreenTouch } from "@/hooks/useScreenTouch";
+import { DEFAULT_BUTTON_PADDING, FONT_SIZE } from "@/utils/styleConstants";
 import { isBooleanFalsy, isNumberFalsy } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import { TextStyle, ViewProps, ViewStyle } from "react-native";
 import Flex from "./Flex";
-import HelperText from "./HelperText";
 import HelperButton from "./HelperButton";
-import { logDebug } from "@/utils/logUtils";
-import { DEFAULT_BUTTON_PADDING, FONT_SIZE } from "@/utils/styleConstants";
-import HelperStyles from "@/assets/styles/helperStyles";
-import { DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperReactChildren from "./HelperReactChildren";
 
+export type TooltipPosition = "top" | "bottom" | "left" | "right";
 
-export type TooltipIconAlign = "top" | "bottom" | "left" | "right";
-
-
-interface Props extends HelperProps<ViewStyle>, ViewProps {
-
+export interface TooltipProps extends HelperProps<ViewStyle>, ViewProps {
     /** Will only work if setter is defined as well */
     visible?: boolean,
     setVisible?: (visible: boolean) => void,
-    /** Determines where to position the tooltip icon relative to the tooltip text. Default is 'left' */
-    iconAlign?: TooltipIconAlign,
+    /** Determines where to position the tooltip relative to the tooltip icon. Default is 'left' */
+    position?: TooltipPosition,
     /** Amount to move the textcontainer in addition to the default value, e.g. to take larger button padding into account. Default is 0 */
     textContainerAdditionalOffset?: number,
     /** 
@@ -49,7 +44,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function Tooltip(
     {
-        iconAlign = "left",
+        position = "left",
         textContainerAdditionalOffset = 5,
         visible,
         setVisible,
@@ -58,36 +53,57 @@ export default function Tooltip(
         buttonStyles = {},
         textContainerStyles = {},
         ...props
-    }: Props
+    }: TooltipProps
 ) {
-    const [visibleState, setVisibleState] = isBooleanFalsy(visible) || !setVisible ? useState(false) : [visible, setVisible];
+    const [visibleState, setVisibleState]: [boolean, (visible: boolean) => void] = isBooleanFalsy(visible) || !setVisible ? useState(false) : [visible, setVisible];
     
     const [hideTextTimeout, setHideTextTimeout] = useState<NodeJS.Timeout>();
+
+    const [textContainerDisplay, setTextContainerDisplay] = useState<undefined | "none">(!visible ? "none" : undefined);
     
-    const { animatedStyle: animatedTextContainerOpacity } = useAnimatedStyle(
+    const { animatedStyle: animatedTextContainerOpacity, animate } = useAnimatedStyle(
         [0, 100],
         [0, 1],
         {
             reverse: !visibleState,
-            startReversed: visible
+            startReversed: visibleState,
+            animationDeps: null // dont handle animation inside hook
         }
     )
+
+    const hasMounted = useHasComponentMounted(500);
 
     const componentName = "Tooltip";
     const { children, ...otherProps } = useHelperProps(props, componentName, TooltipStyles.component);
 
     useEffect(() => {
+        animateTextContainerOpacity();
+        
         if (hideTextTimeout)
             clearTimeout(hideTextTimeout);
 
         if (visibleState && !isNumberFalsy(duration))
             setHideTextTimeout(setTimeout(() => setVisibleState(false), duration));
-
+    
     }, [visibleState]);
 
     useScreenTouch(() => {
         hideTooltipOnScreenTouch();
     });
+
+    async function animateTextContainerOpacity(): Promise<void> {
+        if (!hasMounted)
+            return;
+
+        if (visibleState) {
+            setTextContainerDisplay(undefined);
+            await animate(!visibleState);
+
+        } else {
+            await animate(!visibleState);
+            setTextContainerDisplay("none");
+        }
+    }
 
     function hideTooltipOnScreenTouch(): void {
         setVisibleState(false);
@@ -111,10 +127,10 @@ export default function Tooltip(
     /**
      * Make sure that the text container will not overlap the icon if text gets longer.
      * 
-     * @returns the opposite align of `iconAlign` 
+     * @returns the opposite align of `position` 
      */
-    function getTextContainerPositionKey(): TooltipIconAlign {
-        switch (iconAlign) {
+    function getTextContainerPositionKey(): TooltipPosition {
+        switch (position) {
             case "right":
                 return "left";
 
@@ -156,6 +172,7 @@ export default function Tooltip(
                     style={{
                         ...textContainerStyles,
                         opacity: animatedTextContainerOpacity,
+                        display: textContainerDisplay
                     }}
                 >
                     <HelperReactChildren dynamicStyle={TooltipStyles.text}>

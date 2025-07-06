@@ -61,23 +61,23 @@ export class MusicSchoolYearValidator extends AbstractSchoolYearValidator {
         
         let errorMessage: string = null;
 
-        logDebug("validate schoolyear", schoolYear)
+        logTrace("validate schoolyear", schoolYear)
 
         if ((errorMessage = this.validateNonContextConditions(MUSIC_SCHOOL_YEAR_CONDITIONS, schoolYear)) !== null)
             return errorMessage;
         
-        logDebug("non context schoolyear valid", schoolYear)
+        logTrace("non context schoolyear valid", schoolYear)
 
         if ((errorMessage = this.validateContextConditions(MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS, schoolYear)) !== null)
             return errorMessage;
 
-        logDebug("context schoolyear valid", schoolYear)
+        logTrace("context schoolyear valid", schoolYear)
 
         if ((errorMessage = this.validateFuture(schoolYear)) !== null)
             return errorMessage;        
 
-        logDebug("future valid", schoolYear)
-        logDebug('')
+        logTrace("future valid", schoolYear)
+        logTrace('')
 
         return errorMessage;
     }

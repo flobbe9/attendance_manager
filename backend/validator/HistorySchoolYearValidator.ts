@@ -29,24 +29,24 @@ export class HistorySchoolYearValidator extends AbstractSchoolYearValidator {
         let errorMessageVariant1: string = null;
         let errorMessageVariant2: string = null;
 
-        logDebug("validate schoolyear", schoolYear)
+        logTrace("validate schoolyear", schoolYear)
 
         if ((errorMessageVariant1 = this.validateNonContextConditions(HISTORY_SCHOOL_YEAR_CONDITIONS_VARIANT_1, schoolYear)) !== null)
             errorMessageVariant2 = this.validateNonContextConditions(HISTORY_SCHOOL_YEAR_CONDITIONS_VARIANT_2, schoolYear);
         // case: neither variant is valid
         if (errorMessageVariant1 !== null && errorMessageVariant2 !== null)
             return this.concatErrorMessages(errorMessageVariant1, errorMessageVariant2);
-        logDebug("non context schoolyear valid", schoolYear)
+        logTrace("non context schoolyear valid", schoolYear)
 
         // not passing conditions since history needs to handle multiple condition lists
         if ((errorMessageVariant1 = this.validateContextConditions([], schoolYear)) !== null)
             return errorMessageVariant1;
-        logDebug("context schoolyear valid", schoolYear)
+        logTrace("context schoolyear valid", schoolYear)
 
         if ((errorMessageVariant1 = this.validateFuture(schoolYear)) !== null)
             return errorMessageVariant1;        
-        logDebug("future valid", schoolYear)
-        logDebug('')
+        logTrace("future valid", schoolYear)
+        logTrace('')
 
         return this.concatErrorMessages(errorMessageVariant1, errorMessageVariant2);    
     }

@@ -36,7 +36,6 @@ export function useAnimatedStyle(
         onComplete?: () => void
     } = {}
 ) {
-
     const { 
         duration = TRANSITION_DURATION, 
         easing = Easing.inOut(Easing.ease), 

@@ -1,6 +1,6 @@
-import { MusicLessonTopic_Key } from "@/abstract/MusicLessonTopic";
+import { MUSIC_LESSON_TOPIC_KEYS, MUSIC_LESSON_TOPICS, MusicLessonTopic_Key } from "@/abstract/MusicLessonTopic";
 import { isSchoolYear } from "@/abstract/SchoolYear";
-import { logTrace } from "@/utils/logUtils";
+import { logDebug, logTrace } from "@/utils/logUtils";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 import { AbstractAttendanceInputValidator } from "../abstract/AbstractAttendanceInputValidator";
 import { AttendanceEntity } from "../DbSchema";
@@ -12,8 +12,8 @@ import { AttendanceInputValidatorBuilder } from "./AttendanceInputValidatorBuild
 export class LessonTopicValidator extends AbstractAttendanceInputValidator<MusicLessonTopic_Key> {
 
     public getValidValues(): ValueOf<AttendanceEntity>[] {
-        // TODO
-        return [];
+        return MUSIC_LESSON_TOPIC_KEYS
+            .filter(lessonTopicKey => this.validate(lessonTopicKey) === null);
     }
     
     public getInvalidValues(): ValueOf<AttendanceEntity>[] {
@@ -59,15 +59,15 @@ export class LessonTopicValidator extends AbstractAttendanceInputValidator<Music
 
         logTrace("future valid", inputValue);
 
-        const schoolYearValidator = AttendanceInputValidatorBuilder
-            .builder(this.getCurrentAttendance(), this.getSavedAttendances())
-            .inputType("schoolYear")
-            .build();
         const originalMusicLessonTopic = this.getCurrentAttendance().musicLessonTopic;
-        
         try {
             this.getCurrentAttendance().musicLessonTopic = inputValue;
-            if ((errorMessage = schoolYearValidator.validate(this.getCurrentAttendance().schoolYear)))
+            const schoolYearValidator = AttendanceInputValidatorBuilder
+                .builder(this.getCurrentAttendance(), this.getSavedAttendances())
+                .inputType("schoolYear")
+                .build();
+
+            if ((errorMessage = schoolYearValidator.validate(this.getCurrentAttendance().schoolYear)) !== null)
                 return errorMessage;
 
         } finally {

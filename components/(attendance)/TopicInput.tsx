@@ -5,7 +5,7 @@ import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceI
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { NO_SELECTION_LABEL } from "@/utils/constants";
 import { isBlank } from "@/utils/utils";
-import React, { useContext } from "react";
+import React, { Fragment, useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
@@ -13,6 +13,7 @@ import Flex from "../helpers/Flex";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
 import AttendanceInputTooltip from "./AttendanceInputTooltip";
+import { logDebug } from "@/utils/logUtils";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -28,21 +29,16 @@ export default function TopicInput({...props}: Props) {
         .inputType("musicLessonTopic")
         .build();
 
-    const schoolYearValidator = AttendanceInputValidatorBuilder
-        .builder(currentAttendanceEntity, savedAttendanceEntities)
-        .inputType("schoolYear")
-        .build();
-
     const componentName = "TopicInput";
     const { children, ...otherProps } = useHelperProps(props, componentName);
 
     function handleOptionSelect(value: MusicLessonTopic): void {
-        if (validator.shouldInputBeValidated(value)) {
-            const errorMessage = validator.validate(value);
+        if (validator.shouldInputBeValidated(getMusicLessonTopicKeyByMusicLessonTopic(value))) {
+            const errorMessage = validator.validate(getMusicLessonTopicKeyByMusicLessonTopic(value));
 
             if (!isBlank(errorMessage)) {
                 handleInvalidAttendanceInput(
-                    value, 
+                    getMusicLessonTopicKeyByMusicLessonTopic(value), 
                     errorMessage,
                     "musicLessonTopic");
 
@@ -53,25 +49,42 @@ export default function TopicInput({...props}: Props) {
         updateCurrentAttendanceEntity(["musicLessonTopic", getMusicLessonTopicKeyByMusicLessonTopic(value)]);
     }
 
+    /**
+     * @param value 
+     * @param index 
+     * @returns one music lesson topic formatted for tooltip body
+     */
+    function formatTooltipLessonTopic(value: MusicLessonTopic_Key, index: number): string {
+        const musicLessonTopic = getMusicLessonTopicByMusicLessonTopicKey(value);
+        const prefix = musicLessonTopic.length > 15 && index >= 1 ? '\n' : '';
+        return `${prefix}${getMusicLessonTopicByMusicLessonTopicKey(value)}`;
+    }
+
     return (
-        <HelperSelect 
-            rendered={currentAttendanceEntity.schoolSubject === "music"}
-            options={[NO_SELECTION_LABEL, ...MUSIC_LESSON_TOPICS]}
-            selectedOptions={getMusicLessonTopicByMusicLessonTopicKey(currentAttendanceEntity.musicLessonTopic)}
-            setSelectedOptions={handleOptionSelect}
-            optionsContainerScroll={false}
-            optionsContainerHeight={243}
-            {...otherProps}
-        >
-            <Flex alignItems="center">
+        <Fragment>
+            {/* one higher than parent or 1 */}
+            <Flex alignItems="center" style={{zIndex: (((otherProps.style as ViewStyle).zIndex) ?? 0) + 1}}>
                 <HelperText dynamicStyle={AttendanceStyles.heading}>Stundenthema</HelperText>
                 
                 <AttendanceInputTooltip 
                     attendanceInputKey={"musicLessonTopic"} 
                     validator={validator}
-                    valueToStringPretty={(value) => getMusicLessonTopicByMusicLessonTopicKey(value as MusicLessonTopic_Key)}
+                    valueToStringPretty={formatTooltipLessonTopic}
+                    textContainerStyles={{maxWidth: 300}}
+                    position="top"
+                    
                 />
             </Flex>
-        </HelperSelect>
+
+            <HelperSelect 
+                rendered={currentAttendanceEntity.schoolSubject === "music"}
+                options={[NO_SELECTION_LABEL, ...MUSIC_LESSON_TOPICS]}
+                selectedOptions={getMusicLessonTopicByMusicLessonTopicKey(currentAttendanceEntity.musicLessonTopic)}
+                setSelectedOptions={handleOptionSelect}
+                optionsContainerScroll={false}
+                optionsContainerHeight={243}
+                {...otherProps}
+            />
+        </Fragment>
     )
 }

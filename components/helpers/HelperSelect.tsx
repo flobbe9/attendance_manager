@@ -12,6 +12,7 @@ import { View, ViewProps, ViewStyle } from "react-native";
 import HelperButton from "./HelperButton";
 import HelperScrollView from "./HelperScrollView";
 import HelperText from "./HelperText";
+import HelperReactChildren from "./HelperReactChildren";
 
 
 interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
@@ -178,7 +179,9 @@ export default forwardRef(function HelperSelect<OptionType>({
 
     return (
         <HelperView ref={ref} {...otherProps}>
-            {children}
+            <HelperReactChildren>
+                {children}
+            </HelperReactChildren>
 
             <HelperButton 
                 dynamicStyle={HelperSelectStyles.selectionButton}

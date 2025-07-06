@@ -1,4 +1,3 @@
-import HelperProps from "@/abstract/HelperProps";
 import { AttendanceInputTooltipStyles } from "@/assets/styles/AttendanceInputTooltipStyles";
 import { AbstractAttendanceInputValidator } from "@/backend/abstract/AbstractAttendanceInputValidator";
 import { AttendanceEntity } from "@/backend/DbSchema";
@@ -6,17 +5,15 @@ import { useDeviceOrientation } from "@/hooks/useDeviceOrientation";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR } from "@/utils/styleConstants";
 import React, { ReactNode, useContext, useEffect, useState } from "react";
-import { ViewProps, ViewStyle } from "react-native";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 import { DependencyList } from "react-native-reanimated/lib/typescript/hook";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import B from "../helpers/B";
 import HelperReactChildren from "../helpers/HelperReactChildren";
 import HelperText from "../helpers/HelperText";
-import Tooltip from "../helpers/Tooltip";
-import { logDebug } from "@/utils/logUtils";
+import Tooltip, { TooltipProps } from "../helpers/Tooltip";
 
-interface Props<InputType extends keyof AttendanceEntity> extends HelperProps<ViewStyle>, ViewProps {
+interface Props<InputType extends keyof AttendanceEntity> extends TooltipProps {
     attendanceInputKey: keyof AttendanceEntity,
     validator: AbstractAttendanceInputValidator<InputType>,
     /** Displayed when `valueList` is empty. Has a generic default that should fit any input field. */
@@ -49,6 +46,10 @@ export default function AttendanceInputTooltip<InputType extends keyof Attendanc
     emptyMessage = useInvalidValues ? "Alle Werte erlaubt." : "Keine Auswahl möglich in Kombination mit den restlichen Werten.",
     heading = <B>{useInvalidValues ? 'Invalide' : 'Erlaubte'} Werte:</B>,
     deps,
+    textContainerStyles,
+    buttonStyles,
+    iconStyle,
+    onTouchStart,
     valueToStringPretty = (value) => value.toString(),
     ...props
 }: Props<InputType>) {
@@ -86,26 +87,41 @@ export default function AttendanceInputTooltip<InputType extends keyof Attendanc
                 return `${valueToStringPretty(prev, i)}, ${valueToStringPretty(cur, i)}`;
             }) as string;
 
+        // remove the first line break in case there is one
+        reducedValues = reducedValues.charAt(0) === "\n" ? reducedValues.substring(1) : reducedValues;
+
         return <HelperText>{reducedValues}</HelperText>;
+    }
+
+    function handleTouchStart(event): void {
+        if (onTouchStart)
+            onTouchStart(event);
+
+        // make sure to reset possible error style
+        setTooltipIconColor(ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR);
     }
 
     return (
         <Tooltip 
             iconStyle={{
                 color: currentlyInvalidAttendanceInputKey === attendanceInputKey ?  tooltipIconColor : ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR,
-                ...AttendanceInputTooltipStyles.icon
+                ...AttendanceInputTooltipStyles.icon,
+                ...iconStyle
             }}
-            iconAlign="right"
+            position="right"
             buttonStyles={{
                 style: {
-                    ...AttendanceInputTooltipStyles.button
+                    ...AttendanceInputTooltipStyles.button,
+                    ...buttonStyles
                 }
             }}
             textContainerStyles={{
                 ...AttendanceInputTooltipStyles.textContainerStyles,
-                maxWidth: orientation === "landscape" ? 400 : 200
+                maxWidth: orientation === "landscape" ? 400 : 200,
+                ...textContainerStyles,
             }}
-            onTouchStart={() => setTooltipIconColor(ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR)} // make sure to reset possible error style
+            duration={NaN}
+            onTouchStart={handleTouchStart} 
             {...otherProps}
         >
             <HelperReactChildren
