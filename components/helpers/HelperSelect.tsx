@@ -35,8 +35,9 @@ interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
     multiselect?: boolean,
     /** Default is {@link NO_SELECTION_LABEL} */
     noSelectionLabel?: string,
+    /** Applied to every select option. If returns `true`, disable the select option. */
+    disabledCondition?: (optionValue: OptionType) => boolean
 }
-
 
 /**
  * @since 0.0.1
@@ -49,6 +50,7 @@ export default forwardRef(function HelperSelect<OptionType>({
         optionsContainerScroll = true,
         multiselect = false,
         noSelectionLabel = NO_SELECTION_LABEL,
+        disabledCondition,
         ...props
     }: Props<OptionType>,
     ref: Ref<View>
@@ -134,22 +136,26 @@ export default forwardRef(function HelperSelect<OptionType>({
             return [];
 
         return options
-            .map((option, i) => 
-                <HelperButton 
-                    style={isOptionSelected(option) && !multiselect ? HelperSelectStyles.selectedOptionButton.default : HelperSelectStyles.optionButton.default} 
-                    containerStyles={{default: {width: "100%"}}}
-                    onPress={() => handleOptionPress(option)}
-                    key={i}
-                >
-                    <HelperText 
-                        dynamicStyle={{...HelperSelectStyles.optionButtonText}}
+            .map((option, i) => {
+                const disabled = disabledCondition ? disabledCondition(option) : false;
+                return (
+                    <HelperButton 
+                        style={isOptionSelected(option) && !multiselect ? HelperSelectStyles.selectedOptionButton.default : HelperSelectStyles.optionButton.default} 
+                        containerStyles={{default: {width: "100%"}}}
+                        disabled={disabled}
+                        onPress={() => handleOptionPress(option)}
+                        key={i}
                     >
-                        {option as string}
-                    </HelperText>
+                        <HelperText 
+                            dynamicStyle={{...HelperSelectStyles.optionButtonText}}
+                        >
+                            {option as string}
+                        </HelperText>
 
-                    {isOptionSelected(option) && multiselect && <FontAwesome name="check" style={HelperSelectStyles.optionButtonText.default} />}
-                </HelperButton>
-            );
+                        {isOptionSelected(option) && multiselect && <FontAwesome name="check" style={HelperSelectStyles.optionButtonText.default} />}
+                    </HelperButton>
+                );
+            });
     }
 
 
