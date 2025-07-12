@@ -56,7 +56,9 @@ export default forwardRef(function HelperButton(
         [0.5, 1],
         {
             reverse: disabled || loading,
-            startReversed: !disabled && !loading
+            startReversed: !disabled && !loading,
+            animationDeps: [disabled, loading],
+            animateOnMout: true
         }
     )
 
@@ -79,7 +81,7 @@ export default forwardRef(function HelperButton(
             <TouchableNativeFeedback 
                 onPress={handlePress} 
                 disabled={disabled}
-                background={ripple === null || loading ? null : TouchableNativeFeedback.Ripple(ripple?.rippleBackground, false)}
+                background={ripple === null || disabled || loading ? null : TouchableNativeFeedback.Ripple(ripple?.rippleBackground, false)}
             >
                 <Flex
                     justifyContent="center"

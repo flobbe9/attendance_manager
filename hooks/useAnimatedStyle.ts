@@ -18,6 +18,8 @@ import { useHasComponentMounted } from "./useHasComponentMounted";
  * 
  * `startReversed` indicates to use the `inputRange`'s last value as initial animated value. Default is `false`
  * 
+ * `animateOnMout` whether to allow the animation on component mount. Default is `false`
+ * 
  * `easing` see {@link Easing}. Default is "inOut"
  * 
  * `onComplete` called after animation is done
@@ -32,6 +34,7 @@ export function useAnimatedStyle(
         animationDeps?: DependencyList | null,
         duration?: number,
         startReversed?: boolean,
+        animateOnMout?: boolean,
         easing?: EasingFunction,
         onComplete?: () => void
     } = {}
@@ -41,6 +44,7 @@ export function useAnimatedStyle(
         easing = Easing.inOut(Easing.ease), 
         reverse, 
         animationDeps = [reverse], 
+        animateOnMout = false,
         startReversed = false 
     } = options;
     const animatedValue = useAnimatedValue(inputRange.length ? inputRange[startReversed ? inputRange.length - 1 : 0] : 0);
@@ -48,7 +52,7 @@ export function useAnimatedStyle(
     const hasMounted = useHasComponentMounted();
 
     useEffect(() => {
-        if (animationDeps && hasMounted) {
+        if (animationDeps && (hasMounted || animateOnMout)) {
             animate(reverse);
             
             setTimeout(() => {
