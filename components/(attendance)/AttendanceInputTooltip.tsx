@@ -12,6 +12,7 @@ import B from "../helpers/B";
 import HelperReactChildren from "../helpers/HelperReactChildren";
 import HelperText from "../helpers/HelperText";
 import Tooltip, { TooltipProps } from "../helpers/Tooltip";
+import { logDebug } from "@/utils/logUtils";
 
 interface Props<InputType extends keyof AttendanceEntity> extends TooltipProps {
     values: ValueOf<AttendanceEntity>[],
@@ -60,7 +61,7 @@ export default function AttendanceInputTooltip<InputType extends keyof Attendanc
 
     useEffect(() => {
         setTooltipText(generateTooltipText());
-    }, [deps ?? currentAttendanceEntity])
+    }, [...(deps ?? [currentAttendanceEntity]), values])
 
     function generateTooltipText(): ReactNode {
         if (!values || !values.length)
