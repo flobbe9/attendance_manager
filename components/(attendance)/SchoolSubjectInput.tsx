@@ -13,6 +13,7 @@ import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
 import DontConfirmSchoolSubjectChangeContent from "./DontConfirmSchoolSubjectChangeContent";
 import { AttendanceService } from "@/backend/services/AttendanceService";
+import { TRANSITION_DURATION } from "@/utils/styleConstants";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -66,7 +67,9 @@ export default function SchoolSubjectInput({...props}: Props) {
             );
             
         } else
-            handleConfirm();
+            setTimeout(() => {
+                handleConfirm();
+            }, TRANSITION_DURATION); // wait for select drop down animation to finish
     }
     
     return (
