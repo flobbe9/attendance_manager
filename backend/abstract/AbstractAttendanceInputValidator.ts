@@ -125,7 +125,8 @@ export abstract class AbstractAttendanceInputValidator<InputValueType extends Va
      * 
      * Should only return values corresponding to `InputType`.
      * 
-     * @return all possible (valid) values for `InputType` considering `currentAttendance` and `savedAttendances`. Empty array if no valid values
+     * @return all possible (valid) values for `InputType` considering `currentAttendance` and `savedAttendances`. Don't include values that
+     * are irrelevant for validation. Empty array if no valid values
      */
     public abstract getValidValues(): ValueOf<AttendanceEntity>[];
 

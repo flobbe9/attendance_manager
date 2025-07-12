@@ -1,9 +1,10 @@
+import { getExaminantRoleKeysToValidate } from "@/abstract/Examinant";
+import { logDebug, logTrace } from "@/utils/logUtils";
+import { cloneObj } from "@/utils/utils";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 import { AbstractAttendanceInputValidator } from "../abstract/AbstractAttendanceInputValidator";
 import { AttendanceEntity, ExaminantEntity } from "../DbSchema";
-import { logTrace } from "@/utils/logUtils";
 import { AttendanceInputValidatorBuilder } from "./AttendanceInputValidatorBuilder";
-import { EXAMINANT_ROLE_KEYS } from "@/abstract/Examinant";
 
 /**
  * @since latest
@@ -14,7 +15,7 @@ export class ExamianntValidator extends AbstractAttendanceInputValidator<Examina
      * @returns a 2d array with single element arrays, each of them a selectable examinant
      */
     public getValidValues(): ValueOf<AttendanceEntity>[] {
-        return EXAMINANT_ROLE_KEYS
+        return getExaminantRoleKeysToValidate()
             // only validate unchecked examinants
             .filter(examinantRoleKey => !this.attendanceService.hasExaminant(this.getCurrentAttendance(), examinantRoleKey))
             .map(examinantRoleKey => [new ExaminantEntity(examinantRoleKey)])
@@ -34,9 +35,6 @@ export class ExamianntValidator extends AbstractAttendanceInputValidator<Examina
 
     public validateContextConditions(constantConditions: any, inputValue: ExaminantEntity[]): string | null {
         // not implemented
-        // count up
-            // attendance has educator
-        // check if is maxed out
         return null;    
     }
 
@@ -67,7 +65,7 @@ export class ExamianntValidator extends AbstractAttendanceInputValidator<Examina
         if ((errorMessage = this.validateFuture(inputValue)) !== null)
             return errorMessage;
 
-        const originalExaminants = this.getCurrentAttendance().examinants;
+        const originalExaminants = cloneObj(this.getCurrentAttendance().examinants);
         try {
             this.getCurrentAttendance().examinants = inputValue;
 

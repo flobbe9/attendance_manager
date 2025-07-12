@@ -61,6 +61,17 @@ export default function DateInput({...props}: Props) {
         // prevent set state
         throw new Error(errorMessage);
     }
+
+    /**
+     * @param invalidValue 
+     * @param index 
+     * @returns one music lesson topic formatted for tooltip body
+     */
+    function formatTooltip(invalidValue: Date, index: number): string {
+        const formattedDate = formatDateGermanNoTime(invalidValue);
+        const prefix = index >= 1 ? '\n' : '';
+        return `${prefix}${formattedDate}`;
+    }
     
     return (
         <HelperView dynamicStyle={AttendanceStyles.inputContainer} style={{...style as object, ...mb_2}} {...otherProps}>
@@ -73,7 +84,7 @@ export default function DateInput({...props}: Props) {
                     validator={validator}
                     emptyMessage="Alle Werte erlaubt."
                     heading={<B>Invalide Werte:</B>}
-                    valueToStringPretty={(value) => `${formatDateGermanNoTime(value as Date)}`}
+                    valueToStringPretty={formatTooltip}
                 />
             </Flex>
 

@@ -45,7 +45,7 @@ export default function ExaminantInput({...props}: Props) {
     /** Indicates that all checkbox states have been initialized with `currentAttendanceEntity` values  */
     const [initializedCheckboxes, setInitializedCheckboxes] = useState(false);
 
-    const [validValues, setValidValues] = useState<ExaminantEntity[][]>([]);
+    const [validValues, setValidValues] = useState<ExaminantEntity[]>([]);
 
     const examinantService = new ExaminantService();
     const validator = AttendanceInputValidatorBuilder
@@ -59,7 +59,8 @@ export default function ExaminantInput({...props}: Props) {
     const attendanceService = new AttendanceService();
 
     useEffect(() => {
-        setValidValues(validator.getValidValues() as ExaminantEntity[][]);
+        const validValues = validator.getValidValues().flat() as ExaminantEntity[];
+        setValidValues(validValues);
     }, [currentAttendanceEntity])
 
 
@@ -161,17 +162,7 @@ export default function ExaminantInput({...props}: Props) {
 
     return (
         <HelperView {...otherProps}>
-            {/* one higher than parent or 1 */}
-            <Flex alignItems="center" style={{zIndex: (((otherProps.style as ViewStyle).zIndex) ?? 0) + 1}}>
-                <HelperText dynamicStyle={AttendanceStyles.heading} style={{marginBottom: 0}}>Anwesende Prüfer</HelperText>
-
-                <AttendanceInputTooltip 
-                    values={validValues}
-                    attendanceInputKey={"examinants"} 
-                    validator={validator}                        
-                    valueToStringPretty={(value: ExaminantEntity[]) => getExamiantRoleByExaminantRoleKey(value[0].role)}
-                />
-            </Flex>
+            <HelperText dynamicStyle={AttendanceStyles.heading} style={{marginBottom: 0}}>Anwesende Prüfer</HelperText>
 
             <Flex>
                 {/* Subjects */}
@@ -179,21 +170,21 @@ export default function ExaminantInput({...props}: Props) {
                     checkedStatus={musicExaminantStatus}
                     setCheckedStatus={setMusicExaminantStatus}
                     role="music"
-                    disabled={musicExaminantStatus === "unchecked" && !examinantService.findExaminant(validValues.flat(), "music")[0]}
+                    disabled={musicExaminantStatus === "unchecked" && !examinantService.findExaminant(validValues, "music")[0]}
                 />
 
                 <CheckboxWithExaminantIcon 
                     checkedStatus={historyExaminantStatus}
                     setCheckedStatus={setHistoryExaminantStatus}
                     role="history"
-                    disabled={historyExaminantStatus === "unchecked" && !examinantService.findExaminant(validValues.flat(), "history")[0]}
+                    disabled={historyExaminantStatus === "unchecked" && !examinantService.findExaminant(validValues, "history")[0]}
                 />
 
                 <CheckboxWithExaminantIcon 
                     checkedStatus={educatorExaminantStatus}
                     setCheckedStatus={setEducatorExaminantStatus}
                     role="educator"
-                    disabled={educatorExaminantStatus === "unchecked" && !examinantService.findExaminant(validValues.flat(), "educator")[0]}
+                    disabled={educatorExaminantStatus === "unchecked" && !examinantService.findExaminant(validValues, "educator")[0]}
                 />
             </Flex>
     

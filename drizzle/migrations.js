@@ -12,6 +12,7 @@ import m0007 from './0007_wandering_mentor.sql';
 import m0008 from './0008_military_sharon_carter.sql';
 import m0009 from './0009_cool_lockheed.sql';
 import m0010 from './0010_fixed_aaron_stack.sql';
+import m0011 from './0011_free_betty_brant.sql';
 
   export default {
     journal,
@@ -26,7 +27,8 @@ m0006,
 m0007,
 m0008,
 m0009,
-m0010
+m0010,
+m0011
     }
   }
   

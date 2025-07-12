@@ -1,9 +1,7 @@
 import { ExaminantRole_Key, examinantRoleKeysObject } from "@/abstract/Examinant";
-import { schoolSubjectKeysObj } from "@/abstract/SchoolSubject";
-import { AbstractService } from "../abstract/AbstractService";
-import { ExaminantEntity } from "../DbSchema";
-import { AbstractModifiableService } from "../abstract/AbstractModifiableService";
 import { assertFalsyAndThrow } from "@/utils/utils";
+import { AbstractModifiableService } from "../abstract/AbstractModifiableService";
+import { ExaminantEntity } from "../DbSchema";
 
 
 /**
@@ -68,7 +66,8 @@ export class ExaminantService extends AbstractModifiableService<ExaminantEntity>
     }
 
     private getExaminantSortIndexByRole(role: ExaminantRole_Key): number {
-        return schoolSubjectKeysObj[role] ?? examinantRoleKeysObject[role] ?? -1;
+        const examinantRoleKeyValue = examinantRoleKeysObject[role];
+        return examinantRoleKeyValue ? examinantRoleKeyValue.index : -1;
     }
     
     /**

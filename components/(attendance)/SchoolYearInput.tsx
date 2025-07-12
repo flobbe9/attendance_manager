@@ -14,7 +14,7 @@ import Flex from "../helpers/Flex";
 import HelperInput from "../helpers/HelperInput";
 import HelperText from "../helpers/HelperText";
 import AttendanceInputTooltip from "./AttendanceInputTooltip";
-import { log } from "@/utils/logUtils";
+import { log, logDebug } from "@/utils/logUtils";
 import { AbstractAttendanceInputValidator } from "@/backend/abstract/AbstractAttendanceInputValidator";
 import { AbstractSchoolYearValidator } from "@/backend/abstract/AbstractSchoolYearValidator";
 import { HistorySchoolYearValidator } from "@/backend/validator/HistorySchoolYearValidator";
@@ -43,7 +43,8 @@ export default function SchoolYearInput({...props}: Props) {
     const { children, ...otherProps } = useHelperProps(props, componentName);
 
     useEffect(() => {
-        setValidValues(validator.getValidValues() as SchoolYear[]);
+        const validValues = validator.getValidValues() as SchoolYear[];
+        setValidValues([...validValues]);
     }, [currentAttendanceEntity])
 
     /**

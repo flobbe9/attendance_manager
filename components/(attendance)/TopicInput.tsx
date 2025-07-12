@@ -5,7 +5,7 @@ import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceI
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { NO_SELECTION_LABEL } from "@/utils/constants";
 import { isBlank } from "@/utils/utils";
-import React, { Fragment, useContext, useEffect, useState } from "react";
+import React, { Fragment, useCallback, useContext, useEffect, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
@@ -56,41 +56,23 @@ export default function TopicInput({...props}: Props) {
         updateCurrentAttendanceEntity(["musicLessonTopic", getMusicLessonTopicKeyByMusicLessonTopic(value)]);
     }
 
-    /**
-     * @param value 
-     * @param index 
-     * @returns one music lesson topic formatted for tooltip body
-     */
-    function formatTooltipLessonTopic(value: MusicLessonTopic_Key, index: number): string {
-        const musicLessonTopic = getMusicLessonTopicByMusicLessonTopicKey(value);
-        const prefix = musicLessonTopic.length > 15 && index >= 1 ? '\n' : '';
-        return `${prefix}${getMusicLessonTopicByMusicLessonTopicKey(value)}`;
-    }
+    const isOptionDisabled = useCallback((optionValue: string): boolean => {
+        // is topic not a valid value and not the "no selection" label
+        return !validValues.includes(getMusicLessonTopicKeyByMusicLessonTopic(optionValue as MusicLessonTopic)) &&
+            new AttendanceService().isSelectInputFilledOut(optionValue as string);
+    }, [validValues]);
 
     return (
         <Fragment>
             {/* one higher than parent or 1 */}
-            <Flex alignItems="center" style={{zIndex: (((otherProps.style as ViewStyle).zIndex) ?? 0) + 1}}>
-                <HelperText dynamicStyle={AttendanceStyles.heading}>Stundenthema</HelperText>
-                
-                <AttendanceInputTooltip 
-                    attendanceInputKey={"musicLessonTopic"} 
-                    validator={validator}
-                    valueToStringPretty={formatTooltipLessonTopic}
-                    textContainerStyles={{maxWidth: 300}}
-                    position="top"
-                    values={validValues}
-                />
-            </Flex>
+            <HelperText dynamicStyle={AttendanceStyles.heading}>Stundenthema</HelperText>
 
             <HelperSelect 
                 rendered={currentAttendanceEntity.schoolSubject === "music"}
                 options={[NO_SELECTION_LABEL, ...MUSIC_LESSON_TOPICS]}
                 selectedOptions={getMusicLessonTopicByMusicLessonTopicKey(currentAttendanceEntity.musicLessonTopic)}
                 setSelectedOptions={handleOptionSelect}
-                disabledCondition={(optionValue) => 
-                    !validValues.includes(getMusicLessonTopicKeyByMusicLessonTopic(optionValue as MusicLessonTopic)) &&
-                    new AttendanceService().isSelectInputFilledOut(optionValue as string)}
+                disabledCondition={isOptionDisabled}
                 optionsContainerScroll={false}
                 optionsContainerHeight={243}
                 {...otherProps}

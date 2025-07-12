@@ -1,5 +1,7 @@
 import { ExaminantRole_Key } from "@/abstract/Examinant";
 import { PartialRecord } from "@/abstract/PartialRecord";
+import { SchoolSubject_Key } from "@/abstract/SchoolSubject";
+import { NO_SELECTION_LABEL } from "@/utils/constants";
 import { defaultEqualsFalsy } from "@/utils/projectUtils";
 import { assertFalsyAndThrow, dateEquals, isBlank } from "@/utils/utils";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
@@ -7,8 +9,6 @@ import { AbstractModifiableService } from "../abstract/AbstractModifiableService
 import { AttendanceEntity, ExaminantEntity } from "../DbSchema";
 import { ExaminantService } from "./ExaminantService";
 import { SchoolclassModeService } from "./SchoolclassModeService";
-import { NO_SELECTION_LABEL } from "@/utils/constants";
-import { SchoolSubject_Key, schoolSubjectKeysObj } from "@/abstract/SchoolSubject";
 
 
 /**

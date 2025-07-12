@@ -3,7 +3,6 @@ import { relations } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import AbstractEntity, { Abstract_Table } from "../abstract/Abstract_Schema";
 import { Attendance_Table } from "./Attendance_Schema";
-import { Test_Table, TestEntity } from "./Test_Schema";
 
 
 const TableNameValue = "schoolclass_mode";
@@ -41,5 +40,4 @@ export class SchoolclassModeEntity extends AbstractEntity {
     /** Name of the teacher responsible for the attended class in case the mode is not "ownClass" */
     fullName?: string;
     attendanceId?: number;
-    // test?: TestEntity
 }
