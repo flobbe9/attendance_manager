@@ -14,7 +14,7 @@ export class TopBarStyles {
         default: {
             borderRadius: BORDER_RADIUS,
             margin: 0,
-            paddingHorizontal: 15
+            paddingHorizontal: 25
         }
     }
 

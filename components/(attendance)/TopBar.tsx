@@ -4,7 +4,7 @@ import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepos
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { logTrace } from "@/utils/logUtils";
-import { FONT_SIZE, FONT_SIZE_SMALLER, TOAST_ERROR_OUTER_STYLES } from "@/utils/styleConstants";
+import { FONT_SIZE, FONT_SIZE_LARGER, FONT_SIZE_SMALLER, TOAST_ERROR_OUTER_STYLES } from "@/utils/styleConstants";
 import { isBlank, isNumberFalsy } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -37,7 +37,7 @@ export default function TopBar({...props}: Props) {
 
     const { popup, toast, hideToast, snackbar } = useContext(GlobalContext);
     const { 
-        modified, 
+        isCurrentAttendanceEntityModified, 
         updateLastSavedAttendanceEntity, 
         currentAttendanceEntity, 
         setCurrentAttendanceEntity, 
@@ -187,20 +187,20 @@ export default function TopBar({...props}: Props) {
                 <HelperButton dynamicStyle={TopBarStyles.deleteButton} onPress={handleDeletePress} disabled={isNumberFalsy(currentAttendanceEntity.id)}> 
                     <FontAwesome 
                         name="trash"
-                        size={FONT_SIZE}
+                        size={FONT_SIZE_LARGER}
                     />
                 </HelperButton>
             </Flex>
 
             <Flex justifyContent="flex-end" style={{...pr({col_6})}}>
                 {/* Save button */}
-                <HelperButton dynamicStyle={TopBarStyles.saveButton} onPress={handleSavePress} disabled={!modified}> 
+                <HelperButton dynamicStyle={TopBarStyles.saveButton} onPress={handleSavePress} disabled={!isCurrentAttendanceEntityModified}> 
                     <FontAwesome 
                         name="save"
                         style={{
                             ...TopBarStyles.saveButtonChildren.default, 
                         }} 
-                        size={FONT_SIZE}
+                        size={FONT_SIZE_LARGER}
                     />
                 </HelperButton>
             </Flex>
