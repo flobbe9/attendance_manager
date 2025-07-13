@@ -16,6 +16,7 @@ export class IndexStyles {
         default: {
             minHeight: "100%",
             padding: GLOBAL_SCREEN_PADDING,
+            backgroundColor: "white"
         }
     }
 

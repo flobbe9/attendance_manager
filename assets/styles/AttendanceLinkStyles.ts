@@ -9,7 +9,7 @@ type StyleType = ViewStyle;
 export class AttendanceLinkStyles {
     static component: DynamicStyle<StyleType> = {
         default: {
-            borderWidth: BORDER_WIDTH,
+            borderWidth: 3,
             borderRadius: BORDER_RADIUS,
             marginBottom: GLOBAL_SCREEN_PADDING,
             padding: 5,

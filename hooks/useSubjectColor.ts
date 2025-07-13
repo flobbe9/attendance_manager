@@ -11,17 +11,15 @@ interface SubjectColor {
 
 /**
  * @param subject school subject or examinant role
- * @param defaultColor to return if subject is ```undefined```
+ * @param defaultColor to return if subject is ```undefined```. Default see {@link getSubjectColor()}
  * @param deps 
  * @returns both color and transparent color of the subject
  */
 export function useSubjectColor(subject: SchoolSubject | ExaminantRole_Key | undefined, defaultColor?: ColorValue, deps?: DependencyList): SubjectColor {
-
     const [subjectColor, setSubjectColor] = useState<SubjectColor>({
         color: defaultColor,
         transparentColor: defaultColor
     });
-
 
     useEffect(() => {
         setSubjectColor({
@@ -30,11 +28,9 @@ export function useSubjectColor(subject: SchoolSubject | ExaminantRole_Key | und
         });
 
     }, [subject, ...(deps ? deps : [])]);
-    
 
     return subjectColor;
 }
-
 
 /**
  * @param subject school subject or examinant role
@@ -43,7 +39,6 @@ export function useSubjectColor(subject: SchoolSubject | ExaminantRole_Key | und
  * @returns the color of the subject or ```defaultColor```
  */
 export function getSubjectColor(subject: SchoolSubject | ExaminantRole_Key | undefined, transparent = false, defaultColor: ColorValue = "white"): ColorValue {
-
     if (subject === "Geschichte" || subject === "history")
         return transparent ? HISTORY_COLOR_TRANSPARENT : HISTORY_COLOR;
 

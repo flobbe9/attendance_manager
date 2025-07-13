@@ -3,6 +3,7 @@ import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { forwardRef, Ref } from "react";
 import { Text, TextProps, TextStyle } from "react-native";
 import HelperText from "./HelperText";
+import { BOLD } from "@/utils/styleConstants";
 
 
 interface Props extends HelperProps<TextStyle>, TextProps {}
@@ -23,7 +24,7 @@ export default forwardRef(function B({...props}: Props, ref: Ref<Text>) {
         <HelperText 
             ref={ref} 
             style={{
-                fontWeight: "bold",
+                fontWeight: BOLD,
                 ...style as TextStyle
             }} 
             {...otherProps} 

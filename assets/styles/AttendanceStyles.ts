@@ -1,5 +1,5 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { BOLD, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
 import { default as HelperStyles, default as HS } from "./helperStyles";
 
@@ -27,7 +27,6 @@ export class AttendanceStyles {
     static heading: DynamicStyle<TextStyle> = {
         default: {
             fontSize: 20,
-            fontWeight: "bold",
             marginBottom: GLOBAL_SCREEN_PADDING
         }
     }

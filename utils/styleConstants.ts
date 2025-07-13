@@ -11,6 +11,9 @@ export const HISTORY_COLOR = "rgb(0, 110, 255)";
 export const HISTORY_COLOR_TRANSPARENT = "rgb(229, 242, 255)";
 export const EXAMINANT_COLOR_NO_SUBJECT = "black";
 
+/** Font */
+export const BOLD = 500;
+
 /** Other */
 export const BORDER_RADIUS = 8;
 export const BORDER_WIDTH = 4;

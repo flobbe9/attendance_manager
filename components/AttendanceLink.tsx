@@ -21,6 +21,7 @@ import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { getMusicLessonTopicByMusicLessonTopicKey } from "@/abstract/MusicLessonTopic";
 import HelperStyles from './../assets/styles/helperStyles';
 import B from "./helpers/B";
+import { AttendanceService } from "@/backend/services/AttendanceService";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -35,9 +36,14 @@ export default function AttendanceLink({
     attendanceEntity,
     ...props
 }: Props) {
-    const { date, schoolSubject, examinants } = attendanceEntity;
+    const { date, schoolSubject, examinants, musicLessonTopic, schoolYear } = attendanceEntity;
     
-    const {color: attendanceColor, transparentColor: attendanceColorTransparent} = useSubjectColor(schoolSubject);
+    const attendanceService = new AttendanceService();
+
+    // color depends on both subject and matching examinant
+    const {color: attendanceColor, transparentColor: attendanceColorTransparent} = useSubjectColor(
+        attendanceService.hasExaminant(attendanceEntity, schoolSubject) ? schoolSubject : undefined
+    );
 
     const componentName = "AttendanceLink";
     const { children, style, ...otherProps } = useHelperProps(props, componentName, AttendanceLinkStyles.component);
@@ -45,12 +51,19 @@ export default function AttendanceLink({
     const examinantService = new ExaminantService();
 
     const { allStyles: { ms_1, col_4, mb_2 }} = useResponsiveStyles();
+
+    const errorColor = 'red';
     
     function getDate(): string {
         if (!date)
-            return "Noch kein Termin";
+            return "Termin";
 
         return formatDateGermanNoTime(date);
+    }
+
+    function getTopic(): string {
+        const defaultTopic = schoolSubject === "history" ? "" : " - <Thema>";
+        return `${musicLessonTopic ? ` - ${getMusicLessonTopicByMusicLessonTopicKey(musicLessonTopic)}` : defaultTopic}`;
     }
 
     function mapExaminantIcons(): JSX.Element[] {
@@ -73,9 +86,7 @@ export default function AttendanceLink({
     return (
         <HelperView
             style={{
-                borderColor: attendanceColor,
-                // TODO: add GUB condition
-                    // consider structure for all non-db conditions
+                borderColor: attendanceService.isGub(attendanceEntity) ? attendanceColor : 'transparent',
                 backgroundColor: attendanceColorTransparent,
                 ...style as object
             }}
@@ -91,34 +102,49 @@ export default function AttendanceLink({
                         >
                             {/* Subject */}
                             <B>{getSchoolSubjectBySchoolSubjectKey(schoolSubject)}</B>
+
                             {/* Topic if present */}
-                            <HelperText>
-                                {`${attendanceEntity.musicLessonTopic ? ` - ${getMusicLessonTopicByMusicLessonTopicKey(attendanceEntity.musicLessonTopic)}` : ''}`}
+                            <HelperText style={{color: musicLessonTopic ? '' : errorColor}}>
+                                {getTopic()}
                             </HelperText>
                         </HelperText>
                     </HelperView>
 
                     {/* Bottom row */}
                     <Flex 
+                        justifyContent="space-between"
                         style={{
-                            justifyContent: "space-between", 
-                            width: "100%",
+                            ...HelperStyles.fullWidth
                         }}
                     >
                         <HelperText 
                             dynamicStyle={AttendanceLinkStyles.subheading}
-                            style={{...col_4}}
+                            style={{
+                                color: date ? '' : errorColor,
+                                ...col_4
+                            }}
                         >
                             {getDate()}
                         </HelperText>
 
-                        <Flex justifyContent="flex-end" style={{...col_4}}> 
-                            <HelperText>J. {attendanceEntity.schoolYear || ''} {` | ${attendanceEntity.musicLessonTopic ?? ' - '}`}</HelperText>
+                        <Flex justifyContent="center" style={{...col_4}}> 
+                            <HelperText
+                                style={{
+                                    color: schoolYear ? '' : errorColor
+                                }}
+                            >
+                                {schoolYear || 'Jahrgang'}
+                            </HelperText>
                         </Flex>
 
                         <Flex justifyContent="flex-end" style={{...col_4}}>
                             {/* dont use a state or this wont update correctly */}
                             {mapExaminantIcons()}
+
+                            {/* Invalid examinants */}
+                            <HelperText rendered={!examinants?.length}>
+                                <FontAwesome name="user-o" size={FONT_SIZE - 2} color={errorColor} />
+                            </HelperText>
                         </Flex>
                     </Flex>
 
