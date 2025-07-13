@@ -1,11 +1,9 @@
 import HelperStyles from "@/assets/styles/helperStyles";
 import { IndexStyles } from "@/assets/styles/IndexStyles";
 import { AttendanceEntity } from "@/backend/DbSchema";
-import { AttendanceRepository } from "@/backend/repositories/AttendanceRepository";
-import { MusicSchoolYearValidator } from "@/backend/validator/MusicSchoolYearValidator";
+import { AttendanceService } from "@/backend/services/AttendanceService";
 import AttendanceLink from "@/components/AttendanceLink";
 import { GlobalAttendanceContext } from "@/components/context/GlobalAttendanceContextProvider";
-import { GlobalContext } from "@/components/context/GlobalContextProvider";
 import ExtendableButton from "@/components/helpers/ExtendableButton";
 import Flex from "@/components/helpers/Flex";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
@@ -15,20 +13,16 @@ import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import IndexTopBar from "@/components/IndexTopBar";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import { log } from "@/utils/logUtils";
-import { FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import { Link } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 
-
 /**
  * @since 0.0.1
  */
 export default function index() {
-
     const { savedAttendanceEntities, setSavedAttendanceEntities, setCurrentAttendanceEntityId } = useContext(GlobalAttendanceContext);
 
     const [attendanceLinks, setAttendanceLinks] = useState<JSX.Element[]>([]);
@@ -38,38 +32,35 @@ export default function index() {
 
     const { allStyles: {mt_5} } = useResponsiveStyles();
 
-    const isScreenInView = useIsFocused();
+    const attendanceService = new AttendanceService();
 
+    const isScreenInView = useIsFocused();
 
     useEffect(() => {
         loadAttendanceEntities();
-
     }, [isScreenInView]); // triggered on any child stack screen visit
-
 
     useEffect(() => {
         setAttendanceLinks(mapAttendanceLinks(savedAttendanceEntities));
-
     }, [savedAttendanceEntities]);
 
-    
     function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
-
         const currentScrollPosition = Math.floor(event.nativeEvent?.contentOffset?.y) ?? 0;
         
         setIsExtended(currentScrollPosition <= 0);
     };
 
-
     /**
+     * Sort by subject asc.
+     * 
      * @param attendanceEntities expected to be fetched with cascade
      */
     function mapAttendanceLinks(attendanceEntities: AttendanceEntity[]): JSX.Element[] {
-
         if (!attendanceEntities)
             return [];
 
         return attendanceEntities
+            .sort(attendanceService.sortBySubject)
             .map((attendanceEntity, i) => 
                 <AttendanceLink 
                     key={i}
@@ -79,14 +70,11 @@ export default function index() {
             );
     }
 
-
     async function loadAttendanceEntities(): Promise<void> {
-
         const attendanceEntities = await attendanceRespository.selectCascade();
 
         setSavedAttendanceEntities(attendanceEntities ?? []);
     }
-
 
     return (
         <ScreenWrapper>

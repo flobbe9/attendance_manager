@@ -181,29 +181,25 @@ export default function TopBar({...props}: Props) {
     }
 
     return (
-        <Flex flexWrap="nowrap" {...otherProps}>
-            <Flex justifyContent="flex-start" style={{...pr({col_6})}}>
-                {/* Delete button */}
-                <HelperButton dynamicStyle={TopBarStyles.deleteButton} onPress={handleDeletePress} disabled={isNumberFalsy(currentAttendanceEntity.id)}> 
-                    <FontAwesome 
-                        name="trash"
-                        size={FONT_SIZE_LARGER}
-                    />
-                </HelperButton>
-            </Flex>
+        <Flex justifyContent="space-between" {...otherProps}>
+            {/* Delete button */}
+            <HelperButton dynamicStyle={TopBarStyles.deleteButton} onPress={handleDeletePress} disabled={isNumberFalsy(currentAttendanceEntity.id)}> 
+                <FontAwesome 
+                    name="trash"
+                    size={FONT_SIZE_LARGER}
+                />
+            </HelperButton>
 
-            <Flex justifyContent="flex-end" style={{...pr({col_6})}}>
-                {/* Save button */}
-                <HelperButton dynamicStyle={TopBarStyles.saveButton} onPress={handleSavePress} disabled={!isCurrentAttendanceEntityModified}> 
-                    <FontAwesome 
-                        name="save"
-                        style={{
-                            ...TopBarStyles.saveButtonChildren.default, 
-                        }} 
-                        size={FONT_SIZE_LARGER}
-                    />
-                </HelperButton>
-            </Flex>
+            {/* Save button */}
+            <HelperButton dynamicStyle={TopBarStyles.saveButton} onPress={handleSavePress} disabled={!isCurrentAttendanceEntityModified}> 
+                <FontAwesome 
+                    name="save"
+                    style={{
+                        ...TopBarStyles.saveButtonChildren.default, 
+                    }} 
+                    size={FONT_SIZE_LARGER}
+                />
+            </HelperButton>
         </Flex>
     )
 }

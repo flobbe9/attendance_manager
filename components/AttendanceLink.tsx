@@ -11,13 +11,16 @@ import { FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import React from "react";
-import { ViewProps, ViewStyle } from "react-native";
+import { Text, ViewProps, ViewStyle } from "react-native";
 import Br from "./helpers/Br";
 import Flex from "./helpers/Flex";
 import HelperText from "./helpers/HelperText";
 import P from "./helpers/P";
 import { ExaminantService } from "@/backend/services/ExaminantService";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { getMusicLessonTopicByMusicLessonTopicKey } from "@/abstract/MusicLessonTopic";
+import HelperStyles from './../assets/styles/helperStyles';
+import B from "./helpers/B";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -32,7 +35,6 @@ export default function AttendanceLink({
     attendanceEntity,
     ...props
 }: Props) {
-
     const { date, schoolSubject, examinants } = attendanceEntity;
     
     const {color: attendanceColor, transparentColor: attendanceColorTransparent} = useSubjectColor(schoolSubject);
@@ -42,20 +44,16 @@ export default function AttendanceLink({
 
     const examinantService = new ExaminantService();
 
-    const { allStyles: { ms_1, col_4 }} = useResponsiveStyles();
+    const { allStyles: { ms_1, col_4, mb_2 }} = useResponsiveStyles();
     
-
     function getDate(): string {
-
         if (!date)
             return "Noch kein Termin";
 
         return formatDateGermanNoTime(date);
     }
 
-
     function mapExaminantIcons(): JSX.Element[] {
-
         if (!examinants)
             return [];
 
@@ -84,34 +82,48 @@ export default function AttendanceLink({
             {...otherProps}
         >
             <Link href="/(attendance)">
-                <P dynamicStyle={AttendanceLinkStyles.heading}>{getSchoolSubjectBySchoolSubjectKey(schoolSubject)}</P>
-                <Br />
+                <HelperView>
+                    {/* Top row */}
+                    <HelperView style={{...HelperStyles.fullWidth, ...mb_2}}>
+                        <HelperText 
+                            numberOfLines={1} // ellipsis 
+                            dynamicStyle={AttendanceLinkStyles.heading}
+                        >
+                            {/* Subject */}
+                            <B>{getSchoolSubjectBySchoolSubjectKey(schoolSubject)}</B>
+                            {/* Topic if present */}
+                            <HelperText>
+                                {`${attendanceEntity.musicLessonTopic ? ` - ${getMusicLessonTopicByMusicLessonTopicKey(attendanceEntity.musicLessonTopic)}` : ''}`}
+                            </HelperText>
+                        </HelperText>
+                    </HelperView>
 
-                {/* Bottom row */}
-                <Flex 
-                    style={{
-                        justifyContent: "space-between", 
-                        width: "100%",
-                    }}
-                >
-                    <HelperText 
-                        dynamicStyle={AttendanceLinkStyles.subheading}
-                        style={{...col_4}}
+                    {/* Bottom row */}
+                    <Flex 
+                        style={{
+                            justifyContent: "space-between", 
+                            width: "100%",
+                        }}
                     >
-                        {getDate()}
-                    </HelperText>
+                        <HelperText 
+                            dynamicStyle={AttendanceLinkStyles.subheading}
+                            style={{...col_4}}
+                        >
+                            {getDate()}
+                        </HelperText>
 
-                    <Flex justifyContent="flex-end" style={{...col_4}}> 
-                        <HelperText>J. {attendanceEntity.schoolYear || ''} {` | ${attendanceEntity.musicLessonTopic ?? ' - '}`}</HelperText>
+                        <Flex justifyContent="flex-end" style={{...col_4}}> 
+                            <HelperText>J. {attendanceEntity.schoolYear || ''} {` | ${attendanceEntity.musicLessonTopic ?? ' - '}`}</HelperText>
+                        </Flex>
+
+                        <Flex justifyContent="flex-end" style={{...col_4}}>
+                            {/* dont use a state or this wont update correctly */}
+                            {mapExaminantIcons()}
+                        </Flex>
                     </Flex>
 
-                    <Flex justifyContent="flex-end" style={{...col_4}}>
-                        {/* dont use a state or this wont update correctly */}
-                        {mapExaminantIcons()}
-                    </Flex>
-                </Flex>
-
-                {children}
+                    {children}
+                </HelperView>
             </Link>
         </HelperView>
     )

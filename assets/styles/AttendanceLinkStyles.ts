@@ -1,5 +1,5 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { BORDER_RADIUS, BORDER_WIDTH, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { BORDER_RADIUS, BORDER_WIDTH, FONT_SIZE_LARGER, FONT_SIZE_SMALLER, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
 
 
@@ -18,18 +18,18 @@ export class AttendanceLinkStyles {
 
     static heading: DynamicStyle<TextStyle> = {
         default: {
-            fontSize: 25
+            fontSize: FONT_SIZE_LARGER
         }
     }
 
     static subheading: DynamicStyle<TextStyle> = {
         default: {
-            fontSize: 15
+            fontSize: FONT_SIZE_SMALLER
         }
     }
 
     static icon: TextStyle = {
-        fontSize: 25,
+        fontSize: FONT_SIZE_LARGER,
         marginStart: 5,
     }
 }

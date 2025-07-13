@@ -1,6 +1,6 @@
 import { ExaminantRole_Key } from "@/abstract/Examinant";
 import { PartialRecord } from "@/abstract/PartialRecord";
-import { SchoolSubject_Key } from "@/abstract/SchoolSubject";
+import { SchoolSubject_Key, schoolSubjectKeysObj } from "@/abstract/SchoolSubject";
 import { NO_SELECTION_LABEL } from "@/utils/constants";
 import { defaultEqualsFalsy } from "@/utils/projectUtils";
 import { assertFalsyAndThrow, dateEquals, isBlank } from "@/utils/utils";
@@ -199,5 +199,16 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
      */
     public isSelectInputFilledOut(value: string, noSelectionLabel = NO_SELECTION_LABEL): boolean {
         return !(value === noSelectionLabel || isBlank(value));
+    }
+
+    /**
+     * Sort by `schoolSubjectKeysObj` index.
+     * 
+     * @param attendanceEntity1 
+     * @param attendanceEntity2 
+     * @returns negative value if `attendanceEntity1` should come before `attendanceEntity2`
+     */
+    public sortBySubject(attendanceEntity1: AttendanceEntity, attendanceEntity2: AttendanceEntity): number {
+        return schoolSubjectKeysObj[attendanceEntity1.schoolSubject].index - schoolSubjectKeysObj[attendanceEntity2.schoolSubject].index;
     }
 }
