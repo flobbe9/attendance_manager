@@ -50,12 +50,9 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
         globalToastProps,
     }
 
-
     useEffect(() => {
         initReactPaperLocales();
-
     }, []);
-
 
     /**
      * Show snackbar at bottom of screen.
@@ -71,7 +68,6 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
         options: Omit<SnackbarProps, "children" | "visible" | "onDismiss"> = {},
         onDismiss?: () => void
     ): void {
-
         // make sure dismiss always hides snackbar
         const onDismissWithHide = () => {
             if (onDismiss)
@@ -93,12 +89,9 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
         });
     }
 
-
     function hideSnackbar(): void {
-
         setGlobalSnackbarProps({...globalSnackbarProps, visible: false});
     }
-
 
     /**
      * Display a subtle `<Popup>` and hide automatically. 
@@ -107,7 +100,6 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
      * @param options see {@link GlobalPopupProps}
      */
     function popup(message: ReactNode, options: Omit<GlobalPopupProps, "visible" | "message"> = {}): void {
-
         const popupProps: GlobalPopupProps = {
             visible: true,
             message,
@@ -130,7 +122,6 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
         setGlobalPopupProps({...globalPopupProps, visible: false});
     }
 
-
     /**
      * Show toast popup and update `globalToastProps`. Always combine `toastProps` with `globalToastProps` for fallback values.
      * 
@@ -138,7 +129,6 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
      * @param toastProps 
      */
     function toast(content: ReactNode, toastProps: Omit<GlobalToastProps, "content" | "visible"> = {}): void {
-
         if (isAnyFalsy(content)) {
             logWarn("Not toasting without content. Please specifiy toast 'content'");
             return;
@@ -152,15 +142,12 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
         })
     }
 
-
     function hideToast(): void {
-
         setGlobalToastProps({
             ...globalToastProps,
             visible: false
         })
     }
-
 
     function initReactPaperLocales() {
         
@@ -168,7 +155,6 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
         registerTranslation('de', de);
         registerTranslation('en', en);
     }
-
 
     return (
         <GlobalContext.Provider value={context}>

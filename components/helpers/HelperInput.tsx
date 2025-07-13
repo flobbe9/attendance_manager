@@ -33,7 +33,6 @@ export default forwardRef(function HelperInput(
     }: Props, 
     ref: Ref<TextInput>
 ) {
-
     const componentRef = useRef<TextInput>(null);
 
     const animatedBackgroundColor = useAnimatedValue(0);
@@ -45,23 +44,18 @@ export default forwardRef(function HelperInput(
         [HelperInputStyles.view.animatedDynamicStyles.backgroundColor(animatedBackgroundColor)]
     );
 
-    
     useImperativeHandle(ref, () => componentRef.current!, []);
-
 
     useEffect(() => {
         if (onRender)
             onRender();
-
     }, []);
 
     
     if (!rendered)
         return <Fragment />;
 
-
     function onChangeText(value: string): void {
-
         try {
             if (propsOnChangeText)
                 propsOnChangeText(value);
@@ -78,24 +72,19 @@ export default forwardRef(function HelperInput(
             setValue(value);
     }
 
-
     function onFocus(event: NativeSyntheticEvent<TextInputFocusEventData>): void {
-
         if (propsOnFocus)
             propsOnFocus(event);
 
         viewEventHandlers.onFocus();
     }
-    
 
     function onBlur(event: NativeSyntheticEvent<TextInputFocusEventData>): void {
-
         if (propsOnBlur)
             propsOnBlur(event);
 
         viewEventHandlers.onBlur(); 
     }
-
 
     return (
         <Animated.View style={viewStyles}>

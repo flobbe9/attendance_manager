@@ -1,19 +1,20 @@
 import HelperProps from "@/abstract/HelperProps";
 import { getSchoolSubjectBySchoolSubjectKey, getSchoolSubjectKeyBySchoolSubject, SCHOOL_SUBJECTS, SchoolSubject } from "@/abstract/SchoolSubject";
 import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
+import { AttendanceService } from "@/backend/services/AttendanceService";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
+import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
 import { SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY } from "@/utils/constants";
-import React, { useContext, useEffect, useState } from "react";
+import { TRANSITION_DURATION } from "@/utils/styleConstants";
+import React, { useContext, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
-import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 import { GlobalContext } from "../context/GlobalContextProvider";
 import Flex from "../helpers/Flex";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
 import DontConfirmSchoolSubjectChangeContent from "./DontConfirmSchoolSubjectChangeContent";
-import { AttendanceService } from "@/backend/services/AttendanceService";
-import { TRANSITION_DURATION } from "@/utils/styleConstants";
+import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -22,17 +23,12 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {}
  */
 export default function SchoolSubjectInput({...props}: Props) {
     const { toast } = useContext(GlobalContext);
-    const { dontConfirmSchoolSubjectChange, handleDontShowAgainDismiss } = useContext(GlobalAttendanceContext);
+    const { dontConfirmSchoolSubjectChange, setDontConfirmSchoolSubjectChange } = useContext(GlobalAttendanceContext);
     const { updateCurrentAttendanceEntity, currentAttendanceEntity } = useContext(AttendanceContext);
 
     const attendanceService = new AttendanceService();
 
-    /** Triggered when invalid input error popup is dismissed.  */
-    const [didDismissConfirmChangeToast, setDidDismissConfirmChangeToast] = useState(false);
-    
-    useEffect(() => {
-        handleDontShowAgainDismiss(dontConfirmSchoolSubjectChange, [didDismissConfirmChangeToast, setDidDismissConfirmChangeToast], SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY);
-    }, [didDismissConfirmChangeToast]);
+    const { setDidConfirm, setDidDismiss } = useDontShowAgainStates([dontConfirmSchoolSubjectChange, setDontConfirmSchoolSubjectChange], SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY);
 
     const componentName = "SchoolSubjectInput";
     const { children, ...otherProps } = useDefaultProps(props, componentName);
@@ -61,8 +57,11 @@ export default function SchoolSubjectInput({...props}: Props) {
             toast(
                 <DontConfirmSchoolSubjectChangeContent />,
                 {
-                    onConfirm: handleConfirm,
-                    onDismiss: () => setDidDismissConfirmChangeToast(true)
+                    onConfirm: () => {
+                        setDidConfirm(true);
+                        handleConfirm();
+                    },
+                    onDismiss: () => setDidDismiss(true)
                 }
             );
             

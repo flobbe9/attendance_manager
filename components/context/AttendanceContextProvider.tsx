@@ -1,17 +1,18 @@
 import { AbstractRepository } from "@/backend/abstract/AbstractRepository";
 import { AttendanceEntity } from "@/backend/DbSchema";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
+import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
 import { useFlashState } from "@/hooks/useFlashState";
 import { SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY } from "@/utils/constants";
 import { ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL, ATTENDANCE_INPUT_TOOLTIP_ICON_NUM_FLASHES } from "@/utils/styleConstants";
 import { cloneObj, isAnyFalsy } from "@/utils/utils";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { ColorValue } from "react-native";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 import AttendanceInputErrorSnackbarContent from "../(attendance)/AttendanceInputErrorSnackbarContent";
 import { CustomSnackbarStatus } from "../CustomSnackbar";
-import { GlobalAttendanceContext } from "./GlobalAttendanceContextProvider";
 import { GlobalContext } from "./GlobalContextProvider";
+import { GlobalAttendanceContext } from "./GlobalAttendanceContextProvider";
 
 /**
  * Context available to all attendance edit sepcific screens of /(attendance).
@@ -21,7 +22,7 @@ import { GlobalContext } from "./GlobalContextProvider";
  */
 export default function AttendanceContextProvider({children}) {
     const { snackbar, hideSnackbar } = useContext(GlobalContext);
-    const { dontShowInvalidInputErrorPopup, handleDontShowAgainDismiss } = useContext(GlobalAttendanceContext);
+    const { dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup } = useContext(GlobalAttendanceContext);
 
     /** The attendance entity currently beeing edited. Dont set an initial value */
     const [currentAttendanceEntity, setCurrentAttendanceEntity] = useState<AttendanceEntity | undefined>();
@@ -29,7 +30,7 @@ export default function AttendanceContextProvider({children}) {
     const [lastSavedAttendanceEntity, setLastSavedAttendanceEntity] = useState<AttendanceEntity | undefined>();
 
     /** Triggered when invalid input error popup is dismissed.  */
-    const [didDismissInvalidAttendanceInputErrorPopup, setDidDismissInvalidAttendanceInputErrorPopup] = useState(false);
+    const { setDidConfirm, setDidDismiss } = useDontShowAgainStates([dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup], SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY);
     
     const { attendanceRespository } = useAttendanceRepository();
     
@@ -60,7 +61,7 @@ export default function AttendanceContextProvider({children}) {
         currentAttendanceEntity, setCurrentAttendanceEntity,
         lastSavedAttendanceEntity, updateLastSavedAttendanceEntity,
         
-        modified, setModified,
+        isCurrentAttendanceEntityModified: modified, setCurrentAttendanceEntityModified: setModified,
 
         handleInvalidAttendanceInput,
         resetInvalidAttendanceInputErrorStyles,
@@ -68,14 +69,6 @@ export default function AttendanceContextProvider({children}) {
         tooltipIconColor, setTooltipIconColor,
         currentlyInvalidAttendanceInputKey
     }
-
-    useEffect(() => {
-        handleDontShowAgainDismiss(
-            dontShowInvalidInputErrorPopup, 
-            [didDismissInvalidAttendanceInputErrorPopup, setDidDismissInvalidAttendanceInputErrorPopup], 
-            SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY
-        );
-    }, [didDismissInvalidAttendanceInputErrorPopup]);
  
     /**
      * Prepare value of `attendancEntityKey` for `currentAttendanceEntity`. 
@@ -185,7 +178,10 @@ export default function AttendanceContextProvider({children}) {
                         label: "Dismiss",
                     }
                 },
-                () => setDidDismissInvalidAttendanceInputErrorPopup(true)
+                () => {
+                    setDidDismiss(true);
+                    setDidConfirm(true);
+                }
             )
         }
 
@@ -214,8 +210,8 @@ export const AttendanceContext = createContext({
     lastSavedAttendanceEntity: undefined as AttendanceEntity | undefined, 
     updateLastSavedAttendanceEntity: (attendanceEntity: AttendanceEntity): void => {},
 
-    modified: false as boolean,
-    setModified: (modified: boolean): void => {},
+    isCurrentAttendanceEntityModified: false as boolean,
+    setCurrentAttendanceEntityModified: (modified: boolean): void => {},
 
     handleInvalidAttendanceInput: (invalidValue: string | number, reason: string, invalidAttendanceInputKey: keyof AttendanceEntity, callback?: () => void, status: CustomSnackbarStatus = 'info'): void => {},
     resetInvalidAttendanceInputErrorStyles: (): void => {},

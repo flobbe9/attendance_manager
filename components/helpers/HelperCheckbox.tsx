@@ -8,6 +8,7 @@ import { GestureResponderEvent, TextStyle, View, ViewProps, ViewStyle } from "re
 import HelperButton from "./HelperButton";
 import HelperReactChildren from "./HelperReactChildren";
 import HelperView from "./HelperView";
+import { logDebug } from "@/utils/logUtils";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -17,7 +18,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
     iconStyle?: TextStyle,
     /** How to align children relative to checkbox icon. Default is "right" */
     labelAlign?: "right" | "left",
-    disabled?
+    disabled?: boolean
 }
 
 

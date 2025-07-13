@@ -37,3 +37,4 @@ export const SQL_BLOB_SIZE = 65_535;
 export const SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY = "dont_show_attendance_input_validation_error_popup";
 /** Whether not to show a popup on school subject change. Default shoujld be false */
 export const SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY = "dont_confirm_school_subject_change";
+export const SETTINGS_DONT_CONFIRM_ATTENDANCE_SCREEN_LEAVE = "dont_confirm_attendance_screen_leave";

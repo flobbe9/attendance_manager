@@ -5,10 +5,10 @@ import { useHelperProps } from "@/hooks/useHelperProps";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { logTrace } from "@/utils/logUtils";
 import { FONT_SIZE, FONT_SIZE_SMALLER, TOAST_ERROR_OUTER_STYLES } from "@/utils/styleConstants";
-import { isNumberFalsy } from "@/utils/utils";
+import { isBlank, isNumberFalsy } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useContext } from "react";
+import React, { Fragment, useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import { GlobalContext } from "../context/GlobalContextProvider";
@@ -21,6 +21,10 @@ import HelperView from "../helpers/HelperView";
 import ToastDimissFooter from "../ToastDismissFooter";
 import { eq } from "drizzle-orm";
 import { Attendance_Table } from "@/backend/DbSchema";
+import { isSchoolYear } from "@/abstract/SchoolYear";
+import { AttendanceService } from "@/backend/services/AttendanceService";
+import { ToastDefaultFooterStyles } from "@/assets/styles/ToastDefaultFooterStyles";
+import HelperStyles from "@/assets/styles/helperStyles";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 }
@@ -29,36 +33,51 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  * @since 0.0.1
  */
 export default function TopBar({...props}: Props) {
+    const { allStyles: { mt_5, col_6, mt_3 }, parseResponsiveStyleToStyle: pr } = useResponsiveStyles();
 
-    const { allStyles: { mt_5, col_6 }, parseResponsiveStyleToStyle: pr } = useResponsiveStyles();
-
-    const { popup, toast, hideToast } = useContext(GlobalContext);
+    const { popup, toast, hideToast, snackbar } = useContext(GlobalContext);
     const { 
         modified, 
         updateLastSavedAttendanceEntity, 
         currentAttendanceEntity, 
         setCurrentAttendanceEntity, 
+        resetInvalidAttendanceInputErrorStyles
     } = useContext(AttendanceContext);
     
     const { attendanceRespository } = useAttendanceRepository();
+    const attendanceService = new AttendanceService();
 
     const { navigate } = useRouter();
 
     const componentName = "TopBar";
     const { children, ...otherProps } = useHelperProps(props, componentName, TopBarStyles.component);
 
-    
-    // TODO: 
-        // save button should not be enabled while required fields are missing (simply do "isValid"?)
-        // validate required
-        // validate schoolyear again since putting in 1 is possible now
-        // reset error styles 
     async function handleSavePress(): Promise<void> {
-        // validate empty values to prevent at least sql exceptions
+        let errorMessage = null;
+        if ((errorMessage = validateBeforeSave()) !== null) {
+            toast(
+                (
+                    <Fragment>
+                        <B>Invalider UB</B>
+                        <Br />
 
-        // if invalid
-            // notify
-        // else
+                        <HelperText>{errorMessage}</HelperText>
+                    </Fragment>
+                ), 
+                {
+                    defaultFooter: false,
+                    // custom footer
+                    children: (
+                        <Flex style={{...HelperStyles.fullWidth, ...mt_3}} justifyContent="flex-end">
+                            <HelperButton dynamicStyle={ToastDefaultFooterStyles.button} onPress={hideToast}>  
+                                <HelperText dynamicStyle={ToastDefaultFooterStyles.buttonChildren}>Cancel</HelperText> 
+                            </HelperButton>
+                        </Flex>
+                    )
+                }
+            );
+            return;
+        }
 
         const attendanceEntityResult = await attendanceRespository.persistCascade(currentAttendanceEntity);
         if (!attendanceEntityResult)
@@ -70,15 +89,33 @@ export default function TopBar({...props}: Props) {
         setCurrentAttendanceEntity(attendanceEntityResult);
         updateLastSavedAttendanceEntity(attendanceEntityResult);
 
+        resetInvalidAttendanceInputErrorStyles();
+
         // notify success
-        setTimeout(() => {
-            popup(
-                "UB Gespeichert",
-                {
-                    icon: <FontAwesome name="save" />
-                }
-            );
-        }, 500); // wait for states to update to prevent popup flash
+        popup(
+            "UB Gespeichert",
+            {
+                icon: <FontAwesome name="save" />
+            }
+        );
+    }
+
+    /**
+     * Make sure that no problematic input values are saved, e.g. a malformed schoolYear or notNull values.
+     * 
+     * @returns an error  message or `null` if valid
+     */
+    function validateBeforeSave(): string | null {
+        let errorMessage: string = null;
+
+        // allow blank schoolyear but not a malformed one (e.g. "1")
+        if (!isBlank(currentAttendanceEntity.schoolYear) && !isSchoolYear(currentAttendanceEntity.schoolYear))
+            errorMessage = "Bevor du speicherst, gib einen validen Jahrgang an oder lasse das Feld leer.";
+
+        else if (!attendanceService.isSelectInputFilledOut(currentAttendanceEntity.schoolSubject))
+            errorMessage = "Bevor du speicherst, gib ein Fach an.";
+
+        return errorMessage;
     }
 
     function handleDeletePress(): void {

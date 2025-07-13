@@ -43,8 +43,7 @@ export default function SchoolYearInput({...props}: Props) {
     const { children, ...otherProps } = useHelperProps(props, componentName);
 
     useEffect(() => {
-        const validValues = validator.getValidValues() as SchoolYear[];
-        setValidValues([...validValues]);
+        setValidValues(validator.getValidValues() as SchoolYear[]);
     }, [currentAttendanceEntity])
 
     /**
