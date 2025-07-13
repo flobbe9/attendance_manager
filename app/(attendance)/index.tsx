@@ -22,15 +22,23 @@ import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { DontLeaveScreenOptions, useScreenLeaveAttempt } from "@/hooks/useScreenLeaveAttempt";
 import { useSubjectColor } from "@/hooks/useSubjectColor";
-import { log, logDebug } from "@/utils/logUtils";
+import { logDebug } from "@/utils/logUtils";
 import { BORDER_RADIUS, FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
-import { useIsFocused } from "@react-navigation/native";
 import React, { useContext, useEffect, useState } from "react";
 import { ViewStyle } from "react-native";
-import DateInput from './../../components/(attendance)/DateInput';
 import { Divider } from "react-native-paper";
+import DateInput from './../../components/(attendance)/DateInput';
+import B from "@/components/helpers/B";
+import Br from "@/components/helpers/Br";
+import P from "@/components/helpers/P";
+import HelperCheckbox from "@/components/helpers/HelperCheckbox";
+import { SETTINGS_DONT_CONFIRM_ATTENDANCE_SCREEN_LEAVE } from "@/utils/constants";
+import { useNavigation } from "expo-router";
+import { DontConfirmAttendanceLeaveContent } from "@/components/(attendance)/DontConfirmAttendanceLeaveContent";
+import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
 
 
 /**
@@ -39,22 +47,29 @@ import { Divider } from "react-native-paper";
  * @since 0.0.1
  */
 export default function index() {
+    const { hideSnackbar, toast } = useContext(GlobalContext);
+    const { 
+        currentAttendanceEntityId, 
+        savedAttendanceEntities, 
+        dontConfirmAttendanceScreenLeave,
+        setDontConfirmAttendanceScreenLeave
+    } = useContext(GlobalAttendanceContext);
 
-    const { hideSnackbar } = useContext(GlobalContext);
-    const { currentAttendanceEntityId, savedAttendanceEntities } = useContext(GlobalAttendanceContext);
     const { 
         currentAttendanceEntity, 
         setCurrentAttendanceEntity, 
         updateCurrentAttendanceEntity, 
         lastSavedAttendanceEntity,
         updateLastSavedAttendanceEntity,
-        setModified
+        isCurrentAttendanceEntityModified,
+        setCurrentAttendanceEntityModified,
     } = useContext(AttendanceContext);
     
-
     const { transparentColor: subjectColor} = useSubjectColor(currentAttendanceEntity?.schoolSubject, "rgb(240, 240, 240)");
 
     const [areNotesVisible, setAreNotesVisible] = useState(false);
+
+    const { setDidConfirm, setDidDismiss } = useDontShowAgainStates([dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave], SETTINGS_DONT_CONFIRM_ATTENDANCE_SCREEN_LEAVE);
 
     const { allStyles: {mb_2}} = useResponsiveStyles();
 
@@ -69,28 +84,26 @@ export default function index() {
     const numHelperInputLines = 20;
     const attendanceService = new AttendanceService();
 
-    const isAttendanceScreenFocused = useIsFocused();
-
-
+    const navigation = useNavigation();
+        
     useEffect(() => {
         updateLastSavedAttendanceEntity(initializeCurrentAttendanceEntity());
-        
     }, []);
-    
-    
-    useEffect(() => {
-        return () => handleScreenLeave();
-        
-    }, [isAttendanceScreenFocused]);
-    
+
+    useScreenLeaveAttempt(
+        isCurrentAttendanceEntityModified && !dontConfirmAttendanceScreenLeave, 
+        {
+            handleScreenLeave: handleScreenLeave,
+            handleDontLeaveScreen: handleDontLeaveScreenLeave
+        }
+    )
     
     useEffect(() => {
         // case: last saved instance has been instantiated
         if (lastSavedAttendanceEntity && currentAttendanceEntity)
-            setModified(attendanceService.isModified(lastSavedAttendanceEntity, currentAttendanceEntity));
+            setCurrentAttendanceEntityModified(attendanceService.isModified(lastSavedAttendanceEntity, currentAttendanceEntity));
 
     }, [currentAttendanceEntity, lastSavedAttendanceEntity]);
-
 
     // case: no currentAttendanceEntity yet, should not happen though
     if (!currentAttendanceEntity)
@@ -104,15 +117,31 @@ export default function index() {
             </ScreenWrapper>
         );
 
-
     function handleScreenLeave(): void {
-
         hideSnackbar();
     }
 
+    function handleDontLeaveScreenLeave(options: DontLeaveScreenOptions): void {
+        const handleConfirm = () => 
+            navigation.dispatch(options.data.action)
+
+        if (!dontConfirmAttendanceScreenLeave) {
+            toast(
+                <DontConfirmAttendanceLeaveContent />,
+                {
+                    onConfirm: () => {
+                        setDidConfirm(true);
+                        setTimeout(() => {
+                            handleConfirm();
+                        }, 200); // wait for confirm hook to trigger
+                    },
+                    onDismiss: () => setDidDismiss(true)
+                }
+            );
+        }
+    }
 
     function initializeCurrentAttendanceEntity(): AttendanceEntity | null {
-
         let attendanceEntityForId: AttendanceEntity;
 
         if (currentAttendanceEntityId <= 0)
@@ -185,7 +214,7 @@ export default function index() {
 
                     <ExaminantInput 
                         dynamicStyle={AttendanceStyles.inputContainer} 
-                        style={{zIndex: 1 /* for select container */}}
+                        style={{zIndex: 1}} // for select container
                     />
 
                     <Flex justifyContent="center" dynamicStyle={AttendanceStyles.notesContainer}>
