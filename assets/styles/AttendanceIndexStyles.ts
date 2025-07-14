@@ -1,5 +1,5 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { BOLD, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { BOLD, BORDER_RADIUS, FONT_SIZE, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
 import { default as HelperStyles, default as HS } from "./helperStyles";
 
@@ -26,7 +26,8 @@ export class AttendanceIndexStyles {
     
     static heading: DynamicStyle<TextStyle> = {
         default: {
-            fontSize: 20,
+            fontSize: FONT_SIZE,
+            fontWeight: BOLD,
             marginBottom: GLOBAL_SCREEN_PADDING
         }
     }
@@ -55,8 +56,7 @@ export class AttendanceIndexStyles {
     static defaultMultilineHelperInput: DynamicStyle<TextStyle> = {
         default: {
             ...HS.flexCenter,
-            maxHeight: 200,
-            minHeight: 80,
+            maxHeight: 200
         }
     }
 
@@ -65,6 +65,13 @@ export class AttendanceIndexStyles {
             ...HS.fullWidth,
             marginBottom: 60,
             marginTop: 50,
+        }
+    }
+
+    static moreButton: DynamicStyle<ViewStyle> = {
+        default: {
+            borderRadius: BORDER_RADIUS, 
+            width: 100
         }
     }
 }

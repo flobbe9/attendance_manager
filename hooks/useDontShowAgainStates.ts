@@ -1,7 +1,6 @@
 import { GlobalContext } from "@/components/context/GlobalContextProvider";
 import { useContext, useEffect, useState } from "react";
 import { useSettingsRepository } from "./repositories/useSettingsRepository";
-import { logDebug } from "@/utils/logUtils";
 
 /**
  * Specifically for memorizing popup like "dont show again" choices. Will create / update a db setting and notify user.
@@ -55,10 +54,7 @@ export function useDontShowAgainStates(dontShowAgainState: [boolean, (dontShowAg
 
         await settingsRepository.updateValue(settingsKey, "true");
 
-        // TODO: what's the timeout for?
-        setTimeout(() => 
-            snackbar("Präferenz gespeichert. Du kannst deine Auswahl unter 'Einstellungen' jederzeit ändern."), 
-        200);
+        snackbar("Präferenz gespeichert. Du kannst deine Auswahl unter 'Einstellungen' jederzeit ändern."), 
 
         setDidConfirm(false);
     }

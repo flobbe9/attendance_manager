@@ -15,6 +15,7 @@ import HelperText from "../helpers/HelperText";
 import AttendanceInputTooltip from "./AttendanceInputTooltip";
 import { logDebug } from "@/utils/logUtils";
 import { AttendanceService } from "@/backend/services/AttendanceService";
+import HelperView from "../helpers/HelperView";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -63,20 +64,18 @@ export default function TopicInput({...props}: Props) {
     }, [validValues]);
 
     return (
-        <Fragment>
+        <HelperView {...otherProps}>
             {/* one higher than parent or 1 */}
             <HelperText dynamicStyle={AttendanceIndexStyles.heading}>Stundenthema</HelperText>
 
             <HelperSelect 
-                rendered={currentAttendanceEntity.schoolSubject === "music"}
                 options={[NO_SELECTION_LABEL, ...MUSIC_LESSON_TOPICS]}
                 selectedOptions={getMusicLessonTopicByMusicLessonTopicKey(currentAttendanceEntity.musicLessonTopic)}
                 setSelectedOptions={handleOptionSelect}
                 disabledCondition={isOptionDisabled}
                 optionsContainerScroll={false}
                 optionsContainerHeight={243}
-                {...otherProps}
             />
-        </Fragment>
+        </HelperView>
     )
 }

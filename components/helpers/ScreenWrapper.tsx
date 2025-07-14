@@ -5,11 +5,9 @@ import { KeyboardAvoidingView, Modal, Platform, SafeAreaView, ViewProps, ViewSty
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GlobalContext } from "../context/GlobalContextProvider";
 
-
 interface Props extends DefaultProps<ViewStyle>, ViewProps {
     contentContainerStyle?: ViewStyle
 }
-
 
 /**
  * Wrap any index component representing a whole screen inside this. Makes sure that screen height etc is

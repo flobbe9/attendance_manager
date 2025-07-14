@@ -156,32 +156,6 @@ export default function index() {
         return attendanceEntityForId;
     }
 
-
-    // TODO: 
-        // clean up inline styles
-        // screen leave
-            // confirm leave if unsaved changes
-        // validation
-            // flash input as invalid (?)
-                // flash tooltip(?)
-            // small popup with short description, dismissable with action
-                // "invalid value, see tooltip for valid options"
-            // tooltip next to every input label
-                // explain logic shortly
-                // list valid options
-                // make a component for that?
-        // disable all inputs when date is in past
-        // multiline max height
-            // consider tablet
-            // consider full screen
-        // fix icons
-        // on change
-            // validate
-            // if valid
-                // update modified
-                    // compare all input values to last saved
-
-
     return (
         <ScreenWrapper 
             style={{
@@ -203,6 +177,7 @@ export default function index() {
                     <SchoolYearInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
 
                     <TopicInput 
+                        rendered={currentAttendanceEntity.schoolSubject === "music"}
                         dynamicStyle={AttendanceIndexStyles.inputContainer}
                         style={{zIndex: 2}} // needs to be higher than next sibling
                     />
@@ -216,7 +191,7 @@ export default function index() {
                         {/* Toggle notes */}
                         <HelperButton 
                             disableFlex={true} 
-                            style={{borderRadius: BORDER_RADIUS, width: 100}} 
+                            dynamicStyle={AttendanceIndexStyles.moreButton} 
                             onPress={() => setAreNotesVisible(!areNotesVisible)}
                         >
                             <HelperText>Mehr</HelperText>
@@ -225,7 +200,7 @@ export default function index() {
                                     transform: [{rotate: animatedArrowIconRotation}]
                                 }} 
                             >
-                                <FontAwesome name={"chevron-down"} size={20} />
+                                <FontAwesome name={"chevron-down"} size={FONT_SIZE} />
                             </HelperView>
                         </HelperButton>
                     </Flex>
