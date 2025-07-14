@@ -4,6 +4,7 @@ import CustomSqliteProvider from "@/components/CustomSqliteProvider";
 import GlobalComponentProvider from "@/components/GlobalComponentProvider";
 import { logErrorFiltered, logWarnFiltered } from "@/utils/logUtils";
 import { Stack } from "expo-router";
+import { useColorScheme } from "react-native";
 import { ClickOutsideProvider } from "react-native-click-outside";
 
 
@@ -17,6 +18,8 @@ console.error = logErrorFiltered;
  * @since 0.0.1
  */
 export default function layout() {
+
+    const scheme = useColorScheme();
  
     return (
         <CustomSqliteProvider>
@@ -27,6 +30,7 @@ export default function layout() {
                             <Stack
                                 screenOptions={{
                                     headerShown: false,
+                                    statusBarStyle: scheme,
                                     orientation: "default"
                                 }}
                             >

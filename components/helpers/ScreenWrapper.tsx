@@ -1,7 +1,7 @@
 import DefaultProps from "@/abstract/DefaultProps";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import React, { useContext } from "react";
-import { KeyboardAvoidingView, Platform, SafeAreaView, ViewProps, ViewStyle } from "react-native";
+import { KeyboardAvoidingView, Modal, Platform, SafeAreaView, ViewProps, ViewStyle } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GlobalContext } from "../context/GlobalContextProvider";
 
