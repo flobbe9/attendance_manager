@@ -1,5 +1,5 @@
 import HelperStyles from "@/assets/styles/helperStyles";
-import { IndexStyles } from "@/assets/styles/IndexStyles";
+import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import { AttendanceEntity } from "@/backend/DbSchema";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import AttendanceLink from "@/components/AttendanceLink";
@@ -30,7 +30,7 @@ export default function index() {
 
     const { attendanceRespository } = useAttendanceRepository();
 
-    const { allStyles: {mt_5} } = useResponsiveStyles();
+    const { allStyles: { mt_6 } } = useResponsiveStyles();
 
     const attendanceService = new AttendanceService();
 
@@ -78,14 +78,14 @@ export default function index() {
 
     return (
         <ScreenWrapper>
-            <HelperView dynamicStyle={IndexStyles.component}>
+            <HelperView dynamicStyle={AttendanceIndexStyles.component}>
                 <IndexTopBar />
 
                 {/* Links */}
                 <HelperScrollView 
                     onScroll={handleScroll} 
-                    dynamicStyle={IndexStyles.linkContainer} 
-                    style={{ ...mt_5 }}
+                    dynamicStyle={AttendanceIndexStyles.linkContainer} 
+                    style={{ ...mt_6 }}
                     childrenContainerStyle={{paddingBottom: 50}}
                     rendered={!!attendanceLinks.length}
                 >
@@ -100,8 +100,8 @@ export default function index() {
                     style={{...HelperStyles.fullHeight}}
                     rendered={!attendanceLinks.length}
                 >
-                    <HelperText dynamicStyle={IndexStyles.emptyMessage}>😴</HelperText>
-                    <HelperText dynamicStyle={IndexStyles.emptyMessage}>Noch keine Unterrichtsbesuche...</HelperText>
+                    <HelperText dynamicStyle={AttendanceIndexStyles.emptyMessage}>😴</HelperText>
+                    <HelperText dynamicStyle={AttendanceIndexStyles.emptyMessage}>Noch keine Unterrichtsbesuche...</HelperText>
                 </Flex>
 
                 {/* Add button */}
@@ -112,14 +112,14 @@ export default function index() {
                 >
                     <ExtendableButton 
                         isExtended={isExtended}
-                        dynamicStyle={IndexStyles.addButton}
-                        containerStyles={IndexStyles.addButtonOuterView}
+                        dynamicStyle={AttendanceIndexStyles.addButton}
+                        containerStyles={AttendanceIndexStyles.addButtonOuterView}
                         align="flex-end"
                         extendedWidth={152}
-                        label={<HelperText dynamicStyle={{...IndexStyles.addButtonLabel}} style={{color: "white"}}>Neuer UB</HelperText>}
+                        label={<HelperText dynamicStyle={{...AttendanceIndexStyles.addButtonLabel}} style={{color: "white"}}>Neuer UB</HelperText>}
                         ripple={{rippleBackground: "rgb(70, 70, 70)"}}
                     > 
-                        <FontAwesome name="plus" style={{...IndexStyles.buttonIcon}} color="white" />
+                        <FontAwesome name="plus" style={{...AttendanceIndexStyles.buttonIcon}} color="white" />
                     </ExtendableButton>
                 </Link>
             </HelperView>

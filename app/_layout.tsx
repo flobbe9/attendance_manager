@@ -17,7 +17,7 @@ console.error = logErrorFiltered;
  * @since 0.0.1
  */
 export default function layout() {
-
+ 
     return (
         <CustomSqliteProvider>
             <GlobalContextProvider>
@@ -29,8 +29,10 @@ export default function layout() {
                                     headerShown: false,
                                     orientation: "default"
                                 }}
-                                >
-                                {/* <Stack.Screen name="(attendance)" /> */}
+                            >
+                                <Stack.Screen name="index" />
+                                <Stack.Screen name="(attendance)" options={{animation: "slide_from_right"}} />
+                                <Stack.Screen name="(settings)" options={{animation: "slide_from_left"}} />
                             </Stack>
                         </GlobalComponentProvider>
                     </ClickOutsideProvider>
