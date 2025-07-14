@@ -1,6 +1,6 @@
 import HelperProps from "@/abstract/HelperProps";
 import { getSchoolSubjectBySchoolSubjectKey, getSchoolSubjectKeyBySchoolSubject, SCHOOL_SUBJECTS, SchoolSubject } from "@/abstract/SchoolSubject";
-import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
+import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
@@ -81,7 +81,7 @@ export default function SchoolSubjectInput({...props}: Props) {
             {...otherProps}
         >
             <Flex alignItems="center">
-                <HelperText dynamicStyle={AttendanceStyles.heading}>Fach</HelperText>
+                <HelperText dynamicStyle={AttendanceIndexStyles.heading}>Fach</HelperText>
             </Flex>
             
             {children}

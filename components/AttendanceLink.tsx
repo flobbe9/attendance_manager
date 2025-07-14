@@ -1,33 +1,29 @@
 import HelperProps from "@/abstract/HelperProps";
+import { getMusicLessonTopicByMusicLessonTopicKey } from "@/abstract/MusicLessonTopic";
 import { getSchoolSubjectBySchoolSubjectKey } from "@/abstract/SchoolSubject";
 import { AttendanceLinkStyles } from "@/assets/styles/AttendanceLinkStyles";
 import "@/assets/styles/AttendanceLinkStyles.ts";
 import { AttendanceEntity } from "@/backend/DbSchema";
+import { AttendanceService } from "@/backend/services/AttendanceService";
+import { ExaminantService } from "@/backend/services/ExaminantService";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { getSubjectColor, useSubjectColor } from "@/hooks/useSubjectColor";
 import { formatDateGermanNoTime } from "@/utils/projectUtils";
 import { FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import React from "react";
-import { Text, ViewProps, ViewStyle } from "react-native";
-import Br from "./helpers/Br";
-import Flex from "./helpers/Flex";
-import HelperText from "./helpers/HelperText";
-import P from "./helpers/P";
-import { ExaminantService } from "@/backend/services/ExaminantService";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import { getMusicLessonTopicByMusicLessonTopicKey } from "@/abstract/MusicLessonTopic";
+import { ViewProps, ViewStyle } from "react-native";
 import HelperStyles from './../assets/styles/helperStyles';
 import B from "./helpers/B";
-import { AttendanceService } from "@/backend/services/AttendanceService";
-
+import Flex from "./helpers/Flex";
+import HelperText from "./helpers/HelperText";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
     attendanceEntity: AttendanceEntity
 }    
-
 
 /**
  * @since 0.0.1

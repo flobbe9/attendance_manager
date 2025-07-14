@@ -28,12 +28,9 @@ export default function ScreenWrapper({...props}: Props) {
     const componentName = "ScreenWrapper";
     const { children, ...otherProps } = useDefaultProps(props, componentName);
 
-
     function handleTouchStart(_event): void {
-
         setGlobalScreenTouch(!globalScreenTouch);
     }
-
 
     return (
         <SafeAreaProvider>

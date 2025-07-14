@@ -1,9 +1,10 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
-import "@/assets/styles/AttendanceStyles.ts";
+import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
+import "@/assets/styles/AttendanceIndexStyles";
 import HelperStyles from "@/assets/styles/helperStyles";
 import { AttendanceEntity } from "@/backend/DbSchema";
 import { AttendanceService } from "@/backend/services/AttendanceService";
+import { DontConfirmAttendanceLeaveContent } from "@/components/(attendance)/DontConfirmAttendanceLeaveContent";
 import ExaminantInput from "@/components/(attendance)/ExaminantInput";
 import SchoolclassModeInput from "@/components/(attendance)/SchoolclassModeInput";
 import SchoolSubjectInput from "@/components/(attendance)/SchoolSubjectInput";
@@ -21,25 +22,19 @@ import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
+import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { DontLeaveScreenOptions, useScreenLeaveAttempt } from "@/hooks/useScreenLeaveAttempt";
 import { useSubjectColor } from "@/hooks/useSubjectColor";
+import { SETTINGS_DONT_CONFIRM_ATTENDANCE_SCREEN_LEAVE } from "@/utils/constants";
 import { logDebug } from "@/utils/logUtils";
 import { BORDER_RADIUS, FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
+import { useNavigation } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { ViewStyle } from "react-native";
 import { Divider } from "react-native-paper";
-import DateInput from './../../components/(attendance)/DateInput';
-import B from "@/components/helpers/B";
-import Br from "@/components/helpers/Br";
-import P from "@/components/helpers/P";
-import HelperCheckbox from "@/components/helpers/HelperCheckbox";
-import { SETTINGS_DONT_CONFIRM_ATTENDANCE_SCREEN_LEAVE } from "@/utils/constants";
-import { useNavigation } from "expo-router";
-import { DontConfirmAttendanceLeaveContent } from "@/components/(attendance)/DontConfirmAttendanceLeaveContent";
-import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
-
+import DateInput from '../../components/(attendance)/DateInput';
 
 /**
  * Attendance create / edit screen.
@@ -109,7 +104,7 @@ export default function index() {
     if (!currentAttendanceEntity)
         return (
             <ScreenWrapper
-                style={{...AttendanceStyles.suspenseContainer}}
+                style={{...AttendanceIndexStyles.suspenseContainer}}
                 contentContainerStyle={{...HelperStyles.centerNoFlex}}
             >
                 <FontAwesome name="hourglass" size={FONT_SIZE} style={{...mb_2}} />
@@ -190,7 +185,7 @@ export default function index() {
     return (
         <ScreenWrapper 
             style={{
-                ...AttendanceStyles.component.default,
+                ...AttendanceIndexStyles.component.default,
                 backgroundColor: subjectColor, 
             }} 
         >
@@ -198,26 +193,26 @@ export default function index() {
             
             <Divider style={{...mb_2}} />
 
-            <HelperScrollView dynamicStyle={AttendanceStyles.scrollView}>
-                <SchoolSubjectInput dynamicStyle={AttendanceStyles.inputContainer} />
+            <HelperScrollView dynamicStyle={AttendanceIndexStyles.scrollView}>
+                <SchoolSubjectInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
 
                 {/* Post select subject */}
                 <HelperView rendered={!!currentAttendanceEntity.schoolSubject}>
-                    <DateInput dynamicStyle={AttendanceStyles.inputContainer} />
+                    <DateInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
 
-                    <SchoolYearInput dynamicStyle={AttendanceStyles.inputContainer} />
+                    <SchoolYearInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
 
                     <TopicInput 
-                        dynamicStyle={AttendanceStyles.inputContainer}
+                        dynamicStyle={AttendanceIndexStyles.inputContainer}
                         style={{zIndex: 2}} // needs to be higher than next sibling
                     />
 
                     <ExaminantInput 
-                        dynamicStyle={AttendanceStyles.inputContainer} 
+                        dynamicStyle={AttendanceIndexStyles.inputContainer} 
                         style={{zIndex: 1}} // for select container
                     />
 
-                    <Flex justifyContent="center" dynamicStyle={AttendanceStyles.notesContainer}>
+                    <Flex justifyContent="center" dynamicStyle={AttendanceIndexStyles.notesContainer}>
                         {/* Toggle notes */}
                         <HelperButton 
                             disableFlex={true} 
@@ -237,32 +232,32 @@ export default function index() {
 
                     <HelperView rendered={areNotesVisible}>
                         {/* Note */}
-                        <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
+                        <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer}>
                             <HelperInput 
                                 multiline
                                 numberOfLines={numHelperInputLines}
                                 placeholder="Thema"
-                                dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
-                                containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
+                                dynamicStyle={AttendanceIndexStyles.defaultMultilineHelperInput}
+                                containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
                                 value={currentAttendanceEntity.note}
                                 setValue={(value) => updateCurrentAttendanceEntity(["note", value])}
                             />
                         </HelperView>
 
                         {/* Note2 */}
-                        <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
+                        <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer}>
                             <HelperInput 
                                 multiline
                                 numberOfLines={numHelperInputLines}
                                 placeholder="Lerngruppe"
-                                dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
-                                containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
+                                dynamicStyle={AttendanceIndexStyles.defaultMultilineHelperInput}
+                                containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
                                 value={currentAttendanceEntity.note2}
                                 setValue={(value) => updateCurrentAttendanceEntity(["note2", value])}
                             />
                         </HelperView>
 
-                        <SchoolclassModeInput dynamicStyle={AttendanceStyles.inputContainer} />
+                        <SchoolclassModeInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
                     </HelperView>
                 </HelperView>
             </HelperScrollView>

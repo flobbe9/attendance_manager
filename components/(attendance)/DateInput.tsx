@@ -1,5 +1,5 @@
 import HelperProps from "@/abstract/HelperProps";
-import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
+import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceInputValidatorBuilder";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
@@ -74,9 +74,9 @@ export default function DateInput({...props}: Props) {
     }
     
     return (
-        <HelperView dynamicStyle={AttendanceStyles.inputContainer} style={{...style as object, ...mb_2}} {...otherProps}>
+        <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer} style={{...style as object, ...mb_2}} {...otherProps}>
             <Flex alignItems="center">
-                <HelperText dynamicStyle={AttendanceStyles.heading}>Datum</HelperText>
+                <HelperText dynamicStyle={AttendanceIndexStyles.heading}>Datum</HelperText>
 
                 <AttendanceInputTooltip 
                     values={invalidValues}

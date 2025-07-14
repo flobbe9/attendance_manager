@@ -30,7 +30,13 @@ export default function layout() {
                                     orientation: "default"
                                 }}
                             >
-                                <Stack.Screen name="index" />
+                                <Stack.Screen 
+                                    name="index" 
+                                    options={{
+                                        headerShown: true,
+                                        title: "Attendance Manager"
+                                    }} 
+                                />
                                 <Stack.Screen name="(attendance)" options={{animation: "slide_from_right"}} />
                                 <Stack.Screen name="(settings)" options={{animation: "slide_from_left"}} />
                             </Stack>

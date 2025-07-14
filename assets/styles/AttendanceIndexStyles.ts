@@ -4,7 +4,7 @@ import { TextStyle, ViewStyle } from "react-native";
 import { default as HelperStyles, default as HS } from "./helperStyles";
 
 
-export class AttendanceStyles {
+export class AttendanceIndexStyles {
     static component: DynamicStyle<ViewStyle> = {
         default: {
             height: "100%",

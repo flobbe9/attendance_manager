@@ -1,6 +1,6 @@
 import HelperProps from "@/abstract/HelperProps";
 import { getMusicLessonTopicByMusicLessonTopicKey, getMusicLessonTopicKeyByMusicLessonTopic, MUSIC_LESSON_TOPICS, MusicLessonTopic, MusicLessonTopic_Key } from "@/abstract/MusicLessonTopic";
-import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
+import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceInputValidatorBuilder";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { NO_SELECTION_LABEL } from "@/utils/constants";
@@ -65,7 +65,7 @@ export default function TopicInput({...props}: Props) {
     return (
         <Fragment>
             {/* one higher than parent or 1 */}
-            <HelperText dynamicStyle={AttendanceStyles.heading}>Stundenthema</HelperText>
+            <HelperText dynamicStyle={AttendanceIndexStyles.heading}>Stundenthema</HelperText>
 
             <HelperSelect 
                 rendered={currentAttendanceEntity.schoolSubject === "music"}

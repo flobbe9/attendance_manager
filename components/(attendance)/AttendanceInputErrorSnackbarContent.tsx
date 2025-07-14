@@ -12,6 +12,7 @@ import Br from "../helpers/Br";
 import Flex from "../helpers/Flex";
 import HelperCheckbox from "../helpers/HelperCheckbox";
 import HelperText from "../helpers/HelperText";
+import AttendanceInputErrorPopupIcon from "./AttendanceInputErrorPopupIcon";
 
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
@@ -43,7 +44,7 @@ export default function AttendanceInputErrorSnackbarContent({
         <HelperView {...otherProps}>
             <Flex flexWrap="nowrap" alignItems="center">
                 <HelperView style={{...me_2}}>
-                    <FontAwesome name="info-circle" size={FONT_SIZE_SMALLER} color={ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR} />
+                    <AttendanceInputErrorPopupIcon />
                 </HelperView>
 
                 <B>

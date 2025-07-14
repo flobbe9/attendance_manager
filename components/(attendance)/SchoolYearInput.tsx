@@ -1,7 +1,7 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
 import { isSchoolYear, mightBecomeSchoolYear, SchoolYear } from "@/abstract/SchoolYear";
-import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
+import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceInputValidatorBuilder";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
@@ -97,7 +97,7 @@ export default function SchoolYearInput({...props}: Props) {
     return (
         <HelperView {...otherProps}>
             <Flex alignItems="center" style={{zIndex: 1}}>
-                <HelperText dynamicStyle={AttendanceStyles.heading}>Jahrgang</HelperText>
+                <HelperText dynamicStyle={AttendanceIndexStyles.heading}>Jahrgang</HelperText>
 
                 <AttendanceInputTooltip values={validValues} attendanceInputKey="schoolYear" validator={validator}/>
             </Flex>
@@ -107,7 +107,7 @@ export default function SchoolYearInput({...props}: Props) {
                 setValue={handleSetValue}
                 placeholder="5 - 13"
                 keyboardType="numeric"
-                containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
+                containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
                 onChangeText={handleChangeText}
             />
 

@@ -1,29 +1,27 @@
 import HelperProps from "@/abstract/HelperProps";
 import { SchoolSubject_Key } from "@/abstract/SchoolSubject";
-import { IndexStyles } from "@/assets/styles/IndexStyles";
 import { IndexTopBarStyles } from "@/assets/styles/IndexTopBarStyles";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
-import { HISTORY_COLOR, MUSIC_COLOR } from "@/utils/styleConstants";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { FONT_SIZE, FONT_SIZE_LARGER, HISTORY_COLOR, MUSIC_COLOR } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
+import { Link } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { ColorValue, ViewProps, ViewStyle } from "react-native";
 import { GlobalAttendanceContext } from "./context/GlobalAttendanceContextProvider";
 import Flex from "./helpers/Flex";
+import HelperButton from "./helpers/HelperButton";
 import HelperText from "./helpers/HelperText";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 
 }
 
-
 /**
  * @since 0.0.1
  */
 export default function IndexTopBar({...props}: Props) {
-
     const { savedAttendanceEntities } = useContext(GlobalAttendanceContext);
 
     const [numEducators, setNumEducators] = useState<number | null>(null);
@@ -37,33 +35,28 @@ export default function IndexTopBar({...props}: Props) {
 
     const { allStyles: {me_1, me_2} } =  useResponsiveStyles();
 
-
     useEffect(() => {
         setNumEducators(countEducatorExaminants());
         setNumMusicExaminants(countExaminantsWithSameSubject("music"));
         setNumHistoryExaminants(countExaminantsWithSameSubject("history"));
 
     }, [savedAttendanceEntities]);
-
     
     /**
      * @returns the number of attendance entities having at least one educator examinant
      */
     function countEducatorExaminants(): number {
-
         return savedAttendanceEntities
             .filter(attendanceEntity => 
                 attendanceService.hasExaminant(attendanceEntity, "educator"))
             .length;
     }
 
-
     /**
      * @param schoolSubject to match attendanceEntity and examinants agains
      * @returns the number of attendanceEntities with `schoolSubject` that also have at least one examinant with `role === schoolSubject`
      */
     function countExaminantsWithSameSubject(schoolSubject: SchoolSubject_Key): number {
-
         if (!schoolSubject)
             return NaN;
 
@@ -74,9 +67,7 @@ export default function IndexTopBar({...props}: Props) {
             .length;
     }
 
-
     function ExaminantCount(props: {numExaminants: number, maxExamiants: number, color: ColorValue}) {
-
         const {numExaminants, maxExamiants, color} = props;
 
         return (
@@ -90,17 +81,25 @@ export default function IndexTopBar({...props}: Props) {
         )
     }
 
-
     return ( 
         <Flex 
-            justifyContent="flex-end" 
+            justifyContent="space-between" 
+            alignItems="center"
             {...otherProps}
         >
-            <HelperText style={{...IndexTopBarStyles.text, ...me_2}}>Erledigt:</HelperText>
+            <Link href="/(settings)" asChild>
+                <HelperButton dynamicStyle={IndexTopBarStyles.settingsButton}>
+                    <FontAwesome name="gear" size={FONT_SIZE_LARGER} style={IndexTopBarStyles.gearIcon} />
+                </HelperButton>
+            </Link>
 
-            <ExaminantCount numExaminants={numMusicExaminants} maxExamiants={9} color={MUSIC_COLOR} />
-            <ExaminantCount numExaminants={numHistoryExaminants} maxExamiants={9} color={HISTORY_COLOR} />
-            <ExaminantCount numExaminants={numEducators} maxExamiants={8} color={"black"} />
+            <Flex justifyContent="flex-end">
+                <HelperText style={{...IndexTopBarStyles.text, ...me_2}}>Erledigt:</HelperText>
+
+                <ExaminantCount numExaminants={numMusicExaminants} maxExamiants={9} color={MUSIC_COLOR} />
+                <ExaminantCount numExaminants={numHistoryExaminants} maxExamiants={9} color={HISTORY_COLOR} />
+                <ExaminantCount numExaminants={numEducators} maxExamiants={8} color={"black"} />
+            </Flex>
         </Flex>
     )
 }

@@ -1,7 +1,7 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
 import { getSchoolclassModeBySchoolclassModeKey, getSchoolclassModeKeyBySchoolclassMode, SCHOOLCLASS_MODES, SchoolclassMode } from "@/abstract/SchoolclassMode";
-import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
+import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import HelperStyles from "@/assets/styles/helperStyles";
 import { SchoolclassModeEntity } from "@/backend/DbSchema";
 import HelperView from "@/components/helpers/HelperView";
@@ -85,7 +85,7 @@ export default function SchoolclassModeInput({...props}: Props) {
             <HelperInput
                 placeholder="Ausbildungslehrer"
                 rendered={currentAttendanceEntity.schoolclassMode.mode === "othersClass"}
-                containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
+                containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
                 value={currentAttendanceEntity.schoolclassMode.fullName}
                 onChangeText={updateSchoolclassModeNote}
             />

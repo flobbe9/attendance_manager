@@ -4,12 +4,10 @@ import HS from "./helperStyles";
 import { BORDER_RADIUS, FONT_SIZE, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import HelperStyles from "./helperStyles";
 
-
 type StyleType = ViewStyle;
 
 const addButtonWidth = 59;
 const addButtonFontSize = 20;
-
 
 export class IndexStyles {
     static component: DynamicStyle<StyleType> = {

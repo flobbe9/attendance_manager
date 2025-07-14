@@ -1,7 +1,7 @@
 import { ExaminantRole_Key, getExamiantRoleByExaminantRoleKey } from "@/abstract/Examinant";
 import { Headmaster, HEADMASTERS } from "@/abstract/Headmaster";
 import HelperProps from "@/abstract/HelperProps";
-import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
+import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import { ExaminantInputStyles } from "@/assets/styles/ExaminantInputStyles";
 import { ExaminantEntity } from "@/backend/DbSchema";
 import { AttendanceService } from "@/backend/services/AttendanceService";
@@ -162,7 +162,7 @@ export default function ExaminantInput({...props}: Props) {
 
     return (
         <HelperView {...otherProps}>
-            <HelperText dynamicStyle={AttendanceStyles.heading} style={{marginBottom: 0}}>Anwesende Prüfer</HelperText>
+            <HelperText dynamicStyle={AttendanceIndexStyles.heading} style={{marginBottom: 0}}>Anwesende Prüfer</HelperText>
 
             <Flex>
                 {/* Subjects */}
