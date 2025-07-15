@@ -48,9 +48,7 @@ jobs:
                 expo-cache: true
 
           - name: Build iOS App
-            run: expo build -p ios --local --profile staging --output app.ipa
-            env: 
-                CI: true
+            run: eas build --local -p ios --profile staging --non-interactive --output app.ipa
 
           - name: Deploy TestFlight
             uses: apple-actions/upload-testflight-build@v3
