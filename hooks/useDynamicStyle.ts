@@ -1,6 +1,6 @@
 import { AnimatedDynamicStyle } from "@/abstract/AnimatedDynamicStyle";
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { logWarn } from "@/utils/logUtils";
+import { logDebug, logWarn } from "@/utils/logUtils";
 import { TRANSITION_DURATION } from "@/utils/styleConstants";
 import { cloneObj, flatMapObject, isAnyFalsy } from "@/utils/utils";
 import { useEffect, useState } from "react";
@@ -25,20 +25,18 @@ export function useDynamicStyle<StyleType>(
     dynamicStyle: DynamicStyle<StyleType> = {}, 
     animatedDynamicStyles?: AnimatedDynamicStyle<StyleType>[]
 ) {
-
     const hasComponentMounted = useHasComponentMounted();
 
     /** Copy of style objects that will only be altered for animated styles and for nothing else */
     const [initStyles, setInitStyles] = useState<DynamicStyle<StyleType>>(cloneObj(dynamicStyle, 2)); 
+    /** To make sure `currentStyles` are only initialized once */
+    const [currentStylesInitialized, setCurrentStylesInitialized] = useState(false);
     const [currentStyles, setCurrentStyles] = useState<DynamicStyle<StyleType>>(initAnimatedStyles());
     const [currentStylesFlat, setCurrentStylesFlat] = useState<StyleType>(initStyles.default);
     
-
     useEffect(() => {
         setCurrentStylesFlat(flatMapObject(currentStyles) as StyleType);
-
     }, [currentStyles]);
-
 
     /**
      * Replaces all default styles that need to be animated with an interpolated value for them to be triggered later on. Also 
@@ -48,47 +46,52 @@ export function useDynamicStyle<StyleType>(
      * @returns ```initStyles.default``` including interpolated values
      */
     function initAnimatedStyles(): DynamicStyle<StyleType> {
+        if (currentStylesInitialized)
+            return currentStyles;
 
-        // case: initialized already or no styles to animate
-        if (hasComponentMounted || !animatedDynamicStyles?.length)
+        try {
+            // case: initialized already or no styles to animate
+            if (hasComponentMounted || !animatedDynamicStyles?.length)
+                return {default: initStyles.default};
+
+            animatedDynamicStyles.forEach(animatedDynamicStyle => {
+                if (!initStyles[animatedDynamicStyle.event]) {
+                    logWarn(`Missing styles for event '${animatedDynamicStyle.event}'`);
+                    return;
+                }
+
+                const fromStyleValue = initStyles.default[animatedDynamicStyle.styleProp];
+                const toStyleValue = initStyles[animatedDynamicStyle.event][animatedDynamicStyle.styleProp];
+
+                if (isAnyFalsy(fromStyleValue)) {
+                    logWarn(`Missing 'fromStyleValue' for event '${animatedDynamicStyle.event}' and styleProp '${String(animatedDynamicStyle.styleProp)}'`);
+                    return;
+                }
+
+                if (isAnyFalsy(toStyleValue)) {
+                    logWarn(`Missing 'toStyleValue' for event '${animatedDynamicStyle.event}' and styleProp '${String(animatedDynamicStyle.styleProp)}'`);
+                    return;
+                }
+
+                const newValue = animatedDynamicStyle.animatedValue.interpolate({
+                    inputRange: animatedDynamicStyle.inputRange,
+                    outputRange: [fromStyleValue as any, toStyleValue]
+                });
+                
+                // replace default style with animated one, ready to be triggered
+                initStyles.default[animatedDynamicStyle.styleProp] = newValue as any;
+                // remove event style from event object because its now in the default
+                delete initStyles[animatedDynamicStyle.event][animatedDynamicStyle.styleProp];
+            });
+
             return {default: initStyles.default};
 
-        animatedDynamicStyles.forEach(animatedDynamicStyle => {
-            if (!initStyles[animatedDynamicStyle.event]) {
-                logWarn(`Missing styles for event '${animatedDynamicStyle.event}'`);
-                return;
-            }
-
-            const fromStyleValue = initStyles.default[animatedDynamicStyle.styleProp];
-            const toStyleValue = initStyles[animatedDynamicStyle.event][animatedDynamicStyle.styleProp];
-
-            if (isAnyFalsy(fromStyleValue)) {
-                logWarn(`Missing 'fromStyleValue' for event '${animatedDynamicStyle.event}'`);
-                return;
-            }
-
-            if (isAnyFalsy(toStyleValue)) {
-                logWarn(`Missing 'toStyleValue' for event '${animatedDynamicStyle.event}'`);
-                return;
-            }
-
-            const newValue = animatedDynamicStyle.animatedValue.interpolate({
-                inputRange: animatedDynamicStyle.inputRange,
-                outputRange: [fromStyleValue as any, toStyleValue]
-            });
-            
-            // replace default style with animated one, ready to be triggered
-            initStyles.default[animatedDynamicStyle.styleProp] = newValue as any;
-            // remove event style from event object because its now in the default
-            delete initStyles[animatedDynamicStyle.event][animatedDynamicStyle.styleProp];
-        });
-
-        return {default: initStyles.default};
+        } finally {
+            setCurrentStylesInitialized(true);
+        }
     }
 
-
     function onFocus(): void {
-        
         startAnimations("focus");
         startAnimations("blur", true);
 
@@ -96,38 +99,30 @@ export function useDynamicStyle<StyleType>(
         addStyles("focus");
     }
 
-
     function onBlur(): void {
-
         startAnimations("blur");
         startAnimations("focus", true);
 
         removeStyles("focus");
         addStyles("blur");
     }
-    
 
     function onTouchStart(): void {
-
         startAnimations("touchStart");
 
         addStyles("touchStart");
     }
 
-
     function onTouchEnd(): void {
-
         startAnimations("touchEnd");
 
         addStyles("touchEnd");
     }
         
-
     /**
      * NOTE: triggered only when onPress event is present
      */
     function onPressIn(): void {
-
         startAnimations("pressIn");
         startAnimations("pressOut", true);
 
@@ -135,12 +130,10 @@ export function useDynamicStyle<StyleType>(
         addStyles("pressIn");
     }
 
-
     /**
      * NOTE: triggered only when onPress event is present
      */
     function onPressOut(): void {
-
         startAnimations("pressOut");
         startAnimations("pressIn", true);
 
@@ -148,9 +141,7 @@ export function useDynamicStyle<StyleType>(
         addStyles("pressOut");
     }
 
-
     function addStyles(key: keyof DynamicStyle<StyleType>): void {
-
         if (!key || key === "animatedDynamicStyles")
             return;
 
@@ -161,9 +152,7 @@ export function useDynamicStyle<StyleType>(
         setCurrentStyles({...currentStyles});
     }
 
-
     function removeStyles(key: keyof DynamicStyle<StyleType>): void {
-
         if (!key || key === "animatedDynamicStyles")
             return;
 
@@ -174,7 +163,6 @@ export function useDynamicStyle<StyleType>(
         setCurrentStyles({...currentStyles});
     }
 
-
     /**
      * Trigger all registered animations (```animatedDynamicStyles```) with given ```event```.
      * 
@@ -182,7 +170,6 @@ export function useDynamicStyle<StyleType>(
      * @param reverse indicates whether the animation's input range should be reversed, which will simply start the animation in reverse. Default is ```false```
      */
     function startAnimations(eventName: keyof DynamicStyle<StyleType>, reverse: boolean = false): void {
-
         if (!animatedDynamicStyles)
             return;
         
@@ -201,7 +188,6 @@ export function useDynamicStyle<StyleType>(
                     ).start();
             });
     }
-
 
     return {
         /** Pass these to the component in order for styles to dynamically be added or removed */

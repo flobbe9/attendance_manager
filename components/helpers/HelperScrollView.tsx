@@ -2,10 +2,10 @@ import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { forwardRef, Fragment, Ref, useEffect, useImperativeHandle, useRef } from "react";
 import { Animated, ScrollView, ScrollViewProps, ViewStyle } from "react-native";
 import HelperProps from "../../abstract/HelperProps";
-import { log } from "@/utils/logUtils";
 
 
 interface Props extends HelperProps<ViewStyle>, ScrollViewProps {
+    childrenContainerStyle?: ViewStyle
 }
 
 
@@ -17,6 +17,7 @@ interface Props extends HelperProps<ViewStyle>, ScrollViewProps {
 export default forwardRef(function HelperScrollView(
     {
         dynamicStyle = {},
+        childrenContainerStyle,
         animatedDynamicStyles,
         rendered = true,
         onRender,
@@ -24,26 +25,26 @@ export default forwardRef(function HelperScrollView(
     }: Props,
     ref: Ref<ScrollView>
 ) {
+    const { children, ...otherProps } = useHelperProps(props, undefined, dynamicStyle, animatedDynamicStyles);
+    
+    const componentRef = useRef<ScrollView>(null);
+    
+    useImperativeHandle(ref, () => componentRef.current!, []);
+    
+    
+    useEffect(() => {
+        if (onRender && rendered)
+            onRender();    
+        
+    }, []);
+    
 
     if (rendered === false)
         return <Fragment />;
 
-    const { children, ...otherProps } = useHelperProps(props, undefined, dynamicStyle, animatedDynamicStyles);
-
-    const componentRef = useRef<ScrollView>(null);
-
-    useImperativeHandle(ref, () => componentRef.current!, []);
-
-
-    useEffect(() => {
-        if (onRender)
-            onRender();    
-
-    }, []);
-    
 
     return (
-        <Animated.ScrollView ref={componentRef} {...otherProps}>
+        <Animated.ScrollView ref={componentRef} contentContainerStyle={childrenContainerStyle} {...otherProps}>
             {children}
         </Animated.ScrollView>
     )

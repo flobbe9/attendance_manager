@@ -1,61 +1,66 @@
 import { CustomExceptionFormat } from "@/abstract/CustomExceptionFormat";
+import { getTimeStamp, includesIgnoreCaseTrim, isBlank } from "@/utils/utils";
 import { CONSOLE_MESSAGES_TO_AVOID, LOG_LEVEL, LOG_LEVEL_COLORS } from "./constants";
-import { getTimeStamp, includesIgnoreCaseTrim } from "@/utils/utils";
-import { logLevelDef, LogLevelName } from "@/abstract/LogLevel";
-
-export function log(message?: any, ...optionalParams: any[]): void {
-
-    if (!isInfoLogLevel())
-        return;
-
-    console.log(message, ...optionalParams);
-}
-
-
-export function logDebug(message?: any, ...optionalParams: any[]): void {
-
-    if (!isDebugLogLevel())
-        return;
-
-    const errorObj = typeof message === "string" ? new Error(message) : new Error("<no message>");
-    
-    console.log(getTimeStamp(), errorObj, ...optionalParams);
-}
-
-
-export function logWarn(message?: any, ...optionalParams: any[]): void {
-    
-    if (!isWarnLogLevel())
-        return;
-
-    const errorObj = typeof message === "string" ? new Error(message) : new Error("<no message>");
-
-    console.warn(getTimeStamp(), errorObj, errorObj.stack, ...optionalParams);
-}
-
-
-export function logWarnFiltered(message?: any, ...optionalParams: any[]): void {
-
-    logFiltered("WARN", message, ...optionalParams);
-}
-
+import { LogLevel, logLevelToString } from "@/abstract/LogLevel";
+import { ColorValue } from "react-native";
 
 export function logError(message?: any, ...optionalParams: any[]): void {
+	if (!isLogLevel(LogLevel.ERROR)) return;
 
-    if (!isErrorLogLevel())
-        return;
+	if (typeof message === 'string')
+		console.error(getLogStartOfLine(LogLevel.ERROR), message, ...optionalParams);
 
-    const errorObj = typeof message === "string" ? new Error(message) : new Error("<no message>");
-
-    console.error(getTimeStamp(), errorObj, errorObj.stack, ...optionalParams);
+	else 
+        console.error(getLogStartOfLine(LogLevel.ERROR), message, ...optionalParams);
 }
 
+export function logWarn(message?: any, ...optionalParams: any[]): void {
+	if (!isLogLevel(LogLevel.WARN)) return;
+
+	if (typeof message === 'string')
+		console.warn(getLogStartOfLine(LogLevel.WARN), message, ...optionalParams);
+
+	else 
+        console.warn(getLogStartOfLine(LogLevel.WARN), message, ...optionalParams);
+}
+
+export function log(message?: any, ...optionalParams: any[]): void {
+	if (!isLogLevel(LogLevel.INFO)) return;
+
+	if (typeof message === 'string')
+		logColored(LOG_LEVEL_COLORS[LogLevel.INFO], getLogStartOfLine(LogLevel.INFO), message, ...optionalParams);
+
+	else 
+        logColored(LOG_LEVEL_COLORS[LogLevel.INFO], getLogStartOfLine(LogLevel.INFO), message, ...optionalParams);
+}
+
+export function logDebug(message?: any, ...optionalParams: any[]): void {
+	if (!isLogLevel(LogLevel.DEBUG)) return;
+
+	if (typeof message === 'string')
+		logColored(LOG_LEVEL_COLORS[LogLevel.DEBUG], getLogStartOfLine(LogLevel.DEBUG), message, ...optionalParams);
+
+	else 
+        logColored(LOG_LEVEL_COLORS[LogLevel.DEBUG], getLogStartOfLine(LogLevel.DEBUG), message, ...optionalParams);
+}
+
+export function logTrace(message?: any, ...optionalParams: any[]): void {
+	if (!isLogLevel(LogLevel.TRACE)) return;
+
+	if (typeof message === 'string')
+		logColored(LOG_LEVEL_COLORS[LogLevel.TRACE], getLogStartOfLine(LogLevel.TRACE), message, ...optionalParams);
+
+	else 
+        logColored(LOG_LEVEL_COLORS[LogLevel.TRACE], getLogStartOfLine(LogLevel.TRACE), message, ...optionalParams);
+}
+
+export function logWarnFiltered(message?: any, ...optionalParams: any[]): void {
+    logFiltered(LogLevel.WARN, message, ...optionalParams);
+}
 
 export function logErrorFiltered(message?: any, ...optionalParams: any[]): void {
-
-    logFiltered("ERROR", message, ...optionalParams);
+    logFiltered(LogLevel.ERROR, message, ...optionalParams);
 }
-
 
 /**
  * Dont log given ```obj``` if it contains one of {@link CONSOLE_MESSAGES_TO_AVOID}s strings. Log normally if ```obj``` is not
@@ -65,13 +70,13 @@ export function logErrorFiltered(message?: any, ...optionalParams: any[]): void 
  * @param obj to filter before logging
  * @param optionalParams 
  */
-function logFiltered(logLevelName: LogLevelName, obj?: any, ...optionalParams: any[]): void {
+function logFiltered(logLevelName: LogLevel, obj?: any, ...optionalParams: any[]): void {
 
     let messageToCheck = obj;
 
     // case: cannot filter obj
-    if (!obj || (typeof obj !== "string" && typeof obj !== "number" && !(obj instanceof Error))) {
-       logColored(logLevelName, obj, ...optionalParams);
+    if (!messageToCheck || (typeof messageToCheck !== "string" && typeof messageToCheck !== "number" && !(messageToCheck instanceof Error))) {
+       console.log(messageToCheck, ...optionalParams);
        return;
     }
 
@@ -85,25 +90,21 @@ function logFiltered(logLevelName: LogLevelName, obj?: any, ...optionalParams: a
         if (includesIgnoreCaseTrim(messageToCheck, messageToAvoid)) 
             return; 
         
-    logColored(logLevelName, messageToCheck, ...optionalParams);
+    logColored(LOG_LEVEL_COLORS[logLevelName], messageToCheck, ...optionalParams);
 }
-
 
 /**
- * Don't use custom logs here, since the default ```console.log``` metods are overriden with this an must work independently from LogLevel.
+ * NOTE: Don't use custom logs here, since the default ```console.log``` metods are overriden with this an must work independently from LogLevel.
  *  
- * @param logLevelName 
- * @param obj 
- * @param optionalParams 
+ * @param backgroundColor only applied to `obj` arg
+ * @param obj to log colored
+ * @param optionalParams to log non-colored
  */
-function logColored(logLevelName: LogLevelName, obj?: any, ...optionalParams: any[]): void {
+function logColored(backgroundColor: ColorValue, obj?: any, ...optionalParams: any[]): void {
 
-    // get log color by sevirity
-    const color = LOG_LEVEL_COLORS[logLevelName];
-
-    console.log("%c" + obj, "background: " + color, ...optionalParams);
+    const params = [`%c${obj}`, "background: " + backgroundColor.toString(), ...optionalParams];
+    console.log(...params);
 }
-
 
 /**
  * Log the all props of given {@link CustomExceptionFormat} response and include the stacktrace.
@@ -115,40 +116,15 @@ export function logApiResponse(response: CustomExceptionFormat): void {
     logError(response.timestamp + " (" + response.status + "): " + response.message + (response.path ? " " + response.path : ""));
 }
 
-
-export function isLogLevelName(name: string | undefined | null): name is LogLevelName {
-
-    return !!name && Object.keys(logLevelDef).includes(name);
-}
-
-
-function isLogLevel(expectedLogLevel: LogLevelName): boolean {
-
-    if (!isLogLevelName(LOG_LEVEL)) {
-        // don't use custom log method here since they depend on a valid LOG_LEVEL
-        console.error("Invalid 'LOG_LEVEL'");
-        return false;
-    }
-
-    return logLevelDef[LOG_LEVEL] >= logLevelDef[expectedLogLevel];
-}
-
-
-export function isErrorLogLevel(): boolean {
-
-    return isLogLevel("ERROR");
-}
-
-
-export function isWarnLogLevel(): boolean {
-
-    return isLogLevel("WARN");
-}
-
-
-export function isInfoLogLevel(): boolean {
-
-    return isLogLevel("INFO");
+/**
+ * Indicates whether `expectedLogLevel` is matching {@link LOG_LEVEL}, meaning that logs with that level would
+ * be enabled.
+ * 
+ * @param expectedLogLevel 
+ * @returns `true` if `expectedLogLevel` ordianl value is less than equal {@link LOG_LEVEL}
+ */
+function isLogLevel(expectedLogLevel: LogLevel): boolean {
+    return LOG_LEVEL >= expectedLogLevel;
 }
 
 
@@ -156,11 +132,32 @@ export function isInfoLogLevel(): boolean {
  * @returns ```false``` if {@link NODE_ENV} is "production"
  */
 export function isDebugLogLevel(): boolean {
-
     if ("production" === process.env.NODE_ENV) {
         logWarn("Cannot log at 'DEBUG' level in 'production'");
         return false;
     }
 
-    return isLogLevel("DEBUG");
+    return isLogLevel(LogLevel.DEBUG);
+}
+
+
+export function isTraceLogLevel(): boolean {
+    if ("production" === process.env.NODE_ENV) {
+        logWarn("Cannot log at 'TRACE' level in 'production'");
+        return false;
+    }
+
+    return isLogLevel(LogLevel.TRACE);
+}
+
+/**
+ * Log the timestamp and log level before every log entry.
+ *
+ * @param logLevel
+ * @returns the string the log entry should start with
+ */
+function getLogStartOfLine(logLevel: LogLevel): string {
+	if (!isLogLevel(logLevel)) return `${getTimeStamp()}`;
+
+	return `${getTimeStamp()} ${logLevelToString(logLevel)}`;
 }

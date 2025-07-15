@@ -1,15 +1,15 @@
+import { DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
 import { HelperButtonStyles } from "@/assets/styles/HelperButtonStyles";
 import HS from "@/assets/styles/helperStyles";
+import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
+import { useDynamicStyle } from "@/hooks/useDynamicStyle";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { forwardRef, Ref } from "react";
-import { ColorValue, GestureResponderEvent, Platform, TouchableNativeFeedback, View, ViewProps, ViewStyle } from "react-native";
+import { ActivityIndicator, ActivityIndicatorIOSProps, ColorValue, GestureResponderEvent, TouchableNativeFeedback, View, ViewProps, ViewStyle } from "react-native";
 import Flex from "./Flex";
+import HelperReactChildren from "./HelperReactChildren";
 import HelperView from "./HelperView";
-import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { useDynamicStyle } from "@/hooks/useDynamicStyle";
-import { log } from "@/utils/logUtils";
-import { AnimatedFAB } from "react-native-paper";
 
 
 export interface HelperButtonProps extends HelperProps<ViewStyle>, ViewProps {
@@ -21,7 +21,10 @@ export interface HelperButtonProps extends HelperProps<ViewStyle>, ViewProps {
     /** For this component to be a child of a ```<Link>```. Is passed to ```<TouchableNativeFeedback>```  */
     onPress?: (event?: GestureResponderEvent) => void,
     /** Whether button children container is not flex. Default is ```false```. */
-    disableFlex?: boolean
+    disableFlex?: boolean,
+    /** Renders a loading indicator while `true`. Also disabled the button. Use `loadingProps` to style the indicator. Defualt is `false` */
+    loading?: boolean,
+    loadingProps?: ActivityIndicatorIOSProps
 }
 
 
@@ -34,10 +37,10 @@ export default forwardRef(function HelperButton(
     {
         disabled,
         ripple,
-        containerStyles,
         disableFlex = false,
+        loading = false,
+        loadingProps = {},
         onPress,
-        onLayout,
         ...props
     }: HelperButtonProps,
     ref: Ref<View>
@@ -46,13 +49,22 @@ export default forwardRef(function HelperButton(
     const componentName = "HelperButton";
     const { children, style, ...otherProps } = useHelperProps(props, componentName, HelperButtonStyles.component);
 
-    const { currentStyles: componentStyles, eventHandlers: containerEventHandlers } = useDynamicStyle(containerStyles);
+    const { currentStyles: containerStyles, eventHandlers: containerEventHandlers } = useDynamicStyle(props.containerStyles);
+
+    const { animatedStyle: anmimatedOpacity } = useAnimatedStyle(
+        [50, 100],
+        [0.5, 1],
+        {
+            reverse: disabled || loading,
+            startReversed: !disabled && !loading,
+            animationDeps: [disabled, loading],
+            animateOnMout: true
+        }
+    )
 
     function handlePress(event?: GestureResponderEvent): void {
-
-        if (!disabled && onPress)
+        if (!disabled && !loading && onPress)
             onPress(event);
-
     }
 
     return (
@@ -62,14 +74,14 @@ export default forwardRef(function HelperButton(
                 borderRadius: (style as ViewStyle).borderRadius, 
                 overflow: "hidden",
                 ...HS.fitContent,
-                ...componentStyles,
+                ...containerStyles,
             }}
-            onLayout={onLayout}
             {...containerEventHandlers}
         >
             <TouchableNativeFeedback 
                 onPress={handlePress} 
-                background={ripple === null || disabled ? null : TouchableNativeFeedback.Ripple(ripple?.rippleBackground, false)}
+                disabled={disabled}
+                background={ripple === null || disabled || loading ? null : TouchableNativeFeedback.Ripple(ripple?.rippleBackground, false)}
             >
                 <Flex
                     justifyContent="center"
@@ -78,11 +90,20 @@ export default forwardRef(function HelperButton(
                     ref={ref}
                     style={{
                         ...style as object,
-                        ...(disabled ? HS.disabled : {})
+                        opacity: anmimatedOpacity
                     }}
                     {...otherProps}
                 >
-                    {children}
+                    {
+                        loading && 
+                        <ActivityIndicator
+                            animating={true} 
+                            {...loadingProps}
+                            style={{...HelperButtonStyles.loadingIndicator, ...loadingProps.style as object}}
+                        />
+                    }
+                    
+                    <HelperReactChildren>{children}</HelperReactChildren>
                 </Flex>
             </TouchableNativeFeedback>
         </HelperView>

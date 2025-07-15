@@ -1,17 +1,24 @@
 /**
+ * NOTE: order of values represents priority, dont change.
  * @since 0.0.4
  * @see 'logUtils.ts'
  */
-
-
-export const logLevelDef = {
-    "ERROR": 0,
-    "WARN": 1,
-    "INFO": 2,
-    "DEBUG": 3,
+export enum LogLevel {
+    ERROR,
+    WARN,
+    INFO,
+    DEBUG,
+    TRACE
 }
 
+const logLevelNames = {
+    [LogLevel.ERROR]: "ERROR",
+    [LogLevel.WARN]: "WARN",
+    [LogLevel.INFO]: "INFO",
+    [LogLevel.DEBUG]: "DEBUG",
+    [LogLevel.TRACE]: "TRACE"
+}
 
-export type LogLevelName = keyof typeof logLevelDef;
-
-
+export function logLevelToString(logLevel: LogLevel): string {
+    return logLevelNames[logLevel];
+}

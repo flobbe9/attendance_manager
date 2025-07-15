@@ -1,43 +1,78 @@
 import { TRANSITION_DURATION } from "@/utils/styleConstants";
 import { DependencyList, useEffect } from "react";
-import { Animated, Easing, useAnimatedValue } from "react-native";
+import { Animated, Easing, EasingFunction, useAnimatedValue } from "react-native";
 import { useHasComponentMounted } from "./useHasComponentMounted";
 
 
 /**
  * @param inputRange determines how finegrained the animation will be, e.g. [0, 255]
  * @param outputRange the actual style value range, e.g. ["rgb(0, 0, 0)", "rgb(255, 255, 255)"]
- * @param reverse whether to animate in reverse when animationDeps change
- * @param animationDeps if specified, the animation will be triggered whenever the deps change (useEffect). Set to `null` in order
+ * @param options
+ * 
+ * `reverse` whether to animate in reverse when animationDeps change
+ * 
+ * `animationDeps` if specified, the animation will be triggered whenever the deps change (useEffect). Set to `null` in order
  * to disable animation triggered by state. Default is `[reverse]`
- * @param duration in ms. Default is {@link TRANI}
- * @param easing see {@link Easing}. Default is "inOut"
+ * 
+ * `duration` in ms. Default is {@link TRANSITION_DURATION}
+ * 
+ * `startReversed` indicates to use the `inputRange`'s last value as initial animated value. Default is `false`
+ * 
+ * `animateOnMout` whether to allow the animation on component mount. Default is `false`
+ * 
+ * `easing` see {@link Easing}. Default is "inOut"
+ * 
+ * `onComplete` called after animation is done
  * @since 0.0.1
  * @see Animated.Value.interpolate
  */
 export function useAnimatedStyle(
     inputRange: number[],
     outputRange: string[] | number[],
-    reverse?: boolean,
-    animationDeps: DependencyList | null = [reverse],
-    duration = TRANSITION_DURATION,
-    easing = Easing.inOut(Easing.ease)
+    options: {
+        reverse?: boolean,
+        animationDeps?: DependencyList | null,
+        duration?: number,
+        startReversed?: boolean,
+        animateOnMout?: boolean,
+        easing?: EasingFunction,
+        onComplete?: () => void
+    } = {}
 ) {
-
-    const animatedValue = useAnimatedValue(inputRange.length ? inputRange[0] : 0);
+    const { 
+        duration = TRANSITION_DURATION, 
+        easing = Easing.inOut(Easing.ease), 
+        reverse, 
+        animationDeps = [reverse], 
+        animateOnMout = false,
+        startReversed = false 
+    } = options;
+    const animatedValue = useAnimatedValue(inputRange.length ? inputRange[startReversed ? inputRange.length - 1 : 0] : 0);
 
     const hasMounted = useHasComponentMounted();
 
     useEffect(() => {
-        if (animationDeps && hasMounted)
+        if (animationDeps && (hasMounted || animateOnMout)) {
             animate(reverse);
+            
+            setTimeout(() => {
+                if (options.onComplete)
+                    options.onComplete();
+            }, duration);
+        }
 
     }, animationDeps);
 
 
-    function animate(reverse = false): void {
+    /**
+     * Start animating and resolve once animation is done.
+     * 
+     * @param reverse whether to animate in reverse (will reverse `inputRange`)
+     * @returns the animation object
+     */
+    async function animate(reverse = false): Promise<Animated.CompositeAnimation> {
 
-        Animated.timing(
+        const animation = Animated.timing(
             animatedValue,
             {
                 toValue: inputRange[reverse ? 0 : inputRange.length - 1],
@@ -45,7 +80,15 @@ export function useAnimatedStyle(
                 easing,
                 useNativeDriver: false
             }
-        ).start();
+        );
+        
+        animation.start();
+
+        return new Promise((res, rej) => {
+            setTimeout(() => {
+                res(animation);
+            }, duration);
+        })
     }
 
 

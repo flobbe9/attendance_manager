@@ -1,9 +1,10 @@
-import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
-import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
-import { SQLiteDatabase } from "expo-sqlite";
-import AbstractEntity from "./AbstractEntity_Schema";
-import { eq, SQL } from "drizzle-orm/sql";
 import { logError } from "@/utils/logUtils";
+import { assertFalsyAndThrow } from "@/utils/utils";
+import { getTableName } from "drizzle-orm";
+import { eq, SQL } from "drizzle-orm/sql";
+import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
+import AbstractEntity from "./Abstract_Schema";
+import { Db } from "./Db";
 
 
 /**
@@ -15,26 +16,42 @@ import { logError } from "@/utils/logUtils";
  * 
  * @since 0.0.1
  */
-export abstract class Dao<Entity extends AbstractEntity, Table extends SQLiteTableWithColumns<any>> {
+export class Dao<E extends AbstractEntity> {
 
-    private db: ExpoSQLiteDatabase<Record<string, never>> & {$client: SQLiteDatabase};
-    private table: Table;
+    protected db: Db;
+    protected table : SQLiteTableWithColumns<any>;
 
 
-    constructor(db: ExpoSQLiteDatabase<Record<string, never>> & {$client: SQLiteDatabase}, table: Table) {
+    constructor(db: Db, table: SQLiteTableWithColumns<any>) {
 
         this.db = db;
         this.table = table;
     }
 
-
-    async insert(values: Entity): Promise<Entity[] | null> {
-
-        values.created = new Date();
-        values.updated = new Date();
+    /**
+     * Will attempt to insert (but never update) `values`.
+     * 
+     * @param values to insert
+     * @returns saved result or `null` if error
+     */
+    public async insert(values: E): Promise<E | null> {
 
         try {
-            return this.db.insert(this.table).values(values).returning() as any as Entity[];
+            values.created = new Date();
+            values.updated = new Date();
+
+            const results = await this.db.insert(this.table).values(values).returning() as any as E[];
+
+            if (results.length) {
+
+                const result = results[0];
+                result.created = values.created;
+                result.updated = values.updated;
+
+                return result;
+            }
+
+            throw new Error(`Failed to insert into ${getTableName(this.table)}. Empty result set.`);
             
         } catch (e) {
             logError(e.message);
@@ -44,30 +61,33 @@ export abstract class Dao<Entity extends AbstractEntity, Table extends SQLiteTab
     
 
     /**
-     * Update all entities matching `whereClause`.
+     * Update all entities matching `where`.
+     * 
+     * Notice that setting a field value to `undefined` or removing it completely from the entity will not
+     * be considered as setting the value to `null`. Instead the value wont be modified at all.
      * 
      * @param values to insert. Object may be incomplete, will only update what's given
-     * @param whereClause to identify the row(s) to update. If not specified, `values.id` is used as `whereClause` 
+     * @param where to identify the row(s) to update. If not specified, `values.id` is used as `where` 
      * @returns the updated entities or `null` if error
-     * @throws if sql error or no valid `whereClause` could be resolved
+     * @throws if sql error or no valid `where` could be resolved
      */
-    async update(values: Entity, whereClause?: SQL): Promise<Entity[] | null> {
+    public async update(values: E, where?: SQL): Promise<E[] | null> {
 
-        values.updated = new Date();
-        
         try {
-            if (!whereClause) {
+            values.updated = new Date();
+        
+            if (!where) {
                 if (!values.id)
-                    throw new Error(`Cannot update table. Missing both 'whereClause' and 'values.id'.`);
+                    throw new Error(`Cannot update table ${getTableName(this.table)}. Missing both 'where' and 'values.id'.`);
 
-                whereClause = eq(this.table.id, values.id); 
+                where = eq(this.table.id, values.id); 
             }
 
             return this.db
                 .update(this.table)
                 .set(values)
-                .where(whereClause)
-                .returning() as any as Entity[];
+                .where(where)
+                .returning() as any as E[];
 
         } catch (e) {
             logError(e.message);
@@ -76,7 +96,36 @@ export abstract class Dao<Entity extends AbstractEntity, Table extends SQLiteTab
     }
 
 
-    async select(where: SQL): Promise<Entity[] | null> {
+    /**
+     * Attempt to update `values` first but insert them instead if neither `where` nor `values.id` exist in db.
+     * 
+     * @param values to update or insert
+     * @param where matcher for update statement
+     * @returns inserted / updated value(s) or `null` if error
+     */
+    public async updateOrInsert(values: E, where?: SQL): Promise<E | E[] | null> {
+        assertFalsyAndThrow(values);
+
+        // case: no where, fallback to values.id
+        if (!where && values.id)
+            where = eq(this.table.id, values.id);
+
+        // update if where has at least 1 result
+        if (where) {
+            const selectResults = await this.select(where);
+            if (selectResults.length)
+                return this.update(values, where);
+        }
+
+        return this.insert(values);
+    }
+
+
+    /**
+     * @param where if not specified, select all entities
+     * @returns array of results, empty array if no matches, `null` if error
+     */
+    public async select(where?: SQL): Promise<E[] | null> {
 
         try {
             return this.db.select().from(this.table).where(where);
@@ -88,10 +137,56 @@ export abstract class Dao<Entity extends AbstractEntity, Table extends SQLiteTab
     }
 
 
-    async delete(where: SQL) {
+    public async delete(where: SQL) {
 
         try {
             return this.db.delete(this.table).where(where);
+
+        } catch (e) {
+            logError(e.message);
+            return null;
+        }
+    }
+
+
+    /**
+     * @param id of entity
+     * @returns true if entity with `id` exists
+     * @throws if `id` is falsy
+     */
+    public async existsById(id?: number): Promise<boolean> {
+
+        assertFalsyAndThrow(id);
+
+        return this.exists(eq(this.table.id, id))
+    }
+    
+
+    /**
+     * @param where the select query
+     * @returns true if select query returns at least 1 result
+     * @throws if arg is falsy
+     */
+    public async exists(where: SQL): Promise<boolean> {
+
+        assertFalsyAndThrow(where);
+
+        const results = await this.select(where);
+
+        return !!results.length;
+    }
+
+
+    public getTableName(): string {
+
+        return getTableName(this.table);
+    }
+
+
+    public async count(where?: SQL): Promise<number | null> {
+
+        try {
+            return await this.db.$count(this.table, where);
 
         } catch (e) {
             logError(e.message);

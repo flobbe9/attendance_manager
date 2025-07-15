@@ -2,6 +2,7 @@
  * NOTE: cannot import from modules that import from utils.ts because that would create a cycle.
  */
 import { CSSProperties } from "react";
+import { logError } from "./logUtils";
 
 
 /**
@@ -96,7 +97,7 @@ export function isEmpty(str: string): boolean {
 
 
 /**
- * @param length num chars the string should have
+ * @param length num chars the string should have. Default is 12 (but returns length 10 for some reason)
  * @returns random string of of alphanumeric chars with given length
  */
 export function getRandomString(length = 12): string {
@@ -1004,15 +1005,20 @@ export function flatMapObject(obj: object): object {
  */
 export function cloneObj<T extends object>(obj: T, depth = -1, currentDepth = 0): T {
 
-    if (!obj || typeof obj !== "object")
+    if (!obj || typeof obj !== "object" || obj instanceof Date)
         return obj;
 
     // case: reached desired depth
     if (depth === currentDepth)
         return obj;
 
-    const copy = {...obj};
     currentDepth++;
+
+    if (Array.isArray(obj))
+        return [...obj].map(o => 
+            cloneObj(o, depth, currentDepth)) as T;
+
+    const copy = {...obj};
 
     Object.entries(copy)
         .forEach(([key, value]) => {
@@ -1061,4 +1067,88 @@ export function mergeObjects<T extends object>(...objs: T[]): T {
     objs.forEach(obj => Object.assign(mergedObj, obj));
 
     return mergedObj as T;
+}
+
+
+/**
+ * Throws at the first arg beeing falsy (but not if no args are specified). Use util "isFalsy" methods for primitive types.
+ * 
+ * @param args to check
+ */
+export function assertFalsyAndThrow(...args: any[]): void {
+
+    if (!args || !args.length)
+        return;
+
+    for (let i = 0; i < args.length; i++) {
+        const arg = args[i];
+
+        let isFalsy = false;
+
+        if (typeof arg === "string")
+            isFalsy = isStringFalsy(arg);
+
+        else if (typeof arg === "number")
+            isFalsy = isNumberFalsy(arg);
+
+        else if (typeof arg === "boolean")
+            isFalsy = isBooleanFalsy(arg);
+
+        else 
+            isFalsy = !arg;
+
+        if (isFalsy)
+            throw new Error(`Invalid arg at index ${i}`);
+    }
+}
+
+
+/**
+ * See {@link assertFalsyAndThrow}.
+ * 
+ * @param args to check
+ * @returns `true` if no arg was falsy, else `false`
+ */
+export function assertFalsyAndLog(...args: any[]): boolean {
+
+    try {
+        assertFalsyAndThrow(args);
+        return true;
+
+    } catch (e) {
+        console.error(e.message);
+        return false;
+    }
+}
+
+
+/**
+ * Example: 
+ * ```
+ * const arr1 = [1, 2, 3];
+ * const arr2 = [2, 3, 4];
+ * getArrayDiff(arr1, arr2); // returns [1]
+ * ```
+ * @param arr1 to get diff for
+ * @param arr2 to check the diff against
+ * @returns all elements from arr1 that are not in arr2. An empty array if `arr1` is falsy
+ */
+export function getArrayDiff<T>(arr1: T[], arr2: T[]): T[] {
+
+    if (!arr1)
+        return [];
+
+    if (!arr2)
+        return arr1;
+
+    const arr2Set = new Set(arr2);
+    const diffArr: T[] = [];
+
+    arr1
+        .forEach(el => {
+            if (!arr2Set.has(el))
+                diffArr.push(el);
+        })
+
+    return diffArr;
 }

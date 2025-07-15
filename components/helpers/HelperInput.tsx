@@ -4,12 +4,14 @@ import { HelperInputStyles } from "@/assets/styles/HelperInputStyles";
 import HS from "@/assets/styles/helperStyles";
 import { useDynamicStyle } from "@/hooks/useDynamicStyle";
 import { useHelperProps } from "@/hooks/useHelperProps";
+import { logTrace } from "@/utils/logUtils";
 import React, { forwardRef, Fragment, Ref, useEffect, useImperativeHandle, useRef } from "react";
 import { Animated, NativeSyntheticEvent, TextInput, TextInputFocusEventData, TextInputProps, TextStyle, useAnimatedValue, ViewStyle } from "react-native";
 
 
 interface Props extends HelperProps<TextStyle>, TextInputProps {
-    disabled?: boolean
+    disabled?: boolean,
+    /** Automatically called in `onChangeText`. Make `onChangeText` throw in order to prevent this (will be handled gracefully) */
     setValue?: (value: string) => void,
     /** Applied to the outer most tag of this component. Should only be used for positioning and component dimensions. */
     containerStyles?: DynamicStyle<ViewStyle>
@@ -26,12 +28,11 @@ export default forwardRef(function HelperInput(
         containerStyles = {},
         setValue,
         onRender,
-        onChangeText: onChangeTextProps,
+        onChangeText: propsOnChangeText,
         ...props
     }: Props, 
     ref: Ref<TextInput>
 ) {
-
     const componentRef = useRef<TextInput>(null);
 
     const animatedBackgroundColor = useAnimatedValue(0);
@@ -43,48 +44,47 @@ export default forwardRef(function HelperInput(
         [HelperInputStyles.view.animatedDynamicStyles.backgroundColor(animatedBackgroundColor)]
     );
 
-    
     useImperativeHandle(ref, () => componentRef.current!, []);
-
 
     useEffect(() => {
         if (onRender)
             onRender();
-
     }, []);
 
     
     if (!rendered)
         return <Fragment />;
 
-
     function onChangeText(value: string): void {
+        try {
+            if (propsOnChangeText)
+                propsOnChangeText(value);
 
-        if (onChangeTextProps)
-            onChangeTextProps(value);
+        // intended not to call setValue
+        } catch (e) {
+            if (e.message)
+                logTrace(e.message)
+
+            return;
+        }
 
         if (setValue)
             setValue(value);
     }
 
-
     function onFocus(event: NativeSyntheticEvent<TextInputFocusEventData>): void {
-
         if (propsOnFocus)
             propsOnFocus(event);
 
         viewEventHandlers.onFocus();
     }
-    
 
     function onBlur(event: NativeSyntheticEvent<TextInputFocusEventData>): void {
-
         if (propsOnBlur)
             propsOnBlur(event);
 
         viewEventHandlers.onBlur(); 
     }
-
 
     return (
         <Animated.View style={viewStyles}>
@@ -92,14 +92,14 @@ export default forwardRef(function HelperInput(
                 ref={componentRef}
                 editable={!disabled}
                 selectTextOnFocus={!disabled}
-                onChangeText={onChangeText}
-                onFocus={onFocus}
-                onBlur={onBlur}
                 style={{
                     ...(disabled ? HS.disabled : {}),
                     ...style as object,
                 }}
                 returnKeyType={otherProps.multiline ? "none" : "default"}
+                onChangeText={onChangeText}
+                onFocus={onFocus}
+                onBlur={onBlur}
                 {...otherProps}
             />
 

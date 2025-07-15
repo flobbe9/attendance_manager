@@ -32,6 +32,13 @@ export default class HelperStyles {
         justifyContent: "center", 
     };
 
+    /** Center horizontally without putting elements next to eachother */
+    static centerNoFlex: StyleType = {
+        ...this.flex,
+        flexDirection: "column", 
+        alignItems: "center"
+    }
+
     static flexCenterCenter: StyleType = { 
         ...this.flex,
         justifyContent: "center", 
@@ -39,7 +46,22 @@ export default class HelperStyles {
         alignContent: "center"  // this is needed in combination with alignSelf: 'flex-start'
     };
 
+    static flexStart: StyleType = { 
+        ...this.flex,
+        justifyContent: "flex-start", 
+    };
+
+    static flexStartStart: StyleType = { 
+        ...this.flex,
+        alignItems: "flex-start", 
+        justifyContent: "flex-start",
+    };
+
     static fullWidth: StyleType = {
         width: "100%",
+    }
+    
+    static fullHeight: StyleType = {
+        height: "100%",
     }
 }

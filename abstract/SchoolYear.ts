@@ -1,3 +1,5 @@
+import { isEmpty } from "@/utils/utils";
+
 export const schoolYearObj = {
     "5": "sek1",
     "6": "sek1",
@@ -17,3 +19,21 @@ export type SchoolYear = keyof typeof schoolYearObj;
 export const SCHOOL_YEARS: SchoolYear[] = Object.keys(schoolYearObj) as SchoolYear[]; 
 
 export type SchoolYearSection = "sek1" | "sek2";
+
+
+export function isSchoolYear(value: string): value is SchoolYear {
+
+    return SCHOOL_YEARS.includes(value as any);
+}
+
+
+/**
+ * @param value to check 
+ * @returns `true` if `value` might become a valid `schoolYear` after appending characters
+ */
+export function mightBecomeSchoolYear(value: string): boolean {
+
+    return isEmpty(value) || 
+        (value.length === 1 && value === "1") ||
+        isSchoolYear(value);
+}

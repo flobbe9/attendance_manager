@@ -1,22 +1,21 @@
-import { Examinant, Examinant_Key, EXAMINANT_KEYS } from "@/abstract/Examinant";
 import { relations } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import AbstractEntity, { AbstractEntity_Table } from "../abstract/AbstractEntity_Schema";
+import AbstractEntity, { Abstract_Table } from "../abstract/Abstract_Schema";
 import { Attendance_Table } from "./Attendance_Schema";
+import { EXAMINANT_ROLE_KEYS, ExaminantRole_Key } from "@/abstract/Examinant";
 
-type TableName = "Examinant";
-const TableNameValue: TableName = "Examinant";
+const TableNameValue = "examinant";
 
 
 export const Examinant_Table = sqliteTable(
     TableNameValue, 
     {
-        ...AbstractEntity_Table,
-        role: text({ enum: EXAMINANT_KEYS as [Examinant_Key]}).notNull(),
-        fullName: text("full_name"),
+        ...Abstract_Table,
+        role: text({ enum: EXAMINANT_ROLE_KEYS as [ExaminantRole_Key]}).notNull(),
+        fullName: text(),
         attendanceId: integer("attendance_id")
             .notNull()
-            .references(() => Attendance_Table.id, {onDelete: 'cascade', onUpdate: 'cascade'})
+            .references(() => Attendance_Table.id, {onDelete: 'cascade'})
     },
 );
 
@@ -32,10 +31,14 @@ export const Examinant_Relations = relations(
 /**
  * @since 0.0.1
  */
-export interface ExaminantEntity extends AbstractEntity {
-
+export class ExaminantEntity extends AbstractEntity {
     /** The type of examinant. See {@link Examinant} */
-    role: Examinant_Key,
-    fullName?: string,
-    attendanceId?: number
+    role: ExaminantRole_Key;
+    fullName?: string;
+    attendanceId?: number;
+
+    constructor(role: ExaminantRole_Key) {
+        super();
+        this.role = role;
+    }
 }

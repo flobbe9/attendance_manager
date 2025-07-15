@@ -1,274 +1,241 @@
-import DefaultProps from "@/abstract/DefaultProps";
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { Headmaster, HEADMASTERS } from "@/abstract/Headmaster";
-import { MUSIC_LESSON_TOPICS, MusicLessonTopic } from "@/abstract/MusicLessonTopic";
-import { SCHOOLCLASS_MODES, SchoolclassMode } from "@/abstract/SchoolclassMode";
-import { SCHOOL_SUBJECTS, SchoolSubject } from "@/abstract/SchoolSubject";
-import { AttendanceStyles } from "@/assets/styles/AttendanceStyles";
-import "@/assets/styles/AttendanceStyles.ts";
-import DatePicker from "@/components/helpers/DatePicker";
+import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
+import "@/assets/styles/AttendanceIndexStyles";
+import HelperStyles from "@/assets/styles/helperStyles";
+import { AttendanceEntity } from "@/backend/DbSchema";
+import { AttendanceService } from "@/backend/services/AttendanceService";
+import { DontConfirmAttendanceLeaveContent } from "@/components/(attendance)/DontConfirmAttendanceLeaveContent";
+import ExaminantInput from "@/components/(attendance)/ExaminantInput";
+import SchoolclassModeInput from "@/components/(attendance)/SchoolclassModeInput";
+import SchoolSubjectInput from "@/components/(attendance)/SchoolSubjectInput";
+import SchoolYearInput from "@/components/(attendance)/SchoolYearInput";
+import TopBar from "@/components/(attendance)/TopBar";
+import TopicInput from "@/components/(attendance)/TopicInput";
+import { AttendanceContext } from "@/components/context/AttendanceContextProvider";
+import { GlobalAttendanceContext } from "@/components/context/GlobalAttendanceContextProvider";
+import { GlobalContext } from "@/components/context/GlobalContextProvider";
 import Flex from "@/components/helpers/Flex";
 import HelperButton from "@/components/helpers/HelperButton";
 import HelperInput from "@/components/helpers/HelperInput";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
-import HelperSelect from "@/components/helpers/HelperSelect";
 import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
+import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
-import { useDefaultProps } from "@/hooks/useDefaultProps";
+import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { DontLeaveScreenOptions, useScreenLeaveAttempt } from "@/hooks/useScreenLeaveAttempt";
 import { useSubjectColor } from "@/hooks/useSubjectColor";
-import { CheckboxStatus } from "@/utils/constants";
-import { BORDER_RADIUS, HISTORY_COLOR, MUSIC_COLOR } from "@/utils/styleConstants";
+import { SETTINGS_DONT_CONFIRM_ATTENDANCE_SCREEN_LEAVE } from "@/utils/constants";
+import { logDebug } from "@/utils/logUtils";
+import { BORDER_RADIUS, FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
-import { ViewProps, ViewStyle } from "react-native";
-import { RadioButton } from "react-native-paper";
-import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-
-
-interface Props extends DefaultProps<ViewStyle>, ViewProps {
-
-}
-
+import { useNavigation } from "expo-router";
+import React, { useContext, useEffect, useState } from "react";
+import { ViewStyle } from "react-native";
+import { Divider } from "react-native-paper";
+import DateInput from '../../components/(attendance)/DateInput';
 
 /**
+ * Attendance create / edit screen.
+ * 
  * @since 0.0.1
  */
-export default function index(props: Props) {
+export default function index() {
+    const { hideSnackbar, toast } = useContext(GlobalContext);
+    const { 
+        currentAttendanceEntityId, 
+        savedAttendanceEntities, 
+        dontConfirmAttendanceScreenLeave,
+        setDontConfirmAttendanceScreenLeave
+    } = useContext(GlobalAttendanceContext);
 
-    const [date, setDate] = useState<CalendarDate>(new Date());
+    const { 
+        currentAttendanceEntity, 
+        setCurrentAttendanceEntity, 
+        updateCurrentAttendanceEntity, 
+        lastSavedAttendanceEntity,
+        updateLastSavedAttendanceEntity,
+        isCurrentAttendanceEntityModified,
+        setCurrentAttendanceEntityModified,
+    } = useContext(AttendanceContext);
     
-    const [selectedSubject, setSelectedSubject] = useState<SchoolSubject>();
-    const subjectColor = useSubjectColor(selectedSubject, true, "rgb(240, 240, 240)");
+    const { transparentColor: subjectColor} = useSubjectColor(currentAttendanceEntity?.schoolSubject, "rgb(240, 240, 240)");
 
-    const [selectedMusicLessonTopic, setSelectedMusicLessonTopic] = useState<MusicLessonTopic>();
-
-    const [historyExaminantStatus, setHistoryExaminantStatus] = useState<CheckboxStatus>("unchecked");
-    const [musicExaminantStatus, setMusicExaminantStatus] = useState<CheckboxStatus>("unchecked");
-    const [educatorExaminantStatus, setEducatorExaminantStatus] = useState<CheckboxStatus>("unchecked");
-    
-    const [isHeadmaster, setIsHeadMaster] = useState(false);
-    const [selectedHeadmaster, setSelectedHeadMaster] = useState<Headmaster>();
-    
     const [areNotesVisible, setAreNotesVisible] = useState(false);
 
-    const [schoolclassMode, setSchoolclassMode] = useState<SchoolclassMode>("Eigenverantwortlicher Unterricht");
-    const [schoolclassModeRadioButtons, setSchoolclassModeRadioButtons] = useState<JSX.Element[]>([]); 
+    const { setDidConfirm, setDidDismiss } = useDontShowAgainStates([dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave], SETTINGS_DONT_CONFIRM_ATTENDANCE_SCREEN_LEAVE);
 
-    const { animatedStyle } = useAnimatedStyle(
+    const { allStyles: {mb_2}} = useResponsiveStyles();
+
+    const { animatedStyle: animatedArrowIconRotation } = useAnimatedStyle(
         [0, 180],
         ["0deg", "-180deg"],
-        !areNotesVisible,
-        [areNotesVisible]
+        {
+            reverse: !areNotesVisible,
+        }
     )
 
-    const componentName = "Attendance";
-    const { children, style, ...otherProps } = useDefaultProps(props, componentName, AttendanceStyles.component);
-
     const numHelperInputLines = 20;
+    const attendanceService = new AttendanceService();
 
+    const navigation = useNavigation();
+        
+    useEffect(() => {
+        updateLastSavedAttendanceEntity(initializeCurrentAttendanceEntity());
+    }, []);
+
+    useScreenLeaveAttempt(
+        isCurrentAttendanceEntityModified && !dontConfirmAttendanceScreenLeave, 
+        {
+            handleScreenLeave: handleScreenLeave,
+            handleDontLeaveScreen: handleDontLeaveScreenLeave
+        }
+    )
     
     useEffect(() => {
-        setSchoolclassModeRadioButtons(mapSchoolclassModeRadioButtons());
+        // case: last saved instance has been instantiated
+        if (lastSavedAttendanceEntity && currentAttendanceEntity)
+            setCurrentAttendanceEntityModified(attendanceService.isModified(lastSavedAttendanceEntity, currentAttendanceEntity));
 
-    }, [schoolclassMode]);
+    }, [currentAttendanceEntity, lastSavedAttendanceEntity]);
 
+    // case: no currentAttendanceEntity yet, should not happen though
+    if (!currentAttendanceEntity)
+        return (
+            <ScreenWrapper
+                style={{...AttendanceIndexStyles.suspenseContainer}}
+                contentContainerStyle={{...HelperStyles.centerNoFlex}}
+            >
+                <FontAwesome name="hourglass" size={FONT_SIZE} style={{...mb_2}} />
+                <HelperText>Lade Unterrichtsbesuch...</HelperText>
+            </ScreenWrapper>
+        );
 
-    function mapSchoolclassModeRadioButtons(): JSX.Element[] {
-
-        return SCHOOLCLASS_MODES.map((mode, i) => (
-            <Flex alignItems="center" key={i}>
-                <RadioButton.IOS value={mode} />
-                <HelperText onPress={() => setSchoolclassMode(mode)}>{mode}</HelperText>
-            </Flex>
-        ));
+    function handleScreenLeave(): void {
+        hideSnackbar();
     }
 
+    function handleDontLeaveScreenLeave(options: DontLeaveScreenOptions): void {
+        const handleConfirm = () => 
+            navigation.dispatch(options.data.action)
 
-    // TODO: 
-        // validation
-        // disable all inputs when date is in past
-        // multiline max height
-            // consider tablet
-            // consider full screen
-        // figure out grid thing
-            // do myself
-        // fix icons
+        if (!dontConfirmAttendanceScreenLeave) {
+            toast(
+                <DontConfirmAttendanceLeaveContent />,
+                {
+                    onConfirm: () => {
+                        setDidConfirm(true);
+                        setTimeout(() => {
+                            handleConfirm();
+                        }, 200); // wait for confirm hook to trigger
+                    },
+                    onDismiss: () => setDidDismiss(true)
+                }
+            );
+        }
+    }
 
+    function initializeCurrentAttendanceEntity(): AttendanceEntity | null {
+        let attendanceEntityForId: AttendanceEntity;
+
+        if (currentAttendanceEntityId <= 0)
+            attendanceEntityForId = AttendanceService.getEmptyInstance()
+            
+        else
+            attendanceEntityForId = savedAttendanceEntities
+               .find(attendanceEntity => attendanceEntity.id === currentAttendanceEntityId);
+
+        if (!attendanceEntityForId) {
+            logDebug("Failed to load current attendance entity for current id " + currentAttendanceEntityId);
+            return null;
+        }
+
+        setCurrentAttendanceEntity(attendanceEntityForId);
+
+        return attendanceEntityForId;
+    }
 
     return (
-        <SafeAreaProvider>
-            <SafeAreaView style={{height: "100%"}}>
-                <HelperScrollView 
-                    style={{
-                        backgroundColor: subjectColor,
-                        ...style as object
-                    }} 
-                    {...otherProps}
-                >
-                    {/* Subject */}
-                    <HelperSelect 
-                        dynamicStyle={AttendanceStyles.inputContainer}
-                        options={SCHOOL_SUBJECTS}
-                        selectedOptions={selectedSubject}
-                        setSelectedOptions={setSelectedSubject}
-                        optionsContainerScroll={false}
-                        optionsContainerHeight={85}
-                    >
-                        <HelperText dynamicStyle={AttendanceStyles.heading}>Fach</HelperText>
-                    </HelperSelect>
+        <ScreenWrapper 
+            style={{
+                ...AttendanceIndexStyles.component.default,
+                backgroundColor: subjectColor, 
+            }} 
+        >
+            <TopBar />
+            
+            <Divider style={{...mb_2}} />
 
-                    {/* Date */}
-                    <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
-                        <HelperText dynamicStyle={AttendanceStyles.heading}>Datum (und Zeit? oder Schulstunde?)</HelperText>
-                        <DatePicker date={date} setDate={setDate} />
-                    </HelperView>
+            <HelperScrollView dynamicStyle={AttendanceIndexStyles.scrollView}>
+                <SchoolSubjectInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
 
-                    {/* Year */}
-                    <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
-                        <HelperText dynamicStyle={AttendanceStyles.heading}>Jahrgang</HelperText>
-                        <HelperInput 
-                            placeholder="5 - 13"
-                            keyboardType="numeric"
-                            containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
-                        />
-                    </HelperView>
+                {/* Post select subject */}
+                <HelperView rendered={!!currentAttendanceEntity.schoolSubject}>
+                    <DateInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
 
-                    {/* Topic */}
-                    <HelperSelect 
-                        rendered={selectedSubject === "Musik"}
-                        dynamicStyle={AttendanceStyles.inputContainer}
-                        options={MUSIC_LESSON_TOPICS}
-                        selectedOptions={selectedMusicLessonTopic}
-                        setSelectedOptions={setSelectedMusicLessonTopic}
-                        optionsContainerScroll={false}
-                        optionsContainerHeight={210}
+                    <SchoolYearInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
+
+                    <TopicInput 
+                        rendered={currentAttendanceEntity.schoolSubject === "music"}
+                        dynamicStyle={AttendanceIndexStyles.inputContainer}
                         style={{zIndex: 2}} // needs to be higher than next sibling
-                    >
-                        <HelperText dynamicStyle={AttendanceStyles.heading}>Stundenthema</HelperText>
-                    </HelperSelect>
+                    />
 
-                    {/* Examinants */}
-                    <HelperView dynamicStyle={AttendanceStyles.inputContainer} style={{zIndex: 1/* for select container */}}>
-                        <HelperText dynamicStyle={AttendanceStyles.heading} style={{marginBottom: 0}}>Anwesende Prüfer</HelperText>
+                    <ExaminantInput 
+                        dynamicStyle={AttendanceIndexStyles.inputContainer} 
+                        style={{zIndex: 1}} // for select container
+                    />
 
-                        <Flex flexWrap="nowrap">
-                            {/* Subjects */}
-                            <HelperView dynamicStyle={AttendanceStyles.examinerIconContainer}>
-                                <FontAwesome 
-                                    name={historyExaminantStatus === "checked" ? "user" : "user-o"} 
-                                    color={HISTORY_COLOR} 
-                                    style={{...AttendanceStyles.examinerIcon, fontSize: historyExaminantStatus === "checked" ? 35 : 30}}
-                                    onPress={(e) => setHistoryExaminantStatus(historyExaminantStatus === "checked" ? "unchecked" : "checked")}
-                                />
-                            </HelperView>
-
-                            <HelperView dynamicStyle={AttendanceStyles.examinerIconContainer}>
-                                <FontAwesome 
-                                    name={musicExaminantStatus === "checked" ? "user" : "user-o"}
-                                    color={MUSIC_COLOR}
-                                    style={{...AttendanceStyles.examinerIcon, fontSize: musicExaminantStatus === "checked" ? 35 : 30}}
-                                    onPress={(e) => setMusicExaminantStatus(musicExaminantStatus === "checked" ? "unchecked" : "checked")}
-                                />
-                            </HelperView>
-
-                            <HelperView dynamicStyle={AttendanceStyles.examinerIconContainer}>
-                                <FontAwesome
-                                    name={educatorExaminantStatus === "checked" ? "user" : "user-o"} 
-                                    color={"black"} 
-                                    style={{...AttendanceStyles.examinerIcon, fontSize: educatorExaminantStatus === "checked" ? 35 : 30}}
-                                    onPress={(e) => setEducatorExaminantStatus(educatorExaminantStatus === "checked" ? "unchecked" : "checked")}
-                                />
-                            </HelperView>
-                
-                            {/* Headmaster */}
-                            <Flex 
-                                flexWrap="nowrap" 
-                                alignItems="flex-start" 
-                                flexShrink={1} 
-                                style={{marginLeft: 20}} 
-                                dynamicStyle={AttendanceStyles.examinerIconContainer}
-                            >
-                                <FontAwesome
-                                    name={isHeadmaster ? "user-plus" : "user-o"} 
-                                    color={"black"} 
-                                    style={{...AttendanceStyles.examinerIcon, fontSize: isHeadmaster ? 32 : 30}}
-                                    onPress={(e) => setIsHeadMaster(!isHeadmaster)}
-                                />
-                                
-                                <HelperSelect  
-                                    style={{flexShrink: 1}}
-                                    rendered={isHeadmaster}
-                                    options={HEADMASTERS} 
-                                    selectedOptions={selectedHeadmaster}
-                                    setSelectedOptions={setSelectedHeadMaster} 
-                                    optionsContainerHeight={85}
-                                    optionsContainerScroll={false}
-                                >
-                                    <HelperText>Schulleitung</HelperText>
-                                </HelperSelect>
-                            </Flex>
-                        </Flex>
-                    </HelperView>
-
-                    {/* Toggle notes */}
-                    <Flex justifyContent="center" dynamicStyle={AttendanceStyles.notesContainer}>
+                    <Flex justifyContent="center" dynamicStyle={AttendanceIndexStyles.notesContainer}>
+                        {/* Toggle notes */}
                         <HelperButton 
                             disableFlex={true} 
-                            style={{borderRadius: BORDER_RADIUS, width: 100}} 
+                            dynamicStyle={AttendanceIndexStyles.moreButton} 
                             onPress={() => setAreNotesVisible(!areNotesVisible)}
                         >
                             <HelperText>Mehr</HelperText>
                             <HelperView
                                 style={{
-                                    transform: [{rotate: animatedStyle}]
+                                    transform: [{rotate: animatedArrowIconRotation}]
                                 }} 
                             >
-                                <FontAwesome name={"chevron-down"} size={20} />
+                                <FontAwesome name={"chevron-down"} size={FONT_SIZE} />
                             </HelperView>
                         </HelperButton>
                     </Flex>
 
-                    {/* Notes */}
                     <HelperView rendered={areNotesVisible}>
                         {/* Note */}
-                        <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
+                        <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer}>
                             <HelperInput 
                                 multiline
                                 numberOfLines={numHelperInputLines}
                                 placeholder="Thema"
-                                dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
-                                containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
+                                dynamicStyle={AttendanceIndexStyles.defaultMultilineHelperInput}
+                                containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
+                                value={currentAttendanceEntity.note}
+                                setValue={(value) => updateCurrentAttendanceEntity(["note", value])}
                             />
                         </HelperView>
 
                         {/* Note2 */}
-                        <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
+                        <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer}>
                             <HelperInput 
                                 multiline
                                 numberOfLines={numHelperInputLines}
                                 placeholder="Lerngruppe"
-                                dynamicStyle={AttendanceStyles.defaultMultilineHelperInput}
-                                containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
+                                dynamicStyle={AttendanceIndexStyles.defaultMultilineHelperInput}
+                                containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
+                                value={currentAttendanceEntity.note2}
+                                setValue={(value) => updateCurrentAttendanceEntity(["note2", value])}
                             />
                         </HelperView>
 
-                        {/* Own/Other class */}
-                        <HelperView dynamicStyle={AttendanceStyles.inputContainer}>
-                            <RadioButton.Group value={schoolclassMode} onValueChange={(mode) => setSchoolclassMode(mode as SchoolclassMode)}>
-                                {schoolclassModeRadioButtons}
-                            </RadioButton.Group>
-
-                            <HelperInput
-                                placeholder="Ausbildungslehrer"
-                                rendered={schoolclassMode === "Ausbildungsunterricht"}
-                                containerStyles={AttendanceStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
-                            />
-                        </HelperView>
+                        <SchoolclassModeInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
                     </HelperView>
-                </HelperScrollView>
-            </SafeAreaView>
-        </SafeAreaProvider>
+                </HelperView>
+            </HelperScrollView>
+        </ScreenWrapper>
     )
 }

@@ -1,64 +1,77 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
+import { BOLD, BORDER_RADIUS, FONT_SIZE, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
-import HS from "./helperStyles";
-import { BORDER_RADIUS, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
-import HelperStyles from "./helperStyles";
-
-
-type StyleType = ViewStyle;
-
-const addButtonWidth = 59;
-const addButtonPosition = 20;
-const addButtonFontSize = 20;
+import { default as HelperStyles, default as HS } from "./helperStyles";
 
 
 export class AttendanceIndexStyles {
-    static component: DynamicStyle<StyleType> = {
+    static component: DynamicStyle<ViewStyle> = {
         default: {
+            height: "100%",
             padding: GLOBAL_SCREEN_PADDING,
         }
     }
 
-    static link: DynamicStyle<StyleType> = {
+    static suspenseContainer: ViewStyle = {
+        ...this.component.default,
+        ...HelperStyles.fullHeight, 
+        ...HelperStyles.flexCenterCenter, 
+    }
+
+    static scrollView: DynamicStyle<ViewStyle> = {
         default: {
+            marginBottom: 60, // more than padding sothat keyboard does not cover bottom input
+        }
+    }
+    
+    static heading: DynamicStyle<TextStyle> = {
+        default: {
+            fontSize: FONT_SIZE,
+            fontWeight: BOLD,
             marginBottom: GLOBAL_SCREEN_PADDING
         }
     }
 
-    static statusBarContainer: DynamicStyle<ViewStyle> = {
+    static subHeading: DynamicStyle<TextStyle> = {
         default: {
-            position: "absolute", 
-            top: GLOBAL_SCREEN_PADDING,
-            ...HelperStyles.fullWidth
+            fontSize: 17,
         }
     }
 
-    static addButtonOuterView: DynamicStyle<StyleType> = {
+    static inputContainer: DynamicStyle<ViewStyle> = {
         default: {
-            bottom: GLOBAL_SCREEN_PADDING * 2,
-            position: "absolute",
-            right: GLOBAL_SCREEN_PADDING * 2,
-        }
-    }
-    
-    static addButton: DynamicStyle<StyleType> = {
-        default: {
-            backgroundColor: "rgb(0, 0, 0)",
-            height: addButtonWidth,
-            paddingStart: 20,
-            paddingEnd: 20,
-            width: addButtonWidth
+            marginBottom: 30
         }
     }
 
-    static addButtonLabel: DynamicStyle<TextStyle> = {
+    static defaultHelperInputContainer: DynamicStyle<ViewStyle & TextStyle> = {
         default: {
-            fontSize: addButtonFontSize
+            backgroundColor: "rgb(220, 220, 220)",
+        },
+        focus: {
+            backgroundColor: "rgb(240, 240, 240)"
         }
     }
 
-    static buttonIcon: TextStyle = {
-        fontSize: addButtonFontSize,
-        ...HS.fitContent
+    static defaultMultilineHelperInput: DynamicStyle<TextStyle> = {
+        default: {
+            ...HS.flexCenter,
+            maxHeight: 200
+        }
+    }
+
+    static notesContainer: DynamicStyle<ViewStyle> = {
+        default: {
+            ...HS.fullWidth,
+            marginBottom: 60,
+            marginTop: 50,
+        }
+    }
+
+    static moreButton: DynamicStyle<ViewStyle> = {
+        default: {
+            borderRadius: BORDER_RADIUS, 
+            width: 100
+        }
     }
 }

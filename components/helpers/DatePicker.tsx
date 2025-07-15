@@ -3,20 +3,25 @@ import HelperProps from "@/abstract/HelperProps";
 import HS from "@/assets/styles/helperStyles";
 import HelperView from "@/components/helpers/HelperView";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
+import { formatDateGermanNoTime } from "@/utils/projectUtils";
 import React, { forwardRef, Fragment, Ref, useState } from "react";
 import { GestureResponderEvent, View, ViewProps, ViewStyle } from "react-native";
 import { DatePickerModal } from "react-native-paper-dates";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 import HelperButton from "./HelperButton";
 import HelperText from "./HelperText";
+import { logTrace } from "@/utils/logUtils";
 
+export type DatePickerValue = {startDate: CalendarDate; endDate: CalendarDate} & {date: CalendarDate} & {dates: Date[]};
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
     date: CalendarDate
     setDate: (date: CalendarDate) => void,
     /** Default is "de". Remember to register locales in "GlobalContextProvider.tsx" before adding more. See also https://web-ridge.github.io/react-native-paper-dates/docs/intro/ */
     locale?: "de" | "en",
-    buttonStyles?: DynamicStyle<ViewStyle>
+    buttonStyles?: DynamicStyle<ViewStyle>,
+    /** May throw an error to prevent setting `date` state. Will dismiss regardless */
+    onConfirm?:  (params: DatePickerValue) => void
 }
 
 
@@ -30,7 +35,8 @@ export default forwardRef(function DatePicker(
         date,
         setDate,
         locale = "de",
-        onTouchEnd,
+        onTouchStart,
+        onConfirm,
         buttonStyles,
         ...props
     }: Props,
@@ -44,31 +50,42 @@ export default forwardRef(function DatePicker(
 
     function DefaultChildren(): JSX.Element {
 
+        const dateString = date ?  formatDateGermanNoTime(date) :  'NA';
+
         return (
             <HelperButton dynamicStyle={buttonStyles}>
-                <HelperText>{`${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`}</HelperText>        
+                <HelperText>{dateString}</HelperText>        
             </HelperButton>
         );  
     }
 
-
     function handleDismiss(): void {
-
         setIsVisible(false);
     }
 
+    function handleConfirm(params: DatePickerValue): void {
+        try {
+            if (onConfirm)
+                onConfirm(params);
 
-    function handleConfirm(params: {startDate: CalendarDate; endDate: CalendarDate} & {date: CalendarDate} & {dates: Date[]}): void {
+        // intended to cancel confirm
+        } catch (e) {
+            if (e.message)
+                logTrace(e.message)
+            
+            return;
+
+        } finally {
+            handleDismiss();
+        }
 
         setDate(params.date);
-        setIsVisible(false);
     }
 
 
-    function handleTouchEnd(event: GestureResponderEvent): void {
-
-        if (onTouchEnd)
-            onTouchEnd(event);
+    function handleTouchStart(event: GestureResponderEvent): void {
+        if (onTouchStart)
+            onTouchStart(event);
 
         setIsVisible(!isVisible);
     }
@@ -77,6 +94,7 @@ export default forwardRef(function DatePicker(
     return (
         <Fragment>
             <DatePickerModal
+                startWeekOnMonday
                 locale={locale}
                 mode="single"
                 visible={isVisible}
@@ -89,9 +107,9 @@ export default forwardRef(function DatePicker(
                 ref={ref}
                 style={{
                     ...HS.fitContent,
-                    ...style as object
+                    ...style as object,
                 }}
-                onTouchEnd={handleTouchEnd} 
+                onTouchStart={handleTouchStart} 
                 {...otherProps}
             >
                 {children ?? <DefaultChildren />}

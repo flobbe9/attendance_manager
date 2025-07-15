@@ -16,7 +16,7 @@ export function useHelperProps<PropsType, StyleType>(
     props: HelperProps<StyleType> & PropsType, 
     componentName?: string,
     dynamicStyle: DynamicStyle<StyleType> = {},
-    animatedStyles: AnimatedDynamicStyle<StyleType>[] = [],
+    animatedDynamicStyles: AnimatedDynamicStyle<StyleType>[] = [],
     componentNameAsId = false
 ): HelperProps<StyleType> & PropsType {
 
@@ -27,7 +27,7 @@ export function useHelperProps<PropsType, StyleType>(
         otherProps as PropsType, 
         componentName, 
         combineDynamicStyles(dynamicStyle, propsDynamicStyle), 
-        [...animatedStyles, ...(props.animatedStyles || [])], 
+        [...animatedDynamicStyles, ...(props.animatedDynamicStyles || [])], 
         componentNameAsId
     );
 }

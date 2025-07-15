@@ -4,14 +4,15 @@ import HelperView from "@/components/helpers/HelperView";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useBackHandler } from "@/hooks/useBackHandler";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
+import { NO_SELECTION_LABEL } from "@/utils/constants";
 import { logError } from "@/utils/logUtils";
 import { FontAwesome } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
-import { Animated, Text, ViewProps, ViewStyle } from "react-native";
+import React, { forwardRef, Ref, useEffect, useState } from "react";
+import { View, ViewProps, ViewStyle } from "react-native";
 import HelperButton from "./HelperButton";
-import HelperText from "./HelperText";
+import HelperReactChildren from "./HelperReactChildren";
 import HelperScrollView from "./HelperScrollView";
-
+import HelperText from "./HelperText";
 
 interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
     options: OptionType[],
@@ -31,24 +32,28 @@ interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
     optionsContainerScroll?: boolean,
     /** Default is ```false``` */
     multiselect?: boolean,
-    /** Default is "No selection" */
+    /** Default is {@link NO_SELECTION_LABEL} */
     noSelectionLabel?: string,
+    /** Applied to every select option. If returns `true`, disable the select option. */
+    disabledCondition?: (optionValue: OptionType) => boolean
 }
-
 
 /**
  * @since 0.0.1
  */
-export default function HelperSelect<OptionType>({
-    options,
-    selectedOptions,
-    setSelectedOptions,
-    optionsContainerHeight = 200,
-    optionsContainerScroll = true,
-    multiselect = false,
-    noSelectionLabel = "No selection",
-    ...props
-}: Props<OptionType>) {
+export default forwardRef(function HelperSelect<OptionType>({
+        options,
+        selectedOptions,
+        setSelectedOptions,
+        optionsContainerHeight = 200,
+        optionsContainerScroll = true,
+        multiselect = false,
+        noSelectionLabel = NO_SELECTION_LABEL,
+        disabledCondition,
+        ...props
+    }: Props<OptionType>,
+    ref: Ref<View>
+) {
 
     const [optionElements, setOptionElements] = useState<JSX.Element[]>([]);
     const [areOptionsVisible, setAreOptionsVisible] = useState(false);
@@ -62,19 +67,16 @@ export default function HelperSelect<OptionType>({
         [0, optionsContainerHeight], 
     );
 
-
     useEffect(() => {
         setSelectionButtonValue(getSelectionButtonValue());
         setOptionElements(mapOptions());
 
-    }, [selectedOptions]);
-
+    }, [selectedOptions, setSelectedOptions]);
 
     useEffect(() => {
         slideOptionsContainer(!areOptionsVisible);
 
     }, [areOptionsVisible]);
-
 
     useBackHandler(() => {
         setAreOptionsVisible(false); 
@@ -83,17 +85,15 @@ export default function HelperSelect<OptionType>({
 
     }, [areOptionsVisible]);
 
-
     /**
      * Update ```selectedOptions``` state and possibly hide optionsContainer.
      * 
      * @param pressedOption 
      */
     function handleOptionPress(pressedOption: OptionType): void {
-
         if (multiselect) {
             if (!(selectedOptions instanceof Set)) {
-                logError("'selectedOptions' needs to be a set if 'multiselect' is true");
+                logError("'selectedOptions' needs to be a Set if 'multiselect' is true");
                 return;
             }
             let updatedSelectedOptions = new Set([...selectedOptions]);
@@ -123,29 +123,34 @@ export default function HelperSelect<OptionType>({
         setAreOptionsVisible(multiselect);
     }
 
-
     function mapOptions(): JSX.Element[] {
-
         if (!options)
             return [];
 
         return options
-            .map((option, i) => 
-                <HelperButton 
-                    dynamicStyle={HelperSelectStyles.optionButton} 
-                    containerStyles={{default: {width: "100%"}}}
-                    onPress={() => handleOptionPress(option)}
-                    key={i}
-                >
-                    <HelperText dynamicStyle={HelperSelectStyles.optionButtonText}>{option as string}</HelperText>
-                    {isOptionSelected(option) && multiselect && <FontAwesome name="check" style={HelperSelectStyles.optionButtonText.default} />}
-                </HelperButton>
-            );
+            .map((option, i) => {
+                const disabled = disabledCondition ? disabledCondition(option) : false;
+                return (
+                    <HelperButton 
+                        style={isOptionSelected(option) && !multiselect ? HelperSelectStyles.selectedOptionButton.default : HelperSelectStyles.optionButton.default} 
+                        containerStyles={{default: {width: "100%"}}}
+                        disabled={disabled}
+                        key={i}
+                        onPress={() => handleOptionPress(option)}
+                    >
+                        <HelperText 
+                            dynamicStyle={{...HelperSelectStyles.optionButtonText}}
+                        >
+                            {option as string}
+                        </HelperText>
+
+                        {isOptionSelected(option) && multiselect && <FontAwesome name="check" style={HelperSelectStyles.optionButtonText.default} />}
+                    </HelperButton>
+                );
+            });
     }
 
-
     function getSelectionButtonValue(): string {
-
         if (!options || !selectedOptions)
             return noSelectionLabel;
 
@@ -161,20 +166,19 @@ export default function HelperSelect<OptionType>({
         return selectedOptions as string;
     }
 
-
     function isOptionSelected(optionValue: OptionType): boolean {
-
         return selectedOptions instanceof Set ? selectedOptions.has(optionValue) : selectedOptions === optionValue;
     }
 
-
     return (
-        <HelperView {...otherProps}>
-            {children}
+        <HelperView ref={ref} {...otherProps}>
+            <HelperReactChildren>
+                {children}
+            </HelperReactChildren>
 
             <HelperButton 
                 dynamicStyle={HelperSelectStyles.selectionButton}
-                onTouchStart={() => setAreOptionsVisible(!areOptionsVisible)}
+                onPress={() => setAreOptionsVisible(!areOptionsVisible)}
             >
                 <HelperText dynamicStyle={HelperSelectStyles.selectionButtonValue} style={{opacity: selectionButtonValue === noSelectionLabel ? 0.5 : 1}}>
                     {selectionButtonValue}
@@ -195,4 +199,4 @@ export default function HelperSelect<OptionType>({
             </HelperView>
         </HelperView>
     )
-}
+})

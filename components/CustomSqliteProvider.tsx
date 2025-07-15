@@ -1,12 +1,13 @@
 import migrations from "@/drizzle/migrations";
-import { DATABASE_NAME } from "@/utils/constants";
-import { log, logDebug } from "@/utils/logUtils";
+import { DATABASE_NAME, DRIZZLE_DB_CONFIG } from "@/utils/constants";
+import { logDebug } from "@/utils/logUtils";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { openDatabaseSync, SQLiteProvider } from "expo-sqlite";
 import { ReactNode, Suspense, useEffect } from "react";
 import { ActivityIndicator } from "react-native";
+
 
 interface Props {
     children: ReactNode,
@@ -17,13 +18,13 @@ interface Props {
 
 export default function CustomSqliteProvider({children, useSuspense = true}: Props) {
 
-    const db = openDatabaseSync(DATABASE_NAME);
-    const drizzleDb = drizzle(db, { casing: 'snake_case' });
-    const { error: migrationsError } = useMigrations(drizzleDb, migrations);
+    const sqliteSync = openDatabaseSync(DATABASE_NAME);
+    const db = drizzle(sqliteSync, DRIZZLE_DB_CONFIG);
+    const { error: migrationsError } = useMigrations(db, migrations);
     
     // drizzle dev tools
     if (process.env.NODE_ENV !== 'production')
-        useDrizzleStudio(db);
+        useDrizzleStudio(sqliteSync);
 
     useEffect(() => {
         if (migrationsError)

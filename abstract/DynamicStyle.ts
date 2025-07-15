@@ -1,7 +1,6 @@
-import { log } from "@/utils/logUtils";
 import { isObjectFalsy } from "@/utils/utils";
+import { Animated } from "react-native";
 import { AnimatedDynamicStyle } from "./AnimatedDynamicStyle";
-import { Animated, StyleProp, ViewStyle } from "react-native";
 import { PartialRecord } from "./PartialRecord";
 
 /**
@@ -54,13 +53,13 @@ export function combineDynamicStyles<StyleType>(dynamicStyle1: DynamicStyle<Styl
             const dynamicStyle1Value = dynamicStyle1[key];
             const dynamicStyle2Value = dynamicStyle2[key];
 
-            // case: only style 1
-            if (isObjectFalsy(dynamicStyle2Value)) {
-                combined[key] = dynamicStyle1Value;
-                
             // case: only style 2
-            } else if (isObjectFalsy(dynamicStyle1Value))
+            if (!isObjectFalsy(dynamicStyle2Value) && isObjectFalsy(dynamicStyle1Value)) {
                 combined[key] = dynamicStyle2Value;
+                
+            // case: only style 1
+            } else if (!isObjectFalsy(dynamicStyle1Value) && isObjectFalsy(dynamicStyle2Value))
+                combined[key] = dynamicStyle1Value;
 
             // case: both
             else

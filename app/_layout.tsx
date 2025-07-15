@@ -1,6 +1,15 @@
+import GlobalAttendanceContextProvider from "@/components/context/GlobalAttendanceContextProvider";
 import GlobalContextProvider from "@/components/context/GlobalContextProvider";
 import CustomSqliteProvider from "@/components/CustomSqliteProvider";
+import GlobalComponentProvider from "@/components/GlobalComponentProvider";
+import { logErrorFiltered, logWarnFiltered } from "@/utils/logUtils";
 import { Stack } from "expo-router";
+import { useColorScheme } from "react-native";
+import { ClickOutsideProvider } from "react-native-click-outside";
+
+
+console.warn = logWarnFiltered;
+console.error = logErrorFiltered;
 
 
 /**
@@ -10,16 +19,34 @@ import { Stack } from "expo-router";
  */
 export default function layout() {
 
+    const scheme = useColorScheme();
+ 
     return (
         <CustomSqliteProvider>
             <GlobalContextProvider>
-                <Stack 
-                    screenOptions={{
-                        headerShown: false, 
-                        orientation: "all", 
-                        presentation: "modal"
-                    }} 
-                />
+                <GlobalAttendanceContextProvider>
+                    <ClickOutsideProvider>
+                        <GlobalComponentProvider>
+                            <Stack
+                                screenOptions={{
+                                    headerShown: false,
+                                    statusBarStyle: scheme,
+                                    orientation: "default"
+                                }}
+                            >
+                                <Stack.Screen 
+                                    name="index" 
+                                    options={{
+                                        headerShown: true,
+                                        title: "Attendance Manager"
+                                    }} 
+                                />
+                                <Stack.Screen name="(attendance)" options={{animation: "slide_from_right"}} />
+                                <Stack.Screen name="(settings)" options={{animation: "slide_from_left"}} />
+                            </Stack>
+                        </GlobalComponentProvider>
+                    </ClickOutsideProvider>
+                </GlobalAttendanceContextProvider>
             </GlobalContextProvider>
         </CustomSqliteProvider>
     );

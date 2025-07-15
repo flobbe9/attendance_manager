@@ -5,7 +5,7 @@ import { integer, SQLiteIntegerBuilderInitial } from "drizzle-orm/sqlite-core";
 /**
  * @since 0.0.1
  */
-export abstract class AbstractEntity_Schema<TName extends string> {
+export abstract class Abstract_Schema<TName extends string> {
 
     id: IsPrimaryKey<HasDefault<NotNull<SQLiteIntegerBuilderInitial<TName>>>>;
     
@@ -18,7 +18,7 @@ export abstract class AbstractEntity_Schema<TName extends string> {
 /**
  * @since 0.0.1
  */
-export const AbstractEntity_Table = {
+export const Abstract_Table = {
 
     id: integer().primaryKey({autoIncrement: true}),
     created: integer({ mode: 'timestamp_ms' }).notNull(),
@@ -27,6 +27,8 @@ export const AbstractEntity_Table = {
 
 
 /**
+ * Dont add class methods as entities are rarely instantiated by constructor.
+ *  
  * @since 0.0.1
  */
 export default abstract class AbstractEntity {

@@ -16,3 +16,15 @@ export const schoolclassModeObj = {
  */
 export type SchoolclassMode = keyof typeof schoolclassModeObj;
 export const SCHOOLCLASS_MODES: SchoolclassMode[] = Object.keys(schoolclassModeObj) as SchoolclassMode[]; 
+
+
+export function getSchoolclassModeKeyBySchoolclassMode(schoolclassMode: SchoolclassMode): SchoolclassMode_Key {
+
+    return SCHOOLCLASS_MODE_KEYS[SCHOOLCLASS_MODES.indexOf(schoolclassMode)];
+}
+
+
+export function getSchoolclassModeBySchoolclassModeKey(schoolclassModeKey: SchoolclassMode_Key): SchoolclassMode {
+
+    return SCHOOLCLASS_MODES[SCHOOLCLASS_MODE_KEYS.indexOf(schoolclassModeKey)];
+}

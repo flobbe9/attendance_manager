@@ -35,7 +35,6 @@ export default forwardRef(function(
         disableFlex = false,
         flexDirection = "row",
         flexWrap = "wrap",
-        rendered = true,
         flexShrink = 0,
         style,
         ...props
