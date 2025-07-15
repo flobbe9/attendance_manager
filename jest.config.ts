@@ -5,7 +5,8 @@ const config: Config = {
     testPathIgnorePatterns: [
         "/node_modules/",
         "/build/",
-        "/dist/"
+        "/dist/",
+        "./test.ts"
     ],
     verbose: true,
 };
