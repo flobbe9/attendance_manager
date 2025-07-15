@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - qa
+# env:
+#   CI: true
 
 
 jobs:
@@ -47,8 +49,8 @@ jobs:
 
           - name: Build iOS App
             run: expo build --local -p ios --profile staging --output app.ipa
-            env: 
-                CI: true
+            # env: 
+            #     CI: true
 
           - name: Deploy TestFlight
             uses: apple-actions/upload-testflight-build@v3
