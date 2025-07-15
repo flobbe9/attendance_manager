@@ -24,8 +24,7 @@ export const SchoolclassMode_Table = sqliteTable(
 export const SchoolclassMode_Relations = relations(
     SchoolclassMode_Table,
     ({one}) => ({
-        attendance: one(Attendance_Table),
-        // test: one(Test_Table)
+        attendance: one(Attendance_Table)
     })
 )
 
