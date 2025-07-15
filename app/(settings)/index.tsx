@@ -6,6 +6,7 @@ import HelperButton from "@/components/helpers/HelperButton";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { FONT_SIZE_LARGER } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { Href, Link } from "expo-router";
 import { ReactNode } from "react";
@@ -47,6 +48,12 @@ export default function index() {
                     href="/(settings)/popups" 
                     icon={<AttendanceInputErrorPopupIcon style={{...SettingsIndexStyles.settingsItemText, ...me_2}} />} 
                     label="Popup Präferenzen" 
+                />
+
+                <SetttingsLink 
+                    href="/(settings)/appInfo" 
+                    icon={<FontAwesome name="info-circle" style={{...SettingsIndexStyles.settingsItemText, ...me_2}} />} 
+                    label="Über die App" 
                 />
             </HelperScrollView>
         </ScreenWrapper>

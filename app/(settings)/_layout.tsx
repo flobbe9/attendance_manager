@@ -40,6 +40,18 @@ export default function layout() {
                     )
                 }} 
             />
+            
+            <Stack.Screen 
+                name="appInfo" 
+                options={{
+                    headerTitle: (props) => (
+                        <Flex alignItems="center" {...props}>
+                            <FontAwesome name="info-circle" style={{...LayoutStyles.headerIcon}} size={FONT_SIZE_LARGER} />
+                            <B style={{fontSize: FONT_SIZE_LARGER}}>Über die App</B>
+                        </Flex>
+                    )
+                }} 
+            />
         </Stack>
     );
 }
