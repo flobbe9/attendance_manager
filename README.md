@@ -12,3 +12,6 @@
 # CI/CD
 Expo: https://expo.dev/accounts/flobbe9 <br>
 Apple: https://developer.apple.com/account
+
+## .env
+The `eas build` command does not seem to use the .env variables (according to this post that is: https://www.reddit.com/r/expo/comments/1feh09e/solution_for_using_environment_variables_in_expo/).
