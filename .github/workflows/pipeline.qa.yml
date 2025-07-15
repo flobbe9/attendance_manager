@@ -22,7 +22,7 @@ jobs:
                 cache: npm
 
           - name: Install dependencies
-            run: npm ci
+            run: npm i
 
           - name: Build / bundle
             run: npx expo export:embed --eager --platform ios --dev false
