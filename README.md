@@ -8,3 +8,7 @@
 - Sek = Sekundarstufe
     - Sek1 describes school years from 5 - 10 (inclusive)
     - Sek2 describes school years from 11 - 13 (inclusive)
+
+# CI/CD
+Expo: https://expo.dev/accounts/flobbe9 <br>
+Apple: https://developer.apple.com/account

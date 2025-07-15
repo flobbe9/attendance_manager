@@ -8,7 +8,7 @@ on:
 
 
 jobs:
-    build:
+    build_and_test:
         runs-on: ubuntu-latest
 
         steps:
@@ -24,6 +24,9 @@ jobs:
           - name: Install dependencies
             run: npm ci
 
+          - name: Build / bundle
+            run: npx expo export:embed --eager --platform ios --dev false
+    
           - name: Run tests
             run: npm run test
             # env: 
@@ -49,7 +52,7 @@ jobs:
                 expo-cache: true
 
           - name: Build iOS App
-            run: expo build --local -p ios --profile production --non-interactive --output app.ipa
+            run: expo build --local -p ios --profile staging --non-interactive --output app.ipa
 
           - name: Deploy TestFlight
             uses: apple-actions/upload-testflight-build@v3

@@ -12,11 +12,19 @@
     "preview": {
       "distribution": "internal"
     },
+    "dev": {
+      "autoIncrement": true
+    },
+    "staging": {
+      "autoIncrement": true
+    },
     "production": {
       "autoIncrement": true
     }
   },
   "submit": {
+    "dev": {},
+    "staging": {},
     "production": {}
   }
 }
