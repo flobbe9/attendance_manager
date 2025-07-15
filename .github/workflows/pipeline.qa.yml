@@ -8,20 +8,53 @@ on:
 
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+    build:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository 
-        uses: actions/checkout@v4
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-          cache: npm
-      - name: Install dependencies
-        run: npm ci
-      - name: Run tests
-        run: npm run test
-        # env: 
-        #     CI: ""
+        steps:
+          - name: Checkout repository 
+            uses: actions/checkout@v4
+
+          - name: Setup node
+            uses: actions/setup-node@v4
+            with:
+                node-version: 22.x
+                cache: npm
+
+          - name: Install dependencies
+            run: npm ci
+
+          - name: Run tests
+            run: npm run test
+            # env: 
+            #     CI: ""
+
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Checkout repository 
+            uses: actions/checkout@v4
+
+          - name: Setup node
+            uses: actions/setup-node@v4
+            with:
+                node-version: 22.x
+                cache: npm
+
+          - uses: expo/expo-github-action@v5
+            with:
+                expo-packager: npm
+                expo-token: "${{ secrets.EXPO_TOKEN  }}"
+                expo-cache: true
+
+          - name: Build iOS App
+            run: expo build --local -p ios --profile production --non-interactive --output app.ipa
+
+          - name: Deploy TestFlight
+            uses: apple-actions/upload-testflight-build@v3
+            with: 
+                app-path: './app.ipa'
+                issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+                api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+                api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
