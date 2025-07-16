@@ -28,7 +28,7 @@ jobs:
     #         run: npm run test
 
     deploy:
-        runs-on: macos-latest
+        runs-on: macos-15
         # needs: build_and_test
         
         steps:
@@ -50,7 +50,7 @@ jobs:
                 packager: npm
                 token: "${{ secrets.EXPO_TOKEN  }}"
                 expo-version: latest
-                eas-version: 16.15.0
+                eas-version: latest
 
           - name: Build iOS App
             run: eas build --local -p ios --profile staging --non-interactive --output app.ipa
