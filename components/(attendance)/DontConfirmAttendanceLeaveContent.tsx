@@ -1,5 +1,5 @@
-import { useContext } from "react";
-import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
+import {useContext} from "react";
+import {GlobalAttendanceContext} from "../context/GlobalAttendanceContextProvider";
 import B from "../helpers/B";
 import Br from "../helpers/Br";
 import HelperCheckbox from "../helpers/HelperCheckbox";
@@ -8,11 +8,12 @@ import HelperView from "../helpers/HelperView";
 import P from "../helpers/P";
 
 /**
- * @since latest
+ * @since 0.1.0
  */
 export function DontConfirmAttendanceLeaveContent() {
-    const { dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave } = useContext(GlobalAttendanceContext);
-    
+    const {dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave} =
+        useContext(GlobalAttendanceContext);
+
     return (
         <HelperView>
             <B>Ohne speichern verlassen?</B>
@@ -20,7 +21,7 @@ export function DontConfirmAttendanceLeaveContent() {
 
             <HelperText>Deine letzten Änderungen werden verworfen.</HelperText>
             <P>Bist du sicher?</P>
-            
+
             <HelperCheckbox
                 checked={dontConfirmAttendanceScreenLeave}
                 setChecked={setDontConfirmAttendanceScreenLeave}
@@ -28,5 +29,5 @@ export function DontConfirmAttendanceLeaveContent() {
                 Nicht mehr nachfragen
             </HelperCheckbox>
         </HelperView>
-    )
+    );
 }

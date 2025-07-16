@@ -28,7 +28,8 @@ jobs:
             run: npm run test
 
     deploy:
-        runs-on: macos-latest
+        # uses mandatory xcode v16
+        runs-on: macos-15
         needs: build_and_test
         
         steps:
