@@ -16,7 +16,7 @@ import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import { Link } from "expo-router";
-import { useContext, useEffect, useState } from "react";
+import { JSX, useContext, useEffect, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 
 /**

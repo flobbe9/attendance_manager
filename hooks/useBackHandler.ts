@@ -12,8 +12,8 @@ import { BackHandler } from "react-native";
 export function useBackHandler(callBack: () => boolean, deps?: React.DependencyList) {
 
     useEffect(() => {
-        BackHandler.addEventListener("hardwareBackPress", callBack);
+        const eventSubscription = BackHandler.addEventListener("hardwareBackPress", callBack);
 
-        return () => BackHandler.removeEventListener("hardwareBackPress", callBack);
+        return () => eventSubscription.remove();
     }, deps);
 }

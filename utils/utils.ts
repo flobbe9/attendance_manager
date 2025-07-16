@@ -1,7 +1,7 @@
 /**
  * NOTE: cannot import from modules that import from utils.ts because that would create a cycle.
  */
-import { CSSProperties } from "react";
+import { CSSProperties, JSX } from "react";
 import { logError } from "./logUtils";
 
 

@@ -14,7 +14,7 @@ import { formatDateGermanNoTime } from "@/utils/projectUtils";
 import { FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import React from "react";
+import React, { JSX } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import HelperStyles from './../assets/styles/helperStyles';
 import B from "./helpers/B";

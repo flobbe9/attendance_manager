@@ -4,14 +4,12 @@ import { isBlank } from "@/utils/utils";
 import React from "react";
 import { Portal, Snackbar, SnackbarProps } from "react-native-paper";
 
-
 export type CustomSnackbarStatus = "error" | "warn" | "info" | "default";
 
 export type CustomnSnackbarProps = SnackbarProps & { status: CustomSnackbarStatus };
 
 interface Props extends CustomnSnackbarProps {
 }
-
 
 /**
  * Native bottom popup with action button, slightly customized.
@@ -27,7 +25,6 @@ export default function CustomSnackbar(
         ...props
     }: Props
 ) {
-
     const componentName = "Snackbar";
     const { children, style, ...otherProps } = useDefaultProps(props, componentName, CustomSnackbarStyles.component);
 

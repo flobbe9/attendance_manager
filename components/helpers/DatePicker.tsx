@@ -4,7 +4,7 @@ import HS from "@/assets/styles/helperStyles";
 import HelperView from "@/components/helpers/HelperView";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { formatDateGermanNoTime } from "@/utils/projectUtils";
-import React, { forwardRef, Fragment, Ref, useState } from "react";
+import React, { forwardRef, Fragment, JSX, Ref, useState } from "react";
 import { GestureResponderEvent, View, ViewProps, ViewStyle } from "react-native";
 import { DatePickerModal } from "react-native-paper-dates";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
