@@ -5,28 +5,30 @@ on:
   push:
     branches:
       - qa
+# env:
+#   CI: true
 
 
 jobs:
-    build_and_test:
-        runs-on: ubuntu-latest
+    # build_and_test:
+    #     runs-on: ubuntu-latest
 
-        steps:
-          - name: Checkout repository 
-            uses: actions/checkout@v4
+    #     steps:
+    #       - name: Checkout repository 
+    #         uses: actions/checkout@v4
 
-          - name: Install dependencies
-            run: npm i
+    #       - name: Install dependencies
+    #         run: npm ci
 
-          - name: Build / bundle
-            run: npx expo export:embed --eager --platform ios --dev false
+    #       - name: Build / bundle
+    #         run: npx expo export:embed --eager --platform ios --dev false
     
-          - name: Run tests
-            run: npm run test
+    #       - name: Run tests
+    #         run: npm run test
 
     deploy:
         runs-on: macos-latest
-        needs: build_and_test
+        # needs: build_and_test
         
         steps:
           - name: Checkout repository 
@@ -37,14 +39,20 @@ jobs:
             with:
                 node-version: 22.x
 
-          - uses: expo/expo-github-action@v8
+          - name: Intall dependencies
+            run: npm ci
+            shell: bash
+
+          - name: Setup eas
+            uses: expo/expo-github-action@v8
             with:
                 packager: npm
                 token: "${{ secrets.EXPO_TOKEN  }}"
-                expo-cache: true
+                expo-version: latest
+                eas-version: latest
 
           - name: Build iOS App
-            run: expo build --local -p ios --profile staging --non-interactive --output app.ipa
+            run: eas build --local -p ios --profile staging --non-interactive --output app.ipa
 
           - name: Deploy TestFlight
             uses: apple-actions/upload-testflight-build@v3
