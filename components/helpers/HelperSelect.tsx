@@ -7,7 +7,7 @@ import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { NO_SELECTION_LABEL } from "@/utils/constants";
 import { logError } from "@/utils/logUtils";
 import { FontAwesome } from "@expo/vector-icons";
-import React, { forwardRef, Ref, useEffect, useState } from "react";
+import React, { forwardRef, JSX, Ref, useEffect, useState } from "react";
 import { View, ViewProps, ViewStyle } from "react-native";
 import HelperButton from "./HelperButton";
 import HelperReactChildren from "./HelperReactChildren";

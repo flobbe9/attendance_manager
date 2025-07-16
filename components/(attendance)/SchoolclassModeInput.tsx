@@ -6,7 +6,7 @@ import HelperStyles from "@/assets/styles/helperStyles";
 import { SchoolclassModeEntity } from "@/backend/DbSchema";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
-import React, { useContext, useEffect, useState } from "react";
+import React, { JSX, useContext, useEffect, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { RadioButton } from "react-native-paper";
 import { AttendanceContext } from "../context/AttendanceContextProvider";

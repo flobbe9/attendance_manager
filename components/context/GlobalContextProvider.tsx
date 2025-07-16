@@ -27,7 +27,7 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
     });
 
     const [globalPopupProps, setGlobalPopupProps] = useState<GlobalPopupProps>({message: "", visible: false})
-    const [globalPopupTimeout, setGlobalPopupTimeout] = useState<NodeJS.Timeout>();
+    const [globalPopupTimeout, setGlobalPopupTimeout] = useState<number>();
 
     const [globalToastProps, setGlobalToastProps] = useState<GlobalToastProps>({
         visible: false,
