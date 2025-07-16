@@ -57,7 +57,7 @@ export default function Tooltip(
 ) {
     const [visibleState, setVisibleState]: [boolean, (visible: boolean) => void] = isBooleanFalsy(visible) || !setVisible ? useState(false) : [visible, setVisible];
     
-    const [hideTextTimeout, setHideTextTimeout] = useState<NodeJS.Timeout>();
+    const [hideTextTimeout, setHideTextTimeout] = useState<number>();
 
     const [textContainerDisplay, setTextContainerDisplay] = useState<undefined | "none">(!visible ? "none" : undefined);
     
