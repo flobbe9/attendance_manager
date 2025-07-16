@@ -3,19 +3,21 @@ import Flex from "@/components/helpers/Flex";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
 import HelperText from "@/components/helpers/HelperText";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import { APP_VERSION } from "@/utils/constants";
-import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import {useResponsiveStyles} from "@/hooks/useResponsiveStyles";
+import {APP_VERSION} from "@/utils/constants";
+import {GLOBAL_SCREEN_PADDING} from "@/utils/styleConstants";
 
 import React from "react";
 
 /**
  * Contains "about" content like version etc.
- * 
- * @since latest
+ *
+ * @since 0.1.0
  */
 export default function appInfo() {
-    const { allStyles: { col_6 }} = useResponsiveStyles();
+    const {
+        allStyles: {col_6},
+    } = useResponsiveStyles();
 
     return (
         <ScreenWrapper>
@@ -27,5 +29,5 @@ export default function appInfo() {
                 </Flex>
             </HelperScrollView>
         </ScreenWrapper>
-    )
+    );
 }

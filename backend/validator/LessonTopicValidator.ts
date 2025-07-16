@@ -1,32 +1,42 @@
-import { MUSIC_LESSON_TOPIC_KEYS, MUSIC_LESSON_TOPICS, MusicLessonTopic_Key } from "@/abstract/MusicLessonTopic";
-import { isSchoolYear } from "@/abstract/SchoolYear";
-import { logDebug, logTrace } from "@/utils/logUtils";
-import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
-import { AbstractAttendanceInputValidator } from "../abstract/AbstractAttendanceInputValidator";
-import { AttendanceEntity } from "../DbSchema";
-import { AttendanceInputValidatorBuilder } from "./AttendanceInputValidatorBuilder";
+import {
+    MUSIC_LESSON_TOPIC_KEYS,
+    MUSIC_LESSON_TOPICS,
+    MusicLessonTopic_Key,
+} from "@/abstract/MusicLessonTopic";
+import {isSchoolYear} from "@/abstract/SchoolYear";
+import {logDebug, logTrace} from "@/utils/logUtils";
+import {ValueOf} from "react-native-gesture-handler/lib/typescript/typeUtils";
+import {AbstractAttendanceInputValidator} from "../abstract/AbstractAttendanceInputValidator";
+import {AttendanceEntity} from "../DbSchema";
+import {AttendanceInputValidatorBuilder} from "./AttendanceInputValidatorBuilder";
 
 /**
- * @since latest
+ * @since 0.1.0
  */
 export class LessonTopicValidator extends AbstractAttendanceInputValidator<MusicLessonTopic_Key> {
-
     public getValidValues(): ValueOf<AttendanceEntity>[] {
-        return MUSIC_LESSON_TOPIC_KEYS
-            .filter(lessonTopicKey => this.validate(lessonTopicKey) === null);
+        return MUSIC_LESSON_TOPIC_KEYS.filter(
+            (lessonTopicKey) => this.validate(lessonTopicKey) === null
+        );
     }
-    
+
     public getInvalidValues(): ValueOf<AttendanceEntity>[] {
         // not implemented
-        return [];    
+        return [];
     }
 
-    public validateNonContextConditions(constantConditions: any, inputValue: MusicLessonTopic_Key): string | null {
+    public validateNonContextConditions(
+        constantConditions: any,
+        inputValue: MusicLessonTopic_Key
+    ): string | null {
         // not implemented, see SchoolYearValidator implementations
         return null;
     }
 
-    public validateContextConditions(constantConditions: any, inputValue: MusicLessonTopic_Key): string | null {
+    public validateContextConditions(
+        constantConditions: any,
+        inputValue: MusicLessonTopic_Key
+    ): string | null {
         // not implemented, see SchoolYearValidator implementations
         return null;
     }
@@ -37,9 +47,8 @@ export class LessonTopicValidator extends AbstractAttendanceInputValidator<Music
     }
 
     public validate(inputValue: MusicLessonTopic_Key): string | null {
-        if (!this.shouldInputBeValidated(inputValue))
-            return null;
-        
+        if (!this.shouldInputBeValidated(inputValue)) return null;
+
         let errorMessage: string = null;
 
         logTrace("validate lesson topic", inputValue);
@@ -54,34 +63,47 @@ export class LessonTopicValidator extends AbstractAttendanceInputValidator<Music
 
         logTrace("context valid", inputValue);
 
-        if ((errorMessage = this.validateFuture(inputValue)) !== null)
-            return errorMessage;
+        if ((errorMessage = this.validateFuture(inputValue)) !== null) return errorMessage;
 
         logTrace("future valid", inputValue);
 
         const originalMusicLessonTopic = this.getCurrentAttendance().musicLessonTopic;
         try {
             this.getCurrentAttendance().musicLessonTopic = inputValue;
-            const schoolYearValidator = AttendanceInputValidatorBuilder
-                .builder(this.getCurrentAttendance(), this.getSavedAttendances())
+            const schoolYearValidator = AttendanceInputValidatorBuilder.builder(
+                this.getCurrentAttendance(),
+                this.getSavedAttendances()
+            )
                 .inputType("schoolYear")
                 .build();
 
-            if ((errorMessage = schoolYearValidator.validate(this.getCurrentAttendance().schoolYear)) !== null)
+            if (
+                (errorMessage = schoolYearValidator.validate(
+                    this.getCurrentAttendance().schoolYear
+                )) !== null
+            )
                 return errorMessage;
-
         } finally {
             this.getCurrentAttendance().musicLessonTopic = originalMusicLessonTopic;
         }
 
-        logTrace("schoolyear for lesson topic valid", inputValue, this.getCurrentAttendance().schoolYear);
-        
+        logTrace(
+            "schoolyear for lesson topic valid",
+            inputValue,
+            this.getCurrentAttendance().schoolYear
+        );
+
         return null;
     }
 
     public shouldInputBeValidated(inputValue: MusicLessonTopic_Key): boolean {
-        return this.attendanceService.isSelectInputFilledOut(inputValue) && 
+        return (
+            this.attendanceService.isSelectInputFilledOut(inputValue) &&
             isSchoolYear(this.getCurrentAttendance().schoolYear) &&
-            this.attendanceService.hasExaminant(this.getCurrentAttendance(), this.getCurrentAttendance().schoolSubject);
+            this.attendanceService.hasExaminant(
+                this.getCurrentAttendance(),
+                this.getCurrentAttendance().schoolSubject
+            )
+        );
     }
 }
