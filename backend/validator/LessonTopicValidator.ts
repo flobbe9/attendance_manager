@@ -1,14 +1,13 @@
 import {
     MUSIC_LESSON_TOPIC_KEYS,
-    MUSIC_LESSON_TOPICS,
-    MusicLessonTopic_Key,
+    MusicLessonTopic_Key
 } from "@/abstract/MusicLessonTopic";
-import {isSchoolYear} from "@/abstract/SchoolYear";
-import {logDebug, logTrace} from "@/utils/logUtils";
-import {ValueOf} from "react-native-gesture-handler/lib/typescript/typeUtils";
-import {AbstractAttendanceInputValidator} from "../abstract/AbstractAttendanceInputValidator";
-import {AttendanceEntity} from "../DbSchema";
-import {AttendanceInputValidatorBuilder} from "./AttendanceInputValidatorBuilder";
+import { isSchoolYear } from "@/abstract/SchoolYear";
+import { logTrace } from "@/utils/logUtils";
+import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
+import { AbstractAttendanceInputValidator } from "../abstract/AbstractAttendanceInputValidator";
+import { AttendanceInputValidatorBuilder } from "./AttendanceInputValidatorBuilder";
+import { AttendanceEntity } from "../entities/AttendanceEntity";
 
 /**
  * @since 0.1.0

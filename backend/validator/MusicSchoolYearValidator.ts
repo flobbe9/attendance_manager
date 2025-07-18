@@ -16,7 +16,7 @@ import {
 } from "../abstract/SchoolYearCondition";
 import {SchoolYearConditionOptions} from "../abstract/SchoolYearConditionOptions";
 import {isSchoolYearRangeOverlap, schoolYearRangeToString} from "../abstract/SchoolYearRange";
-import {AttendanceEntity} from "../DbSchema";
+import {AttendanceEntity} from "../entities/AttendanceEntity";
 
 /**
  * @since 0.1.0

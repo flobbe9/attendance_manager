@@ -1,44 +1,43 @@
-import { DynamicStyle } from "@/abstract/DynamicStyle";
+import {DynamicStyle} from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
-import { getSchoolclassModeBySchoolclassModeKey, getSchoolclassModeKeyBySchoolclassMode, SCHOOLCLASS_MODES, SchoolclassMode } from "@/abstract/SchoolclassMode";
-import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
+import {
+    getSchoolclassModeBySchoolclassModeKey,
+    getSchoolclassModeKeyBySchoolclassMode,
+    SCHOOLCLASS_MODES,
+    SchoolclassMode,
+} from "@/abstract/SchoolclassMode";
+import {AttendanceIndexStyles} from "@/assets/styles/AttendanceIndexStyles";
 import HelperStyles from "@/assets/styles/helperStyles";
-import { SchoolclassModeEntity } from "@/backend/DbSchema";
 import HelperView from "@/components/helpers/HelperView";
-import { useHelperProps } from "@/hooks/useHelperProps";
-import React, { JSX, useContext, useEffect, useState } from "react";
-import { ViewProps, ViewStyle } from "react-native";
-import { RadioButton } from "react-native-paper";
-import { AttendanceContext } from "../context/AttendanceContextProvider";
+import {useHelperProps} from "@/hooks/useHelperProps";
+import React, {JSX, useContext, useEffect, useState} from "react";
+import {ViewProps, ViewStyle} from "react-native";
+import {RadioButton} from "react-native-paper";
+import {AttendanceContext} from "../context/AttendanceContextProvider";
 import Flex from "../helpers/Flex";
 import HelperInput from "../helpers/HelperInput";
 import HelperText from "../helpers/HelperText";
-;
-
-
-interface Props extends HelperProps<ViewStyle>, ViewProps {
-
-}
-
+import {SchoolclassModeEntity} from "@/backend/entities/SchoolclassModeEntity";
+interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
 /**
  * @since 0.0.1
  */
 export default function SchoolclassModeInput({...props}: Props) {
-    const { updateCurrentAttendanceEntity, currentAttendanceEntity } = useContext(AttendanceContext);
+    const {updateCurrentAttendanceEntity, currentAttendanceEntity} = useContext(AttendanceContext);
 
-    const [schoolclassModeRadioButtons, setSchoolclassModeRadioButtons] = useState<JSX.Element[]>([]); 
+    const [schoolclassModeRadioButtons, setSchoolclassModeRadioButtons] = useState<JSX.Element[]>(
+        []
+    );
 
     const componentName = "SchoolclassModeInput";
-    const { children, ...otherProps } = useHelperProps(props, componentName);
+    const {children, ...otherProps} = useHelperProps(props, componentName);
 
     useEffect(() => {
         setSchoolclassModeRadioButtons(mapSchoolclassModeRadioButtons());
-
     }, []);
 
     function mapSchoolclassModeRadioButtons(): JSX.Element[] {
-
         return SCHOOLCLASS_MODES.map((mode, i) => (
             <Flex alignItems="center" key={i} flexWrap="nowrap">
                 <RadioButton.IOS value={mode} />
@@ -55,28 +54,30 @@ export default function SchoolclassModeInput({...props}: Props) {
 
     function updateSchoolclassMode(mode: SchoolclassMode): void {
         updateCurrentAttendanceEntity<SchoolclassModeEntity>([
-            "schoolclassMode", 
+            "schoolclassMode",
             {
                 mode: getSchoolclassModeKeyBySchoolclassMode(mode),
-                fullName: currentAttendanceEntity.schoolclassMode.fullName // keep the name for state
-            }
+                fullName: currentAttendanceEntity.schoolclassMode.fullName, // keep the name for state
+            },
         ]);
     }
 
     function updateSchoolclassModeNote(fullName: string): void {
         updateCurrentAttendanceEntity<SchoolclassModeEntity>([
-            "schoolclassMode", 
+            "schoolclassMode",
             {
                 ...currentAttendanceEntity.schoolclassMode,
-                fullName
-            }
-        ])
+                fullName,
+            },
+        ]);
     }
 
     return (
         <HelperView {...otherProps}>
-            <RadioButton.Group 
-                value={getSchoolclassModeBySchoolclassModeKey(currentAttendanceEntity.schoolclassMode.mode)} 
+            <RadioButton.Group
+                value={getSchoolclassModeBySchoolclassModeKey(
+                    currentAttendanceEntity.schoolclassMode.mode
+                )}
                 onValueChange={updateSchoolclassMode}
             >
                 {schoolclassModeRadioButtons}
@@ -85,10 +86,12 @@ export default function SchoolclassModeInput({...props}: Props) {
             <HelperInput
                 placeholder="Ausbildungslehrer"
                 rendered={currentAttendanceEntity.schoolclassMode.mode === "othersClass"}
-                containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
+                containerStyles={
+                    AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>
+                }
                 value={currentAttendanceEntity.schoolclassMode.fullName}
                 onChangeText={updateSchoolclassModeNote}
             />
         </HelperView>
-    )
+    );
 }

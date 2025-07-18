@@ -8,7 +8,7 @@ import {
 } from "@/utils/attendanceValidationConstants";
 import {assertFalsyAndThrow, cloneObj} from "@/utils/utils";
 import {ValueOf} from "react-native-gesture-handler/lib/typescript/typeUtils";
-import {AttendanceEntity} from "../DbSchema";
+import {AttendanceEntity} from "../entities/AttendanceEntity";
 import {AbstractAttendanceInputValidator} from "./AbstractAttendanceInputValidator";
 import {
     destructSchoolYearConditions,

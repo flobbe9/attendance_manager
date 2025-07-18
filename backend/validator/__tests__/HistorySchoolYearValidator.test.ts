@@ -1,6 +1,6 @@
-import { AttendanceEntity } from "@/backend/DbSchema";
-import { HistorySchoolYearValidator } from "../HistorySchoolYearValidator"
-import { SchoolYear } from "@/abstract/SchoolYear";
+import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
+import {HistorySchoolYearValidator} from "../HistorySchoolYearValidator";
+import {SchoolYear} from "@/abstract/SchoolYear";
 
 describe("validateContextConditions", () => {
     test("Should not validate if schoolYear is falsy", () => {
@@ -10,8 +10,8 @@ describe("validateContextConditions", () => {
             schoolYear: "5",
             examinants: [{role: "history"}],
             schoolclassMode: null,
-            musicLessonTopic: "language"
-        }
+            musicLessonTopic: "language",
+        };
         const savedAttendances: AttendanceEntity[] = [
             {
                 id: 2,
@@ -19,7 +19,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "5",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "sound"
+                musicLessonTopic: "sound",
             },
             {
                 id: 3,
@@ -27,7 +27,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "8",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "rhythm"
+                musicLessonTopic: "rhythm",
             },
             // irrelevant attendances
             {
@@ -36,7 +36,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "9",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             {
                 id: 6,
@@ -44,7 +44,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "10",
                 examinants: [{role: "music"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             {
                 id: 7,
@@ -52,7 +52,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "8",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "history"
+                musicLessonTopic: "history",
             },
             {
                 id: 8,
@@ -60,9 +60,9 @@ describe("validateContextConditions", () => {
                 schoolYear: null,
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "language"
-            }
-        ]
+                musicLessonTopic: "language",
+            },
+        ];
         const validator = new HistorySchoolYearValidator(currentAttendanceEntity, savedAttendances);
 
         expect(validator.validateContextConditions([], null)).toBeNull();
@@ -78,8 +78,8 @@ describe("validateContextConditions", () => {
             schoolYear: null,
             examinants: [{role: "history"}],
             schoolclassMode: null,
-            musicLessonTopic: "language"
-        }
+            musicLessonTopic: "language",
+        };
         const savedAttendances: AttendanceEntity[] = [
             {
                 id: 1,
@@ -87,7 +87,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "9",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "rhythm"
+                musicLessonTopic: "rhythm",
             },
             {
                 id: 2,
@@ -95,7 +95,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "7",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             {
                 id: 3,
@@ -103,7 +103,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "8",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             // irrelevant attendances
             {
@@ -112,7 +112,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "9",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             {
                 id: 6,
@@ -120,7 +120,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "10",
                 examinants: [{role: "music"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             {
                 id: 7,
@@ -128,7 +128,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "8",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "history"
+                musicLessonTopic: "history",
             },
             {
                 id: 8,
@@ -136,9 +136,9 @@ describe("validateContextConditions", () => {
                 schoolYear: null,
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "language"
-            }
-        ]
+                musicLessonTopic: "language",
+            },
+        ];
         const validator = new HistorySchoolYearValidator(currentAttendanceEntity, savedAttendances);
 
         expect(validator.validateContextConditions([], "10")).toBeNull();
@@ -152,8 +152,8 @@ describe("validateContextConditions", () => {
             schoolYear: "10",
             examinants: [{role: "history"}],
             schoolclassMode: null,
-            musicLessonTopic: "language"
-        }
+            musicLessonTopic: "language",
+        };
         const savedAttendances: AttendanceEntity[] = [
             {
                 id: 1,
@@ -161,7 +161,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "9",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "rhythm"
+                musicLessonTopic: "rhythm",
             },
             {
                 id: 2,
@@ -169,7 +169,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "9",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             // irrelevant attendances
             {
@@ -178,7 +178,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "9",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             {
                 id: 6,
@@ -186,7 +186,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "10",
                 examinants: [{role: "music"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             {
                 id: 7,
@@ -194,7 +194,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "8",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "history"
+                musicLessonTopic: "history",
             },
             {
                 id: 8,
@@ -202,12 +202,14 @@ describe("validateContextConditions", () => {
                 schoolYear: null,
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "language"
-            }
-        ]
+                musicLessonTopic: "language",
+            },
+        ];
         const validator = new HistorySchoolYearValidator(currentAttendanceEntity, savedAttendances);
 
-        expect(validator.validateContextConditions([], currentAttendanceEntity.schoolYear)).toBeNull();
+        expect(
+            validator.validateContextConditions([], currentAttendanceEntity.schoolYear)
+        ).toBeNull();
     });
 
     test("Need to mix variant 1 and 2 - should be invalid", () => {
@@ -218,8 +220,8 @@ describe("validateContextConditions", () => {
             schoolYear: "10",
             examinants: [{role: "history"}],
             schoolclassMode: null,
-            musicLessonTopic: "language"
-        }
+            musicLessonTopic: "language",
+        };
         // 10, 9, 7, 8 requires variant 1
         // 12, 13, 12 requires variant 2
         const savedAttendances: AttendanceEntity[] = [
@@ -229,7 +231,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "9",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "rhythm"
+                musicLessonTopic: "rhythm",
             },
             {
                 id: 2,
@@ -237,7 +239,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "7",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             {
                 id: 11,
@@ -245,7 +247,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "8",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             {
                 id: 3,
@@ -253,7 +255,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "12",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             {
                 id: 9,
@@ -261,7 +263,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "13",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             {
                 id: 10,
@@ -269,7 +271,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "12",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             // irrelevant attendances
             {
@@ -278,7 +280,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "9",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             {
                 id: 6,
@@ -286,7 +288,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "10",
                 examinants: [{role: "music"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             {
                 id: 7,
@@ -294,7 +296,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "8",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "history"
+                musicLessonTopic: "history",
             },
             {
                 id: 8,
@@ -302,12 +304,14 @@ describe("validateContextConditions", () => {
                 schoolYear: null,
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "language"
-            }
-        ]
+                musicLessonTopic: "language",
+            },
+        ];
         const validator = new HistorySchoolYearValidator(currentAttendanceEntity, savedAttendances);
 
-        expect(validator.validateContextConditions([], currentAttendanceEntity.schoolYear)).not.toBeNull();
+        expect(
+            validator.validateContextConditions([], currentAttendanceEntity.schoolYear)
+        ).not.toBeNull();
     });
 
     test("At least one Variant valid, validate gub", () => {
@@ -318,8 +322,8 @@ describe("validateContextConditions", () => {
             schoolYear: "10",
             examinants: [{role: "history"}],
             schoolclassMode: null,
-            musicLessonTopic: "language"
-        }
+            musicLessonTopic: "language",
+        };
         const savedAttendances: AttendanceEntity[] = [
             {
                 id: 1,
@@ -327,17 +331,17 @@ describe("validateContextConditions", () => {
                 schoolYear: "9",
                 examinants: [
                     {
-                        role: "history"
+                        role: "history",
                     },
                     {
-                        role: "educator"
+                        role: "educator",
                     },
                     {
-                        role: "music"
+                        role: "music",
                     },
                 ],
                 schoolclassMode: null,
-                musicLessonTopic: "rhythm"
+                musicLessonTopic: "rhythm",
             },
             {
                 id: 2,
@@ -345,17 +349,17 @@ describe("validateContextConditions", () => {
                 schoolYear: "9",
                 examinants: [
                     {
-                        role: "history"
+                        role: "history",
                     },
                     {
-                        role: "educator"
+                        role: "educator",
                     },
                     {
-                        role: "music"
+                        role: "music",
                     },
                 ],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             // irrelevant attendances
             {
@@ -364,7 +368,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "9",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             {
                 id: 6,
@@ -372,7 +376,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "10",
                 examinants: [{role: "music"}],
                 schoolclassMode: null,
-                musicLessonTopic: "structure"
+                musicLessonTopic: "structure",
             },
             {
                 id: 7,
@@ -380,7 +384,7 @@ describe("validateContextConditions", () => {
                 schoolYear: "8",
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "history"
+                musicLessonTopic: "history",
             },
             {
                 id: 8,
@@ -388,20 +392,24 @@ describe("validateContextConditions", () => {
                 schoolYear: null,
                 examinants: [{role: "history"}],
                 schoolclassMode: null,
-                musicLessonTopic: "language"
-            }
-        ]
+                musicLessonTopic: "language",
+            },
+        ];
         let validator = new HistorySchoolYearValidator(currentAttendanceEntity, savedAttendances);
 
-        expect(validator.validateContextConditions([], currentAttendanceEntity.schoolYear)).toBeNull();
+        expect(
+            validator.validateContextConditions([], currentAttendanceEntity.schoolYear)
+        ).toBeNull();
 
         // current is gubt but already maxed out
         currentAttendanceEntity.examinants = [
             {role: "history"},
             {role: "music"},
-            {role: "educator"}
-        ]
+            {role: "educator"},
+        ];
         validator = new HistorySchoolYearValidator(currentAttendanceEntity, savedAttendances);
-        expect(validator.validateContextConditions([], currentAttendanceEntity.schoolYear)).not.toBeNull();
+        expect(
+            validator.validateContextConditions([], currentAttendanceEntity.schoolYear)
+        ).not.toBeNull();
     });
-})
+});

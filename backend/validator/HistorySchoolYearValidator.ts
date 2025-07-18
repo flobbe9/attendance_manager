@@ -4,7 +4,7 @@ import {
     isSchoolYearConditionExceedingMax,
     SchoolYearCondition,
 } from "../abstract/SchoolYearCondition";
-import {AttendanceEntity} from "../DbSchema";
+import {AttendanceEntity} from "../entities/AttendanceEntity";
 import {isSchoolYear, SchoolYear} from "@/abstract/SchoolYear";
 import {
     HISTORY_SCHOOL_YEAR_CONDITIONS_VARIANT_1,

@@ -13,6 +13,8 @@ import m0008 from './0008_military_sharon_carter.sql';
 import m0009 from './0009_cool_lockheed.sql';
 import m0010 from './0010_fixed_aaron_stack.sql';
 import m0011 from './0011_free_betty_brant.sql';
+import m0012 from './0012_wonderful_iceman.sql';
+import m0013 from './0013_fine_korg.sql';
 
   export default {
     journal,
@@ -28,7 +30,9 @@ m0007,
 m0008,
 m0009,
 m0010,
-m0011
+m0011,
+m0012,
+m0013
     }
   }
   

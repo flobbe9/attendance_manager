@@ -1,17 +1,22 @@
 import HelperProps from "@/abstract/HelperProps";
-import { TopBarStyles } from "@/assets/styles/TopBarStyles";
-import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
-import { useHelperProps } from "@/hooks/useHelperProps";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import { logTrace } from "@/utils/logUtils";
-import { FONT_SIZE, FONT_SIZE_LARGER, FONT_SIZE_SMALLER, TOAST_ERROR_OUTER_STYLES } from "@/utils/styleConstants";
-import { isBlank, isNumberFalsy } from "@/utils/utils";
-import { FontAwesome } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import React, { Fragment, useContext } from "react";
-import { ViewProps, ViewStyle } from "react-native";
-import { AttendanceContext } from "../context/AttendanceContextProvider";
-import { GlobalContext } from "../context/GlobalContextProvider";
+import {TopBarStyles} from "@/assets/styles/TopBarStyles";
+import {useAttendanceRepository} from "@/hooks/repositories/useAttendanceRepository";
+import {useHelperProps} from "@/hooks/useHelperProps";
+import {useResponsiveStyles} from "@/hooks/useResponsiveStyles";
+import {logTrace} from "@/utils/logUtils";
+import {
+    FONT_SIZE,
+    FONT_SIZE_LARGER,
+    FONT_SIZE_SMALLER,
+    TOAST_ERROR_OUTER_STYLES,
+} from "@/utils/styleConstants";
+import {isBlank, isNumberFalsy} from "@/utils/utils";
+import {FontAwesome} from "@expo/vector-icons";
+import {useRouter} from "expo-router";
+import React, {Fragment, useContext} from "react";
+import {ViewProps, ViewStyle} from "react-native";
+import {AttendanceContext} from "../context/AttendanceContextProvider";
+import {GlobalContext} from "../context/GlobalContextProvider";
 import B from "../helpers/B";
 import Br from "../helpers/Br";
 import Flex from "../helpers/Flex";
@@ -19,69 +24,82 @@ import HelperButton from "../helpers/HelperButton";
 import HelperText from "../helpers/HelperText";
 import HelperView from "../helpers/HelperView";
 import ToastDimissFooter from "../ToastDismissFooter";
-import { eq } from "drizzle-orm";
-import { Attendance_Table } from "@/backend/DbSchema";
-import { isSchoolYear } from "@/abstract/SchoolYear";
-import { AttendanceService } from "@/backend/services/AttendanceService";
-import { ToastDefaultFooterStyles } from "@/assets/styles/ToastDefaultFooterStyles";
+import {eq} from "drizzle-orm";
+import {Attendance_Table} from "@/backend/schemas/AttendanceSchema";
+import {isSchoolYear} from "@/abstract/SchoolYear";
+import {AttendanceService} from "@/backend/services/AttendanceService";
+import {ToastDefaultFooterStyles} from "@/assets/styles/ToastDefaultFooterStyles";
 import HelperStyles from "@/assets/styles/helperStyles";
 
-interface Props extends HelperProps<ViewStyle>, ViewProps {
-}
+interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
 /**
  * @since 0.0.1
  */
 export default function TopBar({...props}: Props) {
-    const { allStyles: { mt_5, col_6, mt_3 }, parseResponsiveStyleToStyle: pr } = useResponsiveStyles();
+    const {
+        allStyles: {mt_5, col_6, mt_3},
+        parseResponsiveStyleToStyle: pr,
+    } = useResponsiveStyles();
 
-    const { popup, toast, hideToast, snackbar } = useContext(GlobalContext);
-    const { 
-        isCurrentAttendanceEntityModified, 
-        updateLastSavedAttendanceEntity, 
-        currentAttendanceEntity, 
-        setCurrentAttendanceEntity, 
-        resetInvalidAttendanceInputErrorStyles
+    const {popup, toast, hideToast, snackbar} = useContext(GlobalContext);
+    const {
+        isCurrentAttendanceEntityModified,
+        updateLastSavedAttendanceEntity,
+        currentAttendanceEntity,
+        setCurrentAttendanceEntity,
+        resetInvalidAttendanceInputErrorStyles,
     } = useContext(AttendanceContext);
-    
-    const { attendanceRespository } = useAttendanceRepository();
+
+    const {attendanceRespository} = useAttendanceRepository();
     const attendanceService = new AttendanceService();
 
-    const { navigate } = useRouter();
+    const {navigate} = useRouter();
 
     const componentName = "TopBar";
-    const { children, ...otherProps } = useHelperProps(props, componentName, TopBarStyles.component);
+    const {children, ...otherProps} = useHelperProps(props, componentName, TopBarStyles.component);
 
     async function handleSavePress(): Promise<void> {
         let errorMessage = null;
         if ((errorMessage = validateBeforeSave()) !== null) {
             toast(
-                (
-                    <Fragment>
-                        <B>Invalider UB</B>
-                        <Br />
+                <Fragment>
+                    <B>Invalider UB</B>
+                    <Br />
 
-                        <HelperText>{errorMessage}</HelperText>
-                    </Fragment>
-                ), 
+                    <HelperText>{errorMessage}</HelperText>
+                </Fragment>,
                 {
                     defaultFooter: false,
                     // custom footer
                     children: (
-                        <Flex style={{...HelperStyles.fullWidth, ...mt_3}} justifyContent="flex-end">
-                            <HelperButton dynamicStyle={ToastDefaultFooterStyles.button} onPress={hideToast}>  
-                                <HelperText dynamicStyle={ToastDefaultFooterStyles.buttonChildren}>Cancel</HelperText> 
+                        <Flex
+                            style={{...HelperStyles.fullWidth, ...mt_3}}
+                            justifyContent="flex-end"
+                        >
+                            <HelperButton
+                                dynamicStyle={ToastDefaultFooterStyles.button}
+                                onPress={hideToast}
+                            >
+                                <HelperText dynamicStyle={ToastDefaultFooterStyles.buttonChildren}>
+                                    Cancel
+                                </HelperText>
                             </HelperButton>
                         </Flex>
-                    )
+                    ),
                 }
             );
             return;
         }
 
-        const attendanceEntityResult = await attendanceRespository.persistCascade(currentAttendanceEntity);
+        const attendanceEntityResult = await attendanceRespository.persistCascade(
+            currentAttendanceEntity
+        );
         if (!attendanceEntityResult)
-            return toastError("Unerwarteter Fehler beim Speichern", "Keine der letzten Änderungen wurde gespeichert. Versuche es nochmal oder kontaktiere den Support.");
+            return toastError(
+                "Unerwarteter Fehler beim Speichern",
+                "Keine der letzten Änderungen wurde gespeichert. Versuche es nochmal oder kontaktiere den Support."
+            );
 
         logTrace("save attendance result: ", attendanceEntityResult);
 
@@ -92,26 +110,26 @@ export default function TopBar({...props}: Props) {
         resetInvalidAttendanceInputErrorStyles();
 
         // notify success
-        popup(
-            "UB Gespeichert",
-            {
-                icon: <FontAwesome name="save" />
-            }
-        );
+        popup("UB Gespeichert", {
+            icon: <FontAwesome name="save" />,
+        });
     }
 
     /**
      * Make sure that no problematic input values are saved, e.g. a malformed schoolYear or notNull values.
-     * 
+     *
      * @returns an error  message or `null` if valid
      */
     function validateBeforeSave(): string | null {
         let errorMessage: string = null;
 
         // allow blank schoolyear but not a malformed one (e.g. "1")
-        if (!isBlank(currentAttendanceEntity.schoolYear) && !isSchoolYear(currentAttendanceEntity.schoolYear))
-            errorMessage = "Bevor du speicherst, gib einen validen Jahrgang an oder lasse das Feld leer.";
-
+        if (
+            !isBlank(currentAttendanceEntity.schoolYear) &&
+            !isSchoolYear(currentAttendanceEntity.schoolYear)
+        )
+            errorMessage =
+                "Bevor du speicherst, gib einen validen Jahrgang an oder lasse das Feld leer.";
         else if (!attendanceService.isSelectInputFilledOut(currentAttendanceEntity.schoolSubject))
             errorMessage = "Bevor du speicherst, gib ein Fach an.";
 
@@ -119,8 +137,7 @@ export default function TopBar({...props}: Props) {
     }
 
     function handleDeletePress(): void {
-        if (isNumberFalsy(currentAttendanceEntity.id))
-            return;
+        if (isNumberFalsy(currentAttendanceEntity.id)) return;
 
         toast(
             <HelperView>
@@ -131,19 +148,24 @@ export default function TopBar({...props}: Props) {
             </HelperView>,
             {
                 onConfirm: async () => {
-                    const result = await attendanceRespository.delete(eq(Attendance_Table.id, currentAttendanceEntity.id));
+                    const result = await attendanceRespository.delete(
+                        eq(Attendance_Table.id, currentAttendanceEntity.id)
+                    );
 
                     if (result === null) {
-                        toastError("Unerwarteter Fehler beim Löschen", "Der Unterrichtsbesuch wurde nicht gelöscht. Versuche es nochmal oder kontaktiere den Support.");
-                        return;   
+                        toastError(
+                            "Unerwarteter Fehler beim Löschen",
+                            "Der Unterrichtsbesuch wurde nicht gelöscht. Versuche es nochmal oder kontaktiere den Support."
+                        );
+                        return;
                     }
 
                     navigate("../");
 
-                    popup("UB gelöscht", { icon: <FontAwesome name="trash" />});
-                }     
+                    popup("UB gelöscht", {icon: <FontAwesome name="trash" />});
+                },
             }
-        )
+        );
     }
 
     function toastError(heading: string, errorMessage: string): void {
@@ -152,54 +174,52 @@ export default function TopBar({...props}: Props) {
                 <B>{heading}</B>
                 <Br />
 
-                <HelperText
-                    style={{fontSize: FONT_SIZE_SMALLER}}
-                >
-                    {errorMessage}
-                </HelperText>
+                <HelperText style={{fontSize: FONT_SIZE_SMALLER}}>{errorMessage}</HelperText>
             </HelperView>
         );
 
         const footer = (
-            <ToastDimissFooter 
+            <ToastDimissFooter
                 buttonStyles={{
-                    backgroundColor: "white"
-                }} 
-                style={{...mt_5}} 
-                onDimiss={hideToast} 
+                    backgroundColor: "white",
+                }}
+                style={{...mt_5}}
+                onDimiss={hideToast}
             />
         );
 
-        toast(
-            content,
-            {
-                outerStyle: {...TOAST_ERROR_OUTER_STYLES},
-                defaultFooter: false,
-                children: footer
-            }
-        )
+        toast(content, {
+            outerStyle: {...TOAST_ERROR_OUTER_STYLES},
+            defaultFooter: false,
+            children: footer,
+        });
     }
 
     return (
         <Flex justifyContent="space-between" {...otherProps}>
             {/* Delete button */}
-            <HelperButton dynamicStyle={TopBarStyles.deleteButton} onPress={handleDeletePress} disabled={isNumberFalsy(currentAttendanceEntity.id)}> 
-                <FontAwesome 
-                    name="trash"
-                    size={FONT_SIZE_LARGER}
-                />
+            <HelperButton
+                dynamicStyle={TopBarStyles.deleteButton}
+                onPress={handleDeletePress}
+                disabled={isNumberFalsy(currentAttendanceEntity.id)}
+            >
+                <FontAwesome name="trash" size={FONT_SIZE_LARGER} />
             </HelperButton>
 
             {/* Save button */}
-            <HelperButton dynamicStyle={TopBarStyles.saveButton} onPress={handleSavePress} disabled={!isCurrentAttendanceEntityModified}> 
-                <FontAwesome 
+            <HelperButton
+                dynamicStyle={TopBarStyles.saveButton}
+                onPress={handleSavePress}
+                disabled={!isCurrentAttendanceEntityModified}
+            >
+                <FontAwesome
                     name="save"
                     style={{
-                        ...TopBarStyles.saveButtonChildren.default, 
-                    }} 
+                        ...TopBarStyles.saveButtonChildren.default,
+                    }}
                     size={FONT_SIZE_LARGER}
                 />
             </HelperButton>
         </Flex>
-    )
+    );
 }

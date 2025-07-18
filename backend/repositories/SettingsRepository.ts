@@ -4,7 +4,8 @@ import {SQLiteDatabase} from "expo-sqlite";
 import {AbstractRepository} from "../abstract/AbstractRepository";
 import {Db} from "../abstract/Db";
 import {RelatedEntityDetail} from "../abstract/RelatedEntityDetail";
-import {Settings_Table, SettingsEntity} from "../DbSchema";
+import { Settings_Table } from "../schemas/SettingsSchema";
+import { SettingsEntity } from "../entities/SettingsEntity";
 
 /**
  * @since 0.1.0

@@ -1,9 +1,10 @@
 import {getExaminantRoleKeysToValidate} from "@/abstract/Examinant";
-import {logDebug, logTrace} from "@/utils/logUtils";
+import {logTrace} from "@/utils/logUtils";
 import {cloneObj} from "@/utils/utils";
 import {ValueOf} from "react-native-gesture-handler/lib/typescript/typeUtils";
 import {AbstractAttendanceInputValidator} from "../abstract/AbstractAttendanceInputValidator";
-import {AttendanceEntity, ExaminantEntity} from "../DbSchema";
+import {AttendanceEntity} from "../entities/AttendanceEntity";
+import {ExaminantEntity} from "../entities/ExaminantEntity";
 import {AttendanceInputValidatorBuilder} from "./AttendanceInputValidatorBuilder";
 
 /**
