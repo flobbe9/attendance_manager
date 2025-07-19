@@ -1,5 +1,5 @@
-import {SchoolclassMode_Key} from "@/abstract/SchoolclassMode";
-import AbstractEntity from "../abstract/Abstract_Schema";
+import { SchoolclassMode_Key } from "@/abstract/SchoolclassMode";
+import AbstractEntity from "../abstract/AbstractEntity";
 
 /**
  * @since 0.0.1

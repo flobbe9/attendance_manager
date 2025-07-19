@@ -1,6 +1,6 @@
 import { SQL_BLOB_SIZE } from "@/utils/constants";
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { Abstract_Table } from "../abstract/Abstract_Schema";
+import { Abstract_Table } from "./AbstractSchema";
 
 const SETTINGS_TABLE_NAME = "settings";
 
@@ -10,5 +10,5 @@ const SETTINGS_TABLE_NAME = "settings";
 export const Settings_Table = sqliteTable(SETTINGS_TABLE_NAME, {
     ...Abstract_Table,
     key: text().unique().notNull(),
-    value: text({length: SQL_BLOB_SIZE}),
+    value: text({ length: SQL_BLOB_SIZE }),
 });

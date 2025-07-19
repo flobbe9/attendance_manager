@@ -1,5 +1,5 @@
 import { ExaminantRole_Key } from "@/abstract/Examinant";
-import AbstractEntity from "../abstract/Abstract_Schema";
+import AbstractEntity from "../abstract/AbstractEntity";
 
 /**
  * @since 0.0.1

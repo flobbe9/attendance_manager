@@ -1,14 +1,13 @@
-import AbstractEntity from "./Abstract_Schema"
-import { AbstractRepository } from "./AbstractRepository"
-import { Cascade } from "./Cascade"
-import { EntityRelationType } from "./EntityRelationType"
-import { FetchType } from "./FetchType"
-import { RelatedEntity } from "./RelatedEntity"
-
+import AbstractEntity from "./AbstractEntity";
+import { AbstractRepository } from "./AbstractRepository";
+import { Cascade } from "./Cascade";
+import { EntityRelationType } from "./EntityRelationType";
+import { FetchType } from "./FetchType";
+import { RelatedEntity } from "./RelatedEntity";
 
 /**
  * Contains detail about a related entity.
- * 
+ *
  * @since 0.0.1
  */
 export interface RelatedEntityDetail<ParentEntity extends AbstractEntity, E extends AbstractEntity> {
@@ -27,14 +26,12 @@ export interface RelatedEntityDetail<ParentEntity extends AbstractEntity, E exte
     fetchType?: FetchType;
 }
 
-
 /**
  * Use this to retrieve the fetchType if possibly falsy to ensure to get the right default (`EAGER`).
- *  
+ *
  * @param fetchType to interpret
  * @returns `fetchType` or FetchType.EAGER
  */
 export function getFetchType(fetchType?: FetchType): FetchType {
-
     return fetchType ?? FetchType.EAGER;
 }

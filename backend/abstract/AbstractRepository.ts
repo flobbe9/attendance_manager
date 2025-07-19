@@ -1,16 +1,17 @@
-import {log, logDebug, logError, logTrace} from "@/utils/logUtils";
-import {assertFalsyAndThrow, isAnyFalsy} from "@/utils/utils";
-import {and, eq, notInArray, SQL} from "drizzle-orm";
-import {SQLiteTableWithColumns} from "drizzle-orm/sqlite-core";
-import {SQLiteDatabase} from "expo-sqlite";
-import {DbTransaction} from "../DbTransaction";
-import AbstractEntity from "./Abstract_Schema";
-import {Cascade} from "./Cascade";
-import {Dao} from "./Dao";
-import {Db} from "./Db";
-import {EntityRelationType} from "./EntityRelationType";
-import {FetchType} from "./FetchType";
-import {getFetchType, RelatedEntityDetail} from "./RelatedEntityDetail";
+import { logDebug, logError, logTrace } from "@/utils/logUtils";
+import { assertFalsyAndThrow, isAnyFalsy } from "@/utils/utils";
+import { and, eq, inArray, notInArray, SQL } from "drizzle-orm";
+import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
+import { SQLiteDatabase } from "expo-sqlite";
+import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
+import { DbTransaction } from "../DbTransaction";
+import AbstractEntity from "./AbstractEntity";
+import { Cascade } from "./Cascade";
+import { Dao } from "./Dao";
+import { Db } from "./Db";
+import { EntityRelationType } from "./EntityRelationType";
+import { FetchType } from "./FetchType";
+import { getFetchType, RelatedEntityDetail } from "./RelatedEntityDetail";
 
 /**
  * @since 0.0.1
@@ -53,8 +54,7 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
     public async selectCascade(where?: SQL): Promise<E[] | null> {
         try {
             const entityResults = await this.select(where);
-            if (!entityResults)
-                throw new Error(`Failed to cascade select entity '${this.getTableName()}'`);
+            if (!entityResults) throw new Error(`Failed to cascade select entity '${this.getTableName()}'`);
 
             for (const ownedEntityDetail of this.getOwnedEntities()) {
                 if (getFetchType(ownedEntityDetail.fetchType) === FetchType.LAZY) continue;
@@ -63,21 +63,10 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
                     const ownedEntityRepository = ownedEntityDetail.repository;
 
                     // fetch owned entity's owned entities
-                    const ownedEntityResults = await ownedEntityRepository.selectCascade(
-                        eq(
-                            ownedEntityRepository.table[this.getBackReferenceColumnName()],
-                            entityResult.id
-                        )
-                    );
-                    if (!ownedEntityResults)
-                        throw new Error(
-                            `Failed to cascade select owned entity '${ownedEntityRepository.getTableName()}`
-                        );
+                    const ownedEntityResults = await ownedEntityRepository.selectCascade(eq(ownedEntityRepository.table[this.getBackReferenceColumnName()], entityResult.id));
+                    if (!ownedEntityResults) throw new Error(`Failed to cascade select owned entity '${ownedEntityRepository.getTableName()}`);
 
-                    entityResult[ownedEntityDetail.column.name] =
-                        ownedEntityDetail.relationType === EntityRelationType.ONE_TO_ONE
-                            ? ownedEntityResults[0]
-                            : ownedEntityResults;
+                    entityResult[ownedEntityDetail.column.name] = ownedEntityDetail.relationType === EntityRelationType.ONE_TO_ONE ? ownedEntityResults[0] : ownedEntityResults;
                 }
             }
 
@@ -86,6 +75,53 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
             logError(e.message);
             return null;
         }
+    }
+
+    /**
+     * @param values to insert
+     * @returns db result merged with `values` "object" type fields or `null` if error
+     */
+    public async insert<T extends E | E[]>(values: T): Promise<T> {
+        const insertResult = await super.insert(values);
+        if (!insertResult) return null;
+
+        this.transferRelatedEntities(insertResult, values);
+
+        return insertResult;
+    }
+
+    /**
+     * Overload.
+     *
+     * @param values
+     * @param where
+     * @returns the select cascade result of all entities that where updated selecting them by their primary keys or `null` if error
+     */
+    public async update(values: E, where?: SQL): Promise<E | E[]> {
+        const udpateResult = await super.update(values, where);
+        if (!udpateResult) return null;
+
+        const selectResult = await this.selectCascade(this.generatePrimaryKeyWhere(udpateResult));
+
+        this.transferRelatedEntities(Array.isArray(udpateResult) ? selectResult : selectResult[0], values);
+
+        return Array.isArray(udpateResult) ? selectResult : selectResult[0];
+    }
+
+    /**
+     * @param values to select by their primary key
+     * @returns an `and` where clause that will select all `values` by their primary keys
+     */
+    private generatePrimaryKeyWhere(values: E | E[]): SQL {
+        assertFalsyAndThrow(values);
+
+        const primaryKeyWheres: SQL[] = this.getPrimaryKeyColumnNames().map((primaryKeyColumnName) => {
+            const primaryKeyValues = Array.isArray(values) ? values.map((value) => value[primaryKeyColumnName]) : [values[primaryKeyColumnName]];
+
+            return inArray(this.table[primaryKeyColumnName], primaryKeyValues);
+        });
+
+        return and(...primaryKeyWheres);
     }
 
     /**
@@ -98,90 +134,68 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
      * @param currentTransaction the ongoing transaction. Will be used instead of creating a new one to prevent nested transactions
      * @return persisted values exactly as now present in db table. Include saved related entites. `null` if error
      */
-    public async persistCascade(values: E, currentTransaction?: DbTransaction): Promise<E | null> {
+    public async persistCascade<T extends E | E[]>(values: T, currentTransaction?: DbTransaction): Promise<T | null> {
+        // NOTE: dont use js forEach as that will prevent nested recursion errors from bubbling up
         if (!values) return null;
 
         const transaction = currentTransaction ?? new DbTransaction(this.sqliteDb);
 
-        const transactionCallback = async () => {
-            // if is array
-                // iterate
-                    // persist
-            // else
-                // persist
-
+        const transactionCallback = async (): Promise<T> => {
             // save owning entity
-            let owningEntityResult = await super.updateOrInsert(values);
-            // case: was update, returned an array with 1 element
-            // if (Array.isArray(owningEntityResult)) owningEntityResult = owningEntityResult[0];
+            let owningEntityResults = await super.persist(values);
 
-            // assertFalsyAndThrow(owningEntityResult);
+            // make an array for convenience
+            if (!Array.isArray(owningEntityResults)) owningEntityResults = [owningEntityResults as E];
 
-            const ownedEntities = this.getOwnedEntities(values);
+            // iterate over unsaved values because persist result removes related entities
+            for (const owningEntityResult of owningEntityResults) {
+                const ownedEntities = this.getOwnedEntities(owningEntityResult);
+                // persist related entities with cascade enabled
+                for (const relatedEntityDetail of ownedEntities) {
+                    const relatedEntityValue = relatedEntityDetail.column.value;
 
-            // NOTE: dont use js forEach as that will prevent nested recursion errors from bubbling up
-            // for (const relatedEntityDetail of ownedEntities) {
-            //     const relatedEntityValue = relatedEntityDetail.column.value;
+                    let relatedEntitiesToCascade: typeof relatedEntityValue;
 
-            //     let result: typeof relatedEntityValue;
+                    // case: one to many (many related entities)
+                    if (Array.isArray(relatedEntityValue)) {
+                        relatedEntitiesToCascade = [];
 
-            //     // case: one to many (many related entities)
-            //     if (Array.isArray(relatedEntityValue)) {
-            //         result = [];
+                        await this.handleOrphanRemoval(owningEntityResult.id, relatedEntityDetail);
+                        
+                        for (const relatedEntityValueEl of relatedEntityValue) {
+                            if (!(await relatedEntityDetail.repository.isCascadeWhenPersist(relatedEntityValueEl, relatedEntityDetail.cascade))) {
+                                logTrace("Wont cascade for", relatedEntityDetail.column.name);
+                                continue;
+                            }
 
-            //         await this.handleOrphanRemoval(owningEntityResult.id, relatedEntityDetail);
+                            relatedEntitiesToCascade.push(relatedEntityValueEl);
+                        }
 
-            //         for (const relatedEntityValueEl of relatedEntityValue) {
-            //             if (
-            //                 !(await relatedEntityDetail.repository.isCascadeWhenPersist(
-            //                     relatedEntityValueEl,
-            //                     relatedEntityDetail.cascade
-            //                 ))
-            //             ) {
-            //                 logTrace("Wont cascade for", relatedEntityDetail.column.name);
-            //                 continue;
-            //             }
+                        // case: one to one (one related entity)
+                    } else {
+                        if (!(await relatedEntityDetail.repository.isCascadeWhenPersist(relatedEntityValue, relatedEntityDetail.cascade))) {
+                            logTrace("Wont cascade for", relatedEntityDetail.column.name);
+                            continue;
+                        }
 
-            //             const itemResult = await this.persistCascadeRelatedEntity(
-            //                 relatedEntityValueEl,
-            //                 relatedEntityDetail.repository,
-            //                 owningEntityResult.id,
-            //                 transaction
-            //             );
-            //             assertFalsyAndThrow(itemResult);
+                        await this.handleOrphanRemoval(owningEntityResult.id, relatedEntityDetail);
 
-            //             result.push(itemResult);
-            //         }
+                        relatedEntitiesToCascade = relatedEntityValue;
+                    }
 
-            //     // case: one to one (one related entity)
-            //     } else {
-            //         if (!await relatedEntityDetail.repository.isCascadeWhenPersist(relatedEntityValue, relatedEntityDetail.cascade)) {
-            //             logTrace("Wont cascade for", relatedEntityDetail.column.name);
-            //             continue;
-            //         }
+                    const relatedEntityResult = await this.persistCascadeRelatedEntity(relatedEntitiesToCascade, relatedEntityDetail.repository, owningEntityResult.id, transaction);
+                    assertFalsyAndThrow(relatedEntityResult);
 
-            //         await this.handleOrphanRemoval(owningEntityResult.id, relatedEntityDetail);
+                    // add related entity result to owning entity
+                    owningEntityResult[relatedEntityDetail.column.name] = relatedEntityResult;
+                }
+            }
 
-            //         result = await this.persistCascadeRelatedEntity(
-            //             relatedEntityValue,
-            //             relatedEntityDetail.repository,
-            //             owningEntityResult.id,
-            //             transaction
-            //         );
-            //         assertFalsyAndThrow(result);
-            //     }
-
-            //     // add related entity result to owning entity
-            //     owningEntityResult[relatedEntityDetail.column.name] = result;
-            // }
-
-            return owningEntityResult;
+            return owningEntityResults.length === 1 ? (owningEntityResults[0] as T) : (owningEntityResults as T);
         };
 
         try {
-            // return currentTransaction
-            //     ? await transactionCallback()
-            //     : await transaction.run(transactionCallback);
+            return currentTransaction ? await transactionCallback() : await transaction.run(transactionCallback);
         } catch (e) {
             return null;
         }
@@ -196,20 +210,13 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
      * @param currentTransaction the ongoing transaction. Can be passed to db functions in recursive calls to prevent nested transactions
      * @returns the db result, or `null` if error
      */
-    private async persistCascadeRelatedEntity<RE extends AbstractEntity>(
-        relatedEntity: RE,
-        relatedEntityRepository: AbstractRepository<RE>,
-        backReferenceValue: any,
-        currentTransaction?: DbTransaction
-    ): Promise<RE | null> {
+    private async persistCascadeRelatedEntity<RE extends AbstractEntity>(relatedEntity: RE | RE[], relatedEntityRepository: AbstractRepository<RE>, backReferenceValue: any, currentTransaction?: DbTransaction): Promise<RE | RE[] | null> {
         assertFalsyAndThrow(relatedEntity, relatedEntityRepository);
 
-        if (!isAnyFalsy(backReferenceValue))
-            relatedEntity[this.getBackReferenceColumnName()] = backReferenceValue;
-        else
-            logDebug(
-                `WARN: Inserting related entity of type '${relatedEntityRepository.getTableName()}' without setting the backreference ${backReferenceValue}.`
-            );
+        if (!isAnyFalsy(backReferenceValue)) {
+            if (Array.isArray(relatedEntity)) for (const singleRelatedEntity of relatedEntity) singleRelatedEntity[this.getBackReferenceColumnName()] = backReferenceValue;
+            else relatedEntity[this.getBackReferenceColumnName()] = backReferenceValue;
+        } else logDebug(`WARN: Inserting related entity of type '${relatedEntityRepository.getTableName()}' without setting the backreference ${backReferenceValue}.`);
 
         return await relatedEntityRepository.persistCascade(relatedEntity, currentTransaction);
     }
@@ -220,36 +227,29 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
      * @param id of owning entity (type `E` that is)
      * @param newRelatedEntityDetail contains new related entities that existing ones will be checked against
      */
-    private async handleOrphanRemoval<RE extends AbstractEntity>(
-        id: number,
-        newRelatedEntityDetail: RelatedEntityDetail<E, RE>
-    ): Promise<void> {
+    private async handleOrphanRemoval<RE extends AbstractEntity>(id: number, newRelatedEntityDetail: RelatedEntityDetail<E, RE>): Promise<void> {
         assertFalsyAndThrow(id);
 
         if (
             !newRelatedEntityDetail ||
-            // !Array.isArray(newRelatedEntityDetail.column.value) || // not one-to-may
-            !newRelatedEntityDetail.orphanRemoval
+            !newRelatedEntityDetail.orphanRemoval // orphanremoval intentionally disabled
         )
-            // orphanremoval intentionally disabled
             return;
 
         let newRelatedEntityIds: number[] = [];
         // case: one-to-many
-        if (Array.isArray(newRelatedEntityDetail.column.value))
-            newRelatedEntityDetail.column.value.map((entity) => entity.id ?? 0);
+        if (Array.isArray(newRelatedEntityDetail.column.value)) newRelatedEntityDetail.column.value.map((entity: any) => entity.id ?? 0);
         // case: one-to-one
         else newRelatedEntityIds.push(newRelatedEntityDetail.column.value.id ?? 0);
 
         const relatedEntityRepository = newRelatedEntityDetail.repository;
         const relatedEntityTable = relatedEntityRepository.table;
 
-        // delete related entities matching diffIds
         await relatedEntityRepository.delete(
             and(
-                // is related entity
+                // was related entity until now
                 eq(relatedEntityTable[this.getBackReferenceColumnName()], id),
-                // is not in in "new" list
+                // is no longer related entity
                 notInArray(relatedEntityTable.id, newRelatedEntityIds)
             )
         );
@@ -263,19 +263,13 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
      * @param cascade cascade types that are supported for `relatedValues`
      * @returns `true` if the persist operation may be executed
      */
-    private async isCascadeWhenPersist<RE extends AbstractEntity>(
-        relatedValues: RE,
-        cascade: Set<Cascade> | undefined
-    ): Promise<boolean> {
+    private async isCascadeWhenPersist<RE extends AbstractEntity>(relatedValues: RE, cascade: Set<Cascade> | undefined): Promise<boolean> {
         // case: no cascade specified at all
         if (!relatedValues || !cascade || !cascade.size) return false;
 
         let valuesExist = !!relatedValues.id && (await this.existsById(relatedValues.id));
 
-        return (
-            (!!valuesExist && cascade.has(Cascade.UPDATE)) ||
-            (!valuesExist && cascade.has(Cascade.INSERT))
-        );
+        return (valuesExist && cascade.has(Cascade.UPDATE)) || (!valuesExist && cascade.has(Cascade.INSERT));
     }
 
     /**
@@ -293,8 +287,7 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
         Object.entries(entity).forEach(([key, value]) => {
             if (value === undefined) entity[key] = AbstractRepository.fixEmptyColumnValue(value);
             else if (typeof value === "object" && !isAnyFalsy(value))
-                if (Array.isArray(value))
-                    value.forEach((nestedEntity) => this.fixEmptyColumnValues(nestedEntity));
+                if (Array.isArray(value)) value.forEach((nestedEntity) => this.fixEmptyColumnValues(nestedEntity));
                 else this.fixEmptyColumnValues(value);
         });
 
@@ -310,5 +303,47 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
         if (value === undefined) return null;
 
         return value;
+    }
+
+    /**
+     * @returns list of column names that are marked as primary key for this table
+     */
+    protected getPrimaryKeyColumnNames(): (keyof E)[] {
+        return ["id"];
+    }
+
+    /**
+     * @returns list of column names that are beeing auto generated during sql insert
+     */
+    protected getAutoGeneratedColumnNames(): (keyof E)[] {
+        return ["id"];
+    }
+
+    /**
+     * Transfer all "object" type field values from `rawValues` to `dbResult` as these wont be returned by persist functions.
+     *
+     * @param dbResult modified entitie(s) returned by some persist function which needs the unsaved related entity fields passed
+     * @param rawValues entitie(s) that were passed to that same persist function that may also contain related entities that were not persisted
+     * If is an array, expected to have the same length as `dbResult`
+     */
+    private transferRelatedEntities<T extends E | E[]>(dbResult: T, rawValues: T): void {
+        const transfer = (singleDbResult: E, key: keyof E, value: ValueOf<E>): void => {
+            if (typeof value === "object") singleDbResult[key] = value;
+        };
+
+        if (Array.isArray(rawValues))
+            rawValues.forEach((rawValue, i) => {
+                Object.entries(rawValue).forEach(([key, value]) => transfer((dbResult as E[])[i], key as keyof E, value));
+            });
+        else Object.entries(rawValues).forEach(([key, value]) => transfer(dbResult as E, key as keyof E, value));
+
+        // this.getAutoGeneratedColumnNames()
+        //     .forEach((autoGeneratedColumnName, i) => {
+        //         if (Array.isArray(rawValues))
+        //             rawValues.forEach((value) => (value[autoGeneratedColumnName] = dbResult[i][autoGeneratedColumnName]));
+
+        //         else
+        //             (rawValues as E)[autoGeneratedColumnName] = (dbResult as E)[autoGeneratedColumnName];
+        //     });
     }
 }

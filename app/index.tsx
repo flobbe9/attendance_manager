@@ -62,7 +62,7 @@ export default function index() {
         if (!attendanceEntities) return [];
 
         return attendanceEntities
-            .sort(attendanceService.sortBySubject)
+            // .sort(attendanceService.sortBySubject)
             .map((attendanceEntity, i) => (
                 <AttendanceLink
                     key={i}

@@ -1,39 +1,33 @@
 import HelperProps from "@/abstract/HelperProps";
-import {SchoolSubject_Key} from "@/abstract/SchoolSubject";
-import {IndexTopBarStyles} from "@/assets/styles/IndexTopBarStyles";
-import {AttendanceService} from "@/backend/services/AttendanceService";
-import {useDefaultProps} from "@/hooks/useDefaultProps";
-import {useResponsiveStyles} from "@/hooks/useResponsiveStyles";
-import {FONT_SIZE, FONT_SIZE_LARGER, HISTORY_COLOR, MUSIC_COLOR} from "@/utils/styleConstants";
-import {FontAwesome} from "@expo/vector-icons";
-import {Link} from "expo-router";
-import React, {useContext, useEffect, useState} from "react";
-import {ColorValue, ViewProps, ViewStyle} from "react-native";
-import {GlobalAttendanceContext} from "./context/GlobalAttendanceContextProvider";
+import { SchoolSubject_Key } from "@/abstract/SchoolSubject";
+import { IndexTopBarStyles } from "@/assets/styles/IndexTopBarStyles";
+import { AttendanceService } from "@/backend/services/AttendanceService";
+import { useDefaultProps } from "@/hooks/useDefaultProps";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { FONT_SIZE_LARGER, HISTORY_COLOR, MUSIC_COLOR } from "@/utils/styleConstants";
+import { FontAwesome } from "@expo/vector-icons";
+import { Link } from "expo-router";
+import React, { useContext, useEffect, useState } from "react";
+import { ColorValue, ViewProps, ViewStyle } from "react-native";
+import { GlobalAttendanceContext } from "./context/GlobalAttendanceContextProvider";
 import Flex from "./helpers/Flex";
 import HelperButton from "./helpers/HelperButton";
 import HelperText from "./helpers/HelperText";
-import {useAttendanceRepository} from "@/hooks/repositories/useAttendanceRepository";
-import {logDebug, logError} from "@/utils/logUtils";
-import {eq} from "drizzle-orm";
-import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
 /**
  * @since 0.0.1
  */
-export default function IndexTopBar({...props}: Props) {
-    const {savedAttendanceEntities} = useContext(GlobalAttendanceContext);
-
-    const {attendanceRespository} = useAttendanceRepository();
+export default function IndexTopBar({ ...props }: Props) {
+    const { savedAttendanceEntities } = useContext(GlobalAttendanceContext);
 
     const [numEducators, setNumEducators] = useState<number | null>(null);
     const [numMusicExaminants, setNumMusicExaminants] = useState(0);
     const [numHistoryExaminants, setNumHistoryExaminants] = useState(0);
 
     const componentName = "IndexTopBar";
-    const {children, ...otherProps} = useDefaultProps(
+    const { children, ...otherProps } = useDefaultProps(
         props,
         componentName,
         IndexTopBarStyles.component
@@ -42,7 +36,7 @@ export default function IndexTopBar({...props}: Props) {
     const attendanceService = new AttendanceService();
 
     const {
-        allStyles: {me_1, me_2},
+        allStyles: { me_1, me_2 },
     } = useResponsiveStyles();
 
     useEffect(() => {
@@ -79,12 +73,12 @@ export default function IndexTopBar({...props}: Props) {
         maxExamiants: number;
         color: ColorValue;
     }) {
-        const {numExaminants, maxExamiants, color} = props;
+        const { numExaminants, maxExamiants, color } = props;
 
         return (
             <Flex dynamicStyle={IndexTopBarStyles.ExaminantCount} alignItems="center">
                 <FontAwesome
-                    style={{color, ...IndexTopBarStyles.text, ...me_1, ...me_2}}
+                    style={{ color, ...IndexTopBarStyles.text, ...me_1, ...me_2 }}
                     name="user"
                 />
                 <HelperText style={IndexTopBarStyles.text}>
@@ -92,40 +86,6 @@ export default function IndexTopBar({...props}: Props) {
                 </HelperText>
             </Flex>
         );
-    }
-
-    async function test() {
-        const attendances: AttendanceEntity[] = [
-            {
-                id: 9,
-                schoolSubject: "",
-                schoolYear: "9",
-                examinants: [],
-                schoolclassMode: null,
-            },
-            {
-                id: 10,
-                schoolSubject: "",
-                schoolYear: "6",
-                examinants: [],
-                schoolclassMode: null,
-            },
-        ];
-
-        // TODO: test persistCascade
-        // single and multiple
-        // one to one
-        // many to one
-        // cascade false
-        // orphan removal
-        try {
-            const result = await attendanceRespository.update(attendances[0]);
-            logDebug(result);
-        } catch (e) {
-            logError(e);
-        }
-
-        logDebug("all", await attendanceRespository.select());
     }
 
     return (
@@ -140,10 +100,8 @@ export default function IndexTopBar({...props}: Props) {
                 </HelperButton>
             </Link>
 
-            <HelperButton onPress={() => test()}>Test</HelperButton>
-
             <Flex justifyContent="flex-end">
-                <HelperText style={{...IndexTopBarStyles.text, ...me_2}}>Erledigt:</HelperText>
+                <HelperText style={{ ...IndexTopBarStyles.text, ...me_2 }}>Erledigt:</HelperText>
 
                 <ExaminantCount
                     numExaminants={numMusicExaminants}

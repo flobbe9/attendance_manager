@@ -1,4 +1,4 @@
-import AbstractEntity from "../abstract/Abstract_Schema";
+import AbstractEntity from "../abstract/AbstractEntity";
 
 export class SettingsEntity extends AbstractEntity {
     key: string;

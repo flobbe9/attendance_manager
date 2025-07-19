@@ -1,9 +1,9 @@
-import { logDebug, logError } from "@/utils/logUtils";
+import { logError } from "@/utils/logUtils";
 import { assertFalsyAndThrow } from "@/utils/utils";
 import { getTableName } from "drizzle-orm";
 import { eq, SQL } from "drizzle-orm/sql";
 import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
-import AbstractEntity from "./Abstract_Schema";
+import AbstractEntity from "./AbstractEntity";
 import { Db } from "./Db";
 
 /**
@@ -28,7 +28,7 @@ export class Dao<E extends AbstractEntity> {
      * Will attempt to insert (but never update) `values`.
      *
      * @param values to insert
-     * @returns saved result or `null` if error
+     * @returns insert result `null` if error
      */
     public async insert<T extends E | E[]>(values: T): Promise<T | null> {
         try {
@@ -42,7 +42,11 @@ export class Dao<E extends AbstractEntity> {
             if (Array.isArray(values)) values.forEach((value) => prepareValue(value));
             else prepareValue(values as E);
 
-            return (await this.db.insert(this.table).values(values).returning()) as T;
+            // always returns an array regardless of values.length
+            const result = (await this.db.insert(this.table).values(values).returning()) as E[];
+
+            // make sure the same type as values arg is returned
+            return Array.isArray(values) ? (result as T) : (result[0] as T);
         } catch (e) {
             logError(e.message);
             return null;
@@ -70,7 +74,7 @@ export class Dao<E extends AbstractEntity> {
                 where = eq(this.table.id, values.id);
             }
 
-            const results = this.db.update(this.table).set(values).where(where).returning() as any as E[];
+            const results = (await this.db.update(this.table).set(values).where(where).returning()) as any as E[];
 
             return results.length === 1 ? results[0] : results;
         } catch (e) {
@@ -81,7 +85,7 @@ export class Dao<E extends AbstractEntity> {
 
     /**
      * Attempt to update if
-     * - `values` is not an array and `where` or `values.id` is specified 
+     * - `values` is not an array and `where` or `values.id` is specified
      * - `values` is an array and `where` is not specified, update each value if it's `id` is specified
      *
      * Attempt to insert if
@@ -97,30 +101,24 @@ export class Dao<E extends AbstractEntity> {
 
         if (Array.isArray(values) && where) throw new Error(`Failed to update or insert. Cannot update multiple using multiple values. Either specify only one 'values' object or don't specify 'where' arg`);
 
-        const results: E | E[] = [];
-
         const updateOrInsert = async (value: E): Promise<E | E[]> => {
             let isWhereArgFalsy = !where;
             // case: no where, fallback to values.id
-            if (isWhereArgFalsy && value.id)
-                where = eq(this.table.id, value.id);
+            if (isWhereArgFalsy && value.id) where = eq(this.table.id, value.id);
 
             // case: update
             if (where) {
                 const updateResult = await this.update(value, where);
-                results.push(...(Array.isArray(updateResult) ? updateResult : [updateResult]));
 
                 // case: where arg has been replace with value.id, reset for next iteration
                 if (isWhereArgFalsy) where = undefined;
+                return updateResult;
 
                 // case: insert
-            } else {
-                const insertResult = await this.insert(value);
-                results.push(...(Array.isArray(insertResult) ? insertResult : [insertResult]));
-            }
-
-            return results.length === 1 ? results[0] : results;
+            } else return await this.insert(value);
         };
+
+        const results: E | E[] = [];
 
         // case: update / insert multiple
         if (Array.isArray(values))
@@ -128,7 +126,6 @@ export class Dao<E extends AbstractEntity> {
                 const singleResult = await updateOrInsert(value);
                 results.push(...(Array.isArray(singleResult) ? singleResult : [singleResult]));
             }
-
         // case: update / insert single
         else {
             const singleResult = await updateOrInsert(values);

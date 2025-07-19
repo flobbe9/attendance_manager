@@ -1,9 +1,9 @@
-import {MusicLessonTopic_Key} from "@/abstract/MusicLessonTopic";
-import {SchoolSubject_Key} from "@/abstract/SchoolSubject";
-import {SchoolYear} from "@/abstract/SchoolYear";
-import AbstractEntity from "../abstract/Abstract_Schema";
-import {ExaminantEntity} from "./ExaminantEntity";
-import {SchoolclassModeEntity} from "./SchoolclassModeEntity";
+import { MusicLessonTopic_Key } from "@/abstract/MusicLessonTopic";
+import { SchoolSubject_Key } from "@/abstract/SchoolSubject";
+import { SchoolYear } from "@/abstract/SchoolYear";
+import AbstractEntity from "../abstract/AbstractEntity";
+import { ExaminantEntity } from "./ExaminantEntity";
+import { SchoolclassModeEntity } from "./SchoolclassModeEntity";
 
 export class AttendanceEntity extends AbstractEntity {
     schoolSubject: SchoolSubject_Key;

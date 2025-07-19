@@ -1,4 +1,4 @@
-import AbstractEntity from "@/backend/abstract/Abstract_Schema";
+import AbstractEntity from "@/backend/abstract/AbstractEntity";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 
 /**
