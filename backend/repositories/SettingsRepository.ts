@@ -30,7 +30,7 @@ export class SettingsRepository extends AbstractRepository<SettingsEntity> {
      * @param value
      */
     public async updateValue(key: string, value: string | null): Promise<void> {
-        this.updateOrInsert(
+        this.persist(
             {
                 key: key,
                 value: value,

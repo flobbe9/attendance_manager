@@ -1,10 +1,10 @@
-import {logError} from "@/utils/logUtils";
-import {assertFalsyAndThrow} from "@/utils/utils";
-import {getTableName} from "drizzle-orm";
-import {eq, SQL} from "drizzle-orm/sql";
-import {SQLiteTableWithColumns} from "drizzle-orm/sqlite-core";
+import { logDebug, logError } from "@/utils/logUtils";
+import { assertFalsyAndThrow } from "@/utils/utils";
+import { getTableName } from "drizzle-orm";
+import { eq, SQL } from "drizzle-orm/sql";
+import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
 import AbstractEntity from "./Abstract_Schema";
-import {Db} from "./Db";
+import { Db } from "./Db";
 
 /**
  * Basically an equivalent of calling ```drizzle()``` with slight modifications.
@@ -32,10 +32,7 @@ export class Dao<E extends AbstractEntity> {
      */
     public async insert<T extends E | E[]>(values: T): Promise<T | null> {
         try {
-            if (!values)
-                throw new Error(
-                    `Failed to insert into table '${this.getTableName()}'. 'values' cannot be '${values}'`
-                );
+            if (!values) throw new Error(`Failed to insert into table '${this.getTableName()}'. 'values' cannot be '${values}'`);
 
             const prepareValue = (value: E) => {
                 value.created = new Date();
@@ -60,25 +57,22 @@ export class Dao<E extends AbstractEntity> {
      *
      * @param values to insert. Object may be incomplete, will only update what's given
      * @param where to identify the row(s) to update. If not specified, `values.id` is used as `where`
-     * @returns the updated entities or `null` if error
+     * @returns the updated entitie(s) or `null` if error
      * @throws if sql error or no valid `where` could be resolved
      */
-    public async update(values: E, where?: SQL): Promise<E[] | null> {
+    public async update(values: E, where?: SQL): Promise<E | E[] | null> {
         try {
             values.updated = new Date();
 
             if (!where) {
-                if (!values.id)
-                    throw new Error(
-                        `Cannot update table ${getTableName(
-                            this.table
-                        )}. Missing both 'where' and 'values.id'.`
-                    );
+                if (!values.id) throw new Error(`Cannot update table ${getTableName(this.table)}. Missing both 'where' and 'values.id'.`);
 
                 where = eq(this.table.id, values.id);
             }
 
-            return this.db.update(this.table).set(values).where(where).returning() as any as E[];
+            const results = this.db.update(this.table).set(values).where(where).returning() as any as E[];
+
+            return results.length === 1 ? results[0] : results;
         } catch (e) {
             logError(e.message);
             return null;
@@ -86,31 +80,62 @@ export class Dao<E extends AbstractEntity> {
     }
 
     /**
-     * Attempt to update `values` first but insert them instead if neither `where` nor `values.id` exist in db.
+     * Attempt to update if
+     * - `values` is not an array and `where` or `values.id` is specified 
+     * - `values` is an array and `where` is not specified, update each value if it's `id` is specified
      *
-     * @param values to update or insert. 
+     * Attempt to insert if
+     * - no `where` is specified AND a single value has no `id` (regardless of single or multiple `values`)
+     *
+     * @param values to update or insert.
      * @param where matcher for update statement
      * @returns inserted / updated value(s) or `null` if error
      * @throws if `values` is an array AND `where` is specified because update does not work with multiple values
      */
-    public async updateOrInsert(values: E | E[], where?: SQL): Promise<E | E[] | null> {
+    public async persist(values: E | E[], where?: SQL): Promise<E | E[] | null> {
         assertFalsyAndThrow(values);
 
-        if (Array.isArray(values) && where)
-            throw new Error(
-                `Failed to update or insert. Cannot update multiple using multiple values. Either specify only one 'values' object or don't specify 'where' arg`
-            );
+        if (Array.isArray(values) && where) throw new Error(`Failed to update or insert. Cannot update multiple using multiple values. Either specify only one 'values' object or don't specify 'where' arg`);
 
-        // case: no where, fallback to values.id
-        if (!Array.isArray(values) && !where && values.id) where = eq(this.table.id, values.id);
+        const results: E | E[] = [];
 
-        // update if where has at least 1 result
-        if (where) {
-            const selectResults = await this.select(where);
-            if (selectResults.length) return this.update(values as E, where);
+        const updateOrInsert = async (value: E): Promise<E | E[]> => {
+            let isWhereArgFalsy = !where;
+            // case: no where, fallback to values.id
+            if (isWhereArgFalsy && value.id)
+                where = eq(this.table.id, value.id);
+
+            // case: update
+            if (where) {
+                const updateResult = await this.update(value, where);
+                results.push(...(Array.isArray(updateResult) ? updateResult : [updateResult]));
+
+                // case: where arg has been replace with value.id, reset for next iteration
+                if (isWhereArgFalsy) where = undefined;
+
+                // case: insert
+            } else {
+                const insertResult = await this.insert(value);
+                results.push(...(Array.isArray(insertResult) ? insertResult : [insertResult]));
+            }
+
+            return results.length === 1 ? results[0] : results;
+        };
+
+        // case: update / insert multiple
+        if (Array.isArray(values))
+            for (const value of values) {
+                const singleResult = await updateOrInsert(value);
+                results.push(...(Array.isArray(singleResult) ? singleResult : [singleResult]));
+            }
+
+        // case: update / insert single
+        else {
+            const singleResult = await updateOrInsert(values);
+            results.push(...(Array.isArray(singleResult) ? singleResult : [singleResult]));
         }
 
-        return this.insert(values);
+        return results.length === 1 ? results[0] : results;
     }
 
     /**
@@ -126,7 +151,12 @@ export class Dao<E extends AbstractEntity> {
         }
     }
 
-    public async delete(where: SQL) {
+    /**
+     *
+     * @param where ommit this arg in order to delete all rows of `this.table`
+     * @returns
+     */
+    public async delete(where?: SQL) {
         try {
             return this.db.delete(this.table).where(where);
         } catch (e) {

@@ -12,20 +12,19 @@ import { RelatedEntity } from "./RelatedEntity"
  * @since 0.0.1
  */
 export interface RelatedEntityDetail<ParentEntity extends AbstractEntity, E extends AbstractEntity> {
-
-    repository: AbstractRepository<E>,
+    repository: AbstractRepository<E>;
     column: {
-        name: keyof ParentEntity,
-        value: RelatedEntity<ParentEntity, E> | undefined
-    },
+        name: keyof ParentEntity;
+        value: RelatedEntity<ParentEntity, E> | RelatedEntity<ParentEntity, E>[] | undefined;
+    };
     /** From the parent entity's perspective */
-    relationType: EntityRelationType,
+    relationType: EntityRelationType;
     /** List of cascade behaiviours to apply when calling a "cascade" method on parent */
-    cascade?: Set<Cascade>,
+    cascade?: Set<Cascade>;
     /** Indicates to delete this entity, should it be removed from one of it's owner's one-to-many list during a persist action. Default should be `false` */
-    orphanRemoval?: boolean,
+    orphanRemoval?: boolean;
     /** Default is `EAGER` */
-    fetchType?: FetchType
+    fetchType?: FetchType;
 }
 
 
