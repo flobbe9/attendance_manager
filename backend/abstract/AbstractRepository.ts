@@ -63,10 +63,13 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
                     const ownedEntityRepository = ownedEntityDetail.repository;
 
                     // fetch owned entity's owned entities
-                    const ownedEntityResults = await ownedEntityRepository.selectCascade(eq(ownedEntityRepository.table[this.getBackReferenceColumnName()], entityResult.id));
+                    const ownedEntityResults = await ownedEntityRepository.selectCascade(
+                        eq(ownedEntityRepository.table[this.getBackReferenceColumnName()], entityResult.id)
+                    );
                     if (!ownedEntityResults) throw new Error(`Failed to cascade select owned entity '${ownedEntityRepository.getTableName()}`);
 
-                    entityResult[ownedEntityDetail.column.name] = ownedEntityDetail.relationType === EntityRelationType.ONE_TO_ONE ? ownedEntityResults[0] : ownedEntityResults;
+                    entityResult[ownedEntityDetail.column.name] =
+                        ownedEntityDetail.relationType === EntityRelationType.ONE_TO_ONE ? ownedEntityResults[0] : ownedEntityResults;
                 }
             }
 
@@ -161,7 +164,7 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
                         relatedEntitiesToCascade = [];
 
                         await this.handleOrphanRemoval(owningEntityResult.id, relatedEntityDetail);
-                        
+
                         for (const relatedEntityValueEl of relatedEntityValue) {
                             if (!(await relatedEntityDetail.repository.isCascadeWhenPersist(relatedEntityValueEl, relatedEntityDetail.cascade))) {
                                 logTrace("Wont cascade for", relatedEntityDetail.column.name);
@@ -183,7 +186,12 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
                         relatedEntitiesToCascade = relatedEntityValue;
                     }
 
-                    const relatedEntityResult = await this.persistCascadeRelatedEntity(relatedEntitiesToCascade, relatedEntityDetail.repository, owningEntityResult.id, transaction);
+                    const relatedEntityResult = await this.persistCascadeRelatedEntity(
+                        relatedEntitiesToCascade,
+                        relatedEntityDetail.repository,
+                        owningEntityResult.id,
+                        transaction
+                    );
                     assertFalsyAndThrow(relatedEntityResult);
 
                     // add related entity result to owning entity
@@ -191,7 +199,7 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
                 }
             }
 
-            return owningEntityResults.length === 1 ? (owningEntityResults[0] as T) : (owningEntityResults as T);
+            return Array.isArray(values) ? (owningEntityResults as T) : (owningEntityResults[0] as T);
         };
 
         try {
@@ -210,13 +218,22 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
      * @param currentTransaction the ongoing transaction. Can be passed to db functions in recursive calls to prevent nested transactions
      * @returns the db result, or `null` if error
      */
-    private async persistCascadeRelatedEntity<RE extends AbstractEntity>(relatedEntity: RE | RE[], relatedEntityRepository: AbstractRepository<RE>, backReferenceValue: any, currentTransaction?: DbTransaction): Promise<RE | RE[] | null> {
+    private async persistCascadeRelatedEntity<RE extends AbstractEntity>(
+        relatedEntity: RE | RE[],
+        relatedEntityRepository: AbstractRepository<RE>,
+        backReferenceValue: any,
+        currentTransaction?: DbTransaction
+    ): Promise<RE | RE[] | null> {
         assertFalsyAndThrow(relatedEntity, relatedEntityRepository);
 
         if (!isAnyFalsy(backReferenceValue)) {
-            if (Array.isArray(relatedEntity)) for (const singleRelatedEntity of relatedEntity) singleRelatedEntity[this.getBackReferenceColumnName()] = backReferenceValue;
+            if (Array.isArray(relatedEntity))
+                for (const singleRelatedEntity of relatedEntity) singleRelatedEntity[this.getBackReferenceColumnName()] = backReferenceValue;
             else relatedEntity[this.getBackReferenceColumnName()] = backReferenceValue;
-        } else logDebug(`WARN: Inserting related entity of type '${relatedEntityRepository.getTableName()}' without setting the backreference ${backReferenceValue}.`);
+        } else
+            logDebug(
+                `WARN: Inserting related entity of type '${relatedEntityRepository.getTableName()}' without setting the backreference ${backReferenceValue}.`
+            );
 
         return await relatedEntityRepository.persistCascade(relatedEntity, currentTransaction);
     }
@@ -336,14 +353,5 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
                 Object.entries(rawValue).forEach(([key, value]) => transfer((dbResult as E[])[i], key as keyof E, value));
             });
         else Object.entries(rawValues).forEach(([key, value]) => transfer(dbResult as E, key as keyof E, value));
-
-        // this.getAutoGeneratedColumnNames()
-        //     .forEach((autoGeneratedColumnName, i) => {
-        //         if (Array.isArray(rawValues))
-        //             rawValues.forEach((value) => (value[autoGeneratedColumnName] = dbResult[i][autoGeneratedColumnName]));
-
-        //         else
-        //             (rawValues as E)[autoGeneratedColumnName] = (dbResult as E)[autoGeneratedColumnName];
-        //     });
     }
 }

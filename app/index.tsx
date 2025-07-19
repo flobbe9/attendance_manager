@@ -1,9 +1,9 @@
 import HelperStyles from "@/assets/styles/helperStyles";
-import {IndexStyles} from "@/assets/styles/IndexStyles";
-import {AttendanceEntity} from "@/backend/entities/AttendanceEntity";
-import {AttendanceService} from "@/backend/services/AttendanceService";
+import { IndexStyles } from "@/assets/styles/IndexStyles";
+import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
+import { AttendanceService } from "@/backend/services/AttendanceService";
 import AttendanceLink from "@/components/AttendanceLink";
-import {GlobalAttendanceContext} from "@/components/context/GlobalAttendanceContextProvider";
+import { GlobalAttendanceContext } from "@/components/context/GlobalAttendanceContextProvider";
 import ExtendableButton from "@/components/helpers/ExtendableButton";
 import Flex from "@/components/helpers/Flex";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
@@ -11,28 +11,27 @@ import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import IndexTopBar from "@/components/IndexTopBar";
-import {useAttendanceRepository} from "@/hooks/repositories/useAttendanceRepository";
-import {useResponsiveStyles} from "@/hooks/useResponsiveStyles";
-import {FontAwesome} from "@expo/vector-icons";
-import {useIsFocused} from "@react-navigation/native";
-import {Link} from "expo-router";
-import {JSX, useContext, useEffect, useState} from "react";
-import {NativeScrollEvent, NativeSyntheticEvent} from "react-native";
+import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { FontAwesome } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
+import { Link } from "expo-router";
+import { JSX, useContext, useEffect, useState } from "react";
+import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 
 /**
  * @since 0.0.1
  */
 export default function index() {
-    const {savedAttendanceEntities, setSavedAttendanceEntities, setCurrentAttendanceEntityId} =
-        useContext(GlobalAttendanceContext);
+    const { savedAttendanceEntities, setSavedAttendanceEntities, setCurrentAttendanceEntityId } = useContext(GlobalAttendanceContext);
 
     const [attendanceLinks, setAttendanceLinks] = useState<JSX.Element[]>([]);
     const [isExtended, setIsExtended] = useState(true);
 
-    const {attendanceRespository} = useAttendanceRepository();
+    const { attendanceRespository } = useAttendanceRepository();
 
     const {
-        allStyles: {mt_6},
+        allStyles: { mt_6 },
     } = useResponsiveStyles();
 
     const attendanceService = new AttendanceService();
@@ -62,13 +61,9 @@ export default function index() {
         if (!attendanceEntities) return [];
 
         return attendanceEntities
-            // .sort(attendanceService.sortBySubject)
+            .sort(attendanceService.sortBySubject)
             .map((attendanceEntity, i) => (
-                <AttendanceLink
-                    key={i}
-                    attendanceEntity={attendanceEntity}
-                    onTouchStart={() => setCurrentAttendanceEntityId(attendanceEntity.id)}
-                />
+                <AttendanceLink key={i} attendanceEntity={attendanceEntity} onTouchStart={() => setCurrentAttendanceEntityId(attendanceEntity.id)} />
             ));
     }
 
@@ -87,8 +82,8 @@ export default function index() {
                 <HelperScrollView
                     onScroll={handleScroll}
                     dynamicStyle={IndexStyles.linkContainer}
-                    style={{...mt_6}}
-                    childrenContainerStyle={{paddingBottom: 50}}
+                    style={{ ...mt_6 }}
+                    childrenContainerStyle={{ paddingBottom: 50 }}
                     rendered={!!attendanceLinks.length}
                 >
                     {attendanceLinks}
@@ -99,21 +94,15 @@ export default function index() {
                     flexDirection="column"
                     justifyContent="center"
                     alignItems="center"
-                    style={{...HelperStyles.fullHeight}}
+                    style={{ ...HelperStyles.fullHeight }}
                     rendered={!attendanceLinks.length}
                 >
                     <HelperText dynamicStyle={IndexStyles.emptyMessage}>😴</HelperText>
-                    <HelperText dynamicStyle={IndexStyles.emptyMessage}>
-                        Noch keine Unterrichtsbesuche...
-                    </HelperText>
+                    <HelperText dynamicStyle={IndexStyles.emptyMessage}>Noch keine Unterrichtsbesuche...</HelperText>
                 </Flex>
 
                 {/* Add button */}
-                <Link
-                    href={"/(attendance)"}
-                    asChild
-                    onPress={() => setCurrentAttendanceEntityId(-1)}
-                >
+                <Link href={"/(attendance)"} asChild onPress={() => setCurrentAttendanceEntityId(-1)}>
                     <ExtendableButton
                         isExtended={isExtended}
                         dynamicStyle={IndexStyles.addButton}
@@ -121,20 +110,13 @@ export default function index() {
                         align="flex-end"
                         extendedWidth={152}
                         label={
-                            <HelperText
-                                dynamicStyle={{...IndexStyles.addButtonLabel}}
-                                style={{color: "white"}}
-                            >
+                            <HelperText dynamicStyle={{ ...IndexStyles.addButtonLabel }} style={{ color: "white" }}>
                                 Neuer UB
                             </HelperText>
                         }
-                        ripple={{rippleBackground: "rgb(70, 70, 70)"}}
+                        ripple={{ rippleBackground: "rgb(70, 70, 70)" }}
                     >
-                        <FontAwesome
-                            name="plus"
-                            style={{...IndexStyles.buttonIcon}}
-                            color="white"
-                        />
+                        <FontAwesome name="plus" style={{ ...IndexStyles.buttonIcon }} color="white" />
                     </ExtendableButton>
                 </Link>
             </HelperView>
