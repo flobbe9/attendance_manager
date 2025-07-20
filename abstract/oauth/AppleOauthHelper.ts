@@ -29,6 +29,8 @@ import {OauthUser} from "./OauthUser";
     />
  * ```
  * @since latest
+ * @see https://github.com/invertase/react-native-apple-authentication (apple sign in)
+ * @see https://developer.android.com/identity/sign-in/credential-manager-siwg (google sign in)
  */
 export class AppleOauthHelper extends AbstractOauthHelper {
     public async login(): Promise<number> {
