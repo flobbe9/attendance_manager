@@ -1,41 +1,45 @@
-import { GlobalPopupProps } from "@/components/Popup";
-import { logWarn } from "@/utils/logUtils";
-import { isAnyFalsy } from "@/utils/utils";
-import { createContext, ReactNode, useEffect, useState } from "react";
-import { SnackbarProps } from "react-native-paper";
-import { de, en, registerTranslation } from 'react-native-paper-dates';
-import { CustomnSnackbarProps, CustomSnackbarStatus } from "../CustomSnackbar";
-import { GlobalToastProps } from "../Toast";
-
+import {GlobalPopupProps} from "@/components/Popup";
+import {logWarn} from "@/utils/logUtils";
+import {isAnyFalsy} from "@/utils/utils";
+import {createContext, ReactNode, useEffect, useState} from "react";
+import {SnackbarProps} from "react-native-paper";
+import {de, en, registerTranslation} from "react-native-paper-dates";
+import {CustomnSnackbarProps, CustomSnackbarStatus} from "../CustomSnackbar";
+import {GlobalToastProps} from "../Toast";
+import {Keyboard} from "react-native";
 
 /**
  * Contains global variables accessible in the whole app.
- * 
+ *
  * @param param0 only accepts children as props
  * @since 0.0.1
  */
 export default function GlobalContextProvider({children}: {children: ReactNode}) {
-
     /** Toggle state, meaning the boolean value does not represent any information but is just to be listened to with `useEffect` */
     const [globalScreenTouch, setGlobalScreenTouch] = useState(false);
+    const [isKeyBoardvisible, setKeyboardVisible] = useState(false);
 
     const [globalSnackbarProps, setGlobalSnackbarProps] = useState<CustomnSnackbarProps>({
         status: "info",
         visible: false,
         onDismiss: () => {},
-        children: ""
+        children: "",
     });
 
-    const [globalPopupProps, setGlobalPopupProps] = useState<GlobalPopupProps>({message: "", visible: false})
+    const [globalPopupProps, setGlobalPopupProps] = useState<GlobalPopupProps>({message: "", visible: false});
     const [globalPopupTimeout, setGlobalPopupTimeout] = useState<number>();
 
     const [globalToastProps, setGlobalToastProps] = useState<GlobalToastProps>({
         visible: false,
-        content: '',
+        content: "",
     });
 
     const context = {
-        globalScreenTouch, setGlobalScreenTouch,
+        globalScreenTouch,
+        setGlobalScreenTouch,
+
+        isKeyBoardvisible,
+        setKeyboardVisible,
 
         snackbar,
         hideSnackbar,
@@ -48,15 +52,20 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
         toast,
         hideToast,
         globalToastProps,
-    }
+    };
 
     useEffect(() => {
         initReactPaperLocales();
+        subscribeKeyboardListeners();
+
+        return () => {
+            unsubscribeKeyboardListeners();
+        };
     }, []);
 
     /**
      * Show snackbar at bottom of screen.
-     * 
+     *
      * @param message the snackbar children
      * @param status will affect the container style
      * @param options see {@link SnackbarProps}
@@ -70,22 +79,21 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
     ): void {
         // make sure dismiss always hides snackbar
         const onDismissWithHide = () => {
-            if (onDismiss)
-                onDismiss();
+            if (onDismiss) onDismiss();
 
             hideSnackbar();
-        }
+        };
 
         const snackbarProps: SnackbarProps = {
             visible: true,
             children: message,
             onDismiss: onDismissWithHide,
-            ...options
-        }
+            ...options,
+        };
 
         setGlobalSnackbarProps({
             ...snackbarProps,
-            status
+            status,
         });
     }
 
@@ -94,8 +102,8 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
     }
 
     /**
-     * Display a subtle `<Popup>` and hide automatically. 
-     * 
+     * Display a subtle `<Popup>` and hide automatically.
+     *
      * @param message rendered as children
      * @param options see {@link GlobalPopupProps}
      */
@@ -106,8 +114,7 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
             ...options,
         };
 
-        if (globalPopupTimeout)
-            clearTimeout(globalPopupTimeout);
+        if (globalPopupTimeout) clearTimeout(globalPopupTimeout);
 
         setTimeout(() => {
             setGlobalPopupProps(popupProps);
@@ -116,17 +123,15 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
         setGlobalPopupTimeout(setTimeout(() => hideGlobalPopup(popupProps), options.duration ?? 5000));
     }
 
-
     function hideGlobalPopup(globalPopupProps: GlobalPopupProps): void {
-
         setGlobalPopupProps({...globalPopupProps, visible: false});
     }
 
     /**
      * Show toast popup and update `globalToastProps`. Always combine `toastProps` with `globalToastProps` for fallback values.
-     * 
+     *
      * @param content of toast, optionally including a custom footer. Set `toastProps.defaultFooter` to `false` for that
-     * @param toastProps 
+     * @param toastProps
      */
     function toast(content: ReactNode, toastProps: Omit<GlobalToastProps, "content" | "visible"> = {}): void {
         if (isAnyFalsy(content)) {
@@ -138,38 +143,50 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
             ...globalToastProps,
             ...toastProps,
             visible: true,
-            content
-        })
+            content,
+        });
     }
 
     function hideToast(): void {
         setGlobalToastProps({
             ...globalToastProps,
-            visible: false
-        })
+            visible: false,
+        });
     }
 
-    function initReactPaperLocales() {
-        
-        // https://web-ridge.github.io/react-native-paper-dates/docs/intro/        
-        registerTranslation('de', de);
-        registerTranslation('en', en);
+    function initReactPaperLocales(): void {
+        // https://web-ridge.github.io/react-native-paper-dates/docs/intro/
+        registerTranslation("de", de);
+        registerTranslation("en", en);
     }
 
-    return (
-        <GlobalContext.Provider value={context}>
-            {children}
-        </GlobalContext.Provider>
-    )
+    function subscribeKeyboardListeners(): void {
+        Keyboard.addListener("keyboardDidShow", () => setKeyboardVisible(true));
+        Keyboard.addListener("keyboardDidHide", () => setKeyboardVisible(false));
+    }
+
+    function unsubscribeKeyboardListeners(): void {
+        Keyboard.removeAllListeners("keyboardDidShow");
+        Keyboard.removeAllListeners("keyboardDidHide");
+    }
+
+    return <GlobalContext.Provider value={context}>{children}</GlobalContext.Provider>;
 }
 
-
 export const GlobalContext = createContext({
-    globalScreenTouch: false, 
+    globalScreenTouch: false,
     setGlobalScreenTouch: (_globalBlur: boolean) => {},
 
-    snackbar: (message: React.ReactNode, status: CustomSnackbarStatus = "info", options?: Omit<SnackbarProps, "children" | "visible" | "onDismiss">, onDismiss?: () => void) => {},
-    globalSnackbarProps: {} as CustomnSnackbarProps, 
+    isKeyBoardvisible: false,
+    setKeyboardVisible: (isVisible: boolean): void => {},
+
+    snackbar: (
+        message: React.ReactNode,
+        status: CustomSnackbarStatus = "info",
+        options?: Omit<SnackbarProps, "children" | "visible" | "onDismiss">,
+        onDismiss?: () => void
+    ) => {},
+    globalSnackbarProps: {} as CustomnSnackbarProps,
     hideSnackbar: (): void => {},
 
     popup: (message: ReactNode, options: Omit<GlobalPopupProps, "visible" | "message"> = {}) => {},
@@ -179,4 +196,4 @@ export const GlobalContext = createContext({
     toast: (content: ReactNode, globalToastProps: Omit<GlobalToastProps, "content" | "visible"> = {}): void => {},
     hideToast: (): void => {},
     globalToastProps: {} as GlobalToastProps,
-})
+});

@@ -1,20 +1,19 @@
 import HelperProps from "@/abstract/HelperProps";
-import {SchoolSubject_Key} from "@/abstract/SchoolSubject";
-import {IndexTopBarStyles} from "@/assets/styles/IndexTopBarStyles";
-import {AttendanceService} from "@/backend/services/AttendanceService";
-import {useDefaultProps} from "@/hooks/useDefaultProps";
-import {useResponsiveStyles} from "@/hooks/useResponsiveStyles";
-import {FONT_SIZE, FONT_SIZE_LARGER, HISTORY_COLOR, MUSIC_COLOR} from "@/utils/styleConstants";
-import {FontAwesome} from "@expo/vector-icons";
-import {Link} from "expo-router";
-import React, {useContext, useEffect, useState} from "react";
-import {ColorValue, ViewProps, ViewStyle} from "react-native";
-import {GlobalAttendanceContext} from "./context/GlobalAttendanceContextProvider";
+import { SchoolSubject_Key } from "@/abstract/SchoolSubject";
+import { IndexTopBarStyles } from "@/assets/styles/IndexTopBarStyles";
+import { AttendanceService } from "@/backend/services/AttendanceService";
+import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
+import { useDefaultProps } from "@/hooks/useDefaultProps";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { FONT_SIZE_LARGER, HISTORY_COLOR, MUSIC_COLOR } from "@/utils/styleConstants";
+import { FontAwesome } from "@expo/vector-icons";
+import { Link } from "expo-router";
+import React, { useContext, useEffect, useState } from "react";
+import { ColorValue, ViewProps, ViewStyle } from "react-native";
+import { GlobalAttendanceContext } from "./context/GlobalAttendanceContextProvider";
 import Flex from "./helpers/Flex";
 import HelperButton from "./helpers/HelperButton";
 import HelperText from "./helpers/HelperText";
-import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
-import { Attendance_Table, Examinant_Table, SchoolclassMode_Table } from "@/backend/DbSchema";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -92,13 +91,6 @@ export default function IndexTopBar({...props}: Props) {
         );
     }
 
-    async function test() {
-        // await db.delete(SchoolclassMode_Table);
-        // await db.delete(Examinant_Table);
-        // await db.delete(Attendance_Table);
-
-    }
-
     return (
         <Flex justifyContent="space-between" alignItems="center" {...otherProps}>
             <Link href="/(settings)" asChild>
@@ -110,8 +102,6 @@ export default function IndexTopBar({...props}: Props) {
                     />
                 </HelperButton>
             </Link>
-
-            <HelperButton onPress={test}>Test</HelperButton>
 
             <Flex justifyContent="flex-end">
                 <HelperText style={{...IndexTopBarStyles.text, ...me_2}}>Erledigt:</HelperText>

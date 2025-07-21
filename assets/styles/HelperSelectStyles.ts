@@ -17,6 +17,7 @@ export class HelperSelectStyles {
     static selectionButton: DynamicStyle<ViewStyle> = {
         default: {
             borderBottomWidth: 1,
+            flexWrap: "nowrap",
             justifyContent: "space-between",
             padding: GLOBAL_SCREEN_PADDING,
             width: "100%",
@@ -27,6 +28,7 @@ export class HelperSelectStyles {
         default: {
             backgroundColor: "transparent",
             borderWidth: 0,
+            flexShrink: 1,
             fontSize: fontSize,
             padding: 0
         }
@@ -42,6 +44,7 @@ export class HelperSelectStyles {
     static optionButton: DynamicStyle<ViewStyle> = {
         default: {
             backgroundColor: "white",
+            flexWrap: "nowrap",
             justifyContent: "space-between",
             paddingBottom: GLOBAL_SCREEN_PADDING,
             paddingTop: GLOBAL_SCREEN_PADDING,
@@ -59,7 +62,8 @@ export class HelperSelectStyles {
 
     static optionButtonText: DynamicStyle<TextStyle> = {
         default: {
-            fontSize: fontSize
+            flexShrink: 1,
+            fontSize: fontSize,
         }
     }
 }

@@ -169,7 +169,6 @@ export class MusicSchoolYearValidator extends AbstractSchoolYearValidator {
                             // case: found a match 
                             if (doesSchoolYearConditionMatchSchoolYearConditionSek) {
                                 if (!isSchoolYearConditionMaxedOut(schoolYearConditionSekWithCount)) {
-                                    logDebug("matched sek", schoolYearRangeToString(schoolYearConditionSekWithCount.schoolYearRange), "count", schoolYearConditionSekWithCount.attendanceCount)
                                     schoolYearConditionSekWithCount.attendanceCount++;
                                     break;
                                 }

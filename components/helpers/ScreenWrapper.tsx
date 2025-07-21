@@ -1,10 +1,10 @@
 import DefaultProps from "@/abstract/DefaultProps";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
+import { useHasComponentMounted } from "@/hooks/useHasComponentMounted";
 import React, { useContext } from "react";
-import { KeyboardAvoidingView, Modal, Platform, SafeAreaView, ViewProps, ViewStyle } from "react-native";
+import { KeyboardAvoidingView, SafeAreaView, ViewProps, ViewStyle } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GlobalContext } from "../context/GlobalContextProvider";
-import { useHasComponentMounted } from "@/hooks/useHasComponentMounted";
 
 interface Props extends DefaultProps<ViewStyle>, ViewProps {
     contentContainerStyle?: ViewStyle
@@ -21,11 +21,10 @@ interface Props extends DefaultProps<ViewStyle>, ViewProps {
  * @since 0.0.1
  */
 export default function ScreenWrapper({...props}: Props) {
-
-    const { globalScreenTouch, setGlobalScreenTouch } = useContext(GlobalContext);
+    const { globalScreenTouch, setGlobalScreenTouch, isKeyBoardvisible } = useContext(GlobalContext);
 
     const componentName = "ScreenWrapper";
-    const { children, ...otherProps } = useDefaultProps(props, componentName);
+    const { children, style, ...otherProps } = useDefaultProps(props, componentName);
 
     const hasMounted = useHasComponentMounted();
 
@@ -40,7 +39,11 @@ export default function ScreenWrapper({...props}: Props) {
         <SafeAreaProvider>
             <SafeAreaView>
                 <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'position'} 
+                    behavior={'position'} 
+                    style={{
+                        paddingBottom: isKeyBoardvisible ? 130 : 0, // bottom offset for keyboard not to cover content
+                        ...style as object,
+                    }}
                     onTouchStart={handleTouchStart}
                     {...otherProps}
                 >

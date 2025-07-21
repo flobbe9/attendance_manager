@@ -20,7 +20,6 @@ export class AttendanceIndexStyles {
 
     static scrollView: DynamicStyle<ViewStyle> = {
         default: {
-            marginBottom: 60, // more than padding sothat keyboard does not cover bottom input
         }
     }
     
@@ -35,6 +34,13 @@ export class AttendanceIndexStyles {
     static subHeading: DynamicStyle<TextStyle> = {
         default: {
             fontSize: 17,
+        }
+    }
+
+    static topBarContainer: DynamicStyle<ViewStyle> = {
+        default: {
+            ...HelperStyles.fullWidth,
+            zIndex: 1,
         }
     }
 

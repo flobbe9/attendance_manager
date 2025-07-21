@@ -2,12 +2,11 @@ import { assertFalsyAndThrow } from "@/utils/utils";
 import { AttendanceEntity } from "../DbSchema";
 import { AbstractAttendanceInputValidator } from "../abstract/AbstractAttendanceInputValidator";
 import { AbstractSchoolYearValidator } from "../abstract/AbstractSchoolYearValidator";
-import { HistorySchoolYearValidator } from "./HistorySchoolYearValidator";
-import { MusicSchoolYearValidator } from "./MusicSchoolYearValidator";
 import { DateValidator } from "./DateValidator";
-import { LessonTopicValidator } from "./LessonTopicValidator";
 import { ExamianntValidator } from "./ExaminantValidator";
-import { logDebug } from "@/utils/logUtils";
+import { HistorySchoolYearValidator } from "./HistorySchoolYearValidator";
+import { LessonTopicValidator } from "./LessonTopicValidator";
+import { MusicSchoolYearValidator } from "./MusicSchoolYearValidator";
 
 
 /**
@@ -76,7 +75,6 @@ export class AttendanceInputValidatorBuilder {
         assertFalsyAndThrow(this.currentAttendance, this.savedAttendances);
         
         const schoolSubject = this.currentAttendance.schoolSubject;
-        logDebug("builder", schoolSubject, this.currentAttendance.examinants.map(e => e.role))
 
         switch (schoolSubject) {
             case "music":

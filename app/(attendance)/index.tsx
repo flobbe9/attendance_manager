@@ -1,12 +1,11 @@
-import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import "@/assets/styles/AttendanceIndexStyles";
+import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import HelperStyles from "@/assets/styles/helperStyles";
 import { AttendanceEntity } from "@/backend/DbSchema";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import { DontConfirmAttendanceLeaveContent } from "@/components/(attendance)/DontConfirmAttendanceLeaveContent";
 import ExaminantInput from "@/components/(attendance)/ExaminantInput";
-import SchoolclassModeInput from "@/components/(attendance)/SchoolclassModeInput";
+import NotesInputs from "@/components/(attendance)/NotesInputs";
 import SchoolSubjectInput from "@/components/(attendance)/SchoolSubjectInput";
 import SchoolYearInput from "@/components/(attendance)/SchoolYearInput";
 import TopBar from "@/components/(attendance)/TopBar";
@@ -14,25 +13,20 @@ import TopicInput from "@/components/(attendance)/TopicInput";
 import { AttendanceContext } from "@/components/context/AttendanceContextProvider";
 import { GlobalAttendanceContext } from "@/components/context/GlobalAttendanceContextProvider";
 import { GlobalContext } from "@/components/context/GlobalContextProvider";
-import Flex from "@/components/helpers/Flex";
-import HelperButton from "@/components/helpers/HelperButton";
-import HelperInput from "@/components/helpers/HelperInput";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
 import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
-import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { DontLeaveScreenOptions, useScreenLeaveAttempt } from "@/hooks/useScreenLeaveAttempt";
 import { useSubjectColor } from "@/hooks/useSubjectColor";
 import { SETTINGS_DONT_CONFIRM_ATTENDANCE_SCREEN_LEAVE } from "@/utils/constants";
 import { logDebug } from "@/utils/logUtils";
-import { BORDER_RADIUS, FONT_SIZE } from "@/utils/styleConstants";
+import { FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
-import { ViewStyle } from "react-native";
+import React, { useContext, useEffect } from "react";
 import { Divider } from "react-native-paper";
 import DateInput from '../../components/(attendance)/DateInput';
 
@@ -62,19 +56,17 @@ export default function index() {
     
     const { transparentColor: subjectColor} = useSubjectColor(currentAttendanceEntity?.schoolSubject, "rgb(240, 240, 240)");
 
-    const [areNotesVisible, setAreNotesVisible] = useState(false);
-
     const { setDidConfirm, setDidDismiss } = useDontShowAgainStates([dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave], SETTINGS_DONT_CONFIRM_ATTENDANCE_SCREEN_LEAVE);
 
     const { allStyles: {mb_2}} = useResponsiveStyles();
 
-    const { animatedStyle: animatedArrowIconRotation } = useAnimatedStyle(
-        [0, 180],
-        ["0deg", "-180deg"],
-        {
-            reverse: !areNotesVisible,
-        }
-    )
+    // const { animatedStyle: animatedArrowIconRotation } = useAnimatedStyle(
+    //     [0, 180],
+    //     ["0deg", "-180deg"],
+    //     {
+    //         reverse: !areNotesVisible,
+    //     }
+    // )
 
     const numHelperInputLines = 20;
     const attendanceService = new AttendanceService();
@@ -163,11 +155,21 @@ export default function index() {
                 backgroundColor: subjectColor, 
             }} 
         >
-            <TopBar />
-            
-            <Divider style={{...mb_2}} />
+            <HelperScrollView 
+                stickyHeaderIndices={[0]}
+                dynamicStyle={AttendanceIndexStyles.scrollView}
+            >
+                <HelperView 
+                    dynamicStyle={AttendanceIndexStyles.topBarContainer}
+                    style={{
+                        backgroundColor: subjectColor
+                    }}
+                >
+                    <TopBar />
+                    
+                    <Divider style={{...mb_2}} />
+                </HelperView>
 
-            <HelperScrollView dynamicStyle={AttendanceIndexStyles.scrollView}>
                 <SchoolSubjectInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
 
                 {/* Post select subject */}
@@ -187,53 +189,9 @@ export default function index() {
                         style={{zIndex: 1}} // for select container
                     />
 
-                    <Flex justifyContent="center" dynamicStyle={AttendanceIndexStyles.notesContainer}>
-                        {/* Toggle notes */}
-                        <HelperButton 
-                            disableFlex={true} 
-                            dynamicStyle={AttendanceIndexStyles.moreButton} 
-                            onPress={() => setAreNotesVisible(!areNotesVisible)}
-                        >
-                            <HelperText>Mehr</HelperText>
-                            <HelperView
-                                style={{
-                                    transform: [{rotate: animatedArrowIconRotation}]
-                                }} 
-                            >
-                                <FontAwesome name={"chevron-down"} size={FONT_SIZE} />
-                            </HelperView>
-                        </HelperButton>
-                    </Flex>
+                    <Divider style={{...mb_2}} />
 
-                    <HelperView rendered={areNotesVisible}>
-                        {/* Note */}
-                        <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer}>
-                            <HelperInput 
-                                multiline
-                                numberOfLines={numHelperInputLines}
-                                placeholder="Thema"
-                                dynamicStyle={AttendanceIndexStyles.defaultMultilineHelperInput}
-                                containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
-                                value={currentAttendanceEntity.note}
-                                setValue={(value) => updateCurrentAttendanceEntity(["note", value])}
-                            />
-                        </HelperView>
-
-                        {/* Note2 */}
-                        <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer}>
-                            <HelperInput 
-                                multiline
-                                numberOfLines={numHelperInputLines}
-                                placeholder="Lerngruppe"
-                                dynamicStyle={AttendanceIndexStyles.defaultMultilineHelperInput}
-                                containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
-                                value={currentAttendanceEntity.note2}
-                                setValue={(value) => updateCurrentAttendanceEntity(["note2", value])}
-                            />
-                        </HelperView>
-
-                        <SchoolclassModeInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
-                    </HelperView>
+                    <NotesInputs />
                 </HelperView>
             </HelperScrollView>
         </ScreenWrapper>

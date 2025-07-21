@@ -36,7 +36,7 @@ export default function popups() {
 
                 <BooleanSetting
                     heading="UB Fach ändern"
-                    explanation="Ein Bestätigungs-popup wird angezeigt bevor das UB Fach gewechselt wird, weil einige UB Werte dabei zurückgesetzt werden."
+                    explanation="Ein Bestätigungs-popup wird angezeigt, bevor das UB Fach gewechselt wird, weil einige UB Werte dabei zurückgesetzt werden."
                     settingsState={isConfirmSubjectChangeState}
                     settingsKey={SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY}
                     invertDbValue

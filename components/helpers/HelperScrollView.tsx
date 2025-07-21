@@ -12,6 +12,8 @@ interface Props extends HelperProps<ViewStyle>, ScrollViewProps {
 /**
  * Convenient ```<ScrollView>``` that can handle dynamic styles as well as animated styles. See also {@link HelperProps}.
  * 
+ * For sticky element use `stickyHeaderIndices`. Refers to child indices.
+ * 
  * @since 0.0.1
  */
 export default forwardRef(function HelperScrollView(
