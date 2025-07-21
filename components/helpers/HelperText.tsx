@@ -12,6 +12,8 @@ interface Props extends HelperProps<TextStyle>, TextProps {}
 /**
  * ```<Text>``` which Supports dynamic and animated text styles.
  * 
+ * Set `numberOfLines` to 1 in order to achive an ellipsis effect. Parent containers width may need to be set.
+ * 
  * @see DynamicStyle
  * @see AnimatedDynamicStyle 
  * @since 0.0.1

@@ -69,12 +69,13 @@ export default function TopicInput({...props}: Props) {
             <HelperText dynamicStyle={AttendanceIndexStyles.heading}>Stundenthema</HelperText>
 
             <HelperSelect 
-                options={[NO_SELECTION_LABEL, ...MUSIC_LESSON_TOPICS]}
+                options={MUSIC_LESSON_TOPICS}
                 selectedOptions={getMusicLessonTopicByMusicLessonTopicKey(currentAttendanceEntity.musicLessonTopic)}
                 setSelectedOptions={handleOptionSelect}
                 disabledCondition={isOptionDisabled}
                 optionsContainerScroll={false}
                 optionsContainerHeight={243}
+                noSelectionLabel="<Noch kein Thema...>"
             />
         </HelperView>
     )

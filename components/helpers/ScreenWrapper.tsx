@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import { KeyboardAvoidingView, Modal, Platform, SafeAreaView, ViewProps, ViewStyle } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GlobalContext } from "../context/GlobalContextProvider";
+import { useHasComponentMounted } from "@/hooks/useHasComponentMounted";
 
 interface Props extends DefaultProps<ViewStyle>, ViewProps {
     contentContainerStyle?: ViewStyle
@@ -26,7 +27,12 @@ export default function ScreenWrapper({...props}: Props) {
     const componentName = "ScreenWrapper";
     const { children, ...otherProps } = useDefaultProps(props, componentName);
 
+    const hasMounted = useHasComponentMounted();
+
     function handleTouchStart(_event): void {
+        if (!hasMounted)
+            return;
+        
         setGlobalScreenTouch(!globalScreenTouch);
     }
 

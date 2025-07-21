@@ -68,7 +68,7 @@ export default function SchoolSubjectInput({...props}: Props) {
         } else
             setTimeout(() => {
                 handleConfirm();
-            }, TRANSITION_DURATION); // wait for select drop down animation to finish
+            }, 100); // wait for select drop down animation to finish
     }
     
     return (
@@ -77,7 +77,8 @@ export default function SchoolSubjectInput({...props}: Props) {
             selectedOptions={getSchoolSubjectBySchoolSubjectKey(currentAttendanceEntity.schoolSubject)}
             setSelectedOptions={handleSelect}
             optionsContainerScroll={!currentAttendanceEntity.schoolSubject} // should be position relative while bottom most element in scrollview, but absolute while not
-            optionsContainerHeight={81}
+            optionsContainerHeight={122}
+            noSelectionLabel="<Noch kein Fach...>"
             {...otherProps}
         >
             <Flex alignItems="center">
