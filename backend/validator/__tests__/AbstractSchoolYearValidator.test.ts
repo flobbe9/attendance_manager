@@ -1240,7 +1240,6 @@ const MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
         minAttendances: 4,
         maxAttendances: 5,
         attendanceCount: 0,
-        isSchoolYearRangeNotDistinct: true
     },
     // Sekundarstufe 2 (sek2)
     {
@@ -1251,7 +1250,6 @@ const MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
         minAttendances: 4,
         maxAttendances: 5,
         attendanceCount: 0,
-        isSchoolYearRangeNotDistinct: true
     },
 ]
 
