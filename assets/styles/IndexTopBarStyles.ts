@@ -10,6 +10,7 @@ export class IndexTopBarStyles {
             position: "absolute", 
             right: GLOBAL_SCREEN_PADDING,
             top: GLOBAL_SCREEN_PADDING,
+            zIndex: 1,
             ...HelperStyles.fullWidth
         }
     }
