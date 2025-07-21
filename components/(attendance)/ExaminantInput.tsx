@@ -5,24 +5,22 @@ import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import { ExaminantInputStyles } from "@/assets/styles/ExaminantInputStyles";
 import { ExaminantEntity } from "@/backend/DbSchema";
 import { AttendanceService } from "@/backend/services/AttendanceService";
+import { ExaminantService } from "@/backend/services/ExaminantService";
+import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceInputValidatorBuilder";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { getSubjectColor } from "@/hooks/useSubjectColor";
 import { CheckboxStatus, NO_SELECTION_LABEL } from "@/utils/constants";
+import { cloneObj, isBlank } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext, useEffect, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
+import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 import Flex from "../helpers/Flex";
 import HelperCheckbox from "../helpers/HelperCheckbox";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
-import { logDebug } from "@/utils/logUtils";
-import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceInputValidatorBuilder";
-import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
-import { cloneObj, isBlank } from "@/utils/utils";
-import AttendanceInputTooltip from "./AttendanceInputTooltip";
-import { ExaminantService } from "@/backend/services/ExaminantService";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 

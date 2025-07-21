@@ -4,6 +4,7 @@ import {cloneObj} from "@/utils/utils";
 import {ValueOf} from "react-native-gesture-handler/lib/typescript/typeUtils";
 import {AttendanceEntity} from "../DbSchema";
 import {AttendanceService} from "../services/AttendanceService";
+import { SchoolYearConditionOptions } from "./SchoolYearConditionOptions";
 
 /**
  * Extend this class for attendance input validators.
@@ -139,12 +140,14 @@ export abstract class AbstractAttendanceInputValidator<
      *
      * @param constantConditions any condition (propbably hardcoded) to validate `inputValue` against
      * @param inputValue to validate
+     * @param options default for includeCurrentAttendanceEntity is `false`. See {@link SchoolYearConditionOptions}
      * @returns `null` if `inputValue` is valid, an error message if invalid
      * @throws if falsy params
      */
     public abstract validateNonContextConditions(
         constantConditions: any,
-        inputValue: InputValueType
+        inputValue: InputValueType,
+        options?: SchoolYearConditionOptions
     ): string | null;
 
     /**

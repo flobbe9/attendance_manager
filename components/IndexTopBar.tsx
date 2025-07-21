@@ -1,55 +1,61 @@
 import HelperProps from "@/abstract/HelperProps";
-import { SchoolSubject_Key } from "@/abstract/SchoolSubject";
-import { IndexTopBarStyles } from "@/assets/styles/IndexTopBarStyles";
-import { AttendanceService } from "@/backend/services/AttendanceService";
-import { useDefaultProps } from "@/hooks/useDefaultProps";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import { FONT_SIZE, FONT_SIZE_LARGER, HISTORY_COLOR, MUSIC_COLOR } from "@/utils/styleConstants";
-import { FontAwesome } from "@expo/vector-icons";
-import { Link } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
-import { ColorValue, ViewProps, ViewStyle } from "react-native";
-import { GlobalAttendanceContext } from "./context/GlobalAttendanceContextProvider";
+import {SchoolSubject_Key} from "@/abstract/SchoolSubject";
+import {IndexTopBarStyles} from "@/assets/styles/IndexTopBarStyles";
+import {AttendanceService} from "@/backend/services/AttendanceService";
+import {useDefaultProps} from "@/hooks/useDefaultProps";
+import {useResponsiveStyles} from "@/hooks/useResponsiveStyles";
+import {FONT_SIZE, FONT_SIZE_LARGER, HISTORY_COLOR, MUSIC_COLOR} from "@/utils/styleConstants";
+import {FontAwesome} from "@expo/vector-icons";
+import {Link} from "expo-router";
+import React, {useContext, useEffect, useState} from "react";
+import {ColorValue, ViewProps, ViewStyle} from "react-native";
+import {GlobalAttendanceContext} from "./context/GlobalAttendanceContextProvider";
 import Flex from "./helpers/Flex";
 import HelperButton from "./helpers/HelperButton";
 import HelperText from "./helpers/HelperText";
+import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
+import { Attendance_Table, Examinant_Table, SchoolclassMode_Table } from "@/backend/DbSchema";
 
-interface Props extends HelperProps<ViewStyle>, ViewProps {
-
-}
+interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
 /**
  * @since 0.0.1
  */
 export default function IndexTopBar({...props}: Props) {
-    const { savedAttendanceEntities } = useContext(GlobalAttendanceContext);
+    const {savedAttendanceEntities} = useContext(GlobalAttendanceContext);
 
     const [numEducators, setNumEducators] = useState<number | null>(null);
     const [numMusicExaminants, setNumMusicExaminants] = useState(0);
     const [numHistoryExaminants, setNumHistoryExaminants] = useState(0);
 
+    const { db, attendanceRespository } = useAttendanceRepository();
+
     const componentName = "IndexTopBar";
-    const { children, ...otherProps } = useDefaultProps(props, componentName, IndexTopBarStyles.component);
+    const {children, ...otherProps} = useDefaultProps(
+        props,
+        componentName,
+        IndexTopBarStyles.component
+    );
 
     const attendanceService = new AttendanceService();
 
-    const { allStyles: {me_1, me_2} } =  useResponsiveStyles();
+    const {
+        allStyles: {me_1, me_2},
+    } = useResponsiveStyles();
 
     useEffect(() => {
         setNumEducators(countEducatorExaminants());
         setNumMusicExaminants(countExaminantsWithSameSubject("music"));
         setNumHistoryExaminants(countExaminantsWithSameSubject("history"));
-
     }, [savedAttendanceEntities]);
-    
+
     /**
      * @returns the number of attendance entities having at least one educator examinant
      */
     function countEducatorExaminants(): number {
-        return savedAttendanceEntities
-            .filter(attendanceEntity => 
-                attendanceService.hasExaminant(attendanceEntity, "educator"))
-            .length;
+        return savedAttendanceEntities.filter((attendanceEntity) =>
+            attendanceService.hasExaminant(attendanceEntity, "educator")
+        ).length;
     }
 
     /**
@@ -57,49 +63,71 @@ export default function IndexTopBar({...props}: Props) {
      * @returns the number of attendanceEntities with `schoolSubject` that also have at least one examinant with `role === schoolSubject`
      */
     function countExaminantsWithSameSubject(schoolSubject: SchoolSubject_Key): number {
-        if (!schoolSubject)
-            return NaN;
+        if (!schoolSubject) return NaN;
 
-        return savedAttendanceEntities
-            .filter(attendanceEntity => 
+        return savedAttendanceEntities.filter(
+            (attendanceEntity) =>
                 attendanceEntity.schoolSubject === schoolSubject && // is attendance with that subject
-                attendanceService.hasExaminant(attendanceEntity, schoolSubject)) // has examinant for that subject
-            .length;
+                attendanceService.hasExaminant(attendanceEntity, schoolSubject)
+        ).length; // has examinant for that subject
     }
 
-    function ExaminantCount(props: {numExaminants: number, maxExamiants: number, color: ColorValue}) {
+    function ExaminantCount(props: {
+        numExaminants: number;
+        maxExamiants: number;
+        color: ColorValue;
+    }) {
         const {numExaminants, maxExamiants, color} = props;
 
         return (
-            <Flex 
-                dynamicStyle={IndexTopBarStyles.ExaminantCount} 
-                alignItems="center"
-            >
-                <FontAwesome style={{color, ...IndexTopBarStyles.text, ...me_1, ...me_2}} name="user" />
-                <HelperText style={IndexTopBarStyles.text}>{numExaminants ?? '-'}/{maxExamiants}</HelperText>
+            <Flex dynamicStyle={IndexTopBarStyles.ExaminantCount} alignItems="center">
+                <FontAwesome
+                    style={{color, ...IndexTopBarStyles.text, ...me_1, ...me_2}}
+                    name="user"
+                />
+                <HelperText style={IndexTopBarStyles.text}>
+                    {numExaminants ?? "-"}/{maxExamiants}
+                </HelperText>
             </Flex>
-        )
+        );
     }
 
-    return ( 
-        <Flex 
-            justifyContent="space-between" 
-            alignItems="center"
-            {...otherProps}
-        >
+    async function test() {
+        // await db.delete(SchoolclassMode_Table);
+        // await db.delete(Examinant_Table);
+        // await db.delete(Attendance_Table);
+
+    }
+
+    return (
+        <Flex justifyContent="space-between" alignItems="center" {...otherProps}>
             <Link href="/(settings)" asChild>
                 <HelperButton dynamicStyle={IndexTopBarStyles.settingsButton}>
-                    <FontAwesome name="gear" size={FONT_SIZE_LARGER} style={IndexTopBarStyles.gearIcon} />
+                    <FontAwesome
+                        name="gear"
+                        size={FONT_SIZE_LARGER}
+                        style={IndexTopBarStyles.gearIcon}
+                    />
                 </HelperButton>
             </Link>
+
+            <HelperButton onPress={test}>Test</HelperButton>
 
             <Flex justifyContent="flex-end">
                 <HelperText style={{...IndexTopBarStyles.text, ...me_2}}>Erledigt:</HelperText>
 
-                <ExaminantCount numExaminants={numMusicExaminants} maxExamiants={9} color={MUSIC_COLOR} />
-                <ExaminantCount numExaminants={numHistoryExaminants} maxExamiants={9} color={HISTORY_COLOR} />
+                <ExaminantCount
+                    numExaminants={numMusicExaminants}
+                    maxExamiants={9}
+                    color={MUSIC_COLOR}
+                />
+                <ExaminantCount
+                    numExaminants={numHistoryExaminants}
+                    maxExamiants={9}
+                    color={HISTORY_COLOR}
+                />
                 <ExaminantCount numExaminants={numEducators} maxExamiants={8} color={"black"} />
             </Flex>
         </Flex>
-    )
+    );
 }

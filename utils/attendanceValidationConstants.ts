@@ -108,6 +108,9 @@ export const MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
         maxAttendances: 4,
         attendanceCount: 0
     },
+]
+
+export const MUSIC_SCHOOL_YEAR_CONDITIONS_SEK: SchoolYearCondition[] = [
     // Sekundarstufe 1 (sek1)
     {
         schoolYearRange: {
@@ -117,7 +120,6 @@ export const MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
         minAttendances: 4,
         maxAttendances: 5,
         attendanceCount: 0,
-        isSchoolYearRangeNotDistinct: true
     },
     // Sekundarstufe 2 (sek2)
     {
@@ -128,7 +130,6 @@ export const MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
         minAttendances: 4,
         maxAttendances: 5,
         attendanceCount: 0,
-        isSchoolYearRangeNotDistinct: true
     },
 ]
 

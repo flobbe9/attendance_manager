@@ -5,6 +5,7 @@ import { dateEquals } from "@/utils/utils";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 import { AbstractAttendanceInputValidator } from "../abstract/AbstractAttendanceInputValidator";
 import { AttendanceEntity } from "../DbSchema";
+import { SchoolYearConditionOptions } from "../abstract/SchoolYearConditionOptions";
 
 export class DateValidator extends AbstractAttendanceInputValidator<Date> {
     public getValidValues(): ValueOf<AttendanceEntity>[] {
@@ -35,7 +36,7 @@ export class DateValidator extends AbstractAttendanceInputValidator<Date> {
         return [...invalidValues];
     }
 
-    public validateNonContextConditions(constantConditions: any, inputValue: Date): string | null {
+    public validateNonContextConditions(constantConditions: any, inputValue: Date, options?: SchoolYearConditionOptions): string | null {
         // not implemented, nothing to validate
         return null;
     }

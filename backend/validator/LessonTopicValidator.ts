@@ -9,6 +9,7 @@ import {ValueOf} from "react-native-gesture-handler/lib/typescript/typeUtils";
 import {AbstractAttendanceInputValidator} from "../abstract/AbstractAttendanceInputValidator";
 import {AttendanceEntity} from "../DbSchema";
 import {AttendanceInputValidatorBuilder} from "./AttendanceInputValidatorBuilder";
+import { SchoolYearConditionOptions } from "../abstract/SchoolYearConditionOptions";
 
 /**
  * @since 0.1.0
@@ -27,7 +28,8 @@ export class LessonTopicValidator extends AbstractAttendanceInputValidator<Music
 
     public validateNonContextConditions(
         constantConditions: any,
-        inputValue: MusicLessonTopic_Key
+        inputValue: MusicLessonTopic_Key, 
+        options?: SchoolYearConditionOptions
     ): string | null {
         // not implemented, see SchoolYearValidator implementations
         return null;

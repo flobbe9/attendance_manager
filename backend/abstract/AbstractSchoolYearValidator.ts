@@ -1,20 +1,12 @@
 import {getMusicLessonTopicByMusicLessonTopicKey} from "@/abstract/MusicLessonTopic";
 import {getSchoolSubjectBySchoolSubjectKey, SchoolSubject_Key} from "@/abstract/SchoolSubject";
 import {isSchoolYear, SCHOOL_YEARS, SchoolYear} from "@/abstract/SchoolYear";
-import {
-    getGubSubjectSchoolYearConditionsBySubject,
-    getTotalRequiredGubs,
-    GUB_SCHOOL_YEAR_CONDITIONS,
-} from "@/utils/attendanceValidationConstants";
+import {getGubSubjectSchoolYearConditionsBySubject, getTotalRequiredGubs, GUB_SCHOOL_YEAR_CONDITIONS} from "@/utils/attendanceValidationConstants";
 import {assertFalsyAndThrow, cloneObj} from "@/utils/utils";
 import {ValueOf} from "react-native-gesture-handler/lib/typescript/typeUtils";
 import {AttendanceEntity} from "../DbSchema";
 import {AbstractAttendanceInputValidator} from "./AbstractAttendanceInputValidator";
-import {
-    destructSchoolYearConditions,
-    findSchoolYearConditionsBySchoolYearRange,
-    SchoolYearCondition,
-} from "./SchoolYearCondition";
+import {destructSchoolYearConditions, findSchoolYearConditionsBySchoolYearRange, SchoolYearCondition} from "./SchoolYearCondition";
 import {SchoolYearConditionOptions} from "./SchoolYearConditionOptions";
 import {isWithinSchoolYearRange, schoolYearRangeToString} from "./SchoolYearRange";
 
@@ -65,11 +57,8 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
         const currentlyUnsatisfiedSchoolYearConditions = cloneObj(allConstantSchoolYearConditions);
 
         // get relevant saved attendances
-        let savedAttendances =
-            this.getSavedAttendanceEntitiesFilteredBySchoolYearConditions(options);
-        savedAttendances = savedAttendances.filter((savedAttendance) =>
-            isSchoolYear(savedAttendance.schoolYear)
-        );
+        let savedAttendances = this.getSavedAttendanceEntitiesFilteredBySchoolYearConditions(options);
+        savedAttendances = savedAttendances.filter((savedAttendance) => isSchoolYear(savedAttendance.schoolYear));
 
         savedAttendances.forEach((savedAttendance) => {
             const matchingSchoolYearConditionTouples = findSchoolYearConditionsBySchoolYearRange(
@@ -78,10 +67,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
             );
 
             // "subtract" saved attendance conditions from constant conditions
-            this.decreaseSchoolYearConditions(
-                matchingSchoolYearConditionTouples,
-                currentlyUnsatisfiedSchoolYearConditions
-            );
+            this.decreaseSchoolYearConditions(matchingSchoolYearConditionTouples, currentlyUnsatisfiedSchoolYearConditions);
         });
 
         return currentlyUnsatisfiedSchoolYearConditions;
@@ -96,10 +82,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
      */
     public getSchoolYearConditionsWithCount(
         constantSchoolYearConditions: SchoolYearCondition[],
-        countCondition: (
-            savedAttendance: AttendanceEntity,
-            condition: SchoolYearCondition
-        ) => boolean,
+        countCondition: (savedAttendance: AttendanceEntity, condition: SchoolYearCondition) => boolean,
         options: SchoolYearConditionOptions = {includeCurrentAttendanceEntity: true}
     ): SchoolYearCondition[] {
         assertFalsyAndThrow(constantSchoolYearConditions, countCondition);
@@ -109,11 +92,8 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
 
         const conditionsWithCount = cloneObj(constantSchoolYearConditions);
 
-        let savedAttendances =
-            this.getSavedAttendanceEntitiesFilteredBySchoolYearConditions(options);
-        savedAttendances = savedAttendances.filter((savedAttendance) =>
-            isSchoolYear(savedAttendance.schoolYear)
-        );
+        let savedAttendances = this.getSavedAttendanceEntitiesFilteredBySchoolYearConditions(options);
+        savedAttendances = savedAttendances.filter((savedAttendance) => isSchoolYear(savedAttendance.schoolYear));
 
         savedAttendances.forEach((savedAttendance) => {
             conditionsWithCount.forEach((condition) => {
@@ -143,8 +123,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
         return this.getSchoolYearConditionsWithCount(
             constantSchoolYearConditions,
             (savedAttendance, condition) =>
-                isSchoolYear(savedAttendance.schoolYear) &&
-                isWithinSchoolYearRange(savedAttendance.schoolYear, condition.schoolYearRange),
+                isSchoolYear(savedAttendance.schoolYear) && isWithinSchoolYearRange(savedAttendance.schoolYear, condition.schoolYearRange),
             options
         );
     }
@@ -152,36 +131,30 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
     /**
      * @param allConstantSchoolYearConditions the constant list to compare saved attendances agains. See "attendanceValidationConstants.ts"
      * @param schoolYear to validate
+     * @param options default for includeCurrentAttendanceEntity is `false` (if options not specified). See {@link SchoolYearConditionOptions}
      * @returns `null` if `schoolYear` is valid or falsy, an error message if invalid
      * @throws if conditions are falsy
      */
     public validateNonContextConditions(
         allConstantSchoolYearConditions: SchoolYearCondition[],
-        schoolYear: SchoolYear
+        schoolYear: SchoolYear,
+        options?: SchoolYearConditionOptions
     ): string | null {
         if (!this.shouldInputBeValidated(schoolYear)) return null;
 
         assertFalsyAndThrow(allConstantSchoolYearConditions);
 
         const schoolYearConditionsWithCount = this.getSchoolYearConditionsWithCountMatchRange(
-            findSchoolYearConditionsBySchoolYearRange(
-                schoolYear,
-                allConstantSchoolYearConditions
-            ).map(([condition]) => condition),
-            {includeCurrentAttendanceEntity: false}
+            findSchoolYearConditionsBySchoolYearRange(schoolYear, allConstantSchoolYearConditions).map(([condition]) => condition),
+            options ?? {includeCurrentAttendanceEntity: false}
         );
 
         // case: range maxed out
         for (const schoolYearConditionWithCount of schoolYearConditionsWithCount)
-            if (
-                schoolYearConditionWithCount.attendanceCount >=
-                schoolYearConditionWithCount.maxAttendances
-            )
+            if (schoolYearConditionWithCount.attendanceCount >= schoolYearConditionWithCount.maxAttendances)
                 return `Für die Jahrgänge '${schoolYearRangeToString(
                     schoolYearConditionWithCount.schoolYearRange
-                )}' sind im ausgewählten Fach bereits die maximale Anzahl an UBs geplant (${
-                    schoolYearConditionWithCount.maxAttendances
-                }x).`;
+                )}' sind im ausgewählten Fach bereits die maximale Anzahl an UBs geplant (${schoolYearConditionWithCount.maxAttendances}x).`;
 
         return null;
     }
@@ -192,10 +165,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
      * @returns `null` if `schoolYear` is valid or falsy, an error message if invalid
      * @throws if conditions are falsy
      */
-    public validateContextConditions(
-        allConstantSchoolYearConditions: SchoolYearCondition[],
-        schoolYear: SchoolYear
-    ): string | null {
+    public validateContextConditions(allConstantSchoolYearConditions: SchoolYearCondition[], schoolYear: SchoolYear): string | null {
         if (!this.shouldInputBeValidated(schoolYear)) return null;
 
         assertFalsyAndThrow(allConstantSchoolYearConditions);
@@ -206,10 +176,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
 
         // case: got lesson topic to validate
         if (this.attendanceService.isSelectInputFilledOut(lessonTopic)) {
-            const schoolYearConditions = findSchoolYearConditionsBySchoolYearRange(
-                schoolYear,
-                allConstantSchoolYearConditions
-            );
+            const schoolYearConditions = findSchoolYearConditionsBySchoolYearRange(schoolYear, allConstantSchoolYearConditions);
 
             if (schoolYearConditions.length) {
                 const schoolYearConditionWithTopicMatch = schoolYearConditions.find(
@@ -251,17 +218,9 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
         try {
             if ((errorMessage = this.validateGubTotal()) !== null) return errorMessage;
 
-            if (
-                isSchoolYear(schoolYear) &&
-                (errorMessage = this.validateGubSchoolYearConditions()) !== null
-            )
-                return errorMessage;
+            if (isSchoolYear(schoolYear) && (errorMessage = this.validateGubSchoolYearConditions()) !== null) return errorMessage;
 
-            if (
-                isSchoolYear(schoolYear) &&
-                (errorMessage = this.validateGubSubjectSchoolYearConditions()) !== null
-            )
-                return errorMessage;
+            if (isSchoolYear(schoolYear) && (errorMessage = this.validateGubSubjectSchoolYearConditions()) !== null) return errorMessage;
         } finally {
             this.getCurrentAttendance().schoolYear = originalSchoolYear;
         }
@@ -280,9 +239,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
                 if (this.attendanceService.isGub(savedAttendance)) gubCount++;
 
                 if (gubCount === totalNumRequiredGubs)
-                    throw new Error(
-                        `Du has bereits all GUBs geplant (${totalNumRequiredGubs}x). Entferne mindestens einen GUB relevanten Prüfer.`
-                    );
+                    throw new Error(`Du has bereits all GUBs geplant (${totalNumRequiredGubs}x). Entferne mindestens einen GUB relevanten Prüfer.`);
             });
         } catch (e) {
             return e.message;
@@ -299,15 +256,9 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
             const gubConditionsWithCount = destructSchoolYearConditions(
                 this.getSchoolYearConditionsWithCount(
                     GUB_SCHOOL_YEAR_CONDITIONS,
-                    (
-                        savedAttendance: AttendanceEntity,
-                        schoolYearCondition: SchoolYearCondition
-                    ) => {
+                    (savedAttendance: AttendanceEntity, schoolYearCondition: SchoolYearCondition) => {
                         const isGub = this.attendanceService.isGub(savedAttendance);
-                        const isSchoolYearWithinRange = isWithinSchoolYearRange(
-                            savedAttendance.schoolYear,
-                            schoolYearCondition.schoolYearRange
-                        );
+                        const isSchoolYearWithinRange = isWithinSchoolYearRange(savedAttendance.schoolYear, schoolYearCondition.schoolYearRange);
 
                         return isGub && isSchoolYearWithinRange;
                     },
@@ -321,9 +272,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
             for (const gubCondition of gubConditionsWithCount)
                 if (gubCondition.attendanceCount > gubCondition.maxAttendances)
                     throw new Error(
-                        `Du hast bereits alle GUBs für die Jahrgänge ${schoolYearRangeToString(
-                            gubCondition.schoolYearRange
-                        )} geplant (${
+                        `Du hast bereits alle GUBs für die Jahrgänge ${schoolYearRangeToString(gubCondition.schoolYearRange)} geplant (${
                             gubCondition.maxAttendances
                         }x). Entferne mindestens einen GUB relevanten Prüfer oder wähle einen anderen Jahrgang.`
                     );
@@ -343,17 +292,10 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
             const gubSubjectConditionsWithCount = destructSchoolYearConditions(
                 this.getSchoolYearConditionsWithCount(
                     getGubSubjectSchoolYearConditionsBySubject(this.schoolSubjectToValidateFor),
-                    (
-                        savedAttendance: AttendanceEntity,
-                        schoolYearCondition: SchoolYearCondition
-                    ) => {
+                    (savedAttendance: AttendanceEntity, schoolYearCondition: SchoolYearCondition) => {
                         const isGub = this.attendanceService.isGub(savedAttendance);
-                        const isSchoolYearWithinRange = isWithinSchoolYearRange(
-                            savedAttendance.schoolYear,
-                            schoolYearCondition.schoolYearRange
-                        );
-                        const isSameSubject =
-                            savedAttendance.schoolSubject === this.schoolSubjectToValidateFor;
+                        const isSchoolYearWithinRange = isWithinSchoolYearRange(savedAttendance.schoolYear, schoolYearCondition.schoolYearRange);
+                        const isSameSubject = savedAttendance.schoolSubject === this.schoolSubjectToValidateFor;
 
                         return isGub && isSchoolYearWithinRange && isSameSubject;
                     },
@@ -367,9 +309,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
             for (const gubCondition of gubSubjectConditionsWithCount)
                 if (gubCondition.attendanceCount > gubCondition.maxAttendances)
                     throw new Error(
-                        `Du hast bereits alle GUBs für das Fach '${getSchoolSubjectBySchoolSubjectKey(
-                            this.schoolSubjectToValidateFor
-                        )}' (${
+                        `Du hast bereits alle GUBs für das Fach '${getSchoolSubjectBySchoolSubjectKey(this.schoolSubjectToValidateFor)}' (${
                             gubCondition.maxAttendances
                         }x) geplant. Entferne mindestens einen GUB relevanten Prüfer oder wähle ein anderes Fach aus.`
                     );
@@ -388,10 +328,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
         return (
             isSchoolYear(inputValue) &&
             this.getCurrentAttendance().schoolSubject === this.schoolSubjectToValidateFor &&
-            this.attendanceService.hasExaminant(
-                this.getCurrentAttendance(),
-                this.schoolSubjectToValidateFor
-            )
+            this.attendanceService.hasExaminant(this.getCurrentAttendance(), this.schoolSubjectToValidateFor)
         );
     }
 
@@ -413,40 +350,23 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
                 if (!matchingSchoolYearCondition) return;
 
                 // case: meeting required amount with this attendance
-                if (
-                    !matchingSchoolYearCondition.minAttendances ||
-                    matchingSchoolYearCondition.minAttendances === 1
-                )
+                if (!matchingSchoolYearCondition.minAttendances || matchingSchoolYearCondition.minAttendances === 1)
                     // remove from conditions array
-                    currentlyUnsatisfiedSchoolYearConditions.splice(
-                        matchingSchoolYearConditionIndex,
-                        1
-                    );
+                    currentlyUnsatisfiedSchoolYearConditions.splice(matchingSchoolYearConditionIndex, 1);
                 else matchingSchoolYearCondition.minAttendances--;
             });
     }
 
-    private getSavedAttendanceEntitiesFilteredBySchoolYearConditions(
-        options: SchoolYearConditionOptions
-    ): AttendanceEntity[] {
+    private getSavedAttendanceEntitiesFilteredBySchoolYearConditions(options: SchoolYearConditionOptions): AttendanceEntity[] {
         assertFalsyAndThrow(options);
 
         const {includeCurrentAttendanceEntity, dontFilterBySchoolSubjectToValidateFor} = options;
 
         // get relevant saved attendances
-        let savedAttendances = this.getSavedAttendancesWithOrWithoutCurrent(
-            includeCurrentAttendanceEntity
-        );
+        let savedAttendances = this.getSavedAttendancesWithOrWithoutCurrent(includeCurrentAttendanceEntity);
         if (dontFilterBySchoolSubjectToValidateFor)
-            savedAttendances = this.attendanceService.findAllByExaminant(
-                savedAttendances,
-                this.schoolSubjectToValidateFor
-            );
-        else
-            savedAttendances = this.attendanceService.findAllByExaminantAndSchoolSubject(
-                savedAttendances,
-                this.schoolSubjectToValidateFor
-            );
+            savedAttendances = this.attendanceService.findAllByExaminant(savedAttendances, this.schoolSubjectToValidateFor);
+        else savedAttendances = this.attendanceService.findAllByExaminantAndSchoolSubject(savedAttendances, this.schoolSubjectToValidateFor);
 
         return savedAttendances;
     }

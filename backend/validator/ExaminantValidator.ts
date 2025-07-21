@@ -5,6 +5,7 @@ import {ValueOf} from "react-native-gesture-handler/lib/typescript/typeUtils";
 import {AbstractAttendanceInputValidator} from "../abstract/AbstractAttendanceInputValidator";
 import {AttendanceEntity, ExaminantEntity} from "../DbSchema";
 import {AttendanceInputValidatorBuilder} from "./AttendanceInputValidatorBuilder";
+import { SchoolYearConditionOptions } from "../abstract/SchoolYearConditionOptions";
 
 /**
  * @since 0.1.0
@@ -17,22 +18,10 @@ export class ExamianntValidator extends AbstractAttendanceInputValidator<Examina
         return (
             getExaminantRoleKeysToValidate()
                 // only validate unchecked examinants
-                .filter(
-                    (examinantRoleKey) =>
-                        !this.attendanceService.hasExaminant(
-                            this.getCurrentAttendance(),
-                            examinantRoleKey
-                        )
-                )
+                .filter((examinantRoleKey) => !this.attendanceService.hasExaminant(this.getCurrentAttendance(), examinantRoleKey))
                 .map((examinantRoleKey) => [new ExaminantEntity(examinantRoleKey)])
                 // pseudo-check each unchecked examinant and validate list
-                .filter(
-                    (examinantEntity) =>
-                        this.validate([
-                            ...(this.getCurrentAttendance().examinants ?? []),
-                            examinantEntity[0],
-                        ]) === null
-                )
+                .filter((examinantEntity) => this.validate([...(this.getCurrentAttendance().examinants ?? []), examinantEntity[0]]) === null)
         );
     }
 
@@ -41,18 +30,12 @@ export class ExamianntValidator extends AbstractAttendanceInputValidator<Examina
         return [];
     }
 
-    public validateNonContextConditions(
-        constantConditions: any,
-        inputValue: ExaminantEntity[]
-    ): string | null {
+    public validateNonContextConditions(constantConditions: any, inputValue: ExaminantEntity[], options?: SchoolYearConditionOptions): string | null {
         // not implemented
         return null;
     }
 
-    public validateContextConditions(
-        constantConditions: any,
-        inputValue: ExaminantEntity[]
-    ): string | null {
+    public validateContextConditions(constantConditions: any, inputValue: ExaminantEntity[]): string | null {
         // not implemented
         return null;
     }
@@ -70,15 +53,9 @@ export class ExamianntValidator extends AbstractAttendanceInputValidator<Examina
 
         let errorMessage = null;
 
-        if ((errorMessage = this.validateNonContextConditions([], inputValue)) !== null)
-            return errorMessage;
+        if ((errorMessage = this.validateNonContextConditions([], inputValue)) !== null) return errorMessage;
 
-        logTrace("validate context", roles);
-
-        if ((errorMessage = this.validateContextConditions([], inputValue)) !== null)
-            return errorMessage;
-
-        logTrace("validate future", roles);
+        if ((errorMessage = this.validateContextConditions([], inputValue)) !== null) return errorMessage;
 
         if ((errorMessage = this.validateFuture(inputValue)) !== null) return errorMessage;
 
@@ -86,29 +63,17 @@ export class ExamianntValidator extends AbstractAttendanceInputValidator<Examina
         try {
             this.getCurrentAttendance().examinants = inputValue;
 
-            const lessonTopicValidator = AttendanceInputValidatorBuilder.builder(
-                this.getCurrentAttendance(),
-                this.getSavedAttendances()
-            )
+            const lessonTopicValidator = AttendanceInputValidatorBuilder.builder(this.getCurrentAttendance(), this.getSavedAttendances())
                 .inputType("musicLessonTopic")
                 .build();
-            if (
-                (errorMessage = lessonTopicValidator.validate(
-                    this.getCurrentAttendance().musicLessonTopic
-                )) !== null
-            )
-                return errorMessage;
+            if ((errorMessage = lessonTopicValidator.validate(this.getCurrentAttendance().musicLessonTopic)) !== null) return errorMessage;
 
             logTrace("validate examinant, topic valid", roles);
 
-            const dateValidator = AttendanceInputValidatorBuilder.builder(
-                this.getCurrentAttendance(),
-                this.getSavedAttendances()
-            )
+            const dateValidator = AttendanceInputValidatorBuilder.builder(this.getCurrentAttendance(), this.getSavedAttendances())
                 .inputType("date")
                 .build();
-            if ((errorMessage = dateValidator.validate(this.getCurrentAttendance().date)) !== null)
-                return errorMessage;
+            if ((errorMessage = dateValidator.validate(this.getCurrentAttendance().date)) !== null) return errorMessage;
 
             logTrace("validate examinant, date valid", roles);
         } finally {
