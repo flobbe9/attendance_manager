@@ -1,14 +1,14 @@
-import {getMusicLessonTopicByMusicLessonTopicKey} from "@/abstract/MusicLessonTopic";
-import {getSchoolSubjectBySchoolSubjectKey, SchoolSubject_Key} from "@/abstract/SchoolSubject";
-import {isSchoolYear, SCHOOL_YEARS, SchoolYear} from "@/abstract/SchoolYear";
-import {getGubSubjectSchoolYearConditionsBySubject, getTotalRequiredGubs, GUB_SCHOOL_YEAR_CONDITIONS} from "@/utils/attendanceValidationConstants";
-import {assertFalsyAndThrow, cloneObj} from "@/utils/utils";
-import {ValueOf} from "react-native-gesture-handler/lib/typescript/typeUtils";
-import {AttendanceEntity} from "../DbSchema";
-import {AbstractAttendanceInputValidator} from "./AbstractAttendanceInputValidator";
-import {destructSchoolYearConditions, findSchoolYearConditionsBySchoolYearRange, SchoolYearCondition} from "./SchoolYearCondition";
-import {SchoolYearConditionOptions} from "./SchoolYearConditionOptions";
-import {isWithinSchoolYearRange, schoolYearRangeToString} from "./SchoolYearRange";
+import { getMusicLessonTopicByMusicLessonTopicKey } from "@/abstract/MusicLessonTopic";
+import { getSchoolSubjectBySchoolSubjectKey, SchoolSubject_Key } from "@/abstract/SchoolSubject";
+import { isSchoolYear, SCHOOL_YEARS, SchoolYear } from "@/abstract/SchoolYear";
+import { getGubSubjectSchoolYearConditionsBySubject, getTotalRequiredGubs, GUB_SCHOOL_YEAR_CONDITIONS } from "@/utils/attendanceValidationConstants";
+import { assertFalsyAndThrow, cloneObj } from "@/utils/utils";
+import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
+import { AttendanceEntity } from "../DbSchema";
+import { AbstractAttendanceInputValidator } from "./AbstractAttendanceInputValidator";
+import { destructSchoolYearConditions, findSchoolYearConditionsBySchoolYearRange, isSchoolYearConditionExceedingMax, isSchoolYearConditionMaxedOut, SchoolYearCondition } from "./SchoolYearCondition";
+import { SchoolYearConditionOptions } from "./SchoolYearConditionOptions";
+import { isWithinSchoolYearRange, schoolYearRangeToString } from "./SchoolYearRange";
 
 /**
  * @since 0.1.0
@@ -149,9 +149,8 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
             options ?? {includeCurrentAttendanceEntity: false}
         );
 
-        // case: range maxed out
         for (const schoolYearConditionWithCount of schoolYearConditionsWithCount)
-            if (schoolYearConditionWithCount.attendanceCount >= schoolYearConditionWithCount.maxAttendances)
+            if (isSchoolYearConditionMaxedOut(schoolYearConditionWithCount))
                 return `Für die Jahrgänge '${schoolYearRangeToString(
                     schoolYearConditionWithCount.schoolYearRange
                 )}' sind im ausgewählten Fach bereits die maximale Anzahl an UBs geplant (${schoolYearConditionWithCount.maxAttendances}x).`;
@@ -270,7 +269,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
             );
 
             for (const gubCondition of gubConditionsWithCount)
-                if (gubCondition.attendanceCount > gubCondition.maxAttendances)
+                if (isSchoolYearConditionExceedingMax(gubCondition))
                     throw new Error(
                         `Du hast bereits alle GUBs für die Jahrgänge ${schoolYearRangeToString(gubCondition.schoolYearRange)} geplant (${
                             gubCondition.maxAttendances
@@ -307,7 +306,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
             );
 
             for (const gubCondition of gubSubjectConditionsWithCount)
-                if (gubCondition.attendanceCount > gubCondition.maxAttendances)
+                if (isSchoolYearConditionExceedingMax(gubCondition))
                     throw new Error(
                         `Du hast bereits alle GUBs für das Fach '${getSchoolSubjectBySchoolSubjectKey(this.schoolSubjectToValidateFor)}' (${
                             gubCondition.maxAttendances

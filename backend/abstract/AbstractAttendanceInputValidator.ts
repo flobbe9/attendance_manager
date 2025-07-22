@@ -54,7 +54,7 @@ export abstract class AbstractAttendanceInputValidator<
         // should not happen, if current is saved it should be among saved attendances
         if (savedCurrentAttendanceIndex === -1) {
             logWarn(
-                "Failed to find saved current attendance among saved attendances. This should not happen."
+                `Failed to find saved current attendance among saved attendances. This should not happen. id: ${this.currentAttendance.id}`
             );
             return this.savedAttendances;
         }

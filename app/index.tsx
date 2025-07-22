@@ -11,7 +11,6 @@ import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import IndexTopBar from "@/components/IndexTopBar";
-import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
@@ -23,12 +22,10 @@ import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
  * @since 0.0.1
  */
 export default function index() {
-    const { savedAttendanceEntities, setSavedAttendanceEntities, setCurrentAttendanceEntityId } = useContext(GlobalAttendanceContext);
+    const { savedAttendanceEntities, setCurrentAttendanceEntityId, updateSavedAttendanceEntities } = useContext(GlobalAttendanceContext);
 
     const [attendanceLinks, setAttendanceLinks] = useState<JSX.Element[]>([]);
     const [isExtended, setIsExtended] = useState(true);
-
-    const { attendanceRespository } = useAttendanceRepository();
 
     const { allStyles: { mt_6 } } = useResponsiveStyles();
 
@@ -37,7 +34,7 @@ export default function index() {
     const isScreenInView = useIsFocused();
 
     useEffect(() => {
-        loadAttendanceEntities();
+        updateSavedAttendanceEntities();
     }, [isScreenInView]); // triggered on any child stack screen visit
 
     useEffect(() => {
@@ -68,12 +65,6 @@ export default function index() {
                     onTouchStart={() => setCurrentAttendanceEntityId(attendanceEntity.id)}
                 />
             );
-    }
-
-    async function loadAttendanceEntities(): Promise<void> {
-        const attendanceEntities = await attendanceRespository.selectCascade();
-
-        setSavedAttendanceEntities(attendanceEntities ?? []);
     }
 
     return (

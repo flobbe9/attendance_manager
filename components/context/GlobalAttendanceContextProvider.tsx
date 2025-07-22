@@ -1,4 +1,5 @@
 import { AttendanceEntity } from "@/backend/DbSchema";
+import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { createContext, useState } from "react";
 
 /**
@@ -18,12 +19,24 @@ export default function GlobalAttendanceContextProvider({children}) {
     const [dontConfirmSchoolSubjectChange, setDontConfirmSchoolSubjectChange] = useState(false);
     const [dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave] = useState(false);
 
+    const { attendanceRespository } = useAttendanceRepository();
+
     const context = {
         currentAttendanceEntityId, setCurrentAttendanceEntityId,
         savedAttendanceEntities: attendanceEntities, setSavedAttendanceEntities: setAttendanceEntities,
+        updateSavedAttendanceEntities,
+
         dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup,
         dontConfirmSchoolSubjectChange, setDontConfirmSchoolSubjectChange,
         dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave,
+    }
+        
+    async function loadAttendanceEntities(): Promise<AttendanceEntity[]> {
+        return await attendanceRespository.selectCascade();
+    }
+    
+    async function updateSavedAttendanceEntities(): Promise<void> {
+        setAttendanceEntities(await loadAttendanceEntities() ?? []);
     }
     
     return (
@@ -38,6 +51,8 @@ export const GlobalAttendanceContext = createContext({
     setCurrentAttendanceEntityId: (currentId: number | null): void => {},
     savedAttendanceEntities: [] as AttendanceEntity[],
     setSavedAttendanceEntities: (savedAttendanceEntities: AttendanceEntity[]): void => {},
+
+    updateSavedAttendanceEntities: async (): Promise<void> => {},
 
     dontShowInvalidInputErrorPopup: false as boolean, 
     setDontShowInvalidInputErrorPopup: (dontShow: boolean): void => {},

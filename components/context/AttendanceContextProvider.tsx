@@ -13,6 +13,7 @@ import AttendanceInputErrorSnackbarContent from "../(attendance)/AttendanceInput
 import { CustomSnackbarStatus } from "../CustomSnackbar";
 import { GlobalContext } from "./GlobalContextProvider";
 import { GlobalAttendanceContext } from "./GlobalAttendanceContextProvider";
+import { logDebug } from "@/utils/logUtils";
 
 /**
  * Context available to all attendance edit sepcific screens of /(attendance).
@@ -22,7 +23,7 @@ import { GlobalAttendanceContext } from "./GlobalAttendanceContextProvider";
  */
 export default function AttendanceContextProvider({children}) {
     const { snackbar, hideSnackbar } = useContext(GlobalContext);
-    const { dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup } = useContext(GlobalAttendanceContext);
+    const { dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup, setSavedAttendanceEntities } = useContext(GlobalAttendanceContext);
 
     /** The attendance entity currently beeing edited. Dont set an initial value */
     const [currentAttendanceEntity, setCurrentAttendanceEntity] = useState<AttendanceEntity | undefined>();

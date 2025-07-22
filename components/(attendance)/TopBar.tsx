@@ -25,6 +25,7 @@ import { isSchoolYear } from "@/abstract/SchoolYear";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import { ToastDefaultFooterStyles } from "@/assets/styles/ToastDefaultFooterStyles";
 import HelperStyles from "@/assets/styles/helperStyles";
+import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 }
@@ -33,9 +34,12 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  * @since 0.0.1
  */
 export default function TopBar({...props}: Props) {
-    const { allStyles: { mt_5, col_6, mt_3 }, parseResponsiveStyleToStyle: pr } = useResponsiveStyles();
+    const { allStyles: { mt_5, mt_3 }, parseResponsiveStyleToStyle: pr } = useResponsiveStyles();
 
-    const { popup, toast, hideToast, snackbar } = useContext(GlobalContext);
+    const { popup, toast, hideToast } = useContext(GlobalContext);
+    const {
+        updateSavedAttendanceEntities
+    } = useContext(GlobalAttendanceContext);
     const { 
         isCurrentAttendanceEntityModified, 
         updateLastSavedAttendanceEntity, 
@@ -88,6 +92,7 @@ export default function TopBar({...props}: Props) {
         // update states
         setCurrentAttendanceEntity(attendanceEntityResult);
         updateLastSavedAttendanceEntity(attendanceEntityResult);
+        updateSavedAttendanceEntities();
 
         resetInvalidAttendanceInputErrorStyles();
 

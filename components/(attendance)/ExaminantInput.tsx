@@ -21,6 +21,7 @@ import Flex from "../helpers/Flex";
 import HelperCheckbox from "../helpers/HelperCheckbox";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
+import { logDebug } from "@/utils/logUtils";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 

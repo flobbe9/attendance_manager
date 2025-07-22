@@ -5,7 +5,7 @@ import {ValueOf} from "react-native-gesture-handler/lib/typescript/typeUtils";
 import {AbstractAttendanceInputValidator} from "../abstract/AbstractAttendanceInputValidator";
 import {AttendanceEntity, ExaminantEntity} from "../DbSchema";
 import {AttendanceInputValidatorBuilder} from "./AttendanceInputValidatorBuilder";
-import { SchoolYearConditionOptions } from "../abstract/SchoolYearConditionOptions";
+import {SchoolYearConditionOptions} from "../abstract/SchoolYearConditionOptions";
 
 /**
  * @since 0.1.0
@@ -63,10 +63,18 @@ export class ExamianntValidator extends AbstractAttendanceInputValidator<Examina
         try {
             this.getCurrentAttendance().examinants = inputValue;
 
-            const lessonTopicValidator = AttendanceInputValidatorBuilder.builder(this.getCurrentAttendance(), this.getSavedAttendances())
-                .inputType("musicLessonTopic")
-                .build();
-            if ((errorMessage = lessonTopicValidator.validate(this.getCurrentAttendance().musicLessonTopic)) !== null) return errorMessage;
+            if (this.getCurrentAttendance().schoolSubject === "music") {
+                // topic will validate school year as well
+                const lessonTopicValidator = AttendanceInputValidatorBuilder.builder(this.getCurrentAttendance(), this.getSavedAttendances())
+                    .inputType("musicLessonTopic")
+                    .build();
+                if ((errorMessage = lessonTopicValidator.validate(this.getCurrentAttendance().musicLessonTopic)) !== null) return errorMessage;
+            } else {
+                const schoolYearValidator = AttendanceInputValidatorBuilder.builder(this.getCurrentAttendance(), this.getSavedAttendances())
+                    .inputType("schoolYear")
+                    .build();
+                if ((errorMessage = schoolYearValidator.validate(this.getCurrentAttendance().schoolYear)) !== null) return errorMessage;
+            }
 
             logTrace("validate examinant, topic valid", roles);
 

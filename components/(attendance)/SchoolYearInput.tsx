@@ -14,12 +14,6 @@ import Flex from "../helpers/Flex";
 import HelperInput from "../helpers/HelperInput";
 import HelperText from "../helpers/HelperText";
 import AttendanceInputTooltip from "./AttendanceInputTooltip";
-import { log, logDebug } from "@/utils/logUtils";
-import { AbstractAttendanceInputValidator } from "@/backend/abstract/AbstractAttendanceInputValidator";
-import { AbstractSchoolYearValidator } from "@/backend/abstract/AbstractSchoolYearValidator";
-import { HistorySchoolYearValidator } from "@/backend/validator/HistorySchoolYearValidator";
-import P from "../helpers/P";
-import B from "../helpers/B";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 
