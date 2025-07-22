@@ -52,10 +52,10 @@ export class AttendanceIndexStyles {
 
     static defaultHelperInputContainer: DynamicStyle<ViewStyle & TextStyle> = {
         default: {
-            backgroundColor: "rgb(220, 220, 220)",
+            backgroundColor: "rgb(255, 255, 255)",
         },
         focus: {
-            backgroundColor: "rgb(240, 240, 240)"
+            backgroundColor: "rgb(255, 255, 255)"
         }
     }
 

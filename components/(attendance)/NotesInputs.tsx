@@ -31,7 +31,6 @@ export default function NotesInputs({...props}: Props) {
             {/* Note */}
             <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer}>
                 <HelperInput 
-                    multiline
                     placeholder="Thema"
                     dynamicStyle={AttendanceIndexStyles.defaultMultilineHelperInput}
                     containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
@@ -43,7 +42,6 @@ export default function NotesInputs({...props}: Props) {
             {/* Note2 */}
             <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer}>
                 <HelperInput 
-                    multiline
                     placeholder="Lerngruppe"
                     dynamicStyle={AttendanceIndexStyles.defaultMultilineHelperInput}
                     containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
@@ -51,8 +49,6 @@ export default function NotesInputs({...props}: Props) {
                     setValue={(value) => updateCurrentAttendanceEntity(["note2", value])}
                 />
             </HelperView>
-
-            <SchoolclassModeInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
         </HelperView>
     )
 }

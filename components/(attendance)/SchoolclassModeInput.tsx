@@ -41,7 +41,7 @@ export default function SchoolclassModeInput({...props}: Props) {
 
         return SCHOOLCLASS_MODES.map((mode, i) => (
             <Flex alignItems="center" key={i} flexWrap="nowrap">
-                <RadioButton.IOS value={mode} />
+                <RadioButton value={mode} />
 
                 <HelperText
                     style={HelperStyles.fullWidth}
@@ -75,6 +75,8 @@ export default function SchoolclassModeInput({...props}: Props) {
 
     return (
         <HelperView {...otherProps}>
+            <HelperText dynamicStyle={AttendanceIndexStyles.heading}>Sonstiges</HelperText>
+            
             <RadioButton.Group 
                 value={getSchoolclassModeBySchoolclassModeKey(currentAttendanceEntity.schoolclassMode.mode)} 
                 onValueChange={updateSchoolclassMode}

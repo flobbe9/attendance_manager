@@ -29,6 +29,7 @@ import { useNavigation } from "expo-router";
 import React, { useContext, useEffect } from "react";
 import { Divider } from "react-native-paper";
 import DateInput from '../../components/(attendance)/DateInput';
+import SchoolclassModeInput from "@/components/(attendance)/SchoolclassModeInput";
 
 /**
  * Attendance create / edit screen.
@@ -182,6 +183,8 @@ export default function index() {
                     <Divider style={{...rs.mb_6, ...rs.mt_3}} />
 
                     <NotesInputs />
+
+                    <SchoolclassModeInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
                 </HelperView>
             </HelperScrollView>
         </ScreenWrapper>
