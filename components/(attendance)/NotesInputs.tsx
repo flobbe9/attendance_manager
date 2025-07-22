@@ -22,6 +22,8 @@ export default function NotesInputs({...props}: Props) {
         
     const componentName = "NotesInputs";
     const { children, ...otherProps } = useHelperProps(props, componentName, DefaultComponentStyles.component);
+
+    const numHelperInputLines = 20;
     
     return (
         <HelperView {...otherProps}>
@@ -31,6 +33,8 @@ export default function NotesInputs({...props}: Props) {
             <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer}>
                 <HelperInput 
                     placeholder="Thema"
+                    multiline
+                    numberOfLines={numHelperInputLines}
                     dynamicStyle={AttendanceIndexStyles.defaultMultilineHelperInput}
                     containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
                     value={currentAttendanceEntity.note}
@@ -42,6 +46,8 @@ export default function NotesInputs({...props}: Props) {
             <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer}>
                 <HelperInput 
                     placeholder="Lerngruppe"
+                    multiline
+                    numberOfLines={numHelperInputLines}
                     dynamicStyle={AttendanceIndexStyles.defaultMultilineHelperInput}
                     containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
                     value={currentAttendanceEntity.note2}

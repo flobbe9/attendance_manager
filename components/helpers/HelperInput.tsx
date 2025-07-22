@@ -91,7 +91,7 @@ export default forwardRef(function HelperInput(
             <TextInput
                 ref={componentRef}
                 editable={!disabled}
-                selectTextOnFocus={!disabled}
+                selectTextOnFocus={false}
                 style={{
                     ...(disabled ? HS.disabled : {}),
                     ...style as object,
