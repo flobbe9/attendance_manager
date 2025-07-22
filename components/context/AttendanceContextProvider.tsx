@@ -11,9 +11,8 @@ import { ColorValue } from "react-native";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 import AttendanceInputErrorSnackbarContent from "../(attendance)/AttendanceInputErrorSnackbarContent";
 import { CustomSnackbarStatus } from "../CustomSnackbar";
-import { GlobalContext } from "./GlobalContextProvider";
 import { GlobalAttendanceContext } from "./GlobalAttendanceContextProvider";
-import { logDebug } from "@/utils/logUtils";
+import { GlobalContext } from "./GlobalContextProvider";
 
 /**
  * Context available to all attendance edit sepcific screens of /(attendance).
@@ -98,8 +97,7 @@ export default function AttendanceContextProvider({children}) {
      * 
      * Set `undefined` values to `null` in order for db update function to work properly.
      * 
-     * @param attendanceEntityKey column name of attendance entity
-     * @param attendancEntityValue the input value, any value of attendance entity props
+     * @param keyValues map of column names and values of attendance entity
      * @see {@link prepareCurrentAttendanceEntityUpdate()}
      */
     function updateCurrentAttendanceEntity<T extends ValueOf<AttendanceEntity>>(keyValues: Map<keyof AttendanceEntity, T> | [keyof AttendanceEntity, T]): void {
