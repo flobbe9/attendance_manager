@@ -1,16 +1,23 @@
 import HelperProps from "@/abstract/HelperProps";
+import { isSchoolYear } from "@/abstract/SchoolYear";
+import HelperStyles from "@/assets/styles/helperStyles";
+import { ToastDefaultFooterStyles } from "@/assets/styles/ToastDefaultFooterStyles";
 import { TopBarStyles } from "@/assets/styles/TopBarStyles";
+import { Attendance_Table } from "@/backend/DbSchema";
+import { AttendanceService } from "@/backend/services/AttendanceService";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { logTrace } from "@/utils/logUtils";
-import { FONT_SIZE, FONT_SIZE_LARGER, FONT_SIZE_SMALLER, TOAST_ERROR_OUTER_STYLES } from "@/utils/styleConstants";
+import { FONT_SIZE_LARGER, FONT_SIZE_SMALLER, TOAST_ERROR_OUTER_STYLES } from "@/utils/styleConstants";
 import { isBlank, isNumberFalsy } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
+import { eq } from "drizzle-orm";
 import { useRouter } from "expo-router";
 import React, { Fragment, useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
+import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 import { GlobalContext } from "../context/GlobalContextProvider";
 import B from "../helpers/B";
 import Br from "../helpers/Br";
@@ -19,13 +26,6 @@ import HelperButton from "../helpers/HelperButton";
 import HelperText from "../helpers/HelperText";
 import HelperView from "../helpers/HelperView";
 import ToastDimissFooter from "../ToastDismissFooter";
-import { eq } from "drizzle-orm";
-import { Attendance_Table } from "@/backend/DbSchema";
-import { isSchoolYear } from "@/abstract/SchoolYear";
-import { AttendanceService } from "@/backend/services/AttendanceService";
-import { ToastDefaultFooterStyles } from "@/assets/styles/ToastDefaultFooterStyles";
-import HelperStyles from "@/assets/styles/helperStyles";
-import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 }
@@ -186,9 +186,10 @@ export default function TopBar({...props}: Props) {
     }
 
     return (
+        // NOTE: dont use onPress prop since it somehow does not work with sticky header
         <Flex justifyContent="space-between" {...otherProps}>
             {/* Delete button */}
-            <HelperButton dynamicStyle={TopBarStyles.deleteButton} onPress={handleDeletePress} disabled={isNumberFalsy(currentAttendanceEntity.id)}> 
+            <HelperButton dynamicStyle={TopBarStyles.deleteButton} onTouchEnd={handleDeletePress} disabled={isNumberFalsy(currentAttendanceEntity.id)}> 
                 <FontAwesome 
                     name="trash"
                     size={FONT_SIZE_LARGER}
@@ -196,7 +197,11 @@ export default function TopBar({...props}: Props) {
             </HelperButton>
 
             {/* Save button */}
-            <HelperButton dynamicStyle={TopBarStyles.saveButton} onPress={handleSavePress} disabled={!isCurrentAttendanceEntityModified}> 
+            <HelperButton 
+                dynamicStyle={TopBarStyles.saveButton} 
+                disabled={!isCurrentAttendanceEntityModified}
+                onTouchEnd={handleSavePress} 
+            > 
                 <FontAwesome 
                     name="save"
                     style={{
