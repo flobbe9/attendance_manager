@@ -74,7 +74,6 @@ export default function TopicInput({...props}: Props) {
                 setSelectedOptions={handleOptionSelect}
                 disabledCondition={isOptionDisabled}
                 optionsContainerScroll={false}
-                optionsContainerHeight={243}
                 noSelectionLabel="<Noch kein Thema...>"
             />
         </HelperView>

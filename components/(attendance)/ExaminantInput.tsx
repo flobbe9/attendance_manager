@@ -202,10 +202,9 @@ export default function ExaminantInput({...props}: Props) {
                 <HelperSelect  
                     style={{flexShrink: 1}}
                     rendered={headmasterStatus === "checked"}
-                    options={[NO_SELECTION_LABEL, ...HEADMASTERS] as (Headmaster | typeof NO_SELECTION_LABEL)[]} 
+                    options={HEADMASTERS} 
                     selectedOptions={selectedHeadmaster}
                     setSelectedOptions={setSelectedHeadmaster} 
-                    optionsContainerHeight={121}
                     optionsContainerScroll={false}
                 >
                     <HelperText>Schulleitung</HelperText>

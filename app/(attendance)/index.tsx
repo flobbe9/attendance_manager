@@ -47,7 +47,6 @@ export default function index() {
     const { 
         currentAttendanceEntity, 
         setCurrentAttendanceEntity, 
-        updateCurrentAttendanceEntity, 
         lastSavedAttendanceEntity,
         updateLastSavedAttendanceEntity,
         isCurrentAttendanceEntityModified,
@@ -58,17 +57,8 @@ export default function index() {
 
     const { setDidConfirm, setDidDismiss } = useDontShowAgainStates([dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave], SETTINGS_DONT_CONFIRM_ATTENDANCE_SCREEN_LEAVE);
 
-    const { allStyles: {mb_2}} = useResponsiveStyles();
+    const { allStyles: rs, parseResponsiveStyleToStyle: prs} = useResponsiveStyles();
 
-    // const { animatedStyle: animatedArrowIconRotation } = useAnimatedStyle(
-    //     [0, 180],
-    //     ["0deg", "-180deg"],
-    //     {
-    //         reverse: !areNotesVisible,
-    //     }
-    // )
-
-    const numHelperInputLines = 20;
     const attendanceService = new AttendanceService();
 
     const navigation = useNavigation();
@@ -99,7 +89,7 @@ export default function index() {
                 style={{...AttendanceIndexStyles.suspenseContainer}}
                 contentContainerStyle={{...HelperStyles.centerNoFlex}}
             >
-                <FontAwesome name="hourglass" size={FONT_SIZE} style={{...mb_2}} />
+                <FontAwesome name="hourglass" size={FONT_SIZE} style={{...rs.mb_2}} />
                 <HelperText>Lade Unterrichtsbesuch...</HelperText>
             </ScreenWrapper>
         );
@@ -167,7 +157,7 @@ export default function index() {
                 >
                     <TopBar />
                     
-                    <Divider style={{...mb_2}} />
+                    <Divider style={{...rs.mb_2}} />
                 </HelperView>
 
                 <SchoolSubjectInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
@@ -189,7 +179,7 @@ export default function index() {
                         style={{zIndex: 1}} // for select container
                     />
 
-                    <Divider style={{...mb_2}} />
+                    <Divider style={{...rs.mb_6, ...rs.mt_3}} />
 
                     <NotesInputs />
                 </HelperView>

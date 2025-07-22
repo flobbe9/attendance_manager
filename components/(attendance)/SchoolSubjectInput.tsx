@@ -5,16 +5,15 @@ import { AttendanceService } from "@/backend/services/AttendanceService";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
 import { SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY } from "@/utils/constants";
-import { TRANSITION_DURATION } from "@/utils/styleConstants";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
+import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 import { GlobalContext } from "../context/GlobalContextProvider";
 import Flex from "../helpers/Flex";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
 import DontConfirmSchoolSubjectChangeContent from "./DontConfirmSchoolSubjectChangeContent";
-import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -77,7 +76,6 @@ export default function SchoolSubjectInput({...props}: Props) {
             selectedOptions={getSchoolSubjectBySchoolSubjectKey(currentAttendanceEntity.schoolSubject)}
             setSelectedOptions={handleSelect}
             optionsContainerScroll={!currentAttendanceEntity.schoolSubject} // should be position relative while bottom most element in scrollview, but absolute while not
-            optionsContainerHeight={currentAttendanceEntity.schoolSubject ? 81 : 122}
             noSelectionLabel={currentAttendanceEntity.schoolSubject ? null : "<Noch kein Fach...>"}
             {...otherProps}
         >
