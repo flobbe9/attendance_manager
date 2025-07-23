@@ -1,7 +1,6 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
 import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
-import { DefaultComponentStyles } from "@/assets/styles/DefaultComponentStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
@@ -21,7 +20,7 @@ export default function NotesInputs({...props}: Props) {
     const { currentAttendanceEntity, updateCurrentAttendanceEntity } = useContext(AttendanceContext);
         
     const componentName = "NotesInputs";
-    const { children, ...otherProps } = useHelperProps(props, componentName, DefaultComponentStyles.component);
+    const { children, ...otherProps } = useHelperProps(props, componentName);
 
     const numHelperInputLines = 20;
     
