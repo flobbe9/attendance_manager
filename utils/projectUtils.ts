@@ -1,4 +1,4 @@
-import { assertFalsyAndThrow, isAnyFalsy } from "./utils";
+import { assertFalsyAndThrow, isFalsy } from "./utils";
 
 export function formatDateGermanNoTime(date: Date): string {
     if (!date)
@@ -25,7 +25,7 @@ export function parseNumOrReturnNull(numString: string): number | null {
 
     const num = Number(numString);
 
-    if (isNaN(num) || isAnyFalsy(numString))
+    if (isNaN(num) || isFalsy(numString))
         return null; 
 
     return num;

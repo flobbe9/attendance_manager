@@ -5,7 +5,7 @@ import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
 import { useFlashState } from "@/hooks/useFlashState";
 import { SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY } from "@/utils/constants";
 import { ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL, ATTENDANCE_INPUT_TOOLTIP_ICON_NUM_FLASHES } from "@/utils/styleConstants";
-import { cloneObj, isAnyFalsy } from "@/utils/utils";
+import { cloneObj, isFalsy } from "@/utils/utils";
 import { createContext, useContext, useState } from "react";
 import { ColorValue } from "react-native";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
@@ -79,10 +79,10 @@ export default function AttendanceContextProvider({children}) {
      */
     function prepareCurrentAttendanceEntityUpdate<T extends ValueOf<AttendanceEntity>>(attendancEntityValue: T): T {
         // make sure to set the backreference
-        if (!isAnyFalsy(attendancEntityValue) && typeof attendancEntityValue === "object") {
+        if (!isFalsy(attendancEntityValue) && typeof attendancEntityValue === "object") {
             if (Array.isArray(attendancEntityValue))
                 attendancEntityValue.forEach(ownedEntity => {
-                    if (!isAnyFalsy(ownedEntity) && typeof ownedEntity === "object")
+                    if (!isFalsy(ownedEntity) && typeof ownedEntity === "object")
                         ownedEntity[attendanceRespository.getBackReferenceColumnName()] = currentAttendanceEntity.id;
                 })
             else

@@ -7,7 +7,7 @@ import { useHasComponentMounted } from "@/hooks/useHasComponentMounted";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { useScreenTouch } from "@/hooks/useScreenTouch";
 import { DEFAULT_BUTTON_PADDING, FONT_SIZE } from "@/utils/styleConstants";
-import { isBooleanFalsy, isNumberFalsy } from "@/utils/utils";
+import { isFalsy, isNumberFalsy } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import { TextStyle, ViewProps, ViewStyle } from "react-native";
@@ -55,7 +55,7 @@ export default function Tooltip(
         ...props
     }: TooltipProps
 ) {
-    const [visibleState, setVisibleState]: [boolean, (visible: boolean) => void] = isBooleanFalsy(visible) || !setVisible ? useState(false) : [visible, setVisible];
+    const [visibleState, setVisibleState]: [boolean, (visible: boolean) => void] = isFalsy(visible) || !setVisible ? useState(false) : [visible, setVisible];
     
     const [hideTextTimeout, setHideTextTimeout] = useState<number>();
 

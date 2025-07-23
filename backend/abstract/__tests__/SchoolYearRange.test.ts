@@ -1,7 +1,5 @@
 import { SchoolYear } from "@/abstract/SchoolYear";
 import { isSchoolYearRangeOverlap, isWithinSchoolYearRange, SchoolYearRange } from "../SchoolYearRange"
-import { isStringFalsy } from "@/utils/utils";
-import { parseNumOrReturnNull, parseNumOrThrow } from "@/utils/projectUtils";
 
 
 describe("isWithingSchoolYearRange", () => {
