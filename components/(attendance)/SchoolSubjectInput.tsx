@@ -44,7 +44,7 @@ export default function SchoolSubjectInput({...props}: Props) {
         const handleConfirm = () => {
             updateCurrentAttendanceEntity(new Map([
                 ["schoolSubject", value ? getSchoolSubjectKeyBySchoolSubject(value) : undefined],
-                ["examinants", [] as any],
+                ["examinants", [{role: getSchoolSubjectKeyBySchoolSubject(value)}] as any], // preselct matching examinant
                 ["musicLessonTopic", null],
                 ["schoolYear", null],
                 ["date", null]
