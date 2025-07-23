@@ -3,6 +3,7 @@ import { BOLD, BORDER_RADIUS, FONT_SIZE, GLOBAL_SCREEN_PADDING } from "@/utils/s
 import { TextStyle, ViewStyle } from "react-native";
 import { default as HelperStyles, default as HS } from "./helperStyles";
 
+const defaultInputBackground = "rgb(255, 255, 255)";
 
 export class AttendanceIndexStyles {
     static component: DynamicStyle<ViewStyle> = {
@@ -52,10 +53,16 @@ export class AttendanceIndexStyles {
 
     static defaultHelperInputContainer: DynamicStyle<ViewStyle & TextStyle> = {
         default: {
-            backgroundColor: "rgb(255, 255, 255)",
+            backgroundColor: defaultInputBackground,
         },
         focus: {
-            backgroundColor: "rgb(255, 255, 255)"
+            backgroundColor: defaultInputBackground
+        }
+    }
+
+    static defaultHelperButton: DynamicStyle<ViewStyle> = {
+        default: {
+            backgroundColor: defaultInputBackground
         }
     }
 

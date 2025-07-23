@@ -26,7 +26,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
 
 
 /**
- * Passing children will completely replace this component's default children.
+ * Pass children to determine the buttons content, e.g. for custom date format.
  * 
  * @since 0.0.1
  */
@@ -45,19 +45,7 @@ export default forwardRef(function DatePicker(
     const [isVisible, setIsVisible] = useState(false);
 
     const componentName = "DatePicker";
-    const { style, children, ...otherProps } = useDefaultProps(props, componentName);
-
-
-    function DefaultChildren(): JSX.Element {
-
-        const dateString = date ?  formatDateGermanNoTime(date) :  'NA';
-
-        return (
-            <HelperButton dynamicStyle={buttonStyles}>
-                <HelperText>{dateString}</HelperText>        
-            </HelperButton>
-        );  
-    }
+    const { style, children, ...otherProps } = useDefaultProps(props, componentName, buttonStyles);
 
     function handleDismiss(): void {
         setIsVisible(false);
@@ -83,7 +71,7 @@ export default forwardRef(function DatePicker(
     }
 
 
-    function handleTouchStart(event: GestureResponderEvent): void {
+    function handlePress(event: GestureResponderEvent): void {
         if (onTouchStart)
             onTouchStart(event);
 
@@ -103,17 +91,17 @@ export default forwardRef(function DatePicker(
                 onConfirm={handleConfirm}
             />
 
-            <HelperView
+            <HelperButton
                 ref={ref}
                 style={{
                     ...HS.fitContent,
                     ...style as object,
                 }}
-                onTouchStart={handleTouchStart} 
+                onPress={handlePress} 
                 {...otherProps}
             >
-                {children ?? <DefaultChildren />}
-            </HelperView>
+                {children ?? <HelperText>{date ? formatDateGermanNoTime(date) :  'NA'}</HelperText>}
+            </HelperButton>
         </Fragment>
     )
 })

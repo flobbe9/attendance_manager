@@ -91,6 +91,7 @@ export default function DateInput({...props}: Props) {
             <DatePicker 
                 date={currentAttendanceEntity.date} 
                 setDate={(date) => updateCurrentAttendanceEntity(["date", date])}
+                buttonStyles={AttendanceIndexStyles.defaultHelperButton}
                 onConfirm={handleConfirm}         
             />
             

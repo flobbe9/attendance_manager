@@ -1,20 +1,16 @@
 import HelperProps from "@/abstract/HelperProps";
 import { getMusicLessonTopicByMusicLessonTopicKey, getMusicLessonTopicKeyByMusicLessonTopic, MUSIC_LESSON_TOPICS, MusicLessonTopic, MusicLessonTopic_Key } from "@/abstract/MusicLessonTopic";
 import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
+import { AttendanceService } from "@/backend/services/AttendanceService";
 import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceInputValidatorBuilder";
 import { useHelperProps } from "@/hooks/useHelperProps";
-import { NO_SELECTION_LABEL } from "@/utils/constants";
 import { isBlank } from "@/utils/utils";
-import React, { Fragment, useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
-import Flex from "../helpers/Flex";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
-import AttendanceInputTooltip from "./AttendanceInputTooltip";
-import { logDebug } from "@/utils/logUtils";
-import { AttendanceService } from "@/backend/services/AttendanceService";
 import HelperView from "../helpers/HelperView";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
@@ -74,6 +70,7 @@ export default function TopicInput({...props}: Props) {
                 setSelectedOptions={handleOptionSelect}
                 disabledCondition={isOptionDisabled}
                 optionsContainerScroll={false}
+                selectionButtonStyles={AttendanceIndexStyles.defaultHelperButton}
                 noSelectionLabel="<Noch kein Thema...>"
             />
         </HelperView>

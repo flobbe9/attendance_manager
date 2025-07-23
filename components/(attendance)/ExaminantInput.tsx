@@ -207,6 +207,7 @@ export default function ExaminantInput({...props}: Props) {
                     selectedOptions={selectedHeadmaster}
                     setSelectedOptions={setSelectedHeadmaster} 
                     optionsContainerScroll={false}
+                    selectionButtonStyles={AttendanceIndexStyles.defaultHelperButton}
                 >
                     <HelperText>Schulleitung</HelperText>
                 </HelperSelect>

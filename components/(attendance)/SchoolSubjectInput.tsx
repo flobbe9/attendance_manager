@@ -77,6 +77,7 @@ export default function SchoolSubjectInput({...props}: Props) {
             setSelectedOptions={handleSelect}
             optionsContainerScroll={!currentAttendanceEntity.schoolSubject} // should be position relative while bottom most element in scrollview, but absolute while not
             noSelectionLabel={currentAttendanceEntity.schoolSubject ? null : "<Noch kein Fach...>"}
+            selectionButtonStyles={AttendanceIndexStyles.defaultHelperButton}
             {...otherProps}
         >
             <Flex alignItems="center">

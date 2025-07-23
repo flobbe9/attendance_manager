@@ -15,6 +15,7 @@ import HelperButton from "./HelperButton";
 import HelperReactChildren from "./HelperReactChildren";
 import HelperScrollView from "./HelperScrollView";
 import HelperText from "./HelperText";
+import { combineDynamicStyles, DynamicStyle } from "@/abstract/DynamicStyle";
 
 interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
     options: OptionType[],
@@ -23,7 +24,7 @@ interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
     /** Needs to have a set as arg if ```multiselect``` is ```true```, else may be both */
     setSelectedOptions: (options: Set<OptionType> | OptionType | undefined) => void,
     /** 
-     * If ```false```, the optionsContainer wont be scrollable view which makes position absolute possible. 
+     * If ```false```, the optionsContainer wont be scrollable view which makes `position: absolute` possible. 
      * Use this if all options fit into the container height and if you want the container not to push down 
      * the rest of the layout.
      * 
@@ -35,7 +36,9 @@ interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
     /** Default is {@link NO_SELECTION_LABEL} */
     noSelectionLabel?: string,
     /** Applied to every select option. If returns `true`, disable the select option. */
-    disabledCondition?: (optionValue: OptionType) => boolean
+    disabledCondition?: (optionValue: OptionType) => boolean,
+    selectionButtonStyles?: DynamicStyle<ViewStyle>,
+    optionButtonStyles?: DynamicStyle<ViewStyle>
 }
 
 /**
@@ -49,6 +52,8 @@ export default forwardRef(function HelperSelect<OptionType>({
         multiselect = false,
         noSelectionLabel = NO_SELECTION_LABEL,
         disabledCondition,
+        selectionButtonStyles = {},
+        optionButtonStyles = {},
         ...props
     }: Props<OptionType>,
     ref: Ref<View>
@@ -166,7 +171,8 @@ export default forwardRef(function HelperSelect<OptionType>({
                 const disabled = disabledCondition && option !== noSelectionLabel ? disabledCondition(option) : false;
                 return (
                     <HelperButton 
-                        style={isOptionSelected(option) && !multiselect ? HelperSelectStyles.selectedOptionButton.default : HelperSelectStyles.optionButton.default} 
+                        dynamicStyle={combineDynamicStyles(HelperSelectStyles.optionButton, optionButtonStyles)}
+                        style={isOptionSelected(option) && !multiselect ? HelperSelectStyles.selectedOptionButton.default : {}} 
                         containerStyles={{default: {...HelperStyles.fullWidth}}}
                         disabled={disabled}
                         key={i}
@@ -234,7 +240,7 @@ export default forwardRef(function HelperSelect<OptionType>({
             </HelperReactChildren>
 
             <HelperButton 
-                dynamicStyle={HelperSelectStyles.selectionButton}
+                dynamicStyle={combineDynamicStyles(HelperSelectStyles.selectionButton, selectionButtonStyles)}
                 onTouchStart={() => setSelectionButtonTouched(true)}
                 onTouchEnd={() => setSelectionButtonTouched(false)}
                 onPress={() => setAreOptionsVisible(!areOptionsVisible)}
