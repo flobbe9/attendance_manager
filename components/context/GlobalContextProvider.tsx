@@ -1,6 +1,6 @@
 import {GlobalPopupProps} from "@/components/Popup";
 import {logWarn} from "@/utils/logUtils";
-import {isAnyFalsy} from "@/utils/utils";
+import {isFalsy} from "@/utils/utils";
 import {createContext, ReactNode, useEffect, useState} from "react";
 import {SnackbarProps} from "react-native-paper";
 import {de, en, registerTranslation} from "react-native-paper-dates";
@@ -134,7 +134,7 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
      * @param toastProps
      */
     function toast(content: ReactNode, toastProps: Omit<GlobalToastProps, "content" | "visible"> = {}): void {
-        if (isAnyFalsy(content)) {
+        if (isFalsy(content)) {
             logWarn("Not toasting without content. Please specifiy toast 'content'");
             return;
         }

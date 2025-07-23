@@ -4,11 +4,11 @@ import {
     HISTORY_SCHOOL_YEAR_CONDITIONS_VARIANT_2
 } from "@/utils/attendanceValidationConstants";
 import { logTrace } from "@/utils/logUtils";
-import { isStringFalsy } from "@/utils/utils";
 import { AbstractSchoolYearValidator } from "../abstract/AbstractSchoolYearValidator";
 import { isSchoolYearConditionExceedingMax, SchoolYearCondition } from "../abstract/SchoolYearCondition";
 import { schoolYearRangeToString } from "../abstract/SchoolYearRange";
 import { AttendanceEntity } from "../DbSchema";
+import { isFalsy } from "@/utils/utils";
 
 /**
  * @since 0.1.0
@@ -128,10 +128,10 @@ export class HistorySchoolYearValidator extends AbstractSchoolYearValidator {
      * @returns both error messages concatenated with line breaks and prepended with "Variant n" label
      */
     private concatErrorMessages(message1: string, message2: string): string | null {
-        if (isStringFalsy(message1) && isStringFalsy(message2)) return null;
+        if (isFalsy(message1) && isFalsy(message2)) return null;
 
-        if (!isStringFalsy(message1)) {
-            if (!isStringFalsy(message2)) return `Variante1:\n${message1}\n\nVariante2:\n${message2}`;
+        if (!isFalsy(message1)) {
+            if (!isFalsy(message2)) return `Variante1:\n${message1}\n\nVariante2:\n${message2}`;
 
             return message1;
         } else return message2;

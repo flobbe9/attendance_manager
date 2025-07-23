@@ -2,7 +2,7 @@ import { AnimatedDynamicStyle } from "@/abstract/AnimatedDynamicStyle";
 import { DynamicStyle } from "@/abstract/DynamicStyle";
 import { logDebug, logWarn } from "@/utils/logUtils";
 import { TRANSITION_DURATION } from "@/utils/styleConstants";
-import { cloneObj, flatMapObject, isAnyFalsy } from "@/utils/utils";
+import { cloneObj, flatMapObject, isFalsy } from "@/utils/utils";
 import { useEffect, useState } from "react";
 import { Animated } from "react-native";
 import { useHasComponentMounted } from './useHasComponentMounted';
@@ -63,12 +63,12 @@ export function useDynamicStyle<StyleType>(
                 const fromStyleValue = initStyles.default[animatedDynamicStyle.styleProp];
                 const toStyleValue = initStyles[animatedDynamicStyle.event][animatedDynamicStyle.styleProp];
 
-                if (isAnyFalsy(fromStyleValue)) {
+                if (isFalsy(fromStyleValue)) {
                     logWarn(`Missing 'fromStyleValue' for event '${animatedDynamicStyle.event}' and styleProp '${String(animatedDynamicStyle.styleProp)}'`);
                     return;
                 }
 
-                if (isAnyFalsy(toStyleValue)) {
+                if (isFalsy(toStyleValue)) {
                     logWarn(`Missing 'toStyleValue' for event '${animatedDynamicStyle.event}' and styleProp '${String(animatedDynamicStyle.styleProp)}'`);
                     return;
                 }

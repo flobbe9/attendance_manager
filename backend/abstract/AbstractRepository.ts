@@ -1,5 +1,5 @@
 import { log, logDebug, logError, logTrace } from "@/utils/logUtils";
-import { assertFalsyAndThrow, isAnyFalsy } from "@/utils/utils";
+import { assertFalsyAndThrow, isFalsy } from "@/utils/utils";
 import { and, eq, notInArray, SQL } from "drizzle-orm";
 import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
 import { SQLiteDatabase } from "expo-sqlite";
@@ -186,7 +186,7 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
     ): Promise<RE | null> {
         assertFalsyAndThrow(relatedEntity, relatedEntityRepository);
         
-        if (!isAnyFalsy(backReferenceValue))
+        if (!isFalsy(backReferenceValue))
             relatedEntity[this.getBackReferenceColumnName()] = backReferenceValue;
         
         else 
@@ -268,7 +268,7 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
                 if (value === undefined)
                     entity[key] = AbstractRepository.fixEmptyColumnValue(value);
 
-                else if (typeof value === "object" && !isAnyFalsy(value))
+                else if (typeof value === "object" && !isFalsy(value))
                     if (Array.isArray(value))
                         value.forEach(nestedEntity => this.fixEmptyColumnValues(nestedEntity));
                     else
