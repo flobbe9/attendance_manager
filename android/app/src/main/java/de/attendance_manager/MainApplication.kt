@@ -1,4 +1,4 @@
-package de.attendence_manager
+package de.attendance_manager
 
 import android.app.Application
 import android.content.res.Configuration

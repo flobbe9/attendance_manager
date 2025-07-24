@@ -1,4 +1,4 @@
-package de.attendence_manager
+package de.attendance_manager
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
