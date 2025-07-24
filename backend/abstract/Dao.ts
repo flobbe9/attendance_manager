@@ -1,4 +1,4 @@
-import { logError } from "@/utils/logUtils";
+import { logDebug, logError } from "@/utils/logUtils";
 import { assertFalsyAndThrow } from "@/utils/utils";
 import { getTableName } from "drizzle-orm";
 import { eq, SQL } from "drizzle-orm/sql";
@@ -85,11 +85,12 @@ export class Dao<E extends AbstractEntity> {
 
     /**
      * Attempt to update if
-     * - `values` is not an array and `where` or `values.id` is specified
-     * - `values` is an array and `where` is not specified, update each value if it's `id` is specified
+     * - `values` is not an array and `where` is specified
+     *    - `where` is not specified but `values.id` is and exists in db
      *
      * Attempt to insert if
      * - no `where` is specified AND a single value has no `id` (regardless of single or multiple `values`)
+     *    - single value has `id` but does not exist in db (still autogenerate id)
      *
      * @param values to update or insert.
      * @param where matcher for update statement
@@ -99,15 +100,19 @@ export class Dao<E extends AbstractEntity> {
     public async persist(values: E | E[], where?: SQL): Promise<E | E[] | null> {
         assertFalsyAndThrow(values);
 
-        if (Array.isArray(values) && where) throw new Error(`Failed to update or insert. Cannot update multiple using multiple values. Either specify only one 'values' object or don't specify 'where' arg`);
+        if (Array.isArray(values) && where)
+            throw new Error(
+                `Failed to update or insert. Cannot update multiple using multiple values. Either specify only one 'values' object or don't specify 'where' arg`
+            );
 
         const updateOrInsert = async (value: E): Promise<E | E[]> => {
             let isWhereArgFalsy = !where;
+            let isWhereArgFalsyButGotId = isWhereArgFalsy && value.id;
             // case: no where, fallback to values.id
-            if (isWhereArgFalsy && value.id) where = eq(this.table.id, value.id);
+            if (isWhereArgFalsyButGotId) where = eq(this.table.id, value.id);
 
-            // case: update
-            if (where) {
+            // case: update if where or existing id
+            if (!isWhereArgFalsy || (isWhereArgFalsyButGotId && (await this.exists(where)))) {
                 const updateResult = await this.update(value, where);
 
                 // case: where arg has been replace with value.id, reset for next iteration
@@ -115,7 +120,12 @@ export class Dao<E extends AbstractEntity> {
                 return updateResult;
 
                 // case: insert
-            } else return await this.insert(value);
+            } else {
+                // case: got non existent id
+                if (isWhereArgFalsyButGotId) delete value.id;
+
+                return await this.insert(value);
+            }
         };
 
         const results: E | E[] = [];
