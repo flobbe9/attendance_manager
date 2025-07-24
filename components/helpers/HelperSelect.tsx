@@ -16,6 +16,8 @@ import HelperReactChildren from "./HelperReactChildren";
 import HelperScrollView from "./HelperScrollView";
 import HelperText from "./HelperText";
 import { combineDynamicStyles, DynamicStyle } from "@/abstract/DynamicStyle";
+import DropShadow from 'react-native-drop-shadow';
+import { Divider } from "react-native-paper";
 
 interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
     options: OptionType[],
@@ -166,13 +168,15 @@ export default forwardRef(function HelperSelect<OptionType>({
         if (noSelectionLabel && !multiselect)
             options = [(noSelectionLabel as OptionType), ...options];
 
-        return options
+        const optionElements: JSX.Element[] = options
             .map((option, i) => {
                 const disabled = disabledCondition && option !== noSelectionLabel ? disabledCondition(option) : false;
                 return (
                     <HelperButton 
                         dynamicStyle={combineDynamicStyles(HelperSelectStyles.optionButton, optionButtonStyles)}
-                        style={isOptionSelected(option) && !multiselect ? HelperSelectStyles.selectedOptionButton.default : {}} 
+                        style={{
+                            ...isOptionSelected(option) && !multiselect ? HelperSelectStyles.selectedOptionButton.default : {}                            
+                        }} 
                         containerStyles={{default: {...HelperStyles.fullWidth}}}
                         disabled={disabled}
                         key={i}
@@ -182,7 +186,8 @@ export default forwardRef(function HelperSelect<OptionType>({
                     >
                         <HelperText 
                             numberOfLines={1}
-                            dynamicStyle={{...HelperSelectStyles.optionButtonText}}
+                            dynamicStyle={HelperSelectStyles.optionButtonText}
+                            style={{opacity: option === noSelectionLabel ? 0.5 : 1}}
                         >
                             {option as string}
                         </HelperText>
@@ -191,6 +196,13 @@ export default forwardRef(function HelperSelect<OptionType>({
                     </HelperButton>
                 );
             });
+
+        // separate last option visually
+        optionElements.push((
+            <Divider />
+        ))
+
+        return optionElements;
     }
 
     function getSelectionButtonValue(): string {

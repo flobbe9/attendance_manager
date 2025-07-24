@@ -13,6 +13,7 @@ import Flex from "../helpers/Flex";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
 import DontConfirmSchoolSubjectChangeContent from "./DontConfirmSchoolSubjectChangeContent";
+import { NO_SELECTION_LABEL } from "@/utils/constants";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -75,7 +76,7 @@ export default function SchoolSubjectInput({...props}: Props) {
             selectedOptions={getSchoolSubjectBySchoolSubjectKey(currentAttendanceEntity.schoolSubject)}
             setSelectedOptions={handleSelect}
             optionsContainerScroll={!currentAttendanceEntity.schoolSubject} // should be position relative while bottom most element in scrollview, but absolute while not
-            noSelectionLabel={currentAttendanceEntity.schoolSubject ? null : "<Noch kein Fach...>"}
+            noSelectionLabel={currentAttendanceEntity.schoolSubject ? null : NO_SELECTION_LABEL}
             selectionButtonStyles={AttendanceIndexStyles.defaultHelperButton}
             {...otherProps}
         >

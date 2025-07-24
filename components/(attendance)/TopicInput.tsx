@@ -71,7 +71,6 @@ export default function TopicInput({...props}: Props) {
                 disabledCondition={isOptionDisabled}
                 optionsContainerScroll={false}
                 selectionButtonStyles={AttendanceIndexStyles.defaultHelperButton}
-                noSelectionLabel="<Noch kein Thema...>"
             />
         </HelperView>
     )

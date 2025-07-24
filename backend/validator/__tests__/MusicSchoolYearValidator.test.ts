@@ -395,7 +395,7 @@ describe("validateFuture", () => {
         let validator = new MusicSchoolYearValidator(currentAttendance, savedAttendances);
 
         // 7-8 maxed out, cannot satisfy rhythm, should throw
-        // expect(validator.validateFuture(currentAttendance.schoolYear)).not.toBe(null);
+        expect(validator.validateFuture(currentAttendance.schoolYear)).not.toBe(null);
 
         // dont validate topic future if no topic selected
         currentAttendance.musicLessonTopic = null;

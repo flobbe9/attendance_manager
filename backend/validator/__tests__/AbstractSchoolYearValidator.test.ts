@@ -17,7 +17,6 @@ describe("getCurrentlyUnsatisfiedSchoolYearConditions", () => {
         // set both mock condition range min attendances to null
         const mockConditions = cloneObj(MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS);
         mockConditions[0].minAttendances = null;
-        mockConditions[5].minAttendances = null;
 
         let savedAttendances: AttendanceEntity[] = [
             {
@@ -33,8 +32,8 @@ describe("getCurrentlyUnsatisfiedSchoolYearConditions", () => {
             validator.getCurrentlyUnsatisfiedSchoolYearConditions(mockConditions);
 
         expect(equalsSchoolYearConditions(mockConditions, unsatisfiedConditions1)).toBe(false);
-        // should have removed 5-6 and 5-10 range conditions
-        expect(unsatisfiedConditions1.length).toBe(mockConditions.length - 2);
+        // should have removed 5-6 range condition
+        expect(unsatisfiedConditions1.length).toBe(mockConditions.length - 1);
     });
 
     test("Should remove conditions with min value == 0", () => {
@@ -1340,27 +1339,7 @@ const MOCK_MUSIC_SCHOOL_YEAR_CONDITIONS: SchoolYearCondition[] = [
         minAttendances: 2,
         maxAttendances: 4,
         attendanceCount: 0,
-    },
-    // Sekundarstufe 1 (sek1)
-    {
-        schoolYearRange: {
-            min: "5",
-            max: "10",
-        },
-        minAttendances: 4,
-        maxAttendances: 5,
-        attendanceCount: 0,
-    },
-    // Sekundarstufe 2 (sek2)
-    {
-        schoolYearRange: {
-            min: "11",
-            max: "13",
-        },
-        minAttendances: 4,
-        maxAttendances: 5,
-        attendanceCount: 0,
-    },
+    }
 ];
 
 const MOCK_MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS: SchoolYearCondition[] = [

@@ -41,7 +41,8 @@ export default function ScreenWrapper({...props}: Props) {
                 <KeyboardAvoidingView
                     behavior={'position'} 
                     style={{
-                        paddingBottom: isKeyBoardvisible ? 130 : 0, // bottom offset for keyboard not to cover content
+                        // NOTE: keep this until tested on ios, works without on android
+                        // paddingBottom: isKeyBoardvisible ? 130 : 0, // bottom offset for keyboard not to cover content
                         ...style as object,
                     }}
                     onTouchStart={handleTouchStart}
