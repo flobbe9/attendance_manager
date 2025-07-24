@@ -51,6 +51,7 @@ export default function SchoolclassModeInput({...props}: Props) {
         updateCurrentAttendanceEntity<SchoolclassModeEntity>([
             "schoolclassMode",
             {
+                ...(currentAttendanceEntity.schoolclassMode ?? {mode: "ownClass"}), // overridden anyway but keep id
                 mode: getSchoolclassModeKeyBySchoolclassMode(mode),
                 fullName: currentAttendanceEntity.schoolclassMode?.fullName, // keep the name for state
             },

@@ -162,9 +162,9 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
                     // case: one to many (many related entities)
                     if (Array.isArray(relatedEntityValue)) {
                         relatedEntitiesToCascade = [];
-                        
+
                         await this.handleOrphanRemoval(owningEntityResult.id, relatedEntityDetail);
-                        
+
                         for (const relatedEntityValueEl of relatedEntityValue) {
                             if (!(await relatedEntityDetail.repository.isCascadeWhenPersist(relatedEntityValueEl, relatedEntityDetail.cascade))) {
                                 logTrace("Wont cascade for", relatedEntityDetail.column.name);
@@ -242,7 +242,7 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
      * Delete related entities that should no longer be related to entity `E` with `id` (not in `newRelatedEntityDetail.column.value`), consider `orphanRemoval` is `true`.
      *
      * @param id of owning entity (type `E` that is)
-     * @param newRelatedEntityDetail contains new related entities that existing ones will be checked against
+     * @param newRelatedEntityDetail contains new related entities about to be persisted
      */
     private async handleOrphanRemoval<RE extends AbstractEntity>(id: number, newRelatedEntityDetail: RelatedEntityDetail<E, RE>): Promise<void> {
         assertFalsyAndThrow(id);
@@ -255,7 +255,8 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
 
         let newRelatedEntityIds: number[] = [];
         // case: one-to-many
-        if (Array.isArray(newRelatedEntityDetail.column.value)) newRelatedEntityDetail.column.value.map((entity: any) => entity.id ?? 0);
+        if (Array.isArray(newRelatedEntityDetail.column.value))
+            newRelatedEntityIds = newRelatedEntityDetail.column.value.map((entity: AbstractEntity) => entity.id ?? 0);
         // case: one-to-one
         else newRelatedEntityIds.push(newRelatedEntityDetail.column.value.id ?? 0);
 
@@ -301,17 +302,12 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
     public static fixEmptyColumnValues<E extends AbstractEntity>(entity: E): E {
         if (!entity) return entity;
 
-        Object.entries(entity)
-            .forEach(([key, value]) => {
-                if (value === undefined)
-                    entity[key] = AbstractRepository.fixEmptyColumnValue(value);
-
-                else if (typeof value === "object" && !isFalsy(value))
-                    if (Array.isArray(value))
-                        value.forEach(nestedEntity => this.fixEmptyColumnValues(nestedEntity));
-                    else
-                        this.fixEmptyColumnValues(value);
-            })
+        Object.entries(entity).forEach(([key, value]) => {
+            if (value === undefined) entity[key] = AbstractRepository.fixEmptyColumnValue(value);
+            else if (typeof value === "object" && !isFalsy(value))
+                if (Array.isArray(value)) value.forEach((nestedEntity) => this.fixEmptyColumnValues(nestedEntity));
+                else this.fixEmptyColumnValues(value);
+        });
 
         return entity;
     }
