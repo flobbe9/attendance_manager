@@ -92,6 +92,7 @@ export default forwardRef(function HelperInput(
                 ref={componentRef}
                 editable={!disabled}
                 selectTextOnFocus={false}
+                placeholderTextColor={"rgb(125, 125, 125)"}
                 style={{
                     ...(disabled ? HS.disabled : {}),
                     ...style as object,
