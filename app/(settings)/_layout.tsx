@@ -28,7 +28,7 @@ export default function layout() {
                 }}
             />
 
-            <Stack.Screen
+            {/* <Stack.Screen
                 name="account"
                 options={{
                     headerTitle: (props) => (
@@ -38,7 +38,7 @@ export default function layout() {
                         </Flex>
                     ),
                 }}
-            />
+            /> */}
 
             <Stack.Screen
                 name="popups"

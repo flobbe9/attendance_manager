@@ -64,14 +64,25 @@ export default function account() {
                 <B style={{ fontSize: FONT_SIZE }}>Geräte synchronisieren</B>
 
                 <HelperView rendered={isCloudAvailable}>
-                    <HelperButton onPress={handleWrite}>Write to {filePath}</HelperButton>
-                    <HelperInput value={fileContent} setValue={setFileContent} />
+                    <HelperInput value={fileContent} setValue={setFileContent} placeholder="File content" />
+                    <Br />
 
-                    <HelperButton onPress={handleRead}>Read from {filePath}</HelperButton>
+                    <HelperButton onPress={handleWrite}>
+                        <HelperText>Write to {filePath}</HelperText>
+                    </HelperButton>
+                    <Br />
 
-                    <HelperButton onPress={handleDelete}>Delete {filePath}</HelperButton>
+                    <HelperButton onPress={handleRead}>
+                        <HelperText>Read from {filePath}</HelperText>
+                    </HelperButton>
+                    <Br />
 
-                    <HelperButton onPress={syncDevices}>Sync devices</HelperButton>
+                    <HelperButton onPress={handleDelete}>
+                        <HelperText>Delete {filePath}</HelperText>
+                    </HelperButton>
+                    <Br />
+
+                    <HelperButton onPress={syncDevices}>Sync files in cloud</HelperButton>
                 </HelperView>
 
                 <HelperText rendered={!isCloudAvailable}>

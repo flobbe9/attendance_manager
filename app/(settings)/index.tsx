@@ -39,7 +39,7 @@ export default function index() {
     return (
         <ScreenWrapper>
             <HelperScrollView dynamicStyle={SettingsIndexStyles.component}>
-                <SetttingsLink href="/(settings)/account" icon="user-circle-o" label="Konto" />
+                {/* <SetttingsLink href="/(settings)/account" icon="user-circle-o" label="Konto" /> */}
                 {/* <SetttingsLink href="/(settings)/popups" icon="paint-brush" label="Farben und Styles" /> */}
                 <SetttingsLink
                     href="/(settings)/popups"
