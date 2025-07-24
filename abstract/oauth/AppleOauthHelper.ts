@@ -58,10 +58,10 @@ export class AppleOauthHelper extends AbstractOauthHelper {
             const response = await appleAuthAndroid.signIn();
             logDebug("response", response);
             if (response) {
-                const code = response.code; // c5a5709e95bbd40079da8bc80091ed125.0.mrxtx.60d9zPXERZnmFhOzbaFQ5A
-                const idToken = response.id_token; // eyJraWQiOiJVYUlJRlkyZlc0IiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiZGUuYXR0ZW5kYW5jZS1tYW5hZ2VyIiwiZXhwIjoxNzUyODUwMDIyLCJpYXQiOjE3NTI3NjM2MjIsInN1YiI6IjAwMTczNy4xMDNmMzA2Njk5ZTk0Yzk3OWJjMTNmM2I5MzQ5YzNjZi4xNDQ3Iiwibm9uY2UiOiJmYmExNjA5MzRhZjJlOTNmZDIzMDVmNzA4MThiZWQyZThlNjA5OTVmMmE0NWJhYjA3MDBlYzg1MjFkNWMyZWUzIiwiY19oYXNoIjoiWjJkTHdFLTQ0X2l4b1ZDa25YUmhrZyIsImVtYWlsIjoiZmxvcmluLnNjaGlrYXJza2lAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF1dGhfdGltZSI6MTc1Mjc2MzYyMiwibm9uY2Vfc3VwcG9ydGVkIjp0cnVlfQ.TE1x1uHwz2TSDx5RufcpBemr72O4Plguv41Tp8fj2ckPouHpteW9X4PUXnyxSxnNc_mxe2hjT6mjzeBxmtaSo1WKIfV55QunsYQPajI6WrOfryPwmXK_Uhyfe2V-CkAMyXWNHA_nwjtI1INdUPz_Trku7VZRb5ocdLx4oBWPZ1mwOgNaoXnMUcaGV8eDaJvkOCo0rAvh7MnsFYe414WLjvt1s2je0ctflVZK_V00sawieFo4D1PoxocEqcOPiSpGtG_kphxOAlve0bcEscDia0u7QnvGx4inCbev5L1YXoDAEQ_KCLO2mBBkvA-EFiOEHMwoPOpi1RxOw1wEAa14xg
+                const code = response.code; 
+                const idToken = response.id_token; 
                 const user = response.user; // Present when user first logs in using appleId
-                const state = response.state; // c2b66836-0895-4bba-afb3-b1e284907485cv
+                const state = response.state; // 
                 // TODO: match csrf token for security?
                 // or the nonce, see docs
                 logDebug("Got auth code", code);
