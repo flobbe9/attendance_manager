@@ -15,8 +15,7 @@ export class SchoolclassModeService extends AbstractModifiableService<Schoolclas
 
         return (
             entityLastSaved.mode !== entityModified.mode ||
-            entityLastSaved.fullName !== entityModified.fullName ||
-            entityLastSaved.attendanceId !== entityModified.attendanceId
+            entityLastSaved.fullName !== entityModified.fullName
         );
     }
 }

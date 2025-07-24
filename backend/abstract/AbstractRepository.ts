@@ -162,9 +162,9 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
                     // case: one to many (many related entities)
                     if (Array.isArray(relatedEntityValue)) {
                         relatedEntitiesToCascade = [];
-
+                        
                         await this.handleOrphanRemoval(owningEntityResult.id, relatedEntityDetail);
-
+                        
                         for (const relatedEntityValueEl of relatedEntityValue) {
                             if (!(await relatedEntityDetail.repository.isCascadeWhenPersist(relatedEntityValueEl, relatedEntityDetail.cascade))) {
                                 logTrace("Wont cascade for", relatedEntityDetail.column.name);
@@ -225,13 +225,16 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
         currentTransaction?: DbTransaction
     ): Promise<RE | RE[] | null> {
         assertFalsyAndThrow(relatedEntity, relatedEntityRepository);
-        
-        if (!isFalsy(backReferenceValue))
-            relatedEntity[this.getBackReferenceColumnName()] = backReferenceValue;
-        
-        else 
-            logDebug(`WARN: Inserting related entity of type ${relatedEntity.constructor.name} without setting the backreference ${backReferenceValue}.`);
-        
+
+        if (!isFalsy(backReferenceValue)) {
+            if (Array.isArray(relatedEntity))
+                for (const singleRelatedEntity of relatedEntity) singleRelatedEntity[this.getBackReferenceColumnName()] = backReferenceValue;
+            else relatedEntity[this.getBackReferenceColumnName()] = backReferenceValue;
+        } else
+            logDebug(
+                `WARN: Inserting related entity of type '${relatedEntityRepository.getTableName()}' without setting the backreference ${backReferenceValue}.`
+            );
+
         return await relatedEntityRepository.persistCascade(relatedEntity, currentTransaction);
     }
 

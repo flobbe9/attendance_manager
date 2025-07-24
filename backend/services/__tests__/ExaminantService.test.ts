@@ -15,8 +15,8 @@ describe("isModified", () => {
         const examinant2: ExaminantEntity = {
             id: 1,
             role: "history",
-            attendanceId: 2,
-            fullName: "name",
+            attendanceId: 1,
+            fullName: "namee",
         };
 
         expect(examinantService.isModified(examinant1, examinant2)).toBe(true);
@@ -44,8 +44,9 @@ describe("isModified", () => {
         examinant2.role = "history";
         expect(examinantService.isModified(examinant1, examinant2)).toBe(false);
 
+        // dont include attendanceId
         examinant2.attendanceId = 2;
-        expect(examinantService.isModified(examinant1, examinant2)).toBe(true);
+        expect(examinantService.isModified(examinant1, examinant2)).toBe(false);
         examinant2.attendanceId = 1;
         expect(examinantService.isModified(examinant1, examinant2)).toBe(false);
 

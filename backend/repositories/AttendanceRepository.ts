@@ -43,7 +43,7 @@ export class AttendanceRepository extends AbstractRepository<AttendanceEntity> {
                 value: entity?.schoolclassMode,
             },
             relationType: EntityRelationType.ONE_TO_ONE,
-            cascade: new Set([Cascade.UPDATE]),
+            cascade: new Set([Cascade.INSERT, Cascade.UPDATE]),
             orphanRemoval: true,
         });
 

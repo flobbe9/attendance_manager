@@ -52,7 +52,7 @@ export default function SchoolclassModeInput({...props}: Props) {
             "schoolclassMode",
             {
                 mode: getSchoolclassModeKeyBySchoolclassMode(mode),
-                fullName: currentAttendanceEntity.schoolclassMode.fullName, // keep the name for state
+                fullName: currentAttendanceEntity.schoolclassMode?.fullName, // keep the name for state
             },
         ]);
     }
@@ -72,7 +72,7 @@ export default function SchoolclassModeInput({...props}: Props) {
             <HelperText dynamicStyle={AttendanceIndexStyles.heading}>Sonstiges</HelperText>
 
             <RadioButton.Group
-                value={getSchoolclassModeBySchoolclassModeKey(currentAttendanceEntity.schoolclassMode.mode)}
+                value={getSchoolclassModeBySchoolclassModeKey(currentAttendanceEntity.schoolclassMode?.mode ?? "ownClass")}
                 onValueChange={updateSchoolclassMode}
             >
                 {schoolclassModeRadioButtons}
@@ -80,11 +80,11 @@ export default function SchoolclassModeInput({...props}: Props) {
 
             <HelperInput
                 placeholder="Ausbildungslehrer"
-                rendered={currentAttendanceEntity.schoolclassMode.mode === "othersClass"}
+                rendered={currentAttendanceEntity.schoolclassMode?.mode === "othersClass"}
                 containerStyles={
                     AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>
                 }
-                value={currentAttendanceEntity.schoolclassMode.fullName}
+                value={currentAttendanceEntity.schoolclassMode?.fullName}
                 onChangeText={updateSchoolclassModeNote}
             />
         </HelperView>

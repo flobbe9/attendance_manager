@@ -21,28 +21,23 @@ import Flex from "../helpers/Flex";
 import HelperCheckbox from "../helpers/HelperCheckbox";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
+import { logDebug } from "@/utils/logUtils";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
 /**
  * @since 0.0.1
  */
-export default function ExaminantInput({...props}: Props) {
-    const {savedAttendanceEntities} = useContext(GlobalAttendanceContext);
-    const {updateCurrentAttendanceEntity, currentAttendanceEntity, handleInvalidAttendanceInput} =
-        useContext(AttendanceContext);
+export default function ExaminantInput({ ...props }: Props) {
+    const { savedAttendanceEntities } = useContext(GlobalAttendanceContext);
+    const { updateCurrentAttendanceEntity, currentAttendanceEntity, handleInvalidAttendanceInput } = useContext(AttendanceContext);
 
-    const [historyExaminantStatus, setHistoryExaminantStatus] =
-        useState<CheckboxStatus>("indeterminate");
-    const [musicExaminantStatus, setMusicExaminantStatus] =
-        useState<CheckboxStatus>("indeterminate");
-    const [educatorExaminantStatus, setEducatorExaminantStatus] =
-        useState<CheckboxStatus>("indeterminate");
+    const [historyExaminantStatus, setHistoryExaminantStatus] = useState<CheckboxStatus>("indeterminate");
+    const [musicExaminantStatus, setMusicExaminantStatus] = useState<CheckboxStatus>("indeterminate");
+    const [educatorExaminantStatus, setEducatorExaminantStatus] = useState<CheckboxStatus>("indeterminate");
     const [headmasterStatus, setHeadmasterStatus] = useState<CheckboxStatus>("indeterminate");
 
-    const [selectedHeadmaster, setSelectedHeadmaster] = useState<
-        Headmaster | typeof NO_SELECTION_LABEL
-    >();
+    const [selectedHeadmaster, setSelectedHeadmaster] = useState<Headmaster | typeof NO_SELECTION_LABEL>();
 
     /** Indicates that all checkbox states have been initialized with `currentAttendanceEntity` values  */
     const [initializedCheckboxes, setInitializedCheckboxes] = useState(false);
@@ -50,19 +45,10 @@ export default function ExaminantInput({...props}: Props) {
     const [validValues, setValidValues] = useState<ExaminantEntity[]>([]);
 
     const examinantService = new ExaminantService();
-    const validator = AttendanceInputValidatorBuilder.builder(
-        currentAttendanceEntity,
-        savedAttendanceEntities
-    )
-        .inputType("examinants")
-        .build();
+    const validator = AttendanceInputValidatorBuilder.builder(currentAttendanceEntity, savedAttendanceEntities).inputType("examinants").build();
 
     const componentName = "ExaminantInput";
-    const {children, ...otherProps} = useHelperProps(
-        props,
-        componentName,
-        ExaminantInputStyles.component
-    );
+    const { children, ...otherProps } = useHelperProps(props, componentName, ExaminantInputStyles.component);
 
     const attendanceService = new AttendanceService();
 
@@ -78,41 +64,16 @@ export default function ExaminantInput({...props}: Props) {
     useEffect(() => {
         // case: states initialized already
         if (initializedCheckboxes) updateCurrentAttendanceEntityExaminants();
-    }, [
-        historyExaminantStatus,
-        musicExaminantStatus,
-        educatorExaminantStatus,
-        headmasterStatus,
-        selectedHeadmaster,
-    ]);
+    }, [historyExaminantStatus, musicExaminantStatus, educatorExaminantStatus, headmasterStatus, selectedHeadmaster]);
 
     function initializeStates(): void {
-        setHistoryExaminantStatus(
-            attendanceService.hasExaminant(currentAttendanceEntity, "history")
-                ? "checked"
-                : "unchecked"
-        );
-        setMusicExaminantStatus(
-            attendanceService.hasExaminant(currentAttendanceEntity, "music")
-                ? "checked"
-                : "unchecked"
-        );
-        setEducatorExaminantStatus(
-            attendanceService.hasExaminant(currentAttendanceEntity, "educator")
-                ? "checked"
-                : "unchecked"
-        );
+        setHistoryExaminantStatus(attendanceService.hasExaminant(currentAttendanceEntity, "history") ? "checked" : "unchecked");
+        setMusicExaminantStatus(attendanceService.hasExaminant(currentAttendanceEntity, "music") ? "checked" : "unchecked");
+        setEducatorExaminantStatus(attendanceService.hasExaminant(currentAttendanceEntity, "educator") ? "checked" : "unchecked");
 
-        const [headmasterExaminant] = attendanceService.getExaminantByRole(
-            currentAttendanceEntity,
-            "headmaster"
-        );
+        const [headmasterExaminant] = attendanceService.getExaminantByRole(currentAttendanceEntity, "headmaster");
         setHeadmasterStatus(!!headmasterExaminant ? "checked" : "unchecked");
-        setSelectedHeadmaster(
-            headmasterExaminant
-                ? (headmasterExaminant.fullName as Headmaster | null)
-                : NO_SELECTION_LABEL
-        );
+        setSelectedHeadmaster(headmasterExaminant ? (headmasterExaminant.fullName as Headmaster | null) : NO_SELECTION_LABEL);
 
         // call this last
         setTimeout(() => {
@@ -123,38 +84,28 @@ export default function ExaminantInput({...props}: Props) {
     function updateCurrentAttendanceEntityExaminants(): void {
         const originalExaminants = cloneObj(currentAttendanceEntity.examinants);
 
-        if (historyExaminantStatus === "checked")
-            attendanceService.addExaminantByRole(currentAttendanceEntity, "history");
-        else if (historyExaminantStatus === "unchecked")
-            attendanceService.removeExaminant(currentAttendanceEntity, "history");
+        if (historyExaminantStatus === "checked") attendanceService.addExaminantByRole(currentAttendanceEntity, "history");
+        else if (historyExaminantStatus === "unchecked") attendanceService.removeExaminant(currentAttendanceEntity, "history");
 
-        if (musicExaminantStatus === "checked")
-            attendanceService.addExaminantByRole(currentAttendanceEntity, "music");
-        else if (musicExaminantStatus === "unchecked")
-            attendanceService.removeExaminant(currentAttendanceEntity, "music");
+        if (musicExaminantStatus === "checked") attendanceService.addExaminantByRole(currentAttendanceEntity, "music");
+        else if (musicExaminantStatus === "unchecked") attendanceService.removeExaminant(currentAttendanceEntity, "music");
 
-        if (educatorExaminantStatus === "checked")
-            attendanceService.addExaminantByRole(currentAttendanceEntity, "educator");
-        else if (educatorExaminantStatus === "unchecked")
-            attendanceService.removeExaminant(currentAttendanceEntity, "educator");
+        if (educatorExaminantStatus === "checked") attendanceService.addExaminantByRole(currentAttendanceEntity, "educator");
+        else if (educatorExaminantStatus === "unchecked") attendanceService.removeExaminant(currentAttendanceEntity, "educator");
 
         if (headmasterStatus === "checked")
             attendanceService.addOrUpdateExaminantByRole(currentAttendanceEntity, {
                 role: "headmaster",
                 fullName: selectedHeadmaster === NO_SELECTION_LABEL ? null : selectedHeadmaster,
             });
-        else if (headmasterStatus === "unchecked")
-            attendanceService.removeExaminant(currentAttendanceEntity, "headmaster");
+        else if (headmasterStatus === "unchecked") attendanceService.removeExaminant(currentAttendanceEntity, "headmaster");
 
         const errorMessage = validator.validate(currentAttendanceEntity.examinants);
 
         if (!isBlank(errorMessage)) {
             handleInvalidAttendanceInput(
                 currentAttendanceEntity.examinants
-                    .map(
-                        (examinantEntity) =>
-                            getExamiantRoleByExaminantRoleKey(examinantEntity.role) as string
-                    )
+                    .map((examinantEntity) => getExamiantRoleByExaminantRoleKey(examinantEntity.role) as string)
                     .reduce((prev, cur) => `${prev}, ${cur}`),
                 errorMessage,
                 "examinants"
@@ -174,7 +125,7 @@ export default function ExaminantInput({...props}: Props) {
         role: ExaminantRole_Key;
         disabled?: boolean;
     }) {
-        const {checkedStatus, setCheckedStatus, iconName = "user", role, disabled = false} = props;
+        const { checkedStatus, setCheckedStatus, iconName = "user", role, disabled = false } = props;
 
         return (
             <HelperView dynamicStyle={ExaminantInputStyles.checkboxContainer}>
@@ -185,11 +136,7 @@ export default function ExaminantInput({...props}: Props) {
                     iconStyle={ExaminantInputStyles.checkboxIcon}
                     disabled={disabled}
                 >
-                    <FontAwesome
-                        name={iconName as any}
-                        color={getSubjectColor(role)}
-                        style={{...ExaminantInputStyles.icon}}
-                    />
+                    <FontAwesome name={iconName as any} color={getSubjectColor(role)} style={{ ...ExaminantInputStyles.icon }} />
                 </HelperCheckbox>
             </HelperView>
         );
@@ -197,7 +144,7 @@ export default function ExaminantInput({...props}: Props) {
 
     return (
         <HelperView {...otherProps}>
-            <HelperText dynamicStyle={AttendanceIndexStyles.heading} style={{marginBottom: 0}}>
+            <HelperText dynamicStyle={AttendanceIndexStyles.heading} style={{ marginBottom: 0 }}>
                 Anwesende Prüfer
             </HelperText>
 
@@ -207,35 +154,26 @@ export default function ExaminantInput({...props}: Props) {
                     checkedStatus={musicExaminantStatus}
                     setCheckedStatus={setMusicExaminantStatus}
                     role="music"
-                    disabled={
-                        musicExaminantStatus === "unchecked" &&
-                        !examinantService.findExaminant(validValues, "music")[0]
-                    }
+                    disabled={musicExaminantStatus === "unchecked" && !examinantService.findExaminant(validValues, "music")[0]}
                 />
 
                 <CheckboxWithExaminantIcon
                     checkedStatus={historyExaminantStatus}
                     setCheckedStatus={setHistoryExaminantStatus}
                     role="history"
-                    disabled={
-                        historyExaminantStatus === "unchecked" &&
-                        !examinantService.findExaminant(validValues, "history")[0]
-                    }
+                    disabled={historyExaminantStatus === "unchecked" && !examinantService.findExaminant(validValues, "history")[0]}
                 />
 
                 <CheckboxWithExaminantIcon
                     checkedStatus={educatorExaminantStatus}
                     setCheckedStatus={setEducatorExaminantStatus}
                     role="educator"
-                    disabled={
-                        educatorExaminantStatus === "unchecked" &&
-                        !examinantService.findExaminant(validValues, "educator")[0]
-                    }
+                    disabled={educatorExaminantStatus === "unchecked" && !examinantService.findExaminant(validValues, "educator")[0]}
                 />
             </Flex>
 
             {/* Headmaster */}
-            <Flex alignItems="flex-start" flexShrink={1} style={{marginTop: 20}}>
+            <Flex alignItems="flex-start" flexShrink={1} style={{ marginTop: 20 }}>
                 <CheckboxWithExaminantIcon
                     checkedStatus={headmasterStatus}
                     setCheckedStatus={setHeadmasterStatus}
@@ -244,11 +182,11 @@ export default function ExaminantInput({...props}: Props) {
                 />
 
                 <HelperSelect
-                    style={{flexShrink: 1}}
+                    style={{ flexShrink: 1 }}
                     rendered={headmasterStatus === "checked"}
-                    options={HEADMASTERS} 
+                    options={HEADMASTERS}
                     selectedOptions={selectedHeadmaster}
-                    setSelectedOptions={setSelectedHeadmaster} 
+                    setSelectedOptions={setSelectedHeadmaster}
                     optionsContainerScroll={false}
                     selectionButtonStyles={AttendanceIndexStyles.defaultHelperButton}
                 >

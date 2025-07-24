@@ -14,8 +14,7 @@ export class ExaminantService extends AbstractModifiableService<ExaminantEntity>
 
         return (
             entityLastSaved.role !== entityModified.role ||
-            entityLastSaved.fullName !== entityModified.fullName ||
-            entityLastSaved.attendanceId !== entityModified.attendanceId
+            entityLastSaved.fullName !== entityModified.fullName
         );
     }
 

@@ -26,7 +26,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { Divider } from "react-native-paper";
-import DateInput from '../../components/(attendance)/DateInput';
+import DateInput from "../../components/(attendance)/DateInput";
 import SchoolclassModeInput from "@/components/(attendance)/SchoolclassModeInput";
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
@@ -41,9 +41,9 @@ export default function index() {
     const { currentAttendanceEntityId, savedAttendanceEntities, dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave } =
         useContext(GlobalAttendanceContext);
 
-    const { 
-        currentAttendanceEntity, 
-        setCurrentAttendanceEntity, 
+    const {
+        currentAttendanceEntity,
+        setCurrentAttendanceEntity,
         lastSavedAttendanceEntity,
         updateLastSavedAttendanceEntity,
         isCurrentAttendanceEntityModified,
@@ -59,11 +59,8 @@ export default function index() {
         "popups.dontConfirmAttendanceScreenLeave"
     );
 
-    const {
-        allStyles: rs,
-    } = useResponsiveStyles();
+    const { allStyles: rs } = useResponsiveStyles();
 
-    const numHelperInputLines = 20;
     const attendanceService = new AttendanceService();
 
     const navigation = useNavigation();
@@ -86,11 +83,8 @@ export default function index() {
     // case: no currentAttendanceEntity yet, should not happen though
     if (!currentAttendanceEntity)
         return (
-            <ScreenWrapper
-                style={{...AttendanceIndexStyles.suspenseContainer}}
-                contentContainerStyle={{...HelperStyles.centerNoFlex}}
-            >
-                <FontAwesome name="hourglass" size={FONT_SIZE} style={{...rs.mb_2}} />
+            <ScreenWrapper style={{ ...AttendanceIndexStyles.suspenseContainer }} contentContainerStyle={{ ...HelperStyles.centerNoFlex }}>
+                <FontAwesome name="hourglass" size={FONT_SIZE} style={{ ...rs.mb_2 }} />
                 <HelperText>Lade Unterrichtsbesuch...</HelperText>
             </ScreenWrapper>
         );
@@ -138,19 +132,16 @@ export default function index() {
                 backgroundColor: subjectColor,
             }}
         >
-            <HelperScrollView 
-                stickyHeaderIndices={[0]}
-                dynamicStyle={AttendanceIndexStyles.scrollView}
-            >
-                <HelperView 
+            <HelperScrollView stickyHeaderIndices={[0]} dynamicStyle={AttendanceIndexStyles.scrollView}>
+                <HelperView
                     dynamicStyle={AttendanceIndexStyles.topBarContainer}
                     style={{
-                        backgroundColor: subjectColor
+                        backgroundColor: subjectColor,
                     }}
                 >
                     <TopBar />
-                    
-                    <Divider style={{...rs.mb_2}} />
+
+                    <Divider style={{ ...rs.mb_2 }} />
                 </HelperView>
 
                 <SchoolSubjectInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
@@ -172,7 +163,7 @@ export default function index() {
                         style={{ zIndex: 1 }} // for select container
                     />
 
-                    <Divider style={{...rs.mb_6, ...rs.mt_3}} />
+                    <Divider style={{ ...rs.mb_6, ...rs.mt_3 }} />
 
                     <NotesInputs />
 

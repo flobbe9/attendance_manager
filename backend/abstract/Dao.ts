@@ -1,4 +1,4 @@
-import { logDebug, logError } from "@/utils/logUtils";
+import { logError } from "@/utils/logUtils";
 import { assertFalsyAndThrow } from "@/utils/utils";
 import { getTableName } from "drizzle-orm";
 import { eq, SQL } from "drizzle-orm/sql";
@@ -109,23 +109,29 @@ export class Dao<E extends AbstractEntity> {
             let isWhereArgFalsy = !where;
             let isWhereArgFalsyButGotId = isWhereArgFalsy && value.id;
             // case: no where, fallback to values.id
-            if (isWhereArgFalsyButGotId) where = eq(this.table.id, value.id);
+            if (isWhereArgFalsyButGotId) {
+                where = eq(this.table.id, value.id);
+            }
 
+            let result: E | E[];
             // case: update if where or existing id
             if (!isWhereArgFalsy || (isWhereArgFalsyButGotId && (await this.exists(where)))) {
-                const updateResult = await this.update(value, where);
+                result = await this.update(value, where);
 
-                // case: where arg has been replace with value.id, reset for next iteration
-                if (isWhereArgFalsy) where = undefined;
-                return updateResult;
-
-                // case: insert
+            // case: insert
             } else {
                 // case: got non existent id
                 if (isWhereArgFalsyButGotId) delete value.id;
 
-                return await this.insert(value);
+                result = await this.insert(value);
             }
+
+            // case: where arg has been replace with value.id, reset for next iteration
+            if (isWhereArgFalsyButGotId) {
+                where = undefined;
+            }
+
+            return result;
         };
 
         const results: E | E[] = [];

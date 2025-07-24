@@ -1,4 +1,5 @@
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
+import { AttendanceRepository } from "@/backend/repositories/AttendanceRepository";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { createContext, useState } from "react";
 

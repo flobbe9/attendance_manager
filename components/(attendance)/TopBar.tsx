@@ -7,7 +7,7 @@ import { AttendanceService } from "@/backend/services/AttendanceService";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import { logTrace } from "@/utils/logUtils";
+import { logDebug, logTrace } from "@/utils/logUtils";
 import { FONT_SIZE_LARGER, FONT_SIZE_SMALLER, TOAST_ERROR_OUTER_STYLES } from "@/utils/styleConstants";
 import { isBlank, isNumberFalsy } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";

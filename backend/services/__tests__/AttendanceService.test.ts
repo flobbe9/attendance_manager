@@ -16,8 +16,8 @@ describe("isModified", () => {
         const examinant2: ExaminantEntity = {
             id: 1,
             role: "history",
-            attendanceId: 2,
-            fullName: "name",
+            attendanceId: 1,
+            fullName: "namee",
         };
 
         const schoolclassMode1: SchoolclassModeEntity = {
@@ -142,8 +142,8 @@ describe("isModified", () => {
             {
                 id: examinant2.id,
                 role: examinant2.role,
-                attendanceId: 0, // altered
-                fullName: examinant2.fullName,
+                attendanceId: 1,
+                fullName: examinant2.fullName + "asdf", // altered
             },
         ];
         expect(attendanceService.isModified(attendance1, attendance2)).toBe(true);

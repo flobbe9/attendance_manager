@@ -9,7 +9,7 @@ import {
     ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL,
     ATTENDANCE_INPUT_TOOLTIP_ICON_NUM_FLASHES,
 } from "@/utils/styleConstants";
-import { cloneObj, isFalsy } from "@/utils/utils";
+import { cloneObj } from "@/utils/utils";
 import { createContext, useContext, useState } from "react";
 import { ColorValue } from "react-native";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
@@ -86,37 +86,11 @@ export default function AttendanceContextProvider({children}) {
     };
 
     /**
-     * Prepare value of `attendancEntityKey` for `currentAttendanceEntity`.
-     *
-     * If `value` is an object also set the backreference assuming `getBackReferenceColumnName`.
-     *
-     * @param attendancEntityValue the input value, any value of attendance entity props
-     */
-    function prepareCurrentAttendanceEntityUpdate<T extends ValueOf<AttendanceEntity>>(
-        attendancEntityValue: T
-    ): T {
-        // make sure to set the backreference
-        if (!isFalsy(attendancEntityValue) && typeof attendancEntityValue === "object") {
-            if (Array.isArray(attendancEntityValue))
-                attendancEntityValue.forEach(ownedEntity => {
-                    if (!isFalsy(ownedEntity) && typeof ownedEntity === "object")
-                        ownedEntity[attendanceRespository.getBackReferenceColumnName()] = currentAttendanceEntity.id;
-                })
-            else
-                attendancEntityValue[attendanceRespository.getBackReferenceColumnName()] =
-                    currentAttendanceEntity.id;
-        }
-
-        return attendancEntityValue;
-    }
-
-    /**
      * Update the `currentAttendanceEntity` state.
      *
      * Set `undefined` values to `null` in order for db update function to work properly.
      * 
      * @param keyValues map of column names and values of attendance entity
-     * @see {@link prepareCurrentAttendanceEntityUpdate()}
      */
     function updateCurrentAttendanceEntity<T extends ValueOf<AttendanceEntity>>(
         keyValues: Map<keyof AttendanceEntity, T> | [keyof AttendanceEntity, T]
@@ -125,20 +99,20 @@ export default function AttendanceContextProvider({children}) {
 
         let updatedAttendanceEntity: AttendanceEntity = currentAttendanceEntity;
 
-        if (Array.isArray(keyValues)) {
+        if (Array.isArray(keyValues))
             updatedAttendanceEntity = {
                 ...updatedAttendanceEntity,
-                [keyValues[0]]: prepareCurrentAttendanceEntityUpdate(keyValues[1]),
+                [keyValues[0]]: keyValues[1],
             };
-        } else if (keyValues instanceof Map) {
+        else if (keyValues instanceof Map)
             keyValues.forEach(
                 (value, key) =>
                     (updatedAttendanceEntity = {
                         ...updatedAttendanceEntity,
-                        [key]: prepareCurrentAttendanceEntityUpdate(value),
+                        [key]: value,
                     })
             );
-        } else throw new Error(`Invalid type of 'keyValues' '${typeof keyValues}'`);
+        else throw new Error(`Invalid type of 'keyValues' '${typeof keyValues}'`);
 
         updatedAttendanceEntity = AbstractRepository.fixEmptyColumnValues(updatedAttendanceEntity);
 
