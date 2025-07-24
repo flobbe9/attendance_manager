@@ -1,16 +1,16 @@
 import * as ExpoSecureStore from "expo-secure-store";
-import {SECURE_STORAGE_KEY_REGEX, SECURE_STORAGE_MAX_VALUE_LENGTH} from "./constants";
-import {logDebug, logError} from "./logUtils";
-import {encodeBase64ToObj, encodeObjToBase64} from "./projectUtils";
-import {isAnyFalsy, isBlank, matchesAll} from "./utils";
+import { SECURE_STORAGE_KEY_REGEX, SECURE_STORAGE_MAX_VALUE_LENGTH } from "./constants";
+import { logDebug, logError } from "./logUtils";
+import { encodeBase64ToObj, encodeObjToBase64 } from "./projectUtils";
+import { isBlank, isFalsy, matchesAll } from "./utils";
 
 /**
- * Like localStorage but encrypted. 
- * 
- * Not persistent after uninstalling the app. 
- * 
+ * Like localStorage but encrypted.
+ *
+ * Not persistent after uninstalling the app.
+ *
  * Be careful with authentication requirements, see docs.
- *  
+ *
  * @since latest
  * @see https://docs.expo.dev/versions/latest/sdk/securestore/
  */
@@ -26,11 +26,7 @@ export class SecureStorage {
      * @returns resolved promise with either the string value, an object or null if an error occurred or no value with
      * `key` exists
      */
-    static async get(
-        key: string,
-        parseBase64 = false,
-        options?: ExpoSecureStore.SecureStoreOptions
-    ): Promise<object | string | null> {
+    static async get(key: string, parseBase64 = false, options?: ExpoSecureStore.SecureStoreOptions): Promise<object | string | null> {
         if (isBlank(key)) {
             logDebug(`Failed to get value from secure storage. 'key' cannot be blank.`);
             return null;
@@ -38,7 +34,7 @@ export class SecureStorage {
 
         let value = await ExpoSecureStore.getItemAsync(key, options);
 
-        if (isAnyFalsy(value)) {
+        if (isFalsy(value)) {
             logDebug(`Failed to get value from secure storage. No value with key '${key}'.`);
             return null;
         }
@@ -60,11 +56,7 @@ export class SecureStorage {
      * @param value to store. See {@link SECURE_STORAGE_KEY_REGEX}. Will be base64 encoded if is an object.
      * @param options to pass to secure store get method. See {@link ExpoSecureStore.SecureStoreOptions}
      */
-    static async set(
-        key: string,
-        value: string | object,
-        options?: ExpoSecureStore.SecureStoreOptions
-    ): Promise<void> {
+    static async set(key: string, value: string | object, options?: ExpoSecureStore.SecureStoreOptions): Promise<void> {
         if (isBlank(key)) {
             logDebug(`Failed to save value to secure storage. 'key' cannot be blank.`);
             return;
@@ -72,16 +64,12 @@ export class SecureStorage {
 
         // case: key malformed
         if (!matchesAll(key, SECURE_STORAGE_KEY_REGEX)) {
-            logDebug(
-                `Failed to save value to secure storage. 'key' '${key}' is malformed. See 'SECURE_STORAGE_KEY_REGEX'`
-            );
+            logDebug(`Failed to save value to secure storage. 'key' '${key}' is malformed. See 'SECURE_STORAGE_KEY_REGEX'`);
             return;
         }
 
-        if (isAnyFalsy(value)) {
-            logDebug(
-                `Failed to save value to secure storage. 'value' cannot be falsy. 'key': ${key}.`
-            );
+        if (isFalsy(value)) {
+            logDebug(`Failed to save value to secure storage. 'value' cannot be falsy. 'key': ${key}.`);
             return;
         }
 

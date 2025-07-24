@@ -1,8 +1,8 @@
 import { CustomExceptionFormat } from "@/abstract/CustomExceptionFormat";
-import { getTimeStamp, includesIgnoreCaseTrim, isBlank } from "@/utils/utils";
-import { CONSOLE_MESSAGES_TO_AVOID, ENV, LOG_LEVEL, LOG_LEVEL_COLORS } from "./constants";
 import { LogLevel, logLevelToString } from "@/abstract/LogLevel";
+import { getTimeStamp, includesIgnoreCaseTrim } from "@/utils/utils";
 import { ColorValue } from "react-native";
+import { CONSOLE_MESSAGES_TO_AVOID, ENV, LOG_LEVEL, LOG_LEVEL_COLORS } from "./constants";
 
 export function logError(message?: any, ...optionalParams: any[]): void {
 	if (!isLogLevel(LogLevel.ERROR)) return;
