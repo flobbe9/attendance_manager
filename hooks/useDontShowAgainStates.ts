@@ -1,6 +1,7 @@
-import {GlobalContext} from "@/components/context/GlobalContextProvider";
-import {useContext, useEffect, useState} from "react";
-import {useSettingsRepository} from "./repositories/useSettingsRepository";
+import { MetadataKey } from "@/backend/abstract/MetadataKey";
+import { GlobalContext } from "@/components/context/GlobalContextProvider";
+import { useContext, useEffect, useState } from "react";
+import { useMetadataRepository } from "./repositories/useMetadataRepository";
 
 /**
  * Specifically for memorizing popup like "dont show again" choices. Will create / update a db setting and notify user.
@@ -14,7 +15,7 @@ import {useSettingsRepository} from "./repositories/useSettingsRepository";
  */
 export function useDontShowAgainStates(
     dontShowAgainState: [boolean, (dontShowAgain: boolean) => void],
-    settingsKey: string
+    settingsKey: MetadataKey
 ) {
     /** Refers to the boolean value beeing confirmed */
     const [didConfirm, setDidConfirm] = useState(false);
@@ -24,7 +25,7 @@ export function useDontShowAgainStates(
 
     const {snackbar} = useContext(GlobalContext);
 
-    const {settingsRepository} = useSettingsRepository();
+    const {metadataRepository} = useMetadataRepository();
 
     useEffect(() => {
         initializeDontShowAgain();
@@ -43,7 +44,7 @@ export function useDontShowAgainStates(
     }, [didDismiss]);
 
     async function initializeDontShowAgain(): Promise<void> {
-        setDontShowAgain(await settingsRepository.loadBooleanSetting(settingsKey));
+        setDontShowAgain(await metadataRepository.selectByKeyParseBoolean(settingsKey));
     }
 
     /**
@@ -52,7 +53,7 @@ export function useDontShowAgainStates(
     async function handleDontShowAgainConfirm(): Promise<void> {
         if (!dontShowAgain) return;
 
-        await settingsRepository.updateValue(settingsKey, "true");
+        await metadataRepository.persistByKey(settingsKey, "true");
 
         snackbar(
             "Präferenz gespeichert. Du kannst deine Auswahl unter 'Einstellungen' jederzeit ändern."

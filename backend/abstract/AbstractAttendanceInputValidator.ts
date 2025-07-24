@@ -2,7 +2,7 @@ import {SchoolSubject_Key} from "@/abstract/SchoolSubject";
 import {logWarn} from "@/utils/logUtils";
 import {cloneObj} from "@/utils/utils";
 import {ValueOf} from "react-native-gesture-handler/lib/typescript/typeUtils";
-import {AttendanceEntity} from "../DbSchema";
+import {AttendanceEntity} from "../entities/AttendanceEntity";
 import {AttendanceService} from "../services/AttendanceService";
 import { SchoolYearConditionOptions } from "./SchoolYearConditionOptions";
 

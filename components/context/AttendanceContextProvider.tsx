@@ -1,10 +1,14 @@
 import { AbstractRepository } from "@/backend/abstract/AbstractRepository";
-import { AttendanceEntity } from "@/backend/DbSchema";
+import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
 import { useFlashState } from "@/hooks/useFlashState";
-import { SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY } from "@/utils/constants";
-import { ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR, ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL, ATTENDANCE_INPUT_TOOLTIP_ICON_NUM_FLASHES } from "@/utils/styleConstants";
+import {
+    ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR,
+    ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR,
+    ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL,
+    ATTENDANCE_INPUT_TOOLTIP_ICON_NUM_FLASHES,
+} from "@/utils/styleConstants";
 import { cloneObj, isFalsy } from "@/utils/utils";
 import { createContext, useContext, useState } from "react";
 import { ColorValue } from "react-native";
@@ -16,68 +20,81 @@ import { GlobalContext } from "./GlobalContextProvider";
 
 /**
  * Context available to all attendance edit sepcific screens of /(attendance).
- * 
- * @param children mandatory 
+ *
+ * @param children mandatory
  * @since 0.0.1
  */
 export default function AttendanceContextProvider({children}) {
     const { snackbar, hideSnackbar } = useContext(GlobalContext);
-    const { dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup, setSavedAttendanceEntities } = useContext(GlobalAttendanceContext);
+    const { dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup } = useContext(GlobalAttendanceContext);
 
     /** The attendance entity currently beeing edited. Dont set an initial value */
-    const [currentAttendanceEntity, setCurrentAttendanceEntity] = useState<AttendanceEntity | undefined>();
+    const [currentAttendanceEntity, setCurrentAttendanceEntity] = useState<
+        AttendanceEntity | undefined
+    >();
     /** Expected to be initialized with `currentAttendanceEntity` on attendance screen render */
-    const [lastSavedAttendanceEntity, setLastSavedAttendanceEntity] = useState<AttendanceEntity | undefined>();
+    const [lastSavedAttendanceEntity, setLastSavedAttendanceEntity] = useState<
+        AttendanceEntity | undefined
+    >();
 
     /** Triggered when invalid input error popup is dismissed.  */
-    const { setDidConfirm, setDidDismiss } = useDontShowAgainStates([dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup], SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY);
-    
-    const { attendanceRespository } = useAttendanceRepository();
-    
+    const {setDidConfirm, setDidDismiss} = useDontShowAgainStates(
+        [dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup],
+        "popups.dontShowAttendanceInputValidationErrorPopup"
+    );
+
+    const {attendanceRespository} = useAttendanceRepository();
+
     /** Indicates whether `currentAttendanceEntity` has been modified compared to `lastSavedAttendanceEntity` */
     const [modified, setModified] = useState(false);
-    
-    /** The attendance entity field name of an input which has last received an invalid value */
-    const [currentlyInvalidAttendanceInputKey, setCurrentlyInvalidAttendanceInputKey] = useState<keyof AttendanceEntity | undefined>()
-    const { 
-        flash: flashTooltipIcon, 
-        flashOnce: flashTooltipIconOnce, 
-        currentValue: tooltipIconColor, 
-        setCurrentValue: setTooltipIconColor 
 
+    /** The attendance entity field name of an input which has last received an invalid value */
+    const [currentlyInvalidAttendanceInputKey, setCurrentlyInvalidAttendanceInputKey] = useState<
+        keyof AttendanceEntity | undefined
+    >();
+    const {
+        flash: flashTooltipIcon,
+        flashOnce: flashTooltipIconOnce,
+        currentValue: tooltipIconColor,
+        setCurrentValue: setTooltipIconColor,
     } = useFlashState<ColorValue>(
-        ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR, 
-        ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR, 
-        { 
-            interval: 
-            ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL, 
-            numFlashes: ATTENDANCE_INPUT_TOOLTIP_ICON_NUM_FLASHES
+        ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR,
+        ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR,
+        {
+            interval: ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL,
+            numFlashes: ATTENDANCE_INPUT_TOOLTIP_ICON_NUM_FLASHES,
         }
     );
 
     const context = {
         updateCurrentAttendanceEntity,
-        
-        currentAttendanceEntity, setCurrentAttendanceEntity,
-        lastSavedAttendanceEntity, updateLastSavedAttendanceEntity,
-        
-        isCurrentAttendanceEntityModified: modified, setCurrentAttendanceEntityModified: setModified,
+
+        currentAttendanceEntity,
+        setCurrentAttendanceEntity,
+        lastSavedAttendanceEntity,
+        updateLastSavedAttendanceEntity,
+
+        isCurrentAttendanceEntityModified: modified,
+        setCurrentAttendanceEntityModified: setModified,
 
         handleInvalidAttendanceInput,
         resetInvalidAttendanceInputErrorStyles,
-        
-        tooltipIconColor, setTooltipIconColor,
-        currentlyInvalidAttendanceInputKey
-    }
- 
+
+        tooltipIconColor,
+        setTooltipIconColor,
+        currentlyInvalidAttendanceInputKey,
+    };
+
     /**
-     * Prepare value of `attendancEntityKey` for `currentAttendanceEntity`. 
-     * 
+     * Prepare value of `attendancEntityKey` for `currentAttendanceEntity`.
+     *
      * If `value` is an object also set the backreference assuming `getBackReferenceColumnName`.
-     * 
+     *
      * @param attendancEntityValue the input value, any value of attendance entity props
      */
-    function prepareCurrentAttendanceEntityUpdate<T extends ValueOf<AttendanceEntity>>(attendancEntityValue: T): T {
+    function prepareCurrentAttendanceEntityUpdate<T extends ValueOf<AttendanceEntity>>(
+        attendancEntityValue: T
+    ): T {
         // make sure to set the backreference
         if (!isFalsy(attendancEntityValue) && typeof attendancEntityValue === "object") {
             if (Array.isArray(attendancEntityValue))
@@ -86,52 +103,53 @@ export default function AttendanceContextProvider({children}) {
                         ownedEntity[attendanceRespository.getBackReferenceColumnName()] = currentAttendanceEntity.id;
                 })
             else
-                attendancEntityValue[attendanceRespository.getBackReferenceColumnName()] = currentAttendanceEntity.id;
+                attendancEntityValue[attendanceRespository.getBackReferenceColumnName()] =
+                    currentAttendanceEntity.id;
         }
 
         return attendancEntityValue;
     }
 
     /**
-     * Update the `currentAttendanceEntity` state. 
-     * 
+     * Update the `currentAttendanceEntity` state.
+     *
      * Set `undefined` values to `null` in order for db update function to work properly.
      * 
      * @param keyValues map of column names and values of attendance entity
      * @see {@link prepareCurrentAttendanceEntityUpdate()}
      */
-    function updateCurrentAttendanceEntity<T extends ValueOf<AttendanceEntity>>(keyValues: Map<keyof AttendanceEntity, T> | [keyof AttendanceEntity, T]): void {
-        if (!keyValues)
-            return;
+    function updateCurrentAttendanceEntity<T extends ValueOf<AttendanceEntity>>(
+        keyValues: Map<keyof AttendanceEntity, T> | [keyof AttendanceEntity, T]
+    ): void {
+        if (!keyValues) return;
 
         let updatedAttendanceEntity: AttendanceEntity = currentAttendanceEntity;
 
         if (Array.isArray(keyValues)) {
             updatedAttendanceEntity = {
                 ...updatedAttendanceEntity,
-                [keyValues[0]]: prepareCurrentAttendanceEntityUpdate(keyValues[1])
-            }
-
+                [keyValues[0]]: prepareCurrentAttendanceEntityUpdate(keyValues[1]),
+            };
         } else if (keyValues instanceof Map) {
-            keyValues
-                .forEach((value, key) =>
-                    updatedAttendanceEntity = {
+            keyValues.forEach(
+                (value, key) =>
+                    (updatedAttendanceEntity = {
                         ...updatedAttendanceEntity,
-                        [key]: prepareCurrentAttendanceEntityUpdate(value)
+                        [key]: prepareCurrentAttendanceEntityUpdate(value),
                     })
-        } else 
-            throw new Error(`Invalid type of 'keyValues' '${typeof keyValues}'`);
+            );
+        } else throw new Error(`Invalid type of 'keyValues' '${typeof keyValues}'`);
 
         updatedAttendanceEntity = AbstractRepository.fixEmptyColumnValues(updatedAttendanceEntity);
 
         setCurrentAttendanceEntity({
             ...updatedAttendanceEntity,
-        })
+        });
     }
 
     /**
      * Clones `attendanceEntity`, then updates state.
-     * 
+     *
      * @param attendanceEntity to update the last saved state with.
      */
     function updateLastSavedAttendanceEntity(attendanceEntity: AttendanceEntity): void {
@@ -140,9 +158,9 @@ export default function AttendanceContextProvider({children}) {
 
     /**
      * Call this on input value change if value is invalid.
-     * 
+     *
      * Flash the `tooltipColor`, call snackbar with an error message.
-     * 
+     *
      * @param invalidValue the invalid input value from attendance input
      * @param reason brief description about why this value is invalid
      * @param invalidAttendanceInputKey the field name of {@link AttendanceEntity} for the invalid input
@@ -150,42 +168,38 @@ export default function AttendanceContextProvider({children}) {
      * @param snackbarStatus default is 'info'
      */
     async function handleInvalidAttendanceInput(
-        invalidValue: string | number, 
-        reason: string, 
+        invalidValue: string | number,
+        reason: string,
         invalidAttendanceInputKey: keyof AttendanceEntity,
-        callback?: () => void, 
-        snackbarStatus: CustomSnackbarStatus = 'info'
+        callback?: () => void,
+        snackbarStatus: CustomSnackbarStatus = "info"
     ): Promise<void> {
         const flash = async () => {
             setCurrentlyInvalidAttendanceInputKey(invalidAttendanceInputKey);
             await flashTooltipIcon();
             flashTooltipIconOnce(ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR); // stick with error color
-        }
+        };
 
         flash();
 
         if (!dontShowInvalidInputErrorPopup) {
             snackbar(
-                <AttendanceInputErrorSnackbarContent 
-                    invalidValue={invalidValue} 
-                    reason={reason} 
-                />,
+                <AttendanceInputErrorSnackbarContent invalidValue={invalidValue} reason={reason} />,
                 snackbarStatus,
                 {
                     duration: Infinity,
                     action: {
                         label: "Dismiss",
-                    }
+                    },
                 },
                 () => {
                     setDidDismiss(true);
                     setDidConfirm(true);
                 }
-            )
+            );
         }
 
-        if (callback)
-            callback();
+        if (callback) callback();
     }
 
     function resetInvalidAttendanceInputErrorStyles(): void {
@@ -193,29 +207,32 @@ export default function AttendanceContextProvider({children}) {
         hideSnackbar();
     }
 
-    return (
-        <AttendanceContext.Provider value={context}>
-            {children}
-        </AttendanceContext.Provider>
-    )
+    return <AttendanceContext.Provider value={context}>{children}</AttendanceContext.Provider>;
 }
 
-
 export const AttendanceContext = createContext({
-    updateCurrentAttendanceEntity: <T extends ValueOf<AttendanceEntity>>(keyValues: Map<keyof AttendanceEntity, T> | [keyof AttendanceEntity, T]): void => {},
+    updateCurrentAttendanceEntity: <T extends ValueOf<AttendanceEntity>>(
+        keyValues: Map<keyof AttendanceEntity, T> | [keyof AttendanceEntity, T]
+    ): void => {},
 
-    currentAttendanceEntity: undefined as AttendanceEntity | undefined, 
+    currentAttendanceEntity: undefined as AttendanceEntity | undefined,
     setCurrentAttendanceEntity: (attendanceEntity: AttendanceEntity): void => {},
-    lastSavedAttendanceEntity: undefined as AttendanceEntity | undefined, 
+    lastSavedAttendanceEntity: undefined as AttendanceEntity | undefined,
     updateLastSavedAttendanceEntity: (attendanceEntity: AttendanceEntity): void => {},
 
     isCurrentAttendanceEntityModified: false as boolean,
     setCurrentAttendanceEntityModified: (modified: boolean): void => {},
 
-    handleInvalidAttendanceInput: (invalidValue: string | number, reason: string, invalidAttendanceInputKey: keyof AttendanceEntity, callback?: () => void, status: CustomSnackbarStatus = 'info'): void => {},
+    handleInvalidAttendanceInput: (
+        invalidValue: string | number,
+        reason: string,
+        invalidAttendanceInputKey: keyof AttendanceEntity,
+        callback?: () => void,
+        status: CustomSnackbarStatus = "info"
+    ): void => {},
     resetInvalidAttendanceInputErrorStyles: (): void => {},
 
     tooltipIconColor: "black" as ColorValue,
     setTooltipIconColor: (color: ColorValue): void => {},
-    currentlyInvalidAttendanceInputKey: undefined as keyof AttendanceEntity | undefined
+    currentlyInvalidAttendanceInputKey: undefined as keyof AttendanceEntity | undefined,
 });

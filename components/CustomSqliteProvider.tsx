@@ -14,6 +14,12 @@ interface Props {
     useSuspense?: boolean;
 }
 
+/**
+ * Development db ui: http://localhost:8081/_expo/plugins/expo-drizzle-studio-plugin
+ * 
+ * @since 0.0.1
+ * @see https://orm.drizzle.team/docs/overview
+ */
 export default function CustomSqliteProvider({children, useSuspense = true}: Props) {
     const sqliteSync = openDatabaseSync(DATABASE_NAME);
     const db = drizzle(sqliteSync, DRIZZLE_DB_CONFIG);

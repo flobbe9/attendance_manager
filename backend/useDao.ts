@@ -3,18 +3,16 @@ import { DRIZZLE_DB_CONFIG } from "@/utils/constants";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
 import { useSQLiteContext } from "expo-sqlite";
-import AbstractEntity from "./abstract/Abstract_Schema";
+import AbstractEntity from "./abstract/AbstractEntity";
 import { log } from "@/utils/logUtils";
-
 
 /**
  * Any database implementation should use this hook to get a db instance.
- * 
+ *
  * @returns a new instance of ```Dao``` to perform any db actions
  * @since 0.0.1
  */
 export function useDao<Entity extends AbstractEntity>(table: SQLiteTableWithColumns<any>) {
-
     const sqliteDb = useSQLiteContext();
     sqliteDb.execSync("PRAGMA FOREIGN_KEYS = ON"); // enable cascade
 
@@ -23,6 +21,6 @@ export function useDao<Entity extends AbstractEntity>(table: SQLiteTableWithColu
     return {
         dao: new Dao<Entity>(db, table),
         sqliteDb,
-        db
+        db,
     };
 }

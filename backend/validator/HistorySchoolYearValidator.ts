@@ -7,8 +7,8 @@ import { logTrace } from "@/utils/logUtils";
 import { AbstractSchoolYearValidator } from "../abstract/AbstractSchoolYearValidator";
 import { isSchoolYearConditionExceedingMax, SchoolYearCondition } from "../abstract/SchoolYearCondition";
 import { schoolYearRangeToString } from "../abstract/SchoolYearRange";
-import { AttendanceEntity } from "../DbSchema";
 import { isFalsy } from "@/utils/utils";
+import { AttendanceEntity } from "../entities/AttendanceEntity";
 
 /**
  * @since 0.1.0

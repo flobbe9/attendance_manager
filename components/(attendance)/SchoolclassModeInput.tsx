@@ -8,7 +8,6 @@ import {
 } from "@/abstract/SchoolclassMode";
 import {AttendanceIndexStyles} from "@/assets/styles/AttendanceIndexStyles";
 import HelperStyles from "@/assets/styles/helperStyles";
-import {SchoolclassModeEntity} from "@/backend/DbSchema";
 import HelperView from "@/components/helpers/HelperView";
 import {useHelperProps} from "@/hooks/useHelperProps";
 import React, {JSX, useContext, useEffect, useState} from "react";
@@ -18,6 +17,7 @@ import {AttendanceContext} from "../context/AttendanceContextProvider";
 import Flex from "../helpers/Flex";
 import HelperInput from "../helpers/HelperInput";
 import HelperText from "../helpers/HelperText";
+import { SchoolclassModeEntity } from "@/backend/entities/SchoolclassModeEntity";
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
 /**
@@ -81,7 +81,9 @@ export default function SchoolclassModeInput({...props}: Props) {
             <HelperInput
                 placeholder="Ausbildungslehrer"
                 rendered={currentAttendanceEntity.schoolclassMode.mode === "othersClass"}
-                containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
+                containerStyles={
+                    AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>
+                }
                 value={currentAttendanceEntity.schoolclassMode.fullName}
                 onChangeText={updateSchoolclassModeNote}
             />

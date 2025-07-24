@@ -1,16 +1,16 @@
-import { AttendanceEntity } from "@/backend/DbSchema";
+import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { createContext, useState } from "react";
 
 /**
  * Context for the app index.
- * 
+ *
  * @since 0.0.1
  */
 export default function GlobalAttendanceContextProvider({children}) {
     const [attendanceEntities, setAttendanceEntities] = useState<AttendanceEntity[]>([]);
-    /** 
-     * The attendance entities' id currently beeing edited. Only meant for initializing the `currentAttendanceEntity`. 
+    /**
+     * The attendance entities' id currently beeing edited. Only meant for initializing the `currentAttendanceEntity`.
      * Set to 0 or negative num to indicate to initialize a new attendanceEntity
      */
     const [currentAttendanceEntityId, setCurrentAttendanceEntityId] = useState<number | null>(null);
@@ -43,11 +43,11 @@ export default function GlobalAttendanceContextProvider({children}) {
         <GlobalAttendanceContext.Provider value={context}>
             {children}
         </GlobalAttendanceContext.Provider>
-    )
+    );
 }
 
 export const GlobalAttendanceContext = createContext({
-    currentAttendanceEntityId: null as number | null, 
+    currentAttendanceEntityId: null as number | null,
     setCurrentAttendanceEntityId: (currentId: number | null): void => {},
     savedAttendanceEntities: [] as AttendanceEntity[],
     setSavedAttendanceEntities: (savedAttendanceEntities: AttendanceEntity[]): void => {},
@@ -56,10 +56,10 @@ export const GlobalAttendanceContext = createContext({
 
     dontShowInvalidInputErrorPopup: false as boolean, 
     setDontShowInvalidInputErrorPopup: (dontShow: boolean): void => {},
-    
-    dontConfirmSchoolSubjectChange: false as boolean, 
+
+    dontConfirmSchoolSubjectChange: false as boolean,
     setDontConfirmSchoolSubjectChange: (dontConfirm: boolean): void => {},
 
-    dontConfirmAttendanceScreenLeave: false as boolean, 
+    dontConfirmAttendanceScreenLeave: false as boolean,
     setDontConfirmAttendanceScreenLeave: (dontConfirm: boolean): void => {},
 });

@@ -4,11 +4,11 @@ import { isSchoolYear, SCHOOL_YEARS, SchoolYear } from "@/abstract/SchoolYear";
 import { getGubSubjectSchoolYearConditionsBySubject, getTotalRequiredGubs, GUB_SCHOOL_YEAR_CONDITIONS } from "@/utils/attendanceValidationConstants";
 import { assertFalsyAndThrow, cloneObj } from "@/utils/utils";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
-import { AttendanceEntity } from "../DbSchema";
 import { AbstractAttendanceInputValidator } from "./AbstractAttendanceInputValidator";
 import { destructSchoolYearConditions, findSchoolYearConditionsBySchoolYearRange, isSchoolYearConditionExceedingMax, isSchoolYearConditionMaxedOut, SchoolYearCondition } from "./SchoolYearCondition";
 import { SchoolYearConditionOptions } from "./SchoolYearConditionOptions";
 import { isWithinSchoolYearRange, schoolYearRangeToString } from "./SchoolYearRange";
+import { AttendanceEntity } from "../entities/AttendanceEntity";
 
 /**
  * @since 0.1.0

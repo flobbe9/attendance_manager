@@ -1,6 +1,6 @@
 import HelperStyles from "@/assets/styles/helperStyles";
 import { IndexStyles } from "@/assets/styles/IndexStyles";
-import { AttendanceEntity } from "@/backend/DbSchema";
+import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import AttendanceLink from "@/components/AttendanceLink";
 import { GlobalAttendanceContext } from "@/components/context/GlobalAttendanceContextProvider";
@@ -43,28 +43,23 @@ export default function index() {
 
     function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
         const currentScrollPosition = Math.floor(event.nativeEvent?.contentOffset?.y) ?? 0;
-        
+
         setIsExtended(currentScrollPosition <= 0);
-    };
+    }
 
     /**
      * Sort by subject asc.
-     * 
+     *
      * @param attendanceEntities expected to be fetched with cascade
      */
     function mapAttendanceLinks(attendanceEntities: AttendanceEntity[]): JSX.Element[] {
-        if (!attendanceEntities)
-            return [];
+        if (!attendanceEntities) return [];
 
         return attendanceEntities
             .sort(attendanceService.sortBySubject)
-            .map((attendanceEntity, i) => 
-                <AttendanceLink 
-                    key={i}
-                    attendanceEntity={attendanceEntity} 
-                    onTouchStart={() => setCurrentAttendanceEntityId(attendanceEntity.id)}
-                />
-            );
+            .map((attendanceEntity, i) => (
+                <AttendanceLink key={i} attendanceEntity={attendanceEntity} onTouchStart={() => setCurrentAttendanceEntityId(attendanceEntity.id)} />
+            ));
     }
 
     return (
@@ -73,22 +68,22 @@ export default function index() {
                 <IndexTopBar />
 
                 {/* Links */}
-                <HelperScrollView 
-                    onScroll={handleScroll} 
-                    dynamicStyle={IndexStyles.linkContainer} 
+                <HelperScrollView
+                    onScroll={handleScroll}
+                    dynamicStyle={IndexStyles.linkContainer}
                     style={{ ...mt_6 }}
-                    childrenContainerStyle={{paddingBottom: 50}}
+                    childrenContainerStyle={{ paddingBottom: 50 }}
                     rendered={!!attendanceLinks.length}
                 >
                     {attendanceLinks}
                 </HelperScrollView>
-                
+
                 {/* Empty message */}
-                <Flex 
-                    flexDirection="column" 
-                    justifyContent="center" 
-                    alignItems="center" 
-                    style={{...HelperStyles.fullHeight}}
+                <Flex
+                    flexDirection="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    style={{ ...HelperStyles.fullHeight }}
                     rendered={!attendanceLinks.length}
                 >
                     <HelperText dynamicStyle={IndexStyles.emptyMessage}>😴</HelperText>
@@ -96,24 +91,24 @@ export default function index() {
                 </Flex>
 
                 {/* Add button */}
-                <Link 
-                    href={"/(attendance)"}  
-                    asChild 
-                    onPress={() => setCurrentAttendanceEntityId(-1)}
-                >
-                    <ExtendableButton 
+                <Link href={"/(attendance)"} asChild onPress={() => setCurrentAttendanceEntityId(-1)}>
+                    <ExtendableButton
                         isExtended={isExtended}
                         dynamicStyle={IndexStyles.addButton}
                         containerStyles={IndexStyles.addButtonOuterView}
                         align="flex-end"
                         extendedWidth={152}
-                        label={<HelperText dynamicStyle={{...IndexStyles.addButtonLabel}} style={{color: "white"}}>Neuer UB</HelperText>}
-                        ripple={{rippleBackground: "rgb(70, 70, 70)"}}
-                    > 
-                        <FontAwesome name="plus" style={{...IndexStyles.buttonIcon}} color="white" />
+                        label={
+                            <HelperText dynamicStyle={{ ...IndexStyles.addButtonLabel }} style={{ color: "white" }}>
+                                Neuer UB
+                            </HelperText>
+                        }
+                        ripple={{ rippleBackground: "rgb(70, 70, 70)" }}
+                    >
+                        <FontAwesome name="plus" style={{ ...IndexStyles.buttonIcon }} color="white" />
                     </ExtendableButton>
                 </Link>
             </HelperView>
         </ScreenWrapper>
-    )
+    );
 }

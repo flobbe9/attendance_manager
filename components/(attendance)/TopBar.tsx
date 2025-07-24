@@ -3,7 +3,6 @@ import { isSchoolYear } from "@/abstract/SchoolYear";
 import HelperStyles from "@/assets/styles/helperStyles";
 import { ToastDefaultFooterStyles } from "@/assets/styles/ToastDefaultFooterStyles";
 import { TopBarStyles } from "@/assets/styles/TopBarStyles";
-import { Attendance_Table } from "@/backend/DbSchema";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useHelperProps } from "@/hooks/useHelperProps";
@@ -26,9 +25,9 @@ import HelperButton from "../helpers/HelperButton";
 import HelperText from "../helpers/HelperText";
 import HelperView from "../helpers/HelperView";
 import ToastDimissFooter from "../ToastDismissFooter";
+import { Attendance_Table } from "@/backend/schemas/AttendanceSchema";
 
-interface Props extends HelperProps<ViewStyle>, ViewProps {
-}
+interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
 /**
  * @since 0.0.1
@@ -47,7 +46,7 @@ export default function TopBar({...props}: Props) {
         setCurrentAttendanceEntity, 
         resetInvalidAttendanceInputErrorStyles
     } = useContext(AttendanceContext);
-    
+
     const { attendanceRespository } = useAttendanceRepository();
     const attendanceService = new AttendanceService();
 
@@ -60,24 +59,22 @@ export default function TopBar({...props}: Props) {
         let errorMessage = null;
         if ((errorMessage = validateBeforeSave()) !== null) {
             toast(
-                (
-                    <Fragment>
-                        <B>Invalider UB</B>
-                        <Br />
+                <Fragment>
+                    <B>Invalider UB</B>
+                    <Br />
 
-                        <HelperText>{errorMessage}</HelperText>
-                    </Fragment>
-                ), 
+                    <HelperText>{errorMessage}</HelperText>
+                </Fragment>,
                 {
                     defaultFooter: false,
                     // custom footer
                     children: (
-                        <Flex style={{...HelperStyles.fullWidth, ...mt_3}} justifyContent="flex-end">
-                            <HelperButton dynamicStyle={ToastDefaultFooterStyles.button} onPress={hideToast}>  
-                                <HelperText dynamicStyle={ToastDefaultFooterStyles.buttonChildren}>Cancel</HelperText> 
+                        <Flex style={{ ...HelperStyles.fullWidth, ...mt_3 }} justifyContent="flex-end">
+                            <HelperButton dynamicStyle={ToastDefaultFooterStyles.button} onPress={hideToast}>
+                                <HelperText dynamicStyle={ToastDefaultFooterStyles.buttonChildren}>Cancel</HelperText>
                             </HelperButton>
                         </Flex>
-                    )
+                    ),
                 }
             );
             return;
@@ -85,7 +82,10 @@ export default function TopBar({...props}: Props) {
 
         const attendanceEntityResult = await attendanceRespository.persistCascade(currentAttendanceEntity);
         if (!attendanceEntityResult)
-            return toastError("Unerwarteter Fehler beim Speichern", "Keine der letzten Änderungen wurde gespeichert. Versuche es nochmal oder kontaktiere den Support.");
+            return toastError(
+                "Unerwarteter Fehler beim Speichern",
+                "Keine der letzten Änderungen wurde gespeichert. Versuche es nochmal oder kontaktiere den Support."
+            );
 
         logTrace("save attendance result: ", attendanceEntityResult);
 
@@ -97,17 +97,14 @@ export default function TopBar({...props}: Props) {
         resetInvalidAttendanceInputErrorStyles();
 
         // notify success
-        popup(
-            "UB Gespeichert",
-            {
-                icon: <FontAwesome name="save" />
-            }
-        );
+        popup("UB Gespeichert", {
+            icon: <FontAwesome name="save" />,
+        });
     }
 
     /**
      * Make sure that no problematic input values are saved, e.g. a malformed schoolYear or notNull values.
-     * 
+     *
      * @returns an error  message or `null` if valid
      */
     function validateBeforeSave(): string | null {
@@ -116,7 +113,6 @@ export default function TopBar({...props}: Props) {
         // allow blank schoolyear but not a malformed one (e.g. "1")
         if (!isBlank(currentAttendanceEntity.schoolYear) && !isSchoolYear(currentAttendanceEntity.schoolYear))
             errorMessage = "Bevor du speicherst, gib einen validen Jahrgang an oder lasse das Feld leer.";
-
         else if (!attendanceService.isSelectInputFilledOut(currentAttendanceEntity.schoolSubject))
             errorMessage = "Bevor du speicherst, gib ein Fach an.";
 
@@ -124,8 +120,7 @@ export default function TopBar({...props}: Props) {
     }
 
     function handleDeletePress(): void {
-        if (isNumberFalsy(currentAttendanceEntity.id))
-            return;
+        if (isNumberFalsy(currentAttendanceEntity.id)) return;
 
         toast(
             <HelperView>
@@ -139,16 +134,19 @@ export default function TopBar({...props}: Props) {
                     const result = await attendanceRespository.delete(eq(Attendance_Table.id, currentAttendanceEntity.id));
 
                     if (result === null) {
-                        toastError("Unerwarteter Fehler beim Löschen", "Der Unterrichtsbesuch wurde nicht gelöscht. Versuche es nochmal oder kontaktiere den Support.");
-                        return;   
+                        toastError(
+                            "Unerwarteter Fehler beim Löschen",
+                            "Der Unterrichtsbesuch wurde nicht gelöscht. Versuche es nochmal oder kontaktiere den Support."
+                        );
+                        return;
                     }
 
                     navigate("../");
 
-                    popup("UB gelöscht", { icon: <FontAwesome name="trash" />});
-                }     
+                    popup("UB gelöscht", { icon: <FontAwesome name="trash" /> });
+                },
             }
-        )
+        );
     }
 
     function toastError(heading: string, errorMessage: string): void {
@@ -157,32 +155,25 @@ export default function TopBar({...props}: Props) {
                 <B>{heading}</B>
                 <Br />
 
-                <HelperText
-                    style={{fontSize: FONT_SIZE_SMALLER}}
-                >
-                    {errorMessage}
-                </HelperText>
+                <HelperText style={{ fontSize: FONT_SIZE_SMALLER }}>{errorMessage}</HelperText>
             </HelperView>
         );
 
         const footer = (
-            <ToastDimissFooter 
+            <ToastDimissFooter
                 buttonStyles={{
-                    backgroundColor: "white"
-                }} 
-                style={{...mt_5}} 
-                onDimiss={hideToast} 
+                    backgroundColor: "white",
+                }}
+                style={{ ...mt_5 }}
+                onDimiss={hideToast}
             />
         );
 
-        toast(
-            content,
-            {
-                outerStyle: {...TOAST_ERROR_OUTER_STYLES},
-                defaultFooter: false,
-                children: footer
-            }
-        )
+        toast(content, {
+            outerStyle: { ...TOAST_ERROR_OUTER_STYLES },
+            defaultFooter: false,
+            children: footer,
+        });
     }
 
     return (
@@ -205,11 +196,11 @@ export default function TopBar({...props}: Props) {
                 <FontAwesome 
                     name="save"
                     style={{
-                        ...TopBarStyles.saveButtonChildren.default, 
-                    }} 
+                        ...TopBarStyles.saveButtonChildren.default,
+                    }}
                     size={FONT_SIZE_LARGER}
                 />
             </HelperButton>
         </Flex>
-    )
+    );
 }

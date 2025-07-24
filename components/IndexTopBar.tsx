@@ -104,7 +104,7 @@ export default function IndexTopBar({...props}: Props) {
             </Link>
 
             <Flex justifyContent="flex-end">
-                <HelperText style={{...IndexTopBarStyles.text, ...me_2}}>Erledigt:</HelperText>
+                <HelperText style={{ ...IndexTopBarStyles.text, ...me_2 }}>Erledigt:</HelperText>
 
                 <ExaminantCount
                     numExaminants={numMusicExaminants}

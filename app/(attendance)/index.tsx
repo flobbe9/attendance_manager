@@ -1,7 +1,6 @@
 import "@/assets/styles/AttendanceIndexStyles";
 import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import HelperStyles from "@/assets/styles/helperStyles";
-import { AttendanceEntity } from "@/backend/DbSchema";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import { DontConfirmAttendanceLeaveContent } from "@/components/(attendance)/DontConfirmAttendanceLeaveContent";
 import ExaminantInput from "@/components/(attendance)/ExaminantInput";
@@ -21,29 +20,26 @@ import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { DontLeaveScreenOptions, useScreenLeaveAttempt } from "@/hooks/useScreenLeaveAttempt";
 import { useSubjectColor } from "@/hooks/useSubjectColor";
-import { SETTINGS_DONT_CONFIRM_ATTENDANCE_SCREEN_LEAVE } from "@/utils/constants";
 import { logDebug } from "@/utils/logUtils";
 import { FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Divider } from "react-native-paper";
 import DateInput from '../../components/(attendance)/DateInput';
 import SchoolclassModeInput from "@/components/(attendance)/SchoolclassModeInput";
+import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
+import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 
 /**
  * Attendance create / edit screen.
- * 
+ *
  * @since 0.0.1
  */
 export default function index() {
     const { hideSnackbar, toast } = useContext(GlobalContext);
-    const { 
-        currentAttendanceEntityId, 
-        savedAttendanceEntities, 
-        dontConfirmAttendanceScreenLeave,
-        setDontConfirmAttendanceScreenLeave
-    } = useContext(GlobalAttendanceContext);
+    const { currentAttendanceEntityId, savedAttendanceEntities, dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave } =
+        useContext(GlobalAttendanceContext);
 
     const { 
         currentAttendanceEntity, 
@@ -53,34 +49,38 @@ export default function index() {
         isCurrentAttendanceEntityModified,
         setCurrentAttendanceEntityModified,
     } = useContext(AttendanceContext);
-    
-    const { transparentColor: subjectColor} = useSubjectColor(currentAttendanceEntity?.schoolSubject, "rgb(240, 240, 240)");
 
-    const { setDidConfirm, setDidDismiss } = useDontShowAgainStates([dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave], SETTINGS_DONT_CONFIRM_ATTENDANCE_SCREEN_LEAVE);
+    const { transparentColor: subjectColor } = useSubjectColor(currentAttendanceEntity?.schoolSubject, "rgb(240, 240, 240)");
 
-    const { allStyles: rs, parseResponsiveStyleToStyle: prs} = useResponsiveStyles();
+    const [areNotesVisible, setAreNotesVisible] = useState(false);
 
+    const { setDidConfirm, setDidDismiss } = useDontShowAgainStates(
+        [dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave],
+        "popups.dontConfirmAttendanceScreenLeave"
+    );
+
+    const {
+        allStyles: rs,
+    } = useResponsiveStyles();
+
+    const numHelperInputLines = 20;
     const attendanceService = new AttendanceService();
 
     const navigation = useNavigation();
-        
+
     useEffect(() => {
         updateLastSavedAttendanceEntity(initializeCurrentAttendanceEntity());
     }, []);
 
-    useScreenLeaveAttempt(
-        isCurrentAttendanceEntityModified && !dontConfirmAttendanceScreenLeave, 
-        {
-            handleScreenLeave: handleScreenLeave,
-            handleDontLeaveScreen: handleDontLeaveScreenLeave
-        }
-    )
-    
+    useScreenLeaveAttempt(isCurrentAttendanceEntityModified && !dontConfirmAttendanceScreenLeave, {
+        handleScreenLeave: handleScreenLeave,
+        handleDontLeaveScreen: handleDontLeaveScreenLeave,
+    });
+
     useEffect(() => {
         // case: last saved instance has been instantiated
         if (lastSavedAttendanceEntity && currentAttendanceEntity)
             setCurrentAttendanceEntityModified(attendanceService.isModified(lastSavedAttendanceEntity, currentAttendanceEntity));
-
     }, [currentAttendanceEntity, lastSavedAttendanceEntity]);
 
     // case: no currentAttendanceEntity yet, should not happen though
@@ -100,34 +100,26 @@ export default function index() {
     }
 
     function handleDontLeaveScreenLeave(options: DontLeaveScreenOptions): void {
-        const handleConfirm = () => 
-            navigation.dispatch(options.data.action)
+        const handleConfirm = () => navigation.dispatch(options.data.action);
 
         if (!dontConfirmAttendanceScreenLeave) {
-            toast(
-                <DontConfirmAttendanceLeaveContent />,
-                {
-                    onConfirm: () => {
-                        setDidConfirm(true);
-                        setTimeout(() => {
-                            handleConfirm();
-                        }, 200); // wait for confirm hook to trigger
-                    },
-                    onDismiss: () => setDidDismiss(true)
-                }
-            );
+            toast(<DontConfirmAttendanceLeaveContent />, {
+                onConfirm: () => {
+                    setDidConfirm(true);
+                    setTimeout(() => {
+                        handleConfirm();
+                    }, 200); // wait for confirm hook to trigger
+                },
+                onDismiss: () => setDidDismiss(true),
+            });
         }
     }
 
     function initializeCurrentAttendanceEntity(): AttendanceEntity | null {
         let attendanceEntityForId: AttendanceEntity;
 
-        if (currentAttendanceEntityId <= 0)
-            attendanceEntityForId = AttendanceService.getEmptyInstance()
-            
-        else
-            attendanceEntityForId = savedAttendanceEntities
-               .find(attendanceEntity => attendanceEntity.id === currentAttendanceEntityId);
+        if (currentAttendanceEntityId <= 0) attendanceEntityForId = AttendanceService.getEmptyInstance();
+        else attendanceEntityForId = savedAttendanceEntities.find((attendanceEntity) => attendanceEntity.id === currentAttendanceEntityId);
 
         if (!attendanceEntityForId) {
             logDebug("Failed to load current attendance entity for current id " + currentAttendanceEntityId);
@@ -140,11 +132,11 @@ export default function index() {
     }
 
     return (
-        <ScreenWrapper 
+        <ScreenWrapper
             style={{
                 ...AttendanceIndexStyles.component.default,
-                backgroundColor: subjectColor, 
-            }} 
+                backgroundColor: subjectColor,
+            }}
         >
             <HelperScrollView 
                 stickyHeaderIndices={[0]}
@@ -169,15 +161,15 @@ export default function index() {
 
                     <SchoolYearInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
 
-                    <TopicInput 
+                    <TopicInput
                         rendered={currentAttendanceEntity.schoolSubject === "music"}
                         dynamicStyle={AttendanceIndexStyles.inputContainer}
-                        style={{zIndex: 2}} // needs to be higher than next sibling
+                        style={{ zIndex: 2 }} // needs to be higher than next sibling
                     />
 
-                    <ExaminantInput 
-                        dynamicStyle={AttendanceIndexStyles.inputContainer} 
-                        style={{zIndex: 1}} // for select container
+                    <ExaminantInput
+                        dynamicStyle={AttendanceIndexStyles.inputContainer}
+                        style={{ zIndex: 1 }} // for select container
                     />
 
                     <Divider style={{...rs.mb_6, ...rs.mt_3}} />
@@ -188,5 +180,5 @@ export default function index() {
                 </HelperView>
             </HelperScrollView>
         </ScreenWrapper>
-    )
+    );
 }
