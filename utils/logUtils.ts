@@ -1,6 +1,6 @@
 import { CustomExceptionFormat } from "@/abstract/CustomExceptionFormat";
 import { getTimeStamp, includesIgnoreCaseTrim, isBlank } from "@/utils/utils";
-import { CONSOLE_MESSAGES_TO_AVOID, LOG_LEVEL, LOG_LEVEL_COLORS } from "./constants";
+import { CONSOLE_MESSAGES_TO_AVOID, ENV, LOG_LEVEL, LOG_LEVEL_COLORS } from "./constants";
 import { LogLevel, logLevelToString } from "@/abstract/LogLevel";
 import { ColorValue } from "react-native";
 
@@ -132,7 +132,7 @@ function isLogLevel(expectedLogLevel: LogLevel): boolean {
  * @returns ```false``` if {@link NODE_ENV} is "production"
  */
 export function isDebugLogLevel(): boolean {
-    if ("production" === process.env.NODE_ENV) {
+    if ("production" === ENV) {
         logWarn("Cannot log at 'DEBUG' level in 'production'");
         return false;
     }
@@ -142,7 +142,7 @@ export function isDebugLogLevel(): boolean {
 
 
 export function isTraceLogLevel(): boolean {
-    if ("production" === process.env.NODE_ENV) {
+    if ("production" === ENV) {
         logWarn("Cannot log at 'TRACE' level in 'production'");
         return false;
     }

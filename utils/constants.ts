@@ -1,8 +1,10 @@
+import { Env } from "@/abstract/Env";
 import { LogLevel } from "@/abstract/LogLevel";
 import { DrizzleConfig } from "drizzle-orm";
 import ExpoConstants from 'expo-constants';
 
 export const APP_VERSION = ExpoConstants.expoConfig.version; // read from app.json
+export const ENV: Env = process.env.EXPO_PUBLIC_ENV as Env;
 export const DATABASE_NAME = process.env.EXPO_PUBLIC_DATABASE_NAME;
 export const LOG_LEVEL = LogLevel[process.env.EXPO_PUBLIC_LOG_LEVEL];
 
