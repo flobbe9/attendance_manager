@@ -21,6 +21,9 @@ jobs:
           - name: Compile typescript
             run: npx tsc --noEmit
 
+          - name: Android clean build
+            run: ./android/gradlew clean build -p ./android
+
           - name: Build / bundle
             run: npx expo export:embed --eager --platform ios --dev false
 
