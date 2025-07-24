@@ -27,11 +27,7 @@ export default function IndexTopBar({ ...props }: Props) {
     const [numHistoryExaminants, setNumHistoryExaminants] = useState(0);
 
     const componentName = "IndexTopBar";
-    const { children, ...otherProps } = useDefaultProps(
-        props,
-        componentName,
-        IndexTopBarStyles.component
-    );
+    const { children, ...otherProps } = useDefaultProps(props, componentName, IndexTopBarStyles.component);
 
     const attendanceService = new AttendanceService();
 
@@ -49,9 +45,7 @@ export default function IndexTopBar({ ...props }: Props) {
      * @returns the number of attendance entities having at least one educator examinant
      */
     function countEducatorExaminants(): number {
-        return savedAttendanceEntities.filter((attendanceEntity) =>
-            attendanceService.hasExaminant(attendanceEntity, "educator")
-        ).length;
+        return savedAttendanceEntities.filter((attendanceEntity) => attendanceService.hasExaminant(attendanceEntity, "educator")).length;
     }
 
     /**
@@ -68,19 +62,12 @@ export default function IndexTopBar({ ...props }: Props) {
         ).length; // has examinant for that subject
     }
 
-    function ExaminantCount(props: {
-        numExaminants: number;
-        maxExamiants: number;
-        color: ColorValue;
-    }) {
+    function ExaminantCount(props: { numExaminants: number; maxExamiants: number; color: ColorValue }) {
         const { numExaminants, maxExamiants, color } = props;
 
         return (
             <Flex dynamicStyle={IndexTopBarStyles.ExaminantCount} alignItems="center">
-                <FontAwesome
-                    style={{ color, ...IndexTopBarStyles.text, ...me_1, ...me_2 }}
-                    name="user"
-                />
+                <FontAwesome style={{ color, ...IndexTopBarStyles.text, ...me_1, ...me_2 }} name="user" />
                 <HelperText style={IndexTopBarStyles.text}>
                     {numExaminants ?? "-"}/{maxExamiants}
                 </HelperText>
@@ -92,27 +79,15 @@ export default function IndexTopBar({ ...props }: Props) {
         <Flex justifyContent="space-between" alignItems="center" {...otherProps}>
             <Link href="/(settings)" asChild>
                 <HelperButton dynamicStyle={IndexTopBarStyles.settingsButton}>
-                    <FontAwesome
-                        name="gear"
-                        size={FONT_SIZE_LARGER}
-                        style={IndexTopBarStyles.gearIcon}
-                    />
+                    <FontAwesome name="gear" size={FONT_SIZE_LARGER} style={IndexTopBarStyles.gearIcon} />
                 </HelperButton>
             </Link>
 
             <Flex justifyContent="flex-end">
                 <HelperText style={{ ...IndexTopBarStyles.text, ...me_2 }}>Erledigt:</HelperText>
 
-                <ExaminantCount
-                    numExaminants={numMusicExaminants}
-                    maxExamiants={9}
-                    color={MUSIC_COLOR}
-                />
-                <ExaminantCount
-                    numExaminants={numHistoryExaminants}
-                    maxExamiants={9}
-                    color={HISTORY_COLOR}
-                />
+                <ExaminantCount numExaminants={numMusicExaminants} maxExamiants={9} color={MUSIC_COLOR} />
+                <ExaminantCount numExaminants={numHistoryExaminants} maxExamiants={9} color={HISTORY_COLOR} />
                 <ExaminantCount numExaminants={numEducators} maxExamiants={8} color={"black"} />
             </Flex>
         </Flex>

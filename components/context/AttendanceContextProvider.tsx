@@ -3,7 +3,6 @@ import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
 import { useFlashState } from "@/hooks/useFlashState";
-import { SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY } from "@/utils/constants";
 import {
     ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR,
     ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR,
@@ -42,7 +41,7 @@ export default function AttendanceContextProvider({children}) {
     /** Triggered when invalid input error popup is dismissed.  */
     const {setDidConfirm, setDidDismiss} = useDontShowAgainStates(
         [dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup],
-        SETTINGS_DONT_SHOW_ATTENDANCE_INPUT_VALIDATOIN_ERROR_POPUP_KEY
+        "popups.dontShowAttendanceInputValidationErrorPopup"
     );
 
     const {attendanceRespository} = useAttendanceRepository();

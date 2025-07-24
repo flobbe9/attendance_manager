@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "e8b28fd8-2bb3-4a93-8818-702c988311d1",
+  "id": "0b8ac49b-36b1-4aef-8b1c-561431792a85",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "attendance": {
@@ -39,7 +39,7 @@
           "name": "date",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "music_lesson_topic": {
@@ -53,19 +53,19 @@
           "name": "school_year",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "note": {
           "name": "note",
-          "type": "text",
+          "type": "text(65535)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "note2": {
           "name": "note2",
-          "type": "text",
+          "type": "text(65535)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -143,8 +143,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "school_class_mode": {
-      "name": "school_class_mode",
+    "schoolclass_mode": {
+      "name": "schoolclass_mode",
       "columns": {
         "id": {
           "name": "id",
@@ -185,15 +185,15 @@
           "name": "attendance_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "school_class_mode_attendance_id_attendance_id_fk": {
-          "name": "school_class_mode_attendance_id_attendance_id_fk",
-          "tableFrom": "school_class_mode",
+        "schoolclass_mode_attendance_id_attendance_id_fk": {
+          "name": "schoolclass_mode_attendance_id_attendance_id_fk",
+          "tableFrom": "schoolclass_mode",
           "tableTo": "attendance",
           "columnsFrom": [
             "attendance_id"
@@ -205,6 +205,59 @@
           "onUpdate": "no action"
         }
       },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "metadata": {
+      "name": "metadata",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created": {
+          "name": "created",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated": {
+          "name": "updated",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "value": {
+          "name": "value",
+          "type": "text(65535)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "metadata_key_unique": {
+          "name": "metadata_key_unique",
+          "columns": [
+            "key"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}

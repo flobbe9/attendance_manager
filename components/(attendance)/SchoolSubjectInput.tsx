@@ -4,7 +4,6 @@ import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
-import { SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY } from "@/utils/constants";
 import { TRANSITION_DURATION } from "@/utils/styleConstants";
 import React, { useContext, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
@@ -28,7 +27,7 @@ export default function SchoolSubjectInput({...props}: Props) {
 
     const attendanceService = new AttendanceService();
 
-    const { setDidConfirm, setDidDismiss } = useDontShowAgainStates([dontConfirmSchoolSubjectChange, setDontConfirmSchoolSubjectChange], SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY);
+    const { setDidConfirm, setDidDismiss } = useDontShowAgainStates([dontConfirmSchoolSubjectChange, setDontConfirmSchoolSubjectChange], "popups.dontConfirmSchoolSubjectChnage");
 
     const componentName = "SchoolSubjectInput";
     const { children, ...otherProps } = useDefaultProps(props, componentName);

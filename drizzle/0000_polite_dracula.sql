@@ -30,7 +30,7 @@ CREATE TABLE `schoolclass_mode` (
 	FOREIGN KEY (`attendance_id`) REFERENCES `attendance`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE TABLE `settings` (
+CREATE TABLE `metadata` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`created` integer NOT NULL,
 	`updated` integer NOT NULL,
@@ -38,4 +38,4 @@ CREATE TABLE `settings` (
 	`value` text(65535)
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `settings_key_unique` ON `settings` (`key`);
+CREATE UNIQUE INDEX `metadata_key_unique` ON `metadata` (`key`);

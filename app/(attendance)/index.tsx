@@ -1,18 +1,18 @@
-import {DynamicStyle} from "@/abstract/DynamicStyle";
-import {AttendanceIndexStyles} from "@/assets/styles/AttendanceIndexStyles";
+import { DynamicStyle } from "@/abstract/DynamicStyle";
+import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import "@/assets/styles/AttendanceIndexStyles";
 import HelperStyles from "@/assets/styles/helperStyles";
-import {AttendanceService} from "@/backend/services/AttendanceService";
-import {DontConfirmAttendanceLeaveContent} from "@/components/(attendance)/DontConfirmAttendanceLeaveContent";
+import { AttendanceService } from "@/backend/services/AttendanceService";
+import { DontConfirmAttendanceLeaveContent } from "@/components/(attendance)/DontConfirmAttendanceLeaveContent";
 import ExaminantInput from "@/components/(attendance)/ExaminantInput";
 import SchoolclassModeInput from "@/components/(attendance)/SchoolclassModeInput";
 import SchoolSubjectInput from "@/components/(attendance)/SchoolSubjectInput";
 import SchoolYearInput from "@/components/(attendance)/SchoolYearInput";
 import TopBar from "@/components/(attendance)/TopBar";
 import TopicInput from "@/components/(attendance)/TopicInput";
-import {AttendanceContext} from "@/components/context/AttendanceContextProvider";
-import {GlobalAttendanceContext} from "@/components/context/GlobalAttendanceContextProvider";
-import {GlobalContext} from "@/components/context/GlobalContextProvider";
+import { AttendanceContext } from "@/components/context/AttendanceContextProvider";
+import { GlobalAttendanceContext } from "@/components/context/GlobalAttendanceContextProvider";
+import { GlobalContext } from "@/components/context/GlobalContextProvider";
 import Flex from "@/components/helpers/Flex";
 import HelperButton from "@/components/helpers/HelperButton";
 import HelperInput from "@/components/helpers/HelperInput";
@@ -20,19 +20,18 @@ import HelperScrollView from "@/components/helpers/HelperScrollView";
 import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
-import {useAnimatedStyle} from "@/hooks/useAnimatedStyle";
-import {useDontShowAgainStates} from "@/hooks/useDontShowAgainStates";
-import {useResponsiveStyles} from "@/hooks/useResponsiveStyles";
-import {DontLeaveScreenOptions, useScreenLeaveAttempt} from "@/hooks/useScreenLeaveAttempt";
-import {useSubjectColor} from "@/hooks/useSubjectColor";
-import {SETTINGS_DONT_CONFIRM_ATTENDANCE_SCREEN_LEAVE} from "@/utils/constants";
-import {logDebug} from "@/utils/logUtils";
-import {BORDER_RADIUS, FONT_SIZE} from "@/utils/styleConstants";
-import {FontAwesome} from "@expo/vector-icons";
-import {useNavigation} from "expo-router";
-import React, {useContext, useEffect, useState} from "react";
-import {ViewStyle} from "react-native";
-import {Divider} from "react-native-paper";
+import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
+import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { DontLeaveScreenOptions, useScreenLeaveAttempt } from "@/hooks/useScreenLeaveAttempt";
+import { useSubjectColor } from "@/hooks/useSubjectColor";
+import { logDebug } from "@/utils/logUtils";
+import { BORDER_RADIUS, FONT_SIZE } from "@/utils/styleConstants";
+import { FontAwesome } from "@expo/vector-icons";
+import { useNavigation } from "expo-router";
+import React, { useContext, useEffect, useState } from "react";
+import { ViewStyle } from "react-native";
+import { Divider } from "react-native-paper";
 import DateInput from "../../components/(attendance)/DateInput";
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 
@@ -42,13 +41,9 @@ import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
  * @since 0.0.1
  */
 export default function index() {
-    const {hideSnackbar, toast} = useContext(GlobalContext);
-    const {
-        currentAttendanceEntityId,
-        savedAttendanceEntities,
-        dontConfirmAttendanceScreenLeave,
-        setDontConfirmAttendanceScreenLeave,
-    } = useContext(GlobalAttendanceContext);
+    const { hideSnackbar, toast } = useContext(GlobalContext);
+    const { currentAttendanceEntityId, savedAttendanceEntities, dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave } =
+        useContext(GlobalAttendanceContext);
 
     const {
         currentAttendanceEntity,
@@ -60,29 +55,22 @@ export default function index() {
         setCurrentAttendanceEntityModified,
     } = useContext(AttendanceContext);
 
-    const {transparentColor: subjectColor} = useSubjectColor(
-        currentAttendanceEntity?.schoolSubject,
-        "rgb(240, 240, 240)"
-    );
+    const { transparentColor: subjectColor } = useSubjectColor(currentAttendanceEntity?.schoolSubject, "rgb(240, 240, 240)");
 
     const [areNotesVisible, setAreNotesVisible] = useState(false);
 
-    const {setDidConfirm, setDidDismiss} = useDontShowAgainStates(
+    const { setDidConfirm, setDidDismiss } = useDontShowAgainStates(
         [dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave],
-        SETTINGS_DONT_CONFIRM_ATTENDANCE_SCREEN_LEAVE
+        "popups.dontConfirmAttendanceScreenLeave"
     );
 
     const {
-        allStyles: {mb_2},
+        allStyles: { mb_2 },
     } = useResponsiveStyles();
 
-    const {animatedStyle: animatedArrowIconRotation} = useAnimatedStyle(
-        [0, 180],
-        ["0deg", "-180deg"],
-        {
-            reverse: !areNotesVisible,
-        }
-    );
+    const { animatedStyle: animatedArrowIconRotation } = useAnimatedStyle([0, 180], ["0deg", "-180deg"], {
+        reverse: !areNotesVisible,
+    });
 
     const numHelperInputLines = 20;
     const attendanceService = new AttendanceService();
@@ -101,19 +89,14 @@ export default function index() {
     useEffect(() => {
         // case: last saved instance has been instantiated
         if (lastSavedAttendanceEntity && currentAttendanceEntity)
-            setCurrentAttendanceEntityModified(
-                attendanceService.isModified(lastSavedAttendanceEntity, currentAttendanceEntity)
-            );
+            setCurrentAttendanceEntityModified(attendanceService.isModified(lastSavedAttendanceEntity, currentAttendanceEntity));
     }, [currentAttendanceEntity, lastSavedAttendanceEntity]);
 
     // case: no currentAttendanceEntity yet, should not happen though
     if (!currentAttendanceEntity)
         return (
-            <ScreenWrapper
-                style={{...AttendanceIndexStyles.suspenseContainer}}
-                contentContainerStyle={{...HelperStyles.centerNoFlex}}
-            >
-                <FontAwesome name="hourglass" size={FONT_SIZE} style={{...mb_2}} />
+            <ScreenWrapper style={{ ...AttendanceIndexStyles.suspenseContainer }} contentContainerStyle={{ ...HelperStyles.centerNoFlex }}>
+                <FontAwesome name="hourglass" size={FONT_SIZE} style={{ ...mb_2 }} />
                 <HelperText>Lade Unterrichtsbesuch...</HelperText>
             </ScreenWrapper>
         );
@@ -141,18 +124,11 @@ export default function index() {
     function initializeCurrentAttendanceEntity(): AttendanceEntity | null {
         let attendanceEntityForId: AttendanceEntity;
 
-        if (currentAttendanceEntityId <= 0)
-            attendanceEntityForId = AttendanceService.getEmptyInstance();
-        else
-            attendanceEntityForId = savedAttendanceEntities.find(
-                (attendanceEntity) => attendanceEntity.id === currentAttendanceEntityId
-            );
+        if (currentAttendanceEntityId <= 0) attendanceEntityForId = AttendanceService.getEmptyInstance();
+        else attendanceEntityForId = savedAttendanceEntities.find((attendanceEntity) => attendanceEntity.id === currentAttendanceEntityId);
 
         if (!attendanceEntityForId) {
-            logDebug(
-                "Failed to load current attendance entity for current id " +
-                    currentAttendanceEntityId
-            );
+            logDebug("Failed to load current attendance entity for current id " + currentAttendanceEntityId);
             return null;
         }
 
@@ -170,7 +146,7 @@ export default function index() {
         >
             <TopBar />
 
-            <Divider style={{...mb_2}} />
+            <Divider style={{ ...mb_2 }} />
 
             <HelperScrollView dynamicStyle={AttendanceIndexStyles.scrollView}>
                 <SchoolSubjectInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
@@ -184,18 +160,15 @@ export default function index() {
                     <TopicInput
                         rendered={currentAttendanceEntity.schoolSubject === "music"}
                         dynamicStyle={AttendanceIndexStyles.inputContainer}
-                        style={{zIndex: 2}} // needs to be higher than next sibling
+                        style={{ zIndex: 2 }} // needs to be higher than next sibling
                     />
 
                     <ExaminantInput
                         dynamicStyle={AttendanceIndexStyles.inputContainer}
-                        style={{zIndex: 1}} // for select container
+                        style={{ zIndex: 1 }} // for select container
                     />
 
-                    <Flex
-                        justifyContent="center"
-                        dynamicStyle={AttendanceIndexStyles.notesContainer}
-                    >
+                    <Flex justifyContent="center" dynamicStyle={AttendanceIndexStyles.notesContainer}>
                         {/* Toggle notes */}
                         <HelperButton
                             disableFlex={true}
@@ -205,7 +178,7 @@ export default function index() {
                             <HelperText>Mehr</HelperText>
                             <HelperView
                                 style={{
-                                    transform: [{rotate: animatedArrowIconRotation}],
+                                    transform: [{ rotate: animatedArrowIconRotation }],
                                 }}
                             >
                                 <FontAwesome name={"chevron-down"} size={FONT_SIZE} />
@@ -221,9 +194,7 @@ export default function index() {
                                 numberOfLines={numHelperInputLines}
                                 placeholder="Thema"
                                 dynamicStyle={AttendanceIndexStyles.defaultMultilineHelperInput}
-                                containerStyles={
-                                    AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>
-                                }
+                                containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
                                 value={currentAttendanceEntity.note}
                                 setValue={(value) => updateCurrentAttendanceEntity(["note", value])}
                             />
@@ -236,13 +207,9 @@ export default function index() {
                                 numberOfLines={numHelperInputLines}
                                 placeholder="Lerngruppe"
                                 dynamicStyle={AttendanceIndexStyles.defaultMultilineHelperInput}
-                                containerStyles={
-                                    AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>
-                                }
+                                containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
                                 value={currentAttendanceEntity.note2}
-                                setValue={(value) =>
-                                    updateCurrentAttendanceEntity(["note2", value])
-                                }
+                                setValue={(value) => updateCurrentAttendanceEntity(["note2", value])}
                             />
                         </HelperView>
 
