@@ -1,12 +1,12 @@
-import {assertFalsyAndThrow} from "@/utils/utils";
-import {AttendanceEntity} from "../entities/AttendanceEntity";
-import {AbstractAttendanceInputValidator} from "../abstract/AbstractAttendanceInputValidator";
-import {AbstractSchoolYearValidator} from "../abstract/AbstractSchoolYearValidator";
-import {HistorySchoolYearValidator} from "./HistorySchoolYearValidator";
-import {MusicSchoolYearValidator} from "./MusicSchoolYearValidator";
-import {DateValidator} from "./DateValidator";
-import {LessonTopicValidator} from "./LessonTopicValidator";
-import {ExamianntValidator} from "./ExaminantValidator";
+import { assertFalsyAndThrow } from "@/utils/utils";
+import { AttendanceEntity } from "../entities/AttendanceEntity";
+import { AbstractAttendanceInputValidator } from "../abstract/AbstractAttendanceInputValidator";
+import { AbstractSchoolYearValidator } from "../abstract/AbstractSchoolYearValidator";
+import { HistorySchoolYearValidator } from "./HistorySchoolYearValidator";
+import { MusicSchoolYearValidator } from "./MusicSchoolYearValidator";
+import { DateValidator } from "./DateValidator";
+import { LessonTopicValidator } from "./LessonTopicValidator";
+import { ExaminantValidator } from "./ExaminantValidator";
 
 /**
  * @since 0.0.1
@@ -25,10 +25,7 @@ export class AttendanceInputValidatorBuilder {
         // use builder() instead
     }
 
-    public static builder(
-        currentAttendanceEntity: AttendanceEntity,
-        savedAttendanceEntities: AttendanceEntity[]
-    ): AttendanceInputValidatorBuilder {
+    public static builder(currentAttendanceEntity: AttendanceEntity, savedAttendanceEntities: AttendanceEntity[]): AttendanceInputValidatorBuilder {
         const newInstance = new AttendanceInputValidatorBuilder();
         newInstance.currentAttendance = currentAttendanceEntity;
         newInstance.savedAttendances = savedAttendanceEntities;
@@ -58,12 +55,10 @@ export class AttendanceInputValidatorBuilder {
                 return new LessonTopicValidator(this.currentAttendance, this.savedAttendances);
 
             case "examinants":
-                return new ExamianntValidator(this.currentAttendance, this.savedAttendances);
+                return new ExaminantValidator(this.currentAttendance, this.savedAttendances);
 
             default:
-                throw new Error(
-                    `No validator implemented for input ${this.attendanceInputKey as string}`
-                );
+                throw new Error(`No validator implemented for input ${this.attendanceInputKey as string}`);
         }
     }
 
@@ -77,15 +72,10 @@ export class AttendanceInputValidatorBuilder {
                 return new MusicSchoolYearValidator(this.currentAttendance, this.savedAttendances);
 
             case "history":
-                return new HistorySchoolYearValidator(
-                    this.currentAttendance,
-                    this.savedAttendances
-                );
+                return new HistorySchoolYearValidator(this.currentAttendance, this.savedAttendances);
 
             default:
-                throw new Error(
-                    `No validator implementation found for schoolSubject ${schoolSubject}`
-                );
+                throw new Error(`No validator implementation found for schoolSubject ${schoolSubject}`);
         }
     }
 }

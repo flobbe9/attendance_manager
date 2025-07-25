@@ -37,7 +37,7 @@ export const DRIZZLE_DB_CONFIG: DrizzleConfig<Record<string, never>> = {
     casing: "snake_case",
 };
 
-export const NO_SELECTION_LABEL = "No selection";
+export const NO_SELECTION_LABEL = "Keine Auswahl";
 
 export const SQL_BLOB_SIZE = 65_535;
 

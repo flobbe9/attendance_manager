@@ -21,4 +21,7 @@ export class AttendanceInputTooltipStyles {
     static textContainerStyles: ViewStyle = {
         backgroundColor: "rgb(197, 197, 197)",
     }
+
+    static maxWidthPortrait = 200;
+    static maxWidthLandscape = 400;
 }

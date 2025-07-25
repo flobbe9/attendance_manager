@@ -89,14 +89,14 @@ export class DateValidator extends AbstractAttendanceInputValidator<Date> {
         logTrace("validate date", formatDateGermanNoTime(inputValue));
         if ((errorMessage = this.validateNonContextConditions([], inputValue)) !== null)
             return errorMessage;
-        logTrace("date - non context valid");
+        logTrace("validate date - non context valid");
 
         if ((errorMessage = this.validateContextConditions([], inputValue)) !== null)
             return errorMessage;
-        logTrace("date - context valid");
+        logTrace("validate date - context valid");
 
         if ((errorMessage = this.validateFuture(inputValue)) !== null) return errorMessage;
-        logTrace("date - future valid");
+        logTrace("validate date - future valid");
         logTrace();
 
         return errorMessage;

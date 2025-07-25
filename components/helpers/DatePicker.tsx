@@ -1,16 +1,15 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
 import HS from "@/assets/styles/helperStyles";
-import HelperView from "@/components/helpers/HelperView";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
+import { logTrace } from "@/utils/logUtils";
 import { formatDateGermanNoTime } from "@/utils/projectUtils";
-import React, { forwardRef, Fragment, JSX, Ref, useState } from "react";
+import React, { forwardRef, Fragment, Ref, useState } from "react";
 import { GestureResponderEvent, View, ViewProps, ViewStyle } from "react-native";
-import { DatePickerModal } from "react-native-paper-dates";
+import { DatePickerModal, DatePickerModalSingleProps } from "react-native-paper-dates";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 import HelperButton from "./HelperButton";
 import HelperText from "./HelperText";
-import { logTrace } from "@/utils/logUtils";
 
 export type DatePickerValue = {startDate: CalendarDate; endDate: CalendarDate} & {date: CalendarDate} & {dates: Date[]};
 
@@ -22,6 +21,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
     buttonStyles?: DynamicStyle<ViewStyle>,
     /** May throw an error to prevent setting `date` state. Will dismiss regardless */
     onConfirm?:  (params: DatePickerValue) => void
+    modalProps?: Omit<DatePickerModalSingleProps, "locale" | "mode" | "visible" | "date" | "onDismiss" | "onConfirm">
 }
 
 
@@ -38,6 +38,7 @@ export default forwardRef(function DatePicker(
         onTouchStart,
         onConfirm,
         buttonStyles,
+        modalProps,
         ...props
     }: Props,
     ref: Ref<View>) {
@@ -86,8 +87,10 @@ export default forwardRef(function DatePicker(
                 locale={locale}
                 mode="single"
                 visible={isVisible}
+                animationType="slide"
                 date={date}
                 onDismiss={handleDismiss}
+                {...modalProps}
                 onConfirm={handleConfirm}
             />
 

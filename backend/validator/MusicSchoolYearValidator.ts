@@ -27,7 +27,7 @@ export class MusicSchoolYearValidator extends AbstractSchoolYearValidator {
 
     /**
      * @param constantSchoolYearConditions the list of conditions to compare saved attendances against
-     * @param options Default for includeCurrentAttendanceEntity is `true`. See {@link SchoolYearConditionOptions}
+     * @param options Default for includeCurrentAttendanceEntity is `true`. Ignore `allowInvalidSchoolYear` option. See {@link SchoolYearConditionOptions}
      * @returns list of conditions with lesson topics that haven't met their required number of attendances yet
      * @throws if falsy params
      */

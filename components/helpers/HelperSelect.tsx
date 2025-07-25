@@ -175,6 +175,8 @@ export default forwardRef(function HelperSelect<OptionType>({
                     <HelperButton 
                         dynamicStyle={combineDynamicStyles(HelperSelectStyles.optionButton, optionButtonStyles)}
                         style={{
+                            borderBottomWidth: option === noSelectionLabel ? .5 : 0,
+                            borderColor: "gray",
                             ...isOptionSelected(option) && !multiselect ? HelperSelectStyles.selectedOptionButton.default : {}                            
                         }} 
                         containerStyles={{default: {...HelperStyles.fullWidth}}}
@@ -187,7 +189,6 @@ export default forwardRef(function HelperSelect<OptionType>({
                         <HelperText 
                             numberOfLines={1}
                             dynamicStyle={HelperSelectStyles.optionButtonText}
-                            style={{opacity: option === noSelectionLabel ? 0.5 : 1}}
                         >
                             {option as string}
                         </HelperText>
@@ -199,7 +200,7 @@ export default forwardRef(function HelperSelect<OptionType>({
 
         // separate last option visually
         optionElements.push((
-            <Divider />
+            <Divider key={options.length} />
         ))
 
         return optionElements;

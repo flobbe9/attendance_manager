@@ -120,7 +120,7 @@ export default function AttendanceInputTooltip<InputType extends keyof Attendanc
             }}
             textContainerStyles={{
                 ...AttendanceInputTooltipStyles.textContainerStyles,
-                maxWidth: orientation === "landscape" ? 400 : 200,
+                maxWidth: orientation === "landscape" ? AttendanceInputTooltipStyles.maxWidthLandscape : AttendanceInputTooltipStyles.maxWidthPortrait,
                 ...textContainerStyles,
             }}
             duration={NaN}

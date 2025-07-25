@@ -14,6 +14,9 @@ import Flex from "../helpers/Flex";
 import HelperText from "../helpers/HelperText";
 import AttendanceInputTooltip from "./AttendanceInputTooltip";
 import B from "../helpers/B";
+import Tooltip from "../helpers/Tooltip";
+import { AttendanceInputTooltipStyles } from "@/assets/styles/AttendanceInputTooltipStyles";
+import { useDeviceOrientation } from "@/hooks/useDeviceOrientation";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 
@@ -25,6 +28,8 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
 export default function DateInput({...props}: Props) {
     const { savedAttendanceEntities } = useContext(GlobalAttendanceContext);
     const { updateCurrentAttendanceEntity, currentAttendanceEntity, handleInvalidAttendanceInput, resetInvalidAttendanceInputErrorStyles } = useContext(AttendanceContext);
+
+    const orientation = useDeviceOrientation();
 
     const { allStyles: { mb_2 } } = useResponsiveStyles();
 
@@ -78,20 +83,35 @@ export default function DateInput({...props}: Props) {
             <Flex alignItems="center">
                 <HelperText dynamicStyle={AttendanceIndexStyles.heading}>Datum</HelperText>
 
-                <AttendanceInputTooltip 
-                    values={invalidValues}
-                    attendanceInputKey="date"
-                    validator={validator}
-                    emptyMessage="Alle Werte erlaubt."
-                    heading={<B>Invalide Werte:</B>}
-                    valueToStringPretty={formatTooltip}
-                />
+                <Tooltip 
+                    dynamicStyle={AttendanceInputTooltipStyles.component}
+                    iconStyle={{
+                        ...AttendanceInputTooltipStyles.icon
+                    }}
+                    position="right"
+                    buttonStyles={{
+                        style: {
+                            ...AttendanceInputTooltipStyles.button,
+                        }
+                    }}
+                    textContainerStyles={{
+                        ...AttendanceInputTooltipStyles.textContainerStyles,
+                        maxWidth: orientation === "landscape" ? AttendanceInputTooltipStyles.maxWidthLandscape : AttendanceInputTooltipStyles.maxWidthPortrait,
+                    }}
+                >
+                    <HelperText>Ausgegraute Werte sind Tage, an denen ein Prüfer bereits in einem anderen UB eingeplant ist.</HelperText>
+                </Tooltip>
             </Flex>
 
             <DatePicker 
                 date={currentAttendanceEntity.date} 
                 setDate={(date) => updateCurrentAttendanceEntity(["date", date])}
                 buttonStyles={AttendanceIndexStyles.defaultHelperButton}
+                modalProps={{
+                    validRange: {
+                        disabledDates: invalidValues
+                    }
+                }}
                 onConfirm={handleConfirm}         
             />
             

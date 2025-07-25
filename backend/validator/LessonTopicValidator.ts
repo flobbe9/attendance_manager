@@ -52,21 +52,21 @@ export class LessonTopicValidator extends AbstractAttendanceInputValidator<Music
 
         let errorMessage: string = null;
 
-        logTrace("validate lesson topic", inputValue);
+        logTrace("validate topic", inputValue);
 
         if ((errorMessage = this.validateNonContextConditions([], inputValue)) !== null)
             return errorMessage;
 
-        logTrace("non context valid", inputValue);
+        logTrace("validate topic - non context valid", inputValue);
 
         if ((errorMessage = this.validateContextConditions([], inputValue)) !== null)
             return errorMessage;
 
-        logTrace("context valid", inputValue);
+        logTrace("validate topic - context valid", inputValue);
 
         if ((errorMessage = this.validateFuture(inputValue)) !== null) return errorMessage;
 
-        logTrace("future valid", inputValue);
+        logTrace("validate topic - future valid", inputValue);
 
         const originalMusicLessonTopic = this.getCurrentAttendance().musicLessonTopic;
         try {
