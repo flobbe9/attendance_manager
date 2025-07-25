@@ -1,3 +1,4 @@
+import { combineDynamicStyles } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
 import { HelperSelectStyles } from "@/assets/styles/HelperSelectStyles";
 import HelperStyles from "@/assets/styles/helperStyles";
@@ -6,18 +7,16 @@ import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useBackHandler } from "@/hooks/useBackHandler";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { NO_SELECTION_LABEL } from "@/utils/constants";
-import { logDebug, logError } from "@/utils/logUtils";
+import { logError } from "@/utils/logUtils";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { forwardRef, JSX, Ref, useContext, useEffect, useState } from "react";
-import { LayoutChangeEvent, Text, View, ViewProps, ViewStyle } from "react-native";
+import { GestureResponderEvent, LayoutChangeEvent, View, ViewProps, ViewStyle } from "react-native";
+import { Divider } from "react-native-paper";
 import { GlobalContext } from "../context/GlobalContextProvider";
-import HelperButton from "./HelperButton";
+import HelperButton, { HelperButtonProps } from "./HelperButton";
 import HelperReactChildren from "./HelperReactChildren";
 import HelperScrollView from "./HelperScrollView";
 import HelperText from "./HelperText";
-import { combineDynamicStyles, DynamicStyle } from "@/abstract/DynamicStyle";
-import DropShadow from 'react-native-drop-shadow';
-import { Divider } from "react-native-paper";
 
 interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
     options: OptionType[],
@@ -39,8 +38,8 @@ interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
     noSelectionLabel?: string,
     /** Applied to every select option. If returns `true`, disable the select option. */
     disabledCondition?: (optionValue: OptionType) => boolean,
-    selectionButtonStyles?: DynamicStyle<ViewStyle>,
-    optionButtonStyles?: DynamicStyle<ViewStyle>
+    selectionButtonProps?: HelperButtonProps,
+    optionButtonProps?: HelperButtonProps
 }
 
 /**
@@ -54,8 +53,8 @@ export default forwardRef(function HelperSelect<OptionType>({
         multiselect = false,
         noSelectionLabel = NO_SELECTION_LABEL,
         disabledCondition,
-        selectionButtonStyles = {},
-        optionButtonStyles = {},
+        selectionButtonProps = {},
+        optionButtonProps = {},
         ...props
     }: Props<OptionType>,
     ref: Ref<View>
@@ -128,7 +127,7 @@ export default forwardRef(function HelperSelect<OptionType>({
      * 
      * @param pressedOption 
      */
-    function handleOptionPress(pressedOption: OptionType): void {
+    function handleOptionPress(event: GestureResponderEvent, pressedOption: OptionType): void {
         if (multiselect) {
             if (!(selectedOptions instanceof Set)) {
                 logError("'selectedOptions' needs to be a Set if 'multiselect' is true");
@@ -157,6 +156,9 @@ export default forwardRef(function HelperSelect<OptionType>({
                 setSelectedOptions(updatedSelectedOptions);
             }
         }
+
+        if (optionButtonProps.onPress)
+            optionButtonProps.onPress(event);
     
         setAreOptionsVisible(multiselect);
     }
@@ -171,20 +173,37 @@ export default forwardRef(function HelperSelect<OptionType>({
         const optionElements: JSX.Element[] = options
             .map((option, i) => {
                 const disabled = disabledCondition && option !== noSelectionLabel ? disabledCondition(option) : false;
+                
+                function handleTouchStart(event: GestureResponderEvent): void {
+                    setOptionsButtonTouched(true);
+
+                    if (optionButtonProps.onTouchStart)
+                        optionButtonProps.onTouchStart(event);
+                }
+
+                function handleTouchEnd(event: GestureResponderEvent): void {
+                    setOptionsButtonTouched(false);
+
+                    if (optionButtonProps.onTouchEnd)
+                        optionButtonProps.onTouchEnd(event);
+                }
+
                 return (
                     <HelperButton 
-                        dynamicStyle={combineDynamicStyles(HelperSelectStyles.optionButton, optionButtonStyles)}
+                        {...optionButtonProps}
+                        dynamicStyle={combineDynamicStyles(HelperSelectStyles.optionButton, optionButtonProps.dynamicStyle)}
                         style={{
                             borderBottomWidth: option === noSelectionLabel ? .5 : 0,
                             borderColor: "gray",
-                            ...isOptionSelected(option) && !multiselect ? HelperSelectStyles.selectedOptionButton.default : {}                            
+                            ...isOptionSelected(option) && !multiselect ? HelperSelectStyles.selectedOptionButton.default : {},
+                            ...(optionButtonProps.style ?? {} as object)
                         }} 
-                        containerStyles={{default: {...HelperStyles.fullWidth}}}
+                        containerStyles={combineDynamicStyles({default: {...HelperStyles.fullWidth}}, optionButtonProps.containerStyles)}
                         disabled={disabled}
                         key={i}
-                        onTouchStart={() => setOptionsButtonTouched(true)}
-                        onPress={() => handleOptionPress(option)}
-                        onTouchEnd={() => setOptionsButtonTouched(false)}
+                        onTouchStart={handleTouchStart}
+                        onPress={(e) => handleOptionPress(e, option)}
+                        onTouchEnd={handleTouchEnd}
                     >
                         <HelperText 
                             numberOfLines={1}
@@ -246,6 +265,27 @@ export default forwardRef(function HelperSelect<OptionType>({
         return expandedOptionsContainerHeight !== 0;
     }
 
+    function handleTouchStart(event: GestureResponderEvent): void {
+        setSelectionButtonTouched(true);
+
+        if (selectionButtonProps.onTouchStart)
+            selectionButtonProps.onTouchStart(event);
+    }
+
+    function handleTouchEnd(event: GestureResponderEvent): void {
+        setSelectionButtonTouched(false);
+
+        if (selectionButtonProps.onTouchEnd)
+            selectionButtonProps.onTouchEnd(event);
+    }
+
+    function handlePress(event: GestureResponderEvent): void {
+        setAreOptionsVisible(!areOptionsVisible);
+
+        if (selectionButtonProps.onPress)
+            selectionButtonProps.onPress(event);
+    }
+
     return (
         <HelperView ref={ref} {...otherProps}>
             <HelperReactChildren>
@@ -253,10 +293,11 @@ export default forwardRef(function HelperSelect<OptionType>({
             </HelperReactChildren>
 
             <HelperButton 
-                dynamicStyle={combineDynamicStyles(HelperSelectStyles.selectionButton, selectionButtonStyles)}
-                onTouchStart={() => setSelectionButtonTouched(true)}
-                onTouchEnd={() => setSelectionButtonTouched(false)}
-                onPress={() => setAreOptionsVisible(!areOptionsVisible)}
+                {...selectionButtonProps}
+                dynamicStyle={combineDynamicStyles(HelperSelectStyles.selectionButton, selectionButtonProps.dynamicStyle)}
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+                onPress={handlePress}
             >
                 <HelperText 
                     numberOfLines={1}

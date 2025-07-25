@@ -1,10 +1,12 @@
 import "@/assets/styles/AttendanceIndexStyles";
 import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import HelperStyles from "@/assets/styles/helperStyles";
+import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import { DontConfirmAttendanceLeaveContent } from "@/components/(attendance)/DontConfirmAttendanceLeaveContent";
 import ExaminantInput from "@/components/(attendance)/ExaminantInput";
 import NotesInputs from "@/components/(attendance)/NotesInputs";
+import SchoolclassModeInput from "@/components/(attendance)/SchoolclassModeInput";
 import SchoolSubjectInput from "@/components/(attendance)/SchoolSubjectInput";
 import SchoolYearInput from "@/components/(attendance)/SchoolYearInput";
 import TopBar from "@/components/(attendance)/TopBar";
@@ -24,12 +26,9 @@ import { logDebug } from "@/utils/logUtils";
 import { FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { Divider } from "react-native-paper";
 import DateInput from "../../components/(attendance)/DateInput";
-import SchoolclassModeInput from "@/components/(attendance)/SchoolclassModeInput";
-import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
-import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 
 /**
  * Attendance create / edit screen.
@@ -40,7 +39,7 @@ export default function index() {
     const { hideSnackbar, toast } = useContext(GlobalContext);
     const { currentAttendanceEntityId, savedAttendanceEntities, dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave } =
         useContext(GlobalAttendanceContext);
-
+        
     const {
         currentAttendanceEntity,
         setCurrentAttendanceEntity,

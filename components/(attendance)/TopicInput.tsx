@@ -70,7 +70,13 @@ export default function TopicInput({...props}: Props) {
                 setSelectedOptions={handleOptionSelect}
                 disabledCondition={isOptionDisabled}
                 optionsContainerScroll={false}
-                selectionButtonStyles={AttendanceIndexStyles.defaultHelperButton}
+                selectionButtonProps={{
+                    dynamicStyle: AttendanceIndexStyles.defaultHelperButton,
+                    ripple: {rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground}
+                }}
+                optionButtonProps={{
+                    ripple: {rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground}
+                }}
             />
         </HelperView>
     )

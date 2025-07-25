@@ -1,22 +1,24 @@
 import HelperProps from "@/abstract/HelperProps";
 import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
+import { AttendanceInputTooltipStyles } from "@/assets/styles/AttendanceInputTooltipStyles";
 import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceInputValidatorBuilder";
 import HelperView from "@/components/helpers/HelperView";
+import { useDeviceOrientation } from "@/hooks/useDeviceOrientation";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { formatDateGermanNoTime } from "@/utils/projectUtils";
 import React, { useContext, useEffect, useState } from "react";
-import { ViewProps, ViewStyle } from "react-native";
+import { StatusBar, ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 import DatePicker, { DatePickerValue } from "../helpers/DatePicker";
 import Flex from "../helpers/Flex";
 import HelperText from "../helpers/HelperText";
-import AttendanceInputTooltip from "./AttendanceInputTooltip";
-import B from "../helpers/B";
 import Tooltip from "../helpers/Tooltip";
-import { AttendanceInputTooltipStyles } from "@/assets/styles/AttendanceInputTooltipStyles";
-import { useDeviceOrientation } from "@/hooks/useDeviceOrientation";
+import { BORDER_RADIUS } from "@/utils/styleConstants";
+import { combineDynamicStyles } from "@/abstract/DynamicStyle";
+import { DateInputStyles } from "@/assets/styles/DateInputStyles";
+import { GlobalContext } from "../context/GlobalContextProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 
@@ -41,7 +43,7 @@ export default function DateInput({...props}: Props) {
         .build();
 
     const componentName = "DateInput";
-    const { children, style, ...otherProps } = useHelperProps(props, componentName);
+    const { children, style, ...otherProps } = useHelperProps(props, componentName, DateInputStyles.component);
 
     useEffect(() => {
         setInvalidValues(validator.getInvalidValues() as Date[]);
@@ -79,7 +81,7 @@ export default function DateInput({...props}: Props) {
     }
     
     return (
-        <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer} style={{...style as object, ...mb_2}} {...otherProps}>
+        <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer} style={{...style as object, ...mb_2}} {...otherProps}>            
             <Flex alignItems="center">
                 <HelperText dynamicStyle={AttendanceIndexStyles.heading}>Datum</HelperText>
 
@@ -89,10 +91,11 @@ export default function DateInput({...props}: Props) {
                         ...AttendanceInputTooltipStyles.icon
                     }}
                     position="right"
-                    buttonStyles={{
+                    buttonProps={{
                         style: {
                             ...AttendanceInputTooltipStyles.button,
-                        }
+                        },
+                        ripple: { rippleBackground: "rgb(200, 200, 200)" }
                     }}
                     textContainerStyles={{
                         ...AttendanceInputTooltipStyles.textContainerStyles,
@@ -106,7 +109,8 @@ export default function DateInput({...props}: Props) {
             <DatePicker 
                 date={currentAttendanceEntity.date} 
                 setDate={(date) => updateCurrentAttendanceEntity(["date", date])}
-                buttonStyles={AttendanceIndexStyles.defaultHelperButton}
+                dynamicStyle={combineDynamicStyles(DateInputStyles.button, AttendanceIndexStyles.defaultHelperButton)}
+                ripple={{rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground}}
                 modalProps={{
                     validRange: {
                         disabledDates: invalidValues

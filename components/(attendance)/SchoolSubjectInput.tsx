@@ -77,7 +77,13 @@ export default function SchoolSubjectInput({...props}: Props) {
             setSelectedOptions={handleSelect}
             optionsContainerScroll={!currentAttendanceEntity.schoolSubject} // should be position relative while bottom most element in scrollview, but absolute while not
             noSelectionLabel={currentAttendanceEntity.schoolSubject ? null : NO_SELECTION_LABEL}
-            selectionButtonStyles={AttendanceIndexStyles.defaultHelperButton}
+            selectionButtonProps={{
+                dynamicStyle: AttendanceIndexStyles.defaultHelperButton,
+                ripple: {rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground}
+            }}
+            optionButtonProps={{
+                ripple: {rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground}
+            }}
             {...otherProps}
         >
             <Flex alignItems="center">

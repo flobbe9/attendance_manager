@@ -36,7 +36,7 @@ export default function ScreenWrapper({...props}: Props) {
     }
 
     return (
-        <SafeAreaProvider>
+        <SafeAreaProvider>            
             <SafeAreaView>
                 <KeyboardAvoidingView
                     behavior={'position'} 

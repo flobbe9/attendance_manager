@@ -30,6 +30,8 @@ export interface HelperButtonProps extends HelperProps<ViewStyle>, ViewProps {
 
 /**
  * Should act like a button, is actually a ```<HelperView>``` supporting a ripple effect and dynamic and animated styles.
+ * 
+ * NOTE: flex `alignItems` of a parent of this component will only apply when settings `containerStyles.alignSelf` to "auto".
  *  
  * @since 0.0.1
  */

@@ -188,7 +188,13 @@ export default function ExaminantInput({ ...props }: Props) {
                     selectedOptions={selectedHeadmaster}
                     setSelectedOptions={setSelectedHeadmaster}
                     optionsContainerScroll={false}
-                    selectionButtonStyles={AttendanceIndexStyles.defaultHelperButton}
+                    selectionButtonProps={{
+                        dynamicStyle: AttendanceIndexStyles.defaultHelperButton,
+                        ripple: {rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground}
+                    }}                
+                    optionButtonProps={{
+                        ripple: {rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground}
+                    }}
                 >
                     <HelperText>Schulleitung</HelperText>
                 </HelperSelect>

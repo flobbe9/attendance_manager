@@ -13,6 +13,7 @@ import HelperText from "../helpers/HelperText";
 import Tooltip, {TooltipProps} from "../helpers/Tooltip";
 import {logDebug} from "@/utils/logUtils";
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
+import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 
 interface Props<InputType extends keyof AttendanceEntity> extends TooltipProps {
     values: ValueOf<AttendanceEntity>[];
@@ -44,7 +45,6 @@ export default function AttendanceInputTooltip<InputType extends keyof Attendanc
     heading = <B>Erlaubte Werte:</B>,
     deps,
     textContainerStyles,
-    buttonStyles,
     iconStyle,
     onTouchStart,
     valueToStringPretty = (value) => value.toString(),
@@ -112,11 +112,11 @@ export default function AttendanceInputTooltip<InputType extends keyof Attendanc
                 ...iconStyle,
             }}
             position="right"
-            buttonStyles={{
+            buttonProps={{
                 style: {
                     ...AttendanceInputTooltipStyles.button,
-                    ...buttonStyles,
                 },
+                ripple: { rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground }
             }}
             textContainerStyles={{
                 ...AttendanceInputTooltipStyles.textContainerStyles,

@@ -7,20 +7,17 @@ import { Stack } from "expo-router";
 import { useColorScheme } from "react-native";
 import { ClickOutsideProvider } from "react-native-click-outside";
 
-
 console.warn = logWarnFiltered;
 console.error = logErrorFiltered;
 
-
 /**
  * Initialize global stuff in here.
- * 
+ *
  * @since 0.0.1
  */
 export default function layout() {
+    const colorScheme = useColorScheme();
 
-    const scheme = useColorScheme();
- 
     return (
         <CustomSqliteProvider>
             <GlobalContextProvider>
@@ -30,19 +27,19 @@ export default function layout() {
                             <Stack
                                 screenOptions={{
                                     headerShown: false,
-                                    statusBarStyle: scheme,
-                                    orientation: "default"
+                                    statusBarStyle: colorScheme,
+                                    orientation: "default",
                                 }}
                             >
-                                <Stack.Screen 
-                                    name="index" 
+                                <Stack.Screen
+                                    name="index"
                                     options={{
                                         headerShown: true,
-                                        title: "Attendance Manager"
-                                    }} 
+                                        title: "Attendance Manager",
+                                    }}
                                 />
-                                <Stack.Screen name="(attendance)" options={{animation: "slide_from_right"}} />
-                                <Stack.Screen name="(settings)" options={{animation: "slide_from_left"}} />
+                                <Stack.Screen name="(attendance)" options={{ animation: "slide_from_right" }} />
+                                <Stack.Screen name="(settings)" options={{ animation: "slide_from_left" }} />
                             </Stack>
                         </GlobalComponentProvider>
                     </ClickOutsideProvider>

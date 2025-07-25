@@ -64,4 +64,10 @@ export default class HelperStyles {
     static fullHeight: StyleType = {
         height: "100%",
     }
+
+    static pseudoHidden: StyleType = {
+        opacity: 0,
+        position: "absolute",
+        zIndex: -1,
+    }
 }

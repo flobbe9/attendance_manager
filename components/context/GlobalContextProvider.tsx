@@ -1,12 +1,12 @@
-import {GlobalPopupProps} from "@/components/Popup";
-import {logWarn} from "@/utils/logUtils";
-import {isFalsy} from "@/utils/utils";
-import {createContext, ReactNode, useEffect, useState} from "react";
-import {SnackbarProps} from "react-native-paper";
-import {de, en, registerTranslation} from "react-native-paper-dates";
-import {CustomnSnackbarProps, CustomSnackbarStatus} from "../CustomSnackbar";
-import {GlobalToastProps} from "../Toast";
-import {Keyboard} from "react-native";
+import { GlobalPopupProps } from "@/components/Popup";
+import { logWarn } from "@/utils/logUtils";
+import { isFalsy } from "@/utils/utils";
+import { createContext, ReactNode, useEffect, useState } from "react";
+import { SnackbarProps } from "react-native-paper";
+import { de, en, registerTranslation } from "react-native-paper-dates";
+import { CustomnSnackbarProps, CustomSnackbarStatus } from "../CustomSnackbar";
+import { GlobalToastProps } from "../Toast";
+import { ColorSchemeName, Keyboard, useColorScheme } from "react-native";
 
 /**
  * Contains global variables accessible in the whole app.
@@ -14,7 +14,9 @@ import {Keyboard} from "react-native";
  * @param param0 only accepts children as props
  * @since 0.0.1
  */
-export default function GlobalContextProvider({children}: {children: ReactNode}) {
+export default function GlobalContextProvider({ children }: { children: ReactNode }) {
+    const colorScheme = useColorScheme();
+
     /** Toggle state, meaning the boolean value does not represent any information but is just to be listened to with `useEffect` */
     const [globalScreenTouch, setGlobalScreenTouch] = useState(false);
     const [isKeyBoardvisible, setKeyboardVisible] = useState(false);
@@ -26,7 +28,7 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
         children: "",
     });
 
-    const [globalPopupProps, setGlobalPopupProps] = useState<GlobalPopupProps>({message: "", visible: false});
+    const [globalPopupProps, setGlobalPopupProps] = useState<GlobalPopupProps>({ message: "", visible: false });
     const [globalPopupTimeout, setGlobalPopupTimeout] = useState<number>();
 
     const [globalToastProps, setGlobalToastProps] = useState<GlobalToastProps>({
@@ -98,7 +100,7 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
     }
 
     function hideSnackbar(): void {
-        setGlobalSnackbarProps({...globalSnackbarProps, visible: false});
+        setGlobalSnackbarProps({ ...globalSnackbarProps, visible: false });
     }
 
     /**
@@ -124,7 +126,7 @@ export default function GlobalContextProvider({children}: {children: ReactNode})
     }
 
     function hideGlobalPopup(globalPopupProps: GlobalPopupProps): void {
-        setGlobalPopupProps({...globalPopupProps, visible: false});
+        setGlobalPopupProps({ ...globalPopupProps, visible: false });
     }
 
     /**

@@ -62,6 +62,7 @@ export class AttendanceIndexStyles {
             backgroundColor: defaultInputBackground
         }
     }
+    static defaultHelperButtonRippleBackground = "rgb(200, 200, 200)";
 
     static defaultMultilineHelperInput: DynamicStyle<TextStyle> = {
         default: {
