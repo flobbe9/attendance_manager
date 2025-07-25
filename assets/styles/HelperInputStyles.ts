@@ -7,8 +7,8 @@ export class HelperInputStyles {
     static component: DynamicStyle<TextStyle> = {
         default: {
             borderBottomWidth: 1,
+            color: "black",
             padding: GLOBAL_SCREEN_PADDING,
-            
         }
     }
 
