@@ -52,11 +52,12 @@ export default function index() {
 
     const { transparentColor: subjectColor } = useSubjectColor(currentAttendanceEntity?.schoolSubject, "rgb(240, 240, 240)");
 
-    const [areNotesVisible, setAreNotesVisible] = useState(false);
-
     const { setDidConfirm, setDidDismiss } = useDontShowAgainStates(
         [dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave],
-        "popups.dontConfirmAttendanceScreenLeave"
+        "popups.dontConfirmAttendanceScreenLeave",
+        {
+            confirmSnackbarDelay: 200
+        }
     );
 
     const { allStyles: rs } = useResponsiveStyles();

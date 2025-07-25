@@ -186,14 +186,6 @@ export class ExaminantValidator extends AbstractAttendanceInputValidator<Examina
                 )
             );
 
-            logDebug(
-                "curent examinants",
-                this.getCurrentAttendance().examinants.map((e) => e.role),
-                this.getCurrentAttendance().schoolSubject
-            );
-
-            logDebug("validate gub subject, condition", gubSubjectConditionsWithCount);
-
             for (const gubCondition of gubSubjectConditionsWithCount)
                 if (isSchoolYearConditionExceedingMax(gubCondition))
                     throw new Error(
