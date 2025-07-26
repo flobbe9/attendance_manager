@@ -33,7 +33,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {}
  * @since 0.0.1
  */
 export default function TopBar({...props}: Props) {
-    const { allStyles: { mt_5, mt_3 }, parseResponsiveStyleToStyle: pr } = useResponsiveStyles();
+    const { prs } = useResponsiveStyles();
 
     const { popup, toast, hideToast } = useContext(GlobalContext);
     const {
@@ -69,7 +69,7 @@ export default function TopBar({...props}: Props) {
                     defaultFooter: false,
                     // custom footer
                     children: (
-                        <Flex style={{ ...HelperStyles.fullWidth, ...mt_3 }} justifyContent="flex-end">
+                        <Flex style={{ ...HelperStyles.fullWidth, ...prs("mt_3") }} justifyContent="flex-end">
                             <HelperButton dynamicStyle={ToastDefaultFooterStyles.button} onPress={hideToast}>
                                 <HelperText dynamicStyle={ToastDefaultFooterStyles.buttonChildren}>Cancel</HelperText>
                             </HelperButton>
@@ -97,9 +97,7 @@ export default function TopBar({...props}: Props) {
         resetInvalidAttendanceInputErrorStyles();
 
         // notify success
-        popup("UB Gespeichert", {
-            icon: <FontAwesome name="save" />,
-        });
+        popup("UB Gespeichert");
     }
 
     /**
@@ -143,7 +141,7 @@ export default function TopBar({...props}: Props) {
 
                     navigate("../");
 
-                    popup("UB gelöscht", { icon: <FontAwesome name="trash" /> });
+                    popup("UB gelöscht");
                 },
             }
         );
@@ -164,7 +162,7 @@ export default function TopBar({...props}: Props) {
                 buttonStyles={{
                     backgroundColor: "white",
                 }}
-                style={{ ...mt_5 }}
+                style={{ ...prs("mt_5") }}
                 onDimiss={hideToast}
             />
         );
