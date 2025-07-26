@@ -2,9 +2,10 @@ import DefaultProps from "@/abstract/DefaultProps";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { useHasComponentMounted } from "@/hooks/useHasComponentMounted";
 import React, { useContext } from "react";
-import { KeyboardAvoidingView, SafeAreaView, ViewProps, ViewStyle } from "react-native";
+import { KeyboardAvoidingView, Platform, SafeAreaView, ViewProps, ViewStyle } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GlobalContext } from "../context/GlobalContextProvider";
+import HelperView from "./HelperView";
 
 interface Props extends DefaultProps<ViewStyle>, ViewProps {
     contentContainerStyle?: ViewStyle
@@ -21,7 +22,7 @@ interface Props extends DefaultProps<ViewStyle>, ViewProps {
  * @since 0.0.1
  */
 export default function ScreenWrapper({...props}: Props) {
-    const { globalScreenTouch, setGlobalScreenTouch, isKeyBoardvisible } = useContext(GlobalContext);
+    const { globalScreenTouch, setGlobalScreenTouch } = useContext(GlobalContext);
 
     const componentName = "ScreenWrapper";
     const { children, style, ...otherProps } = useDefaultProps(props, componentName);
@@ -40,6 +41,7 @@ export default function ScreenWrapper({...props}: Props) {
             <SafeAreaView>
                 <KeyboardAvoidingView
                     behavior={'position'} 
+                    enabled={Platform.OS === "ios"}
                     style={{
                         // NOTE: keep this until tested on ios, works without on android
                         // paddingBottom: isKeyBoardvisible ? 130 : 0, // bottom offset for keyboard not to cover content

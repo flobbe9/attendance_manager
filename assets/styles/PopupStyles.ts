@@ -1,5 +1,5 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { FONT_SIZE } from "@/utils/styleConstants";
+import { FONT_SIZE, LIGHT_COLOR } from "@/utils/styleConstants";
 import { ImageStyle, TextStyle, ViewStyle } from "react-native";
 import HS from "./helperStyles";
 
@@ -17,7 +17,7 @@ export class PopupStyles {
             ...HS.fitContent,
             padding: 10,
             borderRadius: 25,
-            backgroundColor: "rgb(220, 220, 220)",
+            backgroundColor: LIGHT_COLOR,
         },
     };
 

@@ -2,11 +2,12 @@ import { combineDynamicStyles, DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
 import { HelperInputStyles } from "@/assets/styles/HelperInputStyles";
 import HS from "@/assets/styles/helperStyles";
+import { useBackHandler } from "@/hooks/useBackHandler";
 import { useDynamicStyle } from "@/hooks/useDynamicStyle";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { logTrace } from "@/utils/logUtils";
 import React, { forwardRef, Fragment, Ref, useEffect, useImperativeHandle, useRef } from "react";
-import { Animated, NativeSyntheticEvent, TextInput, TextInputFocusEventData, TextInputProps, TextStyle, useAnimatedValue, ViewStyle } from "react-native";
+import { Animated, Keyboard, NativeSyntheticEvent, TextInput, TextInputFocusEventData, TextInputProps, TextStyle, useAnimatedValue, ViewStyle } from "react-native";
 
 
 interface Props extends HelperProps<TextStyle>, TextInputProps {
@@ -47,8 +48,15 @@ export default forwardRef(function HelperInput(
     useImperativeHandle(ref, () => componentRef.current!, []);
 
     useEffect(() => {
+        // unfocus input on keyboard hide
+        Keyboard.addListener("keyboardDidHide", () => componentRef.current?.blur())
+
         if (onRender)
             onRender();
+
+        return () => {
+            Keyboard.removeAllListeners("keyboardDidHide");
+        }
     }, []);
 
     

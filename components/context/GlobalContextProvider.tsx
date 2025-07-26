@@ -2,11 +2,11 @@ import { GlobalPopupProps } from "@/components/Popup";
 import { logWarn } from "@/utils/logUtils";
 import { isFalsy } from "@/utils/utils";
 import { createContext, ReactNode, useEffect, useState } from "react";
+import { Keyboard } from "react-native";
 import { SnackbarProps } from "react-native-paper";
 import { de, en, registerTranslation } from "react-native-paper-dates";
 import { CustomnSnackbarProps, CustomSnackbarStatus } from "../CustomSnackbar";
 import { GlobalToastProps } from "../Toast";
-import { ColorSchemeName, Keyboard, useColorScheme } from "react-native";
 
 /**
  * Contains global variables accessible in the whole app.
@@ -15,8 +15,6 @@ import { ColorSchemeName, Keyboard, useColorScheme } from "react-native";
  * @since 0.0.1
  */
 export default function GlobalContextProvider({ children }: { children: ReactNode }) {
-    const colorScheme = useColorScheme();
-
     /** Toggle state, meaning the boolean value does not represent any information but is just to be listened to with `useEffect` */
     const [globalScreenTouch, setGlobalScreenTouch] = useState(false);
     const [isKeyBoardvisible, setKeyboardVisible] = useState(false);
@@ -122,7 +120,8 @@ export default function GlobalContextProvider({ children }: { children: ReactNod
             setGlobalPopupProps(popupProps);
         }, 0); // somhow causes popup call to be after blur hidePopup call
 
-        setGlobalPopupTimeout(setTimeout(() => hideGlobalPopup(popupProps), options.duration ?? 5000));
+        if (options.duration !== null)
+            setGlobalPopupTimeout(setTimeout(() => hideGlobalPopup(popupProps), options.duration ?? 5000));
     }
 
     function hideGlobalPopup(globalPopupProps: GlobalPopupProps): void {

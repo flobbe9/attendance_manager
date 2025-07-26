@@ -18,6 +18,7 @@ import { Link } from "expo-router";
 import { JSX, useContext, useEffect, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 
+
 /**
  * @since 0.0.1
  */
@@ -27,7 +28,9 @@ export default function index() {
     const [attendanceLinks, setAttendanceLinks] = useState<JSX.Element[]>([]);
     const [isExtended, setIsExtended] = useState(true);
 
-    const { allStyles: { mt_6 } } = useResponsiveStyles();
+    const {
+        allStyles: { mt_6 },
+    } = useResponsiveStyles();
 
     const attendanceService = new AttendanceService();
 

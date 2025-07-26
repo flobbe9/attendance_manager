@@ -112,6 +112,7 @@ export default function DateInput({...props}: Props) {
                 dynamicStyle={combineDynamicStyles(DateInputStyles.button, AttendanceIndexStyles.defaultHelperButton)}
                 ripple={{rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground}}
                 modalProps={{
+                    emptyLabel: "__.__.____",
                     validRange: {
                         disabledDates: invalidValues
                     }
