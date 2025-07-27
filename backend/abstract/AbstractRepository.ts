@@ -12,6 +12,7 @@ import { Db } from "./Db";
 import { EntityRelationType } from "./EntityRelationType";
 import { FetchType } from "./FetchType";
 import { getFetchType, RelatedEntityDetail } from "./RelatedEntityDetail";
+import { LogLevel, logLevelToString } from "@/abstract/LogLevel";
 
 /**
  * @since 0.0.1
@@ -232,7 +233,9 @@ export abstract class AbstractRepository<E extends AbstractEntity> extends Dao<E
             else relatedEntity[this.getBackReferenceColumnName()] = backReferenceValue;
         } else
             logDebug(
-                `WARN: Inserting related entity of type '${relatedEntityRepository.getTableName()}' without setting the backreference ${backReferenceValue}.`
+                `${logLevelToString(
+                    LogLevel.WARN
+                )}: Inserting related entity of type '${relatedEntityRepository.getTableName()}' without setting the backreference ${backReferenceValue}.`
             );
 
         return await relatedEntityRepository.persistCascade(relatedEntity, currentTransaction);

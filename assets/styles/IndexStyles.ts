@@ -7,7 +7,6 @@ import HelperStyles from "./helperStyles";
 type StyleType = ViewStyle;
 
 const addButtonWidth = 59;
-const addButtonFontSize = 20;
 
 export class IndexStyles {
     static component: DynamicStyle<StyleType> = {
@@ -36,11 +35,19 @@ export class IndexStyles {
         }
     }
 
-    static addButtonOuterView: DynamicStyle<StyleType> = {
+    static addButtonContainer: DynamicStyle<StyleType> = {
         default: {
             bottom: GLOBAL_SCREEN_PADDING * 2,
             position: "absolute",
             right: GLOBAL_SCREEN_PADDING * 2,
+        }
+    }
+
+    static sendLogsButtonContainer: DynamicStyle<StyleType> = {
+        default: {
+            bottom: this.addButtonContainer.default.bottom,
+            position: this.addButtonContainer.default.position,
+            left: this.addButtonContainer.default.right
         }
     }
     
@@ -56,12 +63,8 @@ export class IndexStyles {
 
     static addButtonLabel: DynamicStyle<TextStyle> = {
         default: {
-            fontSize: addButtonFontSize
+            color: "white",
+            fontSize: FONT_SIZE,
         }
-    }
-
-    static buttonIcon: TextStyle = {
-        fontSize: addButtonFontSize,
-        ...HS.fitContent
     }
 }

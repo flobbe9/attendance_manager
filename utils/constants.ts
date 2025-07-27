@@ -1,32 +1,21 @@
 import { Env } from "@/abstract/Env";
-import {LogLevel} from "@/abstract/LogLevel";
-import {DrizzleConfig} from "drizzle-orm";
+import { LogLevel } from "@/abstract/LogLevel";
+import { DrizzleConfig } from "drizzle-orm";
 import ExpoConstants from "expo-constants";
 
 /** Values from app.json file */
 export const appJson = ExpoConstants.expoConfig;
 
 export const APP_VERSION = appJson.version;
+export const APP_NAME = appJson.name;
 export const DATABASE_NAME = process.env.EXPO_PUBLIC_DATABASE_NAME;
 export const ENV: Env = process.env.EXPO_PUBLIC_ENV as Env;
 export const LOG_LEVEL = LogLevel[process.env.EXPO_PUBLIC_LOG_LEVEL] ?? LogLevel.INFO;
+export const FILE_LOGGER_ENABLED = process.env.EXPO_PUBLIC_FILE_LOGGER_ENABLED === "true";
+export const FILE_LOGGER_MAIL_TO = process.env.EXPO_PUBLIC_FILE_LOGGER_MAIL_TO;
 
 /** Auth */
 export const AUTH_APPLE_REDIRECT_URL = process.env.EXPO_PUBLIC_AUTH_APPLE_REDIRECT_URL;
-
-// Custom log
-export const LOG_LEVEL_COLORS: Record<LogLevel, string> = {
-    [LogLevel.INFO]: "white",
-    [LogLevel.WARN]: "rgb(255, 233, 174)",
-    [LogLevel.ERROR]: "rgb(255, 230, 230)",
-    [LogLevel.DEBUG]: "rgb(230, 230, 230)",
-    [LogLevel.TRACE]: "rgb(170, 210, 255)",
-};
-
-/** Dont log to console if the 'message' contains one of these strings */
-export const CONSOLE_MESSAGES_TO_AVOID: (string | number)[] = [
-    "Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.",
-];
 
 /**
  * @see Checkbox from 'react-native-paper'

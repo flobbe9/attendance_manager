@@ -7,6 +7,7 @@ import React, { forwardRef, ReactNode, Ref, useEffect, useImperativeHandle, useR
 import { View, ViewStyle } from "react-native";
 import HelperButton, { HelperButtonProps } from "./HelperButton";
 import HelperView from "./HelperView";
+import HelperReactChildren from "./HelperReactChildren";
 
 
 interface Props extends HelperButtonProps {
@@ -113,7 +114,7 @@ export default forwardRef(function ExtendableButton(
                 style={{...labelStyle, ...getLabelMargin()}}
                 ref={labelRef}
             >
-                {label}
+                <HelperReactChildren>{label}</HelperReactChildren>
             </HelperView>
             
             <HelperView rendered={align === "flex-end"}>

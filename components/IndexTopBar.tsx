@@ -14,6 +14,8 @@ import { GlobalAttendanceContext } from "./context/GlobalAttendanceContextProvid
 import Flex from "./helpers/Flex";
 import HelperButton from "./helpers/HelperButton";
 import HelperText from "./helpers/HelperText";
+import { FileLogger } from "react-native-file-logger";
+import { logDebug, logError } from "@/utils/logUtils";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -102,6 +104,16 @@ export default function IndexTopBar({...props}: Props) {
                     />
                 </HelperButton>
             </Link>
+
+            <HelperButton onPress={() => {
+                try {
+                    logDebug("test")
+                } catch (e) {
+                    logError(e.message)
+                }
+            }}>
+                Log
+            </HelperButton>
 
             <Flex justifyContent="flex-end">
                 <HelperText style={{ ...IndexTopBarStyles.text, ...me_2 }}>Erledigt:</HelperText>

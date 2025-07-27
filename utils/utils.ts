@@ -1,8 +1,7 @@
 /**
  * NOTE: cannot import from modules that import from utils.ts because that would create a cycle.
  */
-import {CSSProperties, JSX} from "react";
-import {logError} from "./logUtils";
+import { CSSProperties, JSX } from "react";
 
 /**
  * Wont throw if not a number.
@@ -490,19 +489,21 @@ export function getTimeStamp(date = new Date()): string {
         ":" +
         prepend0ToNumber(date.getSeconds()) +
         ":" +
-        date.getMilliseconds()
+        prepend0ToNumber(date.getMilliseconds(), 3)
     );
 }
 
 /**
  * @param num to prepend a 0 to
+ * @param totalDigits number of digits (including `num`) to stop prepending zeros at. Default is 2, that would make `5 => 05`
  * @returns a string representation of given number with a 0 prended if the number has only one digit
  */
-function prepend0ToNumber(num: number): string {
+function prepend0ToNumber(num: number, totalDigits = 2): string {
     let str = num.toString();
 
-    // case: one digit only
-    if (num / 10 < 1) str = "0" + str;
+    while (str.length < totalDigits)
+        // case: one digit only
+        str = "0" + str;        
 
     return str;
 }
