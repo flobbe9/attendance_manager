@@ -1,4 +1,4 @@
-import {NavigationAction, usePreventRemove} from "@react-navigation/native";
+import {NavigationAction, useIsFocused, usePreventRemove} from "@react-navigation/native";
 import {useEffect} from "react";
 
 /**
@@ -22,10 +22,13 @@ export function useScreenLeaveAttempt(
     const {handleDontLeaveScreen, handleScreenLeave} = options;
 
     usePreventRemove(isDontLeaveScreen, handleDontLeaveScreen);
+    
+    const isScreenFocused = useIsFocused();
 
     useEffect(() => {
-        return () => handleScreenLeave();
-    }, []);
+        if (!isScreenFocused)
+            handleScreenLeave();
+    }, [isScreenFocused]);
 }
 
 /**
