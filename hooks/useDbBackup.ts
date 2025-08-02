@@ -4,8 +4,6 @@
  */
 export function useDbBackup() {
 
-    // TODO: continue here
-
     // parseDb(wrapper): json string
 
     // parseBackup(jsonString): wrapper

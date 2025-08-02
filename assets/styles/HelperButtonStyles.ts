@@ -20,4 +20,10 @@ export class HelperButtonStyles {
         position: "absolute",
         right: padding
     }
+
+    static minimalistic: DynamicStyle<ViewStyle> = {
+        default: {
+            backgroundColor: "transparent",
+        }
+    }
 }

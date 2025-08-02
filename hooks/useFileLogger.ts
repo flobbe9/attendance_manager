@@ -34,6 +34,8 @@ export function useFileLogger() {
 
     /**
      * Triggers a native share popup (on android at least, dont know about ios) to send all log files.
+     * 
+     * Wont delete zip files created by sendMail method.
      */
     async function shareLogFiles(): Promise<void> {
         if (!isFileLoggerEnabled()) return;

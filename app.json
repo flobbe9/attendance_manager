@@ -3,7 +3,7 @@
         "name": "Attendance Manager",
         "slug": "attendence_manager",
         "version": "0.2.1",
-        "orientation": "portrait",
+        "orientation": "default",
         "icon": "./assets/images/favicon.png",
         "scheme": "myapp",
         "userInterfaceStyle": "automatic",
