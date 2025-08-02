@@ -1,4 +1,5 @@
 import AttendanceContextProvider from "@/components/context/AttendanceContextProvider";
+import HeaderBackButton from "@/components/HeaderBackButton";
 import { Stack } from "expo-router";
 
 /**
@@ -12,6 +13,7 @@ export default function layout() {
                 <Stack.Screen 
                     name="index"
                     options={{
+                        headerLeft: (props) => <HeaderBackButton />,
                         title: "Unterrichtsbesuch"
                     }}
                 />

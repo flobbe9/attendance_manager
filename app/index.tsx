@@ -11,13 +11,13 @@ import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import IndexTopBar from "@/components/IndexTopBar";
+import { useFileLogger } from "@/hooks/useFileLogger";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import { Link } from "expo-router";
 import { JSX, useContext, useEffect, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
-
 
 /**
  * @since 0.0.1
@@ -28,6 +28,8 @@ export default function index() {
     const [attendanceLinks, setAttendanceLinks] = useState<JSX.Element[]>([]);
     const [isExtended, setIsExtended] = useState(true);
 
+    const { initializeFileLogger } = useFileLogger();
+
     const {
         allStyles: { mt_6 },
     } = useResponsiveStyles();
@@ -37,8 +39,12 @@ export default function index() {
     const isScreenInView = useIsFocused();
 
     useEffect(() => {
-        updateSavedAttendanceEntities();
-    }, [isScreenInView]); // triggered on any child stack screen visit
+        initializeFileLogger();
+    }, []); // once on app start (not refocus from background)
+
+    useEffect(() => {
+        if (isScreenInView) updateSavedAttendanceEntities();
+    }, [isScreenInView]); // triggered on focus and blur of /app/index view
 
     useEffect(() => {
         setAttendanceLinks(mapAttendanceLinks(savedAttendanceEntities));
@@ -98,17 +104,17 @@ export default function index() {
                     <ExtendableButton
                         isExtended={isExtended}
                         dynamicStyle={IndexStyles.addButton}
-                        containerStyles={IndexStyles.addButtonOuterView}
+                        containerStyles={IndexStyles.addButtonContainer}
                         align="flex-end"
                         extendedWidth={152}
                         label={
-                            <HelperText dynamicStyle={{ ...IndexStyles.addButtonLabel }} style={{ color: "white" }}>
+                            <HelperText dynamicStyle={IndexStyles.addButtonLabel}>
                                 Neuer UB
                             </HelperText>
                         }
                         ripple={{ rippleBackground: "rgb(70, 70, 70)" }}
                     >
-                        <FontAwesome name="plus" style={{ ...IndexStyles.buttonIcon }} color="white" />
+                        <FontAwesome name="plus" style={IndexStyles.addButtonLabel.default} />
                     </ExtendableButton>
                 </Link>
             </HelperView>

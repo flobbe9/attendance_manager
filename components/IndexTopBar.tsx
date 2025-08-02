@@ -5,17 +5,14 @@ import { AttendanceService } from "@/backend/services/AttendanceService";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import { FONT_SIZE_LARGER, HISTORY_COLOR, MUSIC_COLOR } from "@/utils/styleConstants";
+import { HISTORY_COLOR, MUSIC_COLOR } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
-import { Link } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { ColorValue, ViewProps, ViewStyle } from "react-native";
 import { GlobalAttendanceContext } from "./context/GlobalAttendanceContextProvider";
 import Flex from "./helpers/Flex";
-import HelperButton from "./helpers/HelperButton";
 import HelperText from "./helpers/HelperText";
-import { FileLogger } from "react-native-file-logger";
-import { logDebug, logError } from "@/utils/logUtils";
+import HS from "@/assets/styles/helperStyles";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -95,27 +92,7 @@ export default function IndexTopBar({...props}: Props) {
 
     return (
         <Flex justifyContent="space-between" alignItems="center" {...otherProps}>
-            <Link href="/(settings)" asChild>
-                <HelperButton dynamicStyle={IndexTopBarStyles.settingsButton}>
-                    <FontAwesome
-                        name="gear"
-                        size={FONT_SIZE_LARGER}
-                        style={IndexTopBarStyles.gearIcon}
-                    />
-                </HelperButton>
-            </Link>
-
-            <HelperButton onPress={() => {
-                try {
-                    logDebug("test")
-                } catch (e) {
-                    logError(e.message)
-                }
-            }}>
-                Log
-            </HelperButton>
-
-            <Flex justifyContent="flex-end">
+            <Flex justifyContent="flex-end" style={{...HS.fullWidth}}>
                 <HelperText style={{ ...IndexTopBarStyles.text, ...me_2 }}>Erledigt:</HelperText>
 
                 <ExaminantCount
