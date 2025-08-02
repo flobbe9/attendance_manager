@@ -29,6 +29,7 @@ import { useNavigation } from "expo-router";
 import React, { useContext, useEffect } from "react";
 import { Divider } from "react-native-paper";
 import DateInput from "../../components/(attendance)/DateInput";
+import { useIsFocused } from "@react-navigation/native";
 
 /**
  * Attendance create / edit screen.
@@ -65,9 +66,12 @@ export default function index() {
 
     const navigation = useNavigation();
 
+    const isScreenFocused = useIsFocused();
+
     useEffect(() => {
-        updateLastSavedAttendanceEntity(initializeCurrentAttendanceEntity());
-    }, []);
+        if (isScreenFocused)
+            updateLastSavedAttendanceEntity(initializeCurrentAttendanceEntity());
+    }, [isScreenFocused]);
 
     useScreenLeaveAttempt(isCurrentAttendanceEntityModified && !dontConfirmAttendanceScreenLeave, {
         handleScreenLeave: handleScreenLeave,
@@ -119,6 +123,8 @@ export default function index() {
             logDebug("Failed to load current attendance entity for current id " + currentAttendanceEntityId);
             return null;
         }
+
+        logDebug("found current for id ", currentAttendanceEntityId, attendanceEntityForId.id, attendanceEntityForId.schoolSubject)
 
         setCurrentAttendanceEntity(attendanceEntityForId);
 
