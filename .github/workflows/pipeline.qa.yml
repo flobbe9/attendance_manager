@@ -52,9 +52,19 @@ jobs:
             uses: expo/expo-github-action@v8
             with:
                 packager: npm
-                token: "${{ secrets.EXPO_TOKEN  }}"
+                token: "${{ secrets.EXPO_TOKEN }}"
                 expo-version: latest
                 eas-version: latest
+
+          - name: Set up iOS credentials
+            run: |
+                echo "${{ secrets.APPSTORE_P12_BASE64 }}" | base64 --decode > cert.p12
+                echo "${{ secrets.APPSTORE_MOBILEPROVISION_BASE64 }}" | base64 --decode > profile.mobileprovision
+                eas credentials:sync
+                --team-id ${{ secrets.APPSTORE_TEAM_ID }}
+                --certificate cert.p12
+                --certificate-password ${{ secrets.APPSTORE_P12_PASSWORD }}
+                --profile profile.mobileprovision
 
           - name: Build iOS App
             run: eas build --local -p ios --profile staging --non-interactive --output app.ipa
