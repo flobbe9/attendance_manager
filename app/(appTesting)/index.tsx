@@ -21,9 +21,9 @@ export default function index() {
         <ScreenWrapper style={{padding: GLOBAL_SCREEN_PADDING}}>
             <B dynamicStyle={SettingsStyles.heading}>Logs senden {isFileLoggerEnabled() ? "" : "(deaktiviert)"}</B>
 
-            <HelperView rendered={true}>
+            <HelperView rendered={isFileLoggerEnabled()}>
                 <HelperButton
-                    rendered={true}
+                    rendered={isFileLoggerEnabled()}
                     onPress={shareLogFiles}
                     >
                     <FontAwesome name="share" style={{...prs("me_2"), ...AppTestingIndexStyles.buttonContent.default}} />

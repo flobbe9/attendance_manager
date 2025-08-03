@@ -76,7 +76,7 @@ export class ExaminantValidator extends AbstractAttendanceInputValidator<Examina
                 
                                 return (
                                     <Fragment key={i}>
-                                        <Br rendered={i >= 1} large={false} />
+                                        <Br rendered={i >= 1} />
                 
                                         <B>
                                             {invalidExaminantRole}

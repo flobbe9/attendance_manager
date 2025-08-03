@@ -22,6 +22,7 @@ import HelperReactChildren from "../helpers/HelperReactChildren";
 import P from "../helpers/P";
 import Tooltip, { TooltipProps } from "../helpers/Tooltip";
 import AttendanceInputErrorPopupIcon from "./AttendanceInputErrorPopupIcon";
+import Br from "../helpers/Br";
 
 interface Props<InputType extends keyof AttendanceEntity, ValuesType extends Map<ValueOf<AttendanceEntity>, string> | ValueOf<AttendanceEntity>[]>
     extends TooltipProps {
@@ -109,7 +110,7 @@ export default function AttendanceInputTooltip<
     function getHeading(): ReactNode {
         if (!isFalsy(heading)) return heading;
 
-        return <P style={{ ...prs("mb_3") }}>{isValidValues() ? <B>Erlaubte Werte:</B> : <B>Nicht auswählbare Werte</B>}</P>;
+        return <P style={{...(isValidValues() ? {} : prs("mb_2"))}}>{isValidValues() ? <B>Erlaubte Werte:</B> : <B>Nicht auswählbare Werte</B>}</P>;
     }
 
     function getEmptyMessage(): string {

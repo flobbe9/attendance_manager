@@ -38,7 +38,6 @@ export default function index() {
         <ScreenWrapper>
             <HelperScrollView dynamicStyle={SettingsIndexStyles.component}>
                 {/* <SetttingsLink href="/(settings)/account" icon="user-circle-o" label="Konto" /> */}
-                {/* <SetttingsLink href="/(settings)/popups" icon="paint-brush" label="Farben und Styles" /> */}
                 <SetttingsLink
                     href="/(settings)/popups"
                     icon={<AttendanceInputErrorPopupIcon style={{ ...SettingsIndexStyles.settingsItemText, ...prs("me_2") }} color="black" />}
@@ -47,7 +46,7 @@ export default function index() {
 
                 <SetttingsLink
                     href="/(settings)/appInfo"
-                    icon={<FontAwesome name="info" style={{ ...SettingsIndexStyles.settingsItemText, ...prs("me_2") }} />}
+                    icon={<FontAwesome name="info" style={{ ...SettingsIndexStyles.settingsItemText, ...prs("ms_2", "me_3") }} />}
                     label="Über die App"
                 />
             </HelperScrollView>

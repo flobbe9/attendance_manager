@@ -53,7 +53,7 @@ export class DateValidator extends AbstractAttendanceInputValidator<Date> {
         
                         return (
                             <Fragment key={i}>
-                                <Br rendered={i >= 1} large={false} />
+                                <Br rendered={i >= 1} />
         
                                 <B>
                                     {formattedDate}

@@ -49,7 +49,7 @@ export class LessonTopicValidator extends AbstractAttendanceInputValidator<Music
         
                         return (
                             <Fragment key={i}>
-                                <Br rendered={i >= 1} large={false} />
+                                <Br rendered={i >= 1} />
         
                                 <B>
                                     {invalidTopic}
