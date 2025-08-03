@@ -9,12 +9,19 @@
     - Sek1 describes school years from 5 - 10 (inclusive)
     - Sek2 describes school years from 11 - 13 (inclusive)
 
+# Deploy
+## ios credentials
+The `eas build` command expects some credentials to be uploaded in eas cloud. This needs to be done once locally and does not happen in the pipeline. See docs below. 
+
 # Docs
 ## CI/CD
 Expo: https://expo.dev/accounts/flobbe9 <br>
 Apple apps: https://appstoreconnect.apple.com/apps
 Apple certificate stuff: https://developer.apple.com/account/resources/certificates/list <br>
 Apple general developer: https://developer.apple.com/account <br>
+
+## Credentials
+https://docs.expo.dev/app-signing/local-credentials/
 
 ## UI
 React native paper: https://callstack.github.io/react-native-paper/docs/components/ActivityIndicator <br>
