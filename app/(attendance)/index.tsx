@@ -19,7 +19,6 @@ import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { DontLeaveScreenOptions, useScreenLeaveAttempt } from "@/hooks/useScreenLeaveAttempt";
 import { useSubjectColor } from "@/hooks/useSubjectColor";
 import { logDebug } from "@/utils/logUtils";

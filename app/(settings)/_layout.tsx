@@ -1,19 +1,13 @@
-import { HelperButtonStyles } from "@/assets/styles/HelperButtonStyles";
-import { LayoutStyles } from "@/assets/styles/LayoutStyles";
-import AttendanceInputErrorPopupIcon from "@/components/(attendance)/AttendanceInputErrorPopupIcon";
 import HeaderBackButton from "@/components/HeaderBackButton";
 import B from "@/components/helpers/B";
 import Flex from "@/components/helpers/Flex";
-import HelperButton from "@/components/helpers/HelperButton";
-import HelperText from "@/components/helpers/HelperText";
 import { FONT_SIZE_LARGER } from "@/utils/styleConstants";
-import { FontAwesome } from "@expo/vector-icons";
-import { Stack, useNavigation } from "expo-router";
+import { Stack } from "expo-router";
+
 /**
  * @since 0.1.0
  */
 export default function layout() {
-    const navigation = useNavigation();
 
     return (
         <Stack>
@@ -24,7 +18,6 @@ export default function layout() {
                     headerLeft: (props) => <HeaderBackButton />,
                     headerTitle: (props) => (
                         <Flex alignItems="center" {...props}>
-                            <FontAwesome name="gear" style={{ ...LayoutStyles.headerIcon }} />
                             <B style={{ fontSize: FONT_SIZE_LARGER }}>Einstellungen</B>
                         </Flex>
                     ),
@@ -49,7 +42,6 @@ export default function layout() {
                     headerLeft: (props) => <HeaderBackButton />,
                     headerTitle: (props) => (
                         <Flex alignItems="center" {...props}>
-                            {/* <AttendanceInputErrorPopupIcon style={{ ...LayoutStyles.headerIcon }} /> */}
                             <B style={{ fontSize: FONT_SIZE_LARGER }}>Popups</B>
                         </Flex>
                     ),
@@ -62,7 +54,6 @@ export default function layout() {
                     headerLeft: (props) => <HeaderBackButton />,
                     headerTitle: (props) => (
                         <Flex alignItems="center" {...props}>
-                            <FontAwesome name="info-circle" style={{ ...LayoutStyles.headerIcon }} />
                             <B style={{ fontSize: FONT_SIZE_LARGER }}>Über die App</B>
                         </Flex>
                     ),

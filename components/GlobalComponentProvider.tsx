@@ -1,53 +1,40 @@
 import Popup from "@/components/Popup";
-import React, { Fragment, ReactNode, useContext } from "react";
+import React, { ReactNode, useContext } from "react";
+import { useClickOutside } from "react-native-click-outside";
 import { Provider } from "react-native-paper";
 import { GlobalContext } from "./context/GlobalContextProvider";
 import CustomSnackbar from "./CustomSnackbar";
 import Toast from "./Toast";
-import { useScreenTouch } from "@/hooks/useScreenTouch";
-import { logDebug } from "@/utils/logUtils";
-
-
 
 /**
  * Provides global popups etc. Should be wrapped around all screens automatically by only adding it to the app _layout
- * 
- * Will update `globalScreenTouch` state on touchstart. Will hide `<Popup>` on blur
- * 
+ *
+ * Will hide `<Popup>` on blur
+ *
  * @since 0.0.1
  */
-export default function GlobalComponentProvider({children}: {children: ReactNode}) {
-
-    const { 
-        globalSnackbarProps, 
+export default function GlobalComponentProvider({ children }: { children: ReactNode }) {
+    const {
+        globalSnackbarProps,
         globalPopupProps,
-        hideGlobalPopup, 
+        hideGlobalPopup,
 
-        globalToastProps, 
+        globalToastProps,
         hideToast,
-
-        globalScreenTouch,
-        setGlobalScreenTouch,
     } = useContext(GlobalContext);
 
-    function handleTouchStart(_event): void {
-        setGlobalScreenTouch(!globalScreenTouch);
-    }
+    const popupRef = useClickOutside(() => hideGlobalPopup(globalPopupProps));
 
-    useScreenTouch(() => {
-        hideGlobalPopup(globalPopupProps);
-    });
-    
     return (
         /** for react-native-paper */
-        <Provider> 
+        <Provider>
             {children}
 
-            <Toast hideToast={hideToast} onTouchStart={handleTouchStart} {...globalToastProps} />
+            <Toast hideToast={hideToast} {...globalToastProps} />
 
-            <CustomSnackbar onTouchStart={handleTouchStart} {...globalSnackbarProps} />
+            <CustomSnackbar {...globalSnackbarProps} />
 
-            <Popup onTouchStart={handleTouchStart} {...globalPopupProps} />
+            <Popup ref={popupRef} {...globalPopupProps} />
         </Provider>
-    )
+    );
 }

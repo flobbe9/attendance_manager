@@ -1,6 +1,5 @@
 import { AbstractRepository } from "@/backend/abstract/AbstractRepository";
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
-import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
 import { useFlashState } from "@/hooks/useFlashState";
 import {
@@ -42,8 +41,6 @@ export default function AttendanceContextProvider({children}) {
         [dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup],
         "popups.dontShowAttendanceInputValidationErrorPopup"
     );
-
-    const {attendanceRespository} = useAttendanceRepository();
 
     /** Indicates whether `currentAttendanceEntity` has been modified compared to `lastSavedAttendanceEntity` */
     const [modified, setModified] = useState(false);

@@ -6,12 +6,12 @@ import HelperView from "@/components/helpers/HelperView";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useHasComponentMounted } from "@/hooks/useHasComponentMounted";
 import { useHelperProps } from "@/hooks/useHelperProps";
-import { useScreenTouch } from "@/hooks/useScreenTouch";
 import { DEFAULT_BUTTON_PADDING, FONT_SIZE, TOOLTIP_DEFAULT_ICON } from "@/utils/styleConstants";
 import { isFalsy, isNumberFalsy } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import { TextStyle, ViewProps, ViewStyle } from "react-native";
+import { useClickOutside } from "react-native-click-outside";
 import Flex from "./Flex";
 import HelperButton, { HelperButtonProps } from "./HelperButton";
 import HelperReactChildren from "./HelperReactChildren";
@@ -82,7 +82,7 @@ export default function Tooltip({
         if (visibleState && !isNumberFalsy(duration)) setHideTextTimeout(setTimeout(() => setVisibleState(false), duration));
     }, [visibleState]);
 
-    useScreenTouch(() => {
+    const componentRef = useClickOutside(() => {
         hideTooltipOnScreenTouch();
     });
 
@@ -141,7 +141,7 @@ export default function Tooltip({
     }
 
     return (
-        <Flex alignItems="center" justifyContent="center" {...otherProps}>
+        <Flex alignItems="center" justifyContent="center" ref={componentRef} {...otherProps}>
             <HelperButton
                 {...buttonProps}
                 dynamicStyle={combineDynamicStyles(TooltipStyles.iconButton, buttonProps.dynamicStyle)}

@@ -1,6 +1,7 @@
 import HelperProps from "@/abstract/HelperProps";
 import { BooleanSettingStyles } from "@/assets/styles/BooleanSettingStyles";
 import HelperStyles from "@/assets/styles/helperStyles";
+import { SettingsStyles } from "@/assets/styles/SettingsStyles";
 import { MetadataKey } from "@/backend/abstract/MetadataKey";
 import B from "@/components/helpers/B";
 import Flex from "@/components/helpers/Flex";
@@ -73,7 +74,7 @@ export default function BooleanSetting({
                 justifyContent="space-between"
                 style={{...HelperStyles.fullWidth}}
             >
-                <B dynamicStyle={BooleanSettingStyles.heading}>{heading}</B>
+                <B dynamicStyle={SettingsStyles.heading}>{heading}</B>
 
                 <Switch
                     value={settingTurnedOn}

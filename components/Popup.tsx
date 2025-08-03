@@ -7,8 +7,8 @@ import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { useDeviceOrientation } from "@/hooks/useDeviceOrientation";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import React, { ReactNode, useContext, useEffect, useState } from "react";
-import { GestureResponderEvent, Image, ViewProps, ViewStyle } from "react-native";
+import React, { forwardRef, ReactNode, Ref, useContext, useEffect, useState } from "react";
+import { GestureResponderEvent, Image, View, ViewProps, ViewStyle } from "react-native";
 import favicon from "../assets/images/favicon-small-transparent.png";
 import HelperReactChildren from "./helpers/HelperReactChildren";
 
@@ -33,7 +33,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps, PopupProps {}
  *
  * @since 0.0.1
  */
-export default function Popup({ icon, visible, message, containerStyle = {}, onTouchStart, ...props }: Props) {
+export default forwardRef(function Popup({ icon, visible, message, containerStyle = {}, onTouchStart, ...props }: Props, ref: Ref<View>) {
     const orientation = useDeviceOrientation();
 
     const { hideGlobalPopup, globalPopupProps } = useContext(GlobalContext);
@@ -81,6 +81,7 @@ export default function Popup({ icon, visible, message, containerStyle = {}, onT
                 zIndex: componentZIndex,
             }}
             justifyContent="center"
+            ref={ref}
             onTouchStart={handleTouchStart}
             {...otherProps}
         >
@@ -106,4 +107,4 @@ export default function Popup({ icon, visible, message, containerStyle = {}, onT
             </Flex>
         </Flex>
     );
-}
+});

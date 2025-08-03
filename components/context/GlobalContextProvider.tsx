@@ -17,8 +17,6 @@ import { ResponsiveStyle } from "@/abstract/ResponsiveStyle";
  * @since 0.0.1
  */
 export default function GlobalContextProvider({ children }: { children: ReactNode }) {
-    /** Toggle state, meaning the boolean value does not represent any information but is just to be listened to with `useEffect` */
-    const [globalScreenTouch, setGlobalScreenTouch] = useState(false);
     const [isKeyBoardvisible, setKeyboardVisible] = useState(false);
 
     const [globalSnackbarProps, setGlobalSnackbarProps] = useState<CustomnSnackbarProps>({
@@ -39,9 +37,6 @@ export default function GlobalContextProvider({ children }: { children: ReactNod
     const { prs } = useResponsiveStyles();
 
     const context = {
-        globalScreenTouch,
-        setGlobalScreenTouch,
-
         isKeyBoardvisible,
         setKeyboardVisible,
 
@@ -181,9 +176,6 @@ export default function GlobalContextProvider({ children }: { children: ReactNod
 }
 
 export const GlobalContext = createContext({
-    globalScreenTouch: false,
-    setGlobalScreenTouch: ((_globalBlur: boolean) => {}) as React.Dispatch<React.SetStateAction<boolean>>,
-
     isKeyBoardvisible: false,
     setKeyboardVisible: (isVisible: boolean): void => {},
 

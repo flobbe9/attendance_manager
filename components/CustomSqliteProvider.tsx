@@ -1,12 +1,12 @@
 import migrations from "@/drizzle/migrations";
-import {DATABASE_NAME, DRIZZLE_DB_CONFIG} from "@/utils/constants";
-import {logDebug} from "@/utils/logUtils";
-import {drizzle} from "drizzle-orm/expo-sqlite";
-import {migrate, useMigrations} from "drizzle-orm/expo-sqlite/migrator";
-import {useDrizzleStudio} from "expo-drizzle-studio-plugin";
-import {openDatabaseSync, SQLiteProvider} from "expo-sqlite";
-import {ReactNode, Suspense, useEffect} from "react";
-import {ActivityIndicator} from "react-native";
+import { DATABASE_NAME, DRIZZLE_DB_CONFIG, ENV } from "@/utils/constants";
+import { logDebug } from "@/utils/logUtils";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { migrate, useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
+import { openDatabaseSync, SQLiteProvider } from "expo-sqlite";
+import { ReactNode, Suspense, useEffect } from "react";
+import { ActivityIndicator } from "react-native";
 
 interface Props {
     children: ReactNode;
@@ -16,27 +16,30 @@ interface Props {
 
 /**
  * Development db ui: http://localhost:8081/_expo/plugins/expo-drizzle-studio-plugin
- * 
+ *
  * @since 0.0.1
  * @see https://orm.drizzle.team/docs/overview
  */
-export default function CustomSqliteProvider({children, useSuspense = true}: Props) {
+export default function CustomSqliteProvider({ children, useSuspense = true }: Props) {
     const sqliteSync = openDatabaseSync(DATABASE_NAME);
     const db = drizzle(sqliteSync, DRIZZLE_DB_CONFIG);
-    const {error: migrationsError} = useMigrations(db, migrations);
+    const { error: migrationsError } = useMigrations(db, migrations);
 
     // drizzle dev tools
     if (process.env.NODE_ENV !== "production") useDrizzleStudio(sqliteSync);
 
     useEffect(() => {
-        logDebug("Db migrations: ", migrations)
+        if (ENV !== "development") logDebug("Db migrations: ", migrations);
+    }, []);
+
+    useEffect(() => {
         if (migrationsError) logDebug("Db migration error: " + migrationsError.message);
         else logDebug("No db migration errors");
     }, [migrationsError]);
 
     return (
         <Suspense fallback={<ActivityIndicator size="large" />}>
-            <SQLiteProvider databaseName={DATABASE_NAME} options={{enableChangeListener: true}} useSuspense={useSuspense}>
+            <SQLiteProvider databaseName={DATABASE_NAME} options={{ enableChangeListener: true }} useSuspense={useSuspense}>
                 {children}
             </SQLiteProvider>
         </Suspense>

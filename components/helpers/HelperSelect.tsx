@@ -9,10 +9,10 @@ import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { NO_SELECTION_LABEL } from "@/utils/constants";
 import { logError } from "@/utils/logUtils";
 import { FontAwesome } from "@expo/vector-icons";
-import React, { forwardRef, JSX, Ref, useContext, useEffect, useState } from "react";
-import { GestureResponderEvent, LayoutChangeEvent, View, ViewProps, ViewStyle } from "react-native";
+import React, { JSX, useEffect, useState } from "react";
+import { GestureResponderEvent, LayoutChangeEvent, ViewProps, ViewStyle } from "react-native";
+import { useClickOutside } from "react-native-click-outside";
 import { Divider } from "react-native-paper";
-import { GlobalContext } from "../context/GlobalContextProvider";
 import HelperButton, { HelperButtonProps } from "./HelperButton";
 import HelperReactChildren from "./HelperReactChildren";
 import HelperScrollView from "./HelperScrollView";
@@ -45,7 +45,7 @@ interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
 /**
  * @since 0.0.1
  */
-export default forwardRef(function HelperSelect<OptionType>({
+export default function HelperSelect<OptionType>({
         options,
         selectedOptions,
         setSelectedOptions,
@@ -56,11 +56,8 @@ export default forwardRef(function HelperSelect<OptionType>({
         selectionButtonProps = {},
         optionButtonProps = {},
         ...props
-    }: Props<OptionType>,
-    ref: Ref<View>
+    }: Props<OptionType>
 ) {
-    const { globalScreenTouch } = useContext(GlobalContext);
-
     const [optionElements, setOptionElements] = useState<JSX.Element[]>([]);
     const [areOptionsVisible, setAreOptionsVisible] = useState(false);
     const [selectionButtonValue, setSelectionButtonValue] = useState("");
@@ -81,13 +78,11 @@ export default forwardRef(function HelperSelect<OptionType>({
             animationDeps: null
         }
     );
+
+    const componentRef = useClickOutside(handleGlobalScreenTouch);
     
     const componentName = "HelperSelect";
     const { children, ...otherProps } = useDefaultProps(props, componentName, HelperSelectStyles.component);
-
-    useEffect(() => {
-        handleGlobalScreenTouch();
-    }, [globalScreenTouch])
 
     useEffect(() => {
         setSelectionButtonValue(getSelectionButtonValue());
@@ -287,7 +282,7 @@ export default forwardRef(function HelperSelect<OptionType>({
     }
 
     return (
-        <HelperView ref={ref} {...otherProps}>
+        <HelperView ref={componentRef} {...otherProps}>
             <HelperReactChildren>
                 {children}
             </HelperReactChildren>
@@ -324,4 +319,4 @@ export default forwardRef(function HelperSelect<OptionType>({
             </HelperView>
         </HelperView>
     )
-})
+}

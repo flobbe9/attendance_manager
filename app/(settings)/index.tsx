@@ -6,9 +6,10 @@ import B from "@/components/helpers/B";
 import HelperButton from "@/components/helpers/HelperButton";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
+import { logDebug } from "@/utils/logUtils";
 import { FontAwesome } from "@expo/vector-icons";
 import { Href, Link } from "expo-router";
-import { ReactNode, useContext } from "react";
+import { ReactNode, useContext, useEffect } from "react";
 
 /**
  * @since 0.1.0
@@ -20,7 +21,7 @@ export default function index() {
         const { href, label, icon } = props;
 
         return (
-            <Link href={href} asChild>
+           <Link href={href} asChild>
                 <HelperButton dynamicStyle={SettingsIndexStyles.settingsItemButton} containerStyles={SettingsIndexStyles.settingsItemButtonContainer}>
                     {typeof icon === "string" ? (
                         <FontAwesome name={icon as FontAweSomeIconname} style={{ ...SettingsIndexStyles.settingsItemText, ...prs("me_2") }} />
