@@ -56,15 +56,19 @@ jobs:
                 expo-version: latest
                 eas-version: latest
 
-          - name: Set up iOS credentials
+          - name: Write App Store Connect API key to file
             run: |
-                echo "${{ secrets.APPSTORE_P12_BASE64 }}" | base64 --decode > cert.p12
-                echo "${{ secrets.APPSTORE_MOBILEPROVISION_BASE64 }}" | base64 --decode > profile.mobileprovision
-                eas credentials:sync
-                --team-id ${{ secrets.APPSTORE_TEAM_ID }}
-                --certificate cert.p12
-                --certificate-password ${{ secrets.APPSTORE_P12_PASSWORD }}
-                --profile profile.mobileprovision
+                echo "${{ secrets.APPSTORE_API_PRIVATE_KEY }}" > ./AuthKey.p8
+
+          - name: Set up iOS credentials
+            run: eas credentials --platform ios --non-interactive
+            env:
+                EXPO_IOS_DIST_P12_PASSWORD: ${{ secrets.APPSTORE_P12_PASSWORD }}
+                # apparently required for the signing process, value does not matter
+                EXPO_IOS_KEYCHAIN_PASSWORD: doNotChange 
+                EAS_APPLE_APP_STORE_CONNECT_API_KEY_PATH: ./AuthKey.p8
+                EAS_APPLE_APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+                EAS_APPLE_APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
 
           - name: Build iOS App
             run: eas build --local -p ios --profile staging --non-interactive --output app.ipa
