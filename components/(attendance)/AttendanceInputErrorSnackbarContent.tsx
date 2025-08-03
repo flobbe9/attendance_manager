@@ -13,58 +13,45 @@ import Flex from "../helpers/Flex";
 import HelperCheckbox from "../helpers/HelperCheckbox";
 import HelperText from "../helpers/HelperText";
 import AttendanceInputErrorPopupIcon from "./AttendanceInputErrorPopupIcon";
-
+import { GlobalContext } from "../context/GlobalContextProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
-    reason: string,
-    invalidValue: string | number,
+    reason: string;
+    invalidValue: string | number;
 }
-
 
 /**
  * The content of the snackbar when an attendance input value is invalid.
- * 
+ *
  * @since 0.0.1
  */
-export default function AttendanceInputErrorSnackbarContent({
-    reason, 
-    invalidValue,
-    ...props
-}: Props) {
-
-    const { allStyles: { me_2 } } = useResponsiveStyles();
+export default function AttendanceInputErrorSnackbarContent({ reason, invalidValue, ...props }: Props) {
+    const { prs } = useContext(GlobalContext);
 
     const { dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup } = useContext(GlobalAttendanceContext);
-    
+
     const componentName = "AttendanceInputErrorSnackbarContent";
     const { children, ...otherProps } = useHelperProps(props, componentName);
 
-    
     return (
         <HelperView {...otherProps}>
             <Flex flexWrap="nowrap" alignItems="center">
-                <HelperView style={{...me_2}}>
+                <HelperView style={{ ...prs("me_2") }}>
                     <AttendanceInputErrorPopupIcon />
                 </HelperView>
 
-                <B>
-                    '{invalidValue}' kann nicht ausgewählt werden.
-                </B>
+                <B>'{invalidValue}' kann nicht ausgewählt werden.</B>
             </Flex>
 
             <Br />
 
-            <HelperText>
-                {reason}
-            </HelperText>
+            <HelperText>{reason}</HelperText>
 
             <Br />
 
-            <HelperText>
-                Um alle erlaubten Werte anzuzeigen, tippe auf die Glühbirne neben der Feldüberschrift. 
-            </HelperText>
+            <HelperText>Um alle erlaubten Werte anzuzeigen, tippe auf die Glühbirne neben der Feldüberschrift.</HelperText>
 
-            <Br />                    
+            <Br />
 
             <HelperCheckbox checked={dontShowInvalidInputErrorPopup} setChecked={setDontShowInvalidInputErrorPopup}>
                 <HelperText>Nicht mehr anzeigen</HelperText>
@@ -72,5 +59,5 @@ export default function AttendanceInputErrorSnackbarContent({
 
             {children}
         </HelperView>
-    )
+    );
 }

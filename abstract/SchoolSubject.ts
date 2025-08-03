@@ -1,29 +1,27 @@
 /**
- * Make sure to be consistent with object value indices! 
+ * Make sure to be consistent with object value indices!
  */
 
-import { AttendanceInputConstantValue } from "@/backend/abstract/AttendanceInputConstantValue";
-
 /** Order is hardcoded in ExaminantService.test.js */
-export const schoolSubjectKeysObj: Record<string, AttendanceInputConstantValue> = {
-    "history": {
+export const schoolSubjectKeysObj = {
+    history: {
         index: 0,
-        validate: true
+        validate: true,
     },
-    "music": {
+    music: {
         index: 1,
-        validate: true
-    }
+        validate: true,
+    },
 };
 export type SchoolSubject_Key = keyof typeof schoolSubjectKeysObj;
-export const SCHOOL_SUBJECT_KEYS: SchoolSubject_Key[] = Object.keys(schoolSubjectKeysObj) as SchoolSubject_Key[]; 
+export const SCHOOL_SUBJECT_KEYS: SchoolSubject_Key[] = Object.keys(schoolSubjectKeysObj) as SchoolSubject_Key[];
 
-export const schoolSubjectValuesObj = {"Geschichte": 0, "Musik": 1};
+export const schoolSubjectValuesObj = { Geschichte: 0, Musik: 1 };
 /**
  *  @since 0.0.1
  */
 export type SchoolSubject = keyof typeof schoolSubjectValuesObj;
-export const SCHOOL_SUBJECTS: SchoolSubject[] = Object.keys(schoolSubjectValuesObj) as SchoolSubject[]; 
+export const SCHOOL_SUBJECTS: SchoolSubject[] = Object.keys(schoolSubjectValuesObj) as SchoolSubject[];
 
 export function getSchoolSubjectBySchoolSubjectKey(key: SchoolSubject_Key): SchoolSubject {
     return SCHOOL_SUBJECTS[SCHOOL_SUBJECT_KEYS.indexOf(key)];

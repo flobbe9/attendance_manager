@@ -1,5 +1,6 @@
-import { AttendanceEntity, ExaminantEntity } from "@/backend/DbSchema";
-import { AbstractRepository } from "../AbstractRepository";
+import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
+import { ExaminantEntity } from "@/backend/entities/ExaminantEntity";
+import {AbstractRepository} from "../AbstractRepository";
 
 describe("fixEmptyColumnValues", () => {
     // falsy param
@@ -16,8 +17,8 @@ describe("fixEmptyColumnValues", () => {
     test("Should fix primitive field values from undefined to null", () => {
         const entity: ExaminantEntity = {
             id: 1,
-            role: undefined
-        }
+            role: undefined,
+        };
 
         expect(entity.role).toBeUndefined();
         expect(entity.id).toBe(1);
@@ -28,7 +29,7 @@ describe("fixEmptyColumnValues", () => {
         expect(fixedEntity.role).toBeNull();
         // should not touch non-falsy values
         expect(fixedEntity.id).toBe(1);
-    })
+    });
 
     test("Should fix related entities' field values from undefined to null", () => {
         const entity: AttendanceEntity = {
@@ -38,8 +39,8 @@ describe("fixEmptyColumnValues", () => {
             schoolclassMode: {
                 id: 1,
                 mode: undefined,
-            }
-        }
+            },
+        };
 
         expect(entity.schoolclassMode.mode).toBeUndefined();
         expect(entity.examinants).toBeUndefined();
@@ -52,7 +53,7 @@ describe("fixEmptyColumnValues", () => {
         expect(fixedEntity.examinants).toBeNull();
         // should not touch non-falsy values
         expect(fixedEntity.schoolclassMode.id).toBe(1);
-    })
+    });
 
     test("Should fix related entities' field values from undefined to null", () => {
         const entity: AttendanceEntity = {
@@ -60,14 +61,14 @@ describe("fixEmptyColumnValues", () => {
             schoolYear: "5",
             examinants: [
                 {
-                    role: undefined
+                    role: undefined,
                 },
                 {
                     role: "history",
-                }
+                },
             ],
-            schoolclassMode: null
-        }
+            schoolclassMode: null,
+        };
 
         expect(entity.examinants[0].role).toBeUndefined();
         expect(entity.examinants[1].role).toBe("history");
@@ -76,5 +77,5 @@ describe("fixEmptyColumnValues", () => {
 
         expect(fixedEntity.examinants[0].role).toBeNull();
         expect(fixedEntity.examinants[1].role).toBe("history");
-    })
+    });
 });

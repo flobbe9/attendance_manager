@@ -1,4 +1,4 @@
-import {SchoolYearCondition} from "@/backend/abstract/SchoolYearCondition";
+import { SchoolYearCondition } from "@/backend/abstract/SchoolYearCondition";
 /**
  * Options to pass to getter methods that retrieve school year conditions.
  *
@@ -10,4 +10,6 @@ export interface SchoolYearConditionOptions {
     includeCurrentAttendanceEntity: boolean | null;
     /** Whether to include attendance entities with any subject. Does not regard the examinant role. Default is `false` */
     dontFilterBySchoolSubjectToValidateFor?: boolean;
+    /** Whether to iterate saved attendances regardless of their schoolyear beeing invalid. Default is `false` */
+    allowInvalidSchoolYear?: boolean;
 }

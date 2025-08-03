@@ -1,5 +1,5 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { BORDER_RADIUS } from "@/utils/styleConstants";
+import { BORDER_RADIUS, LIGHT_COLOR } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
 
 
@@ -21,7 +21,7 @@ export class CustomSnackbarStyles {
         backgroundColor: "rgb(255, 200, 0)"
     }
     static info: ViewStyle = {
-        backgroundColor: "rgb(230, 225, 229)" // light theme
+        backgroundColor: LIGHT_COLOR
     }
     static default: ViewStyle = {
         // only for completeness, shouldn't do anything

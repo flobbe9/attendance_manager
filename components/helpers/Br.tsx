@@ -1,32 +1,27 @@
 import HelperProps from "@/abstract/HelperProps";
-import { useDefaultProps } from "@/hooks/useDefaultProps";
-import React, { useEffect } from "react";
-import { Text, TextProps, TextStyle } from "react-native";
-import HelperView from "@/components/helpers/HelperView";
-import { logWarn } from "@/utils/logUtils";
 import { useHelperProps } from "@/hooks/useHelperProps";
+import { logWarn } from "@/utils/logUtils";
+import React, { Fragment, useEffect } from "react";
+import { Text, TextProps, TextStyle } from "react-native";
 
-
-interface Props extends HelperProps<TextStyle>, TextProps {
-
-}
-
+interface Props extends HelperProps<TextStyle>, TextProps {}
 
 /**
  * Wont render children. Does not support animated styles.
- * 
+ *
  * @since 0.0.1
  */
-export default function Br({...props}: Props) {
-
+export default function Br({ rendered = true, onRender, ...props }: Props) {
     const componentName = "Br";
-    const { children, ...otherProps } = useHelperProps(props, componentName);
+    const { children, style, ...otherProps } = useHelperProps(props, componentName);
 
     useEffect(() => {
-        if (children)
-            logWarn("'<Br>' component wont render 'props.children'");
-        
+        if (rendered && onRender) onRender();
+
+        if (children) logWarn("'<Br>' component wont render 'props.children'");
     }, []);
 
-    return <Text {...otherProps}>{"\n"}</Text>;
+    if (!rendered) return <Fragment />;
+
+    return <Text {...otherProps}>{""}</Text>;
 }

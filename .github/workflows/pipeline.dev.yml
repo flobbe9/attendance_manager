@@ -21,8 +21,11 @@ jobs:
           - name: Compile typescript
             run: npx tsc --noEmit
 
-          - name: Build / bundle
+          - name: Prebuild
+            run: npx expo prebuild
+              
+          - name: Eas bundle
             run: npx expo export:embed --eager --platform ios --dev false
-
+            
           - name: Run tests
             run: npm run test

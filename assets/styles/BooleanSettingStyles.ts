@@ -7,10 +7,4 @@ export class BooleanSettingStyles {
         default: {
         }
     }
-
-    static heading: DynamicStyle<TextStyle> = {
-        default: {
-            fontSize: FONT_SIZE
-        }
-    }
 }

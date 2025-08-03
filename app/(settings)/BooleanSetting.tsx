@@ -1,25 +1,25 @@
 import HelperProps from "@/abstract/HelperProps";
-import {BooleanSettingStyles} from "@/assets/styles/BooleanSettingStyles";
+import { BooleanSettingStyles } from "@/assets/styles/BooleanSettingStyles";
 import HelperStyles from "@/assets/styles/helperStyles";
-import {PopupsStyles} from "@/assets/styles/PopupsStyles";
+import { SettingsStyles } from "@/assets/styles/SettingsStyles";
+import { MetadataKey } from "@/backend/abstract/MetadataKey";
 import B from "@/components/helpers/B";
 import Flex from "@/components/helpers/Flex";
 import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
-import {useSettingsRepository} from "@/hooks/repositories/useSettingsRepository";
-import {useHasComponentMounted} from "@/hooks/useHasComponentMounted";
-import {useHelperProps} from "@/hooks/useHelperProps";
-import {useResponsiveStyles} from "@/hooks/useResponsiveStyles";
-import {logTrace} from "@/utils/logUtils";
-import {useState, useEffect} from "react";
-import {ViewStyle, ViewProps} from "react-native";
-import {Switch} from "react-native-paper";
+import { useMetadataRepository } from "@/hooks/repositories/useMetadataRepository";
+import { useHasComponentMounted } from "@/hooks/useHasComponentMounted";
+import { useHelperProps } from "@/hooks/useHelperProps";
+import { logTrace } from "@/utils/logUtils";
+import { useEffect } from "react";
+import { ViewProps, ViewStyle } from "react-native";
+import { Switch } from "react-native-paper";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
     heading: string;
     explanation: string;
     settingsState: [boolean, (turnedOn: boolean) => void];
-    settingsKey: string;
+    settingsKey: MetadataKey;
     /** Whether to save a `true` state as "false". Default is `false` */
     invertDbValue?: boolean;
 }
@@ -42,7 +42,7 @@ export default function BooleanSetting({
         BooleanSettingStyles.component
     );
 
-    const {settingsRepository} = useSettingsRepository();
+    const { metadataRepository } = useMetadataRepository();
 
     const [settingTurnedOn, setSettingTurnedOn] = settingsState;
 
@@ -57,13 +57,13 @@ export default function BooleanSetting({
     }, [settingTurnedOn]);
 
     async function initializeSetting(): Promise<void> {
-        const dbResult = await settingsRepository.loadBooleanSetting(settingsKey);
+        const dbResult = await metadataRepository.selectByKeyParseBoolean(settingsKey);
         setSettingTurnedOn(!invertDbValue ? dbResult : !dbResult);
     }
 
     async function updateSetting(): Promise<void> {
         const value = invertDbValue ? !settingTurnedOn : settingTurnedOn;
-        await settingsRepository.updateValue(settingsKey, value ? "true" : "false");
+        await metadataRepository.persistByKey(settingsKey, value ? "true" : "false");
         logTrace("udpated setting", settingsKey, value);
     }
 
@@ -74,7 +74,7 @@ export default function BooleanSetting({
                 justifyContent="space-between"
                 style={{...HelperStyles.fullWidth}}
             >
-                <B dynamicStyle={BooleanSettingStyles.heading}>{heading}</B>
+                <B dynamicStyle={SettingsStyles.heading}>{heading}</B>
 
                 <Switch
                     value={settingTurnedOn}

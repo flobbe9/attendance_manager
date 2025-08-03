@@ -5,85 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1746195168429,
-      "tag": "0000_true_the_initiative",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1746350980075,
-      "tag": "0001_amused_shaman",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1746353928005,
-      "tag": "0002_great_warbird",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1746354325326,
-      "tag": "0003_amazing_skreet",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1747327757819,
-      "tag": "0004_bizarre_leopardon",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "6",
-      "when": 1747327844607,
-      "tag": "0005_oval_talisman",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "6",
-      "when": 1748603964148,
-      "tag": "0006_medical_blue_shield",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "6",
-      "when": 1748604146276,
-      "tag": "0007_wandering_mentor",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "6",
-      "when": 1749375246927,
-      "tag": "0008_military_sharon_carter",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "6",
-      "when": 1749461926618,
-      "tag": "0009_cool_lockheed",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "6",
-      "when": 1750489403929,
-      "tag": "0010_fixed_aaron_stack",
-      "breakpoints": true
-    },
-    {
-      "idx": 11,
-      "version": "6",
-      "when": 1752310958111,
-      "tag": "0011_free_betty_brant",
+      "when": 1753358903907,
+      "tag": "0000_polite_dracula",
       "breakpoints": true
     }
   ]

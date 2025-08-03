@@ -13,12 +13,17 @@ export class AttendanceInputTooltipStyles {
     }
 
     static button: ViewStyle = {
+        backgroundColor: "transparent",
+        borderRadius: "100%",
         // make button a square
         height: FONT_SIZE_LARGER + 20,
-        width: FONT_SIZE_LARGER + 20
+        width: FONT_SIZE_LARGER + 20,
     }
 
     static textContainerStyles: ViewStyle = {
         backgroundColor: "rgb(197, 197, 197)",
     }
+
+    static maxWidthPortrait = 200;
+    static maxWidthLandscape = 400;
 }

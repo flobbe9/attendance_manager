@@ -4,17 +4,16 @@ import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
-import { SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY } from "@/utils/constants";
-import { TRANSITION_DURATION } from "@/utils/styleConstants";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
+import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 import { GlobalContext } from "../context/GlobalContextProvider";
 import Flex from "../helpers/Flex";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
 import DontConfirmSchoolSubjectChangeContent from "./DontConfirmSchoolSubjectChangeContent";
-import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
+import { NO_SELECTION_LABEL } from "@/utils/constants";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -28,7 +27,7 @@ export default function SchoolSubjectInput({...props}: Props) {
 
     const attendanceService = new AttendanceService();
 
-    const { setDidConfirm, setDidDismiss } = useDontShowAgainStates([dontConfirmSchoolSubjectChange, setDontConfirmSchoolSubjectChange], SETTINGS_DONT_CONFIRM_SCHOOL_SUBJECT_CHANGE_KEY);
+    const { setDidConfirm, setDidDismiss } = useDontShowAgainStates([dontConfirmSchoolSubjectChange, setDontConfirmSchoolSubjectChange], "popups.dontConfirmSchoolSubjectChnage");
 
     const componentName = "SchoolSubjectInput";
     const { children, ...otherProps } = useDefaultProps(props, componentName);
@@ -45,7 +44,7 @@ export default function SchoolSubjectInput({...props}: Props) {
         const handleConfirm = () => {
             updateCurrentAttendanceEntity(new Map([
                 ["schoolSubject", value ? getSchoolSubjectKeyBySchoolSubject(value) : undefined],
-                ["examinants", [] as any],
+                ["examinants", [{role: getSchoolSubjectKeyBySchoolSubject(value)}] as any], // preselct matching examinant
                 ["musicLessonTopic", null],
                 ["schoolYear", null],
                 ["date", null]
@@ -68,7 +67,7 @@ export default function SchoolSubjectInput({...props}: Props) {
         } else
             setTimeout(() => {
                 handleConfirm();
-            }, TRANSITION_DURATION); // wait for select drop down animation to finish
+            }, 100); // wait for select drop down animation to finish
     }
     
     return (
@@ -77,7 +76,14 @@ export default function SchoolSubjectInput({...props}: Props) {
             selectedOptions={getSchoolSubjectBySchoolSubjectKey(currentAttendanceEntity.schoolSubject)}
             setSelectedOptions={handleSelect}
             optionsContainerScroll={!currentAttendanceEntity.schoolSubject} // should be position relative while bottom most element in scrollview, but absolute while not
-            optionsContainerHeight={81}
+            noSelectionLabel={currentAttendanceEntity.schoolSubject ? null : NO_SELECTION_LABEL}
+            selectionButtonProps={{
+                dynamicStyle: AttendanceIndexStyles.defaultHelperButton,
+                ripple: {rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground}
+            }}
+            optionButtonProps={{
+                ripple: {rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground}
+            }}
             {...otherProps}
         >
             <Flex alignItems="center">

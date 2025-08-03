@@ -1,63 +1,45 @@
-import { DynamicStyle } from "@/abstract/DynamicStyle";
-import HelperProps from "@/abstract/HelperProps";
-import HS from "@/assets/styles/helperStyles";
-import HelperView from "@/components/helpers/HelperView";
-import { useDefaultProps } from "@/hooks/useDefaultProps";
-import { formatDateGermanNoTime } from "@/utils/projectUtils";
-import React, { forwardRef, Fragment, JSX, Ref, useState } from "react";
-import { GestureResponderEvent, View, ViewProps, ViewStyle } from "react-native";
-import { DatePickerModal } from "react-native-paper-dates";
-import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
-import HelperButton from "./HelperButton";
-import HelperText from "./HelperText";
+import { DatePickerStyles } from "@/assets/styles/DatePickerStyles";
+import { useHelperProps } from "@/hooks/useHelperProps";
 import { logTrace } from "@/utils/logUtils";
+import { formatDateGermanNoTime } from "@/utils/projectUtils";
+import React, { forwardRef, Fragment, Ref, useContext, useState } from "react";
+import { GestureResponderEvent, View, ViewStyle } from "react-native";
+import { DatePickerModal, DatePickerModalSingleProps } from "react-native-paper-dates";
+import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
+import HelperButton, { HelperButtonProps } from "./HelperButton";
+import HelperText from "./HelperText";
+import { FontAwesome } from "@expo/vector-icons";
+import { BORDER_RADIUS, FONT_SIZE, FONT_SIZE_SMALLER } from "@/utils/styleConstants";
+import Flex from "./Flex";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import HelperView from "./HelperView";
+import HelperStyles from "@/assets/styles/helperStyles";
+import { GlobalContext } from "../context/GlobalContextProvider";
 
-export type DatePickerValue = {startDate: CalendarDate; endDate: CalendarDate} & {date: CalendarDate} & {dates: Date[]};
+export type DatePickerValue = { startDate: CalendarDate; endDate: CalendarDate } & { date: CalendarDate } & { dates: Date[] };
 
-interface Props extends HelperProps<ViewStyle>, ViewProps {
-    date: CalendarDate
-    setDate: (date: CalendarDate) => void,
+interface Props extends HelperButtonProps {
+    date: CalendarDate;
+    setDate: (date: CalendarDate) => void;
     /** Default is "de". Remember to register locales in "GlobalContextProvider.tsx" before adding more. See also https://web-ridge.github.io/react-native-paper-dates/docs/intro/ */
-    locale?: "de" | "en",
-    buttonStyles?: DynamicStyle<ViewStyle>,
+    locale?: "de" | "en";
     /** May throw an error to prevent setting `date` state. Will dismiss regardless */
-    onConfirm?:  (params: DatePickerValue) => void
+    onConfirm?: (params: DatePickerValue) => void;
+    modalProps?: Omit<DatePickerModalSingleProps, "locale" | "mode" | "visible" | "date" | "onDismiss" | "onConfirm">;
 }
 
-
 /**
- * Passing children will completely replace this component's default children.
- * 
+ * Pass children to determine the buttons content, e.g. for custom date format.
+ *
  * @since 0.0.1
  */
-export default forwardRef(function DatePicker(
-    {
-        date,
-        setDate,
-        locale = "de",
-        onTouchStart,
-        onConfirm,
-        buttonStyles,
-        ...props
-    }: Props,
-    ref: Ref<View>) {
-
+export default forwardRef(function DatePicker({ date, setDate, locale = "de", onPress, onConfirm, modalProps, ...props }: Props, ref: Ref<View>) {
     const [isVisible, setIsVisible] = useState(false);
 
+    const { prs } = useContext(GlobalContext);
+
     const componentName = "DatePicker";
-    const { style, children, ...otherProps } = useDefaultProps(props, componentName);
-
-
-    function DefaultChildren(): JSX.Element {
-
-        const dateString = date ?  formatDateGermanNoTime(date) :  'NA';
-
-        return (
-            <HelperButton dynamicStyle={buttonStyles}>
-                <HelperText>{dateString}</HelperText>        
-            </HelperButton>
-        );  
-    }
+    const { children, ...otherProps } = useHelperProps(props, componentName, DatePickerStyles.component);
 
     function handleDismiss(): void {
         setIsVisible(false);
@@ -65,16 +47,13 @@ export default forwardRef(function DatePicker(
 
     function handleConfirm(params: DatePickerValue): void {
         try {
-            if (onConfirm)
-                onConfirm(params);
+            if (onConfirm) onConfirm(params);
 
-        // intended to cancel confirm
+            // intended to cancel confirm
         } catch (e) {
-            if (e.message)
-                logTrace(e.message)
-            
-            return;
+            if (e.message) logTrace(e.message);
 
+            return;
         } finally {
             handleDismiss();
         }
@@ -82,38 +61,41 @@ export default forwardRef(function DatePicker(
         setDate(params.date);
     }
 
-
-    function handleTouchStart(event: GestureResponderEvent): void {
-        if (onTouchStart)
-            onTouchStart(event);
+    function handlePress(event: GestureResponderEvent): void {
+        if (onPress) onPress(event);
 
         setIsVisible(!isVisible);
     }
-    
 
     return (
-        <Fragment>
+        <Flex alignItems="center">
             <DatePickerModal
                 startWeekOnMonday
                 locale={locale}
                 mode="single"
                 visible={isVisible}
+                animationType="slide"
                 date={date}
                 onDismiss={handleDismiss}
+                {...modalProps}
                 onConfirm={handleConfirm}
             />
 
-            <HelperView
-                ref={ref}
+            <HelperButton ref={ref} {...otherProps} onPress={handlePress}>
+                {children ?? <HelperText>{date ? formatDateGermanNoTime(date) : modalProps.emptyLabel ?? "NA"}</HelperText>}
+            </HelperButton>
+
+            <HelperButton
+                disabled={otherProps.disabled || date === null}
                 style={{
-                    ...HS.fitContent,
-                    ...style as object,
+                    borderRadius: BORDER_RADIUS,
+                    backgroundColor: (otherProps.style as ViewStyle).backgroundColor,
+                    ...prs("ms_2")
                 }}
-                onTouchStart={handleTouchStart} 
-                {...otherProps}
+                onPress={() => setDate(null)}
             >
-                {children ?? <DefaultChildren />}
-            </HelperView>
-        </Fragment>
-    )
-})
+                <FontAwesome name="close" size={FONT_SIZE_SMALLER} style={{height: FONT_SIZE, lineHeight: FONT_SIZE}} />
+            </HelperButton>
+        </Flex>
+    );
+});

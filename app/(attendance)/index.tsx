@@ -1,11 +1,11 @@
-import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import "@/assets/styles/AttendanceIndexStyles";
+import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import HelperStyles from "@/assets/styles/helperStyles";
-import { AttendanceEntity } from "@/backend/DbSchema";
+import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import { DontConfirmAttendanceLeaveContent } from "@/components/(attendance)/DontConfirmAttendanceLeaveContent";
 import ExaminantInput from "@/components/(attendance)/ExaminantInput";
+import NotesInputs from "@/components/(attendance)/NotesInputs";
 import SchoolclassModeInput from "@/components/(attendance)/SchoolclassModeInput";
 import SchoolSubjectInput from "@/components/(attendance)/SchoolSubjectInput";
 import SchoolYearInput from "@/components/(attendance)/SchoolYearInput";
@@ -14,100 +14,78 @@ import TopicInput from "@/components/(attendance)/TopicInput";
 import { AttendanceContext } from "@/components/context/AttendanceContextProvider";
 import { GlobalAttendanceContext } from "@/components/context/GlobalAttendanceContextProvider";
 import { GlobalContext } from "@/components/context/GlobalContextProvider";
-import Flex from "@/components/helpers/Flex";
-import HelperButton from "@/components/helpers/HelperButton";
-import HelperInput from "@/components/helpers/HelperInput";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
 import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
-import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useDontShowAgainStates } from "@/hooks/useDontShowAgainStates";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { DontLeaveScreenOptions, useScreenLeaveAttempt } from "@/hooks/useScreenLeaveAttempt";
 import { useSubjectColor } from "@/hooks/useSubjectColor";
-import { SETTINGS_DONT_CONFIRM_ATTENDANCE_SCREEN_LEAVE } from "@/utils/constants";
 import { logDebug } from "@/utils/logUtils";
-import { BORDER_RADIUS, FONT_SIZE } from "@/utils/styleConstants";
+import { FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
-import { ViewStyle } from "react-native";
+import React, { useContext, useEffect } from "react";
 import { Divider } from "react-native-paper";
-import DateInput from '../../components/(attendance)/DateInput';
+import DateInput from "../../components/(attendance)/DateInput";
 
 /**
  * Attendance create / edit screen.
- * 
+ *
  * @since 0.0.1
  */
 export default function index() {
-    const { hideSnackbar, toast } = useContext(GlobalContext);
-    const { 
-        currentAttendanceEntityId, 
-        savedAttendanceEntities, 
-        dontConfirmAttendanceScreenLeave,
-        setDontConfirmAttendanceScreenLeave
-    } = useContext(GlobalAttendanceContext);
-
-    const { 
-        currentAttendanceEntity, 
-        setCurrentAttendanceEntity, 
-        updateCurrentAttendanceEntity, 
+    const { hideSnackbar, toast, prs } = useContext(GlobalContext);
+    const { currentAttendanceEntityId, savedAttendanceEntities, dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave } =
+        useContext(GlobalAttendanceContext);
+        
+    const {
+        currentAttendanceEntity,
+        setCurrentAttendanceEntity,
         lastSavedAttendanceEntity,
         updateLastSavedAttendanceEntity,
         isCurrentAttendanceEntityModified,
         setCurrentAttendanceEntityModified,
     } = useContext(AttendanceContext);
-    
-    const { transparentColor: subjectColor} = useSubjectColor(currentAttendanceEntity?.schoolSubject, "rgb(240, 240, 240)");
 
-    const [areNotesVisible, setAreNotesVisible] = useState(false);
+    const { transparentColor: subjectColor } = useSubjectColor(currentAttendanceEntity?.schoolSubject, "rgb(240, 240, 240)");
 
-    const { setDidConfirm, setDidDismiss } = useDontShowAgainStates([dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave], SETTINGS_DONT_CONFIRM_ATTENDANCE_SCREEN_LEAVE);
-
-    const { allStyles: {mb_2}} = useResponsiveStyles();
-
-    const { animatedStyle: animatedArrowIconRotation } = useAnimatedStyle(
-        [0, 180],
-        ["0deg", "-180deg"],
+    const { setDidConfirm, setDidDismiss } = useDontShowAgainStates(
+        [dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave],
+        "popups.dontConfirmAttendanceScreenLeave",
         {
-            reverse: !areNotesVisible,
+            confirmSnackbarDelay: 200
         }
-    )
+    );
 
-    const numHelperInputLines = 20;
     const attendanceService = new AttendanceService();
 
     const navigation = useNavigation();
-        
-    useEffect(() => {
-        updateLastSavedAttendanceEntity(initializeCurrentAttendanceEntity());
-    }, []);
 
-    useScreenLeaveAttempt(
-        isCurrentAttendanceEntityModified && !dontConfirmAttendanceScreenLeave, 
-        {
-            handleScreenLeave: handleScreenLeave,
-            handleDontLeaveScreen: handleDontLeaveScreenLeave
-        }
-    )
-    
+    const isScreenFocused = useIsFocused();
+
+    useEffect(() => {
+        if (isScreenFocused)
+            updateLastSavedAttendanceEntity(initializeCurrentAttendanceEntity());
+    }, [isScreenFocused]);
+
+    useScreenLeaveAttempt(isCurrentAttendanceEntityModified && !dontConfirmAttendanceScreenLeave, {
+        handleScreenLeave,
+        handleDontLeaveScreen,
+    });
+
     useEffect(() => {
         // case: last saved instance has been instantiated
         if (lastSavedAttendanceEntity && currentAttendanceEntity)
             setCurrentAttendanceEntityModified(attendanceService.isModified(lastSavedAttendanceEntity, currentAttendanceEntity));
-
     }, [currentAttendanceEntity, lastSavedAttendanceEntity]);
 
     // case: no currentAttendanceEntity yet, should not happen though
     if (!currentAttendanceEntity)
         return (
-            <ScreenWrapper
-                style={{...AttendanceIndexStyles.suspenseContainer}}
-                contentContainerStyle={{...HelperStyles.centerNoFlex}}
-            >
-                <FontAwesome name="hourglass" size={FONT_SIZE} style={{...mb_2}} />
+            <ScreenWrapper style={{ ...AttendanceIndexStyles.suspenseContainer }} contentContainerStyle={{ ...HelperStyles.centerNoFlex }}>
+                <FontAwesome name="hourglass" size={FONT_SIZE} style={{ ...prs("mb_2") }} />
                 <HelperText>Lade Unterrichtsbesuch...</HelperText>
             </ScreenWrapper>
         );
@@ -116,35 +94,27 @@ export default function index() {
         hideSnackbar();
     }
 
-    function handleDontLeaveScreenLeave(options: DontLeaveScreenOptions): void {
-        const handleConfirm = () => 
-            navigation.dispatch(options.data.action)
+    function handleDontLeaveScreen(options: DontLeaveScreenOptions): void {
+        const handleConfirm = () => navigation.dispatch(options.data.action);
 
         if (!dontConfirmAttendanceScreenLeave) {
-            toast(
-                <DontConfirmAttendanceLeaveContent />,
-                {
-                    onConfirm: () => {
-                        setDidConfirm(true);
-                        setTimeout(() => {
-                            handleConfirm();
-                        }, 200); // wait for confirm hook to trigger
-                    },
-                    onDismiss: () => setDidDismiss(true)
-                }
-            );
+            toast(<DontConfirmAttendanceLeaveContent />, {
+                onConfirm: () => {
+                    setDidConfirm(true);
+                    setTimeout(() => {
+                        handleConfirm();
+                    }, 200); // wait for confirm hook to trigger
+                },
+                onDismiss: () => setDidDismiss(true),
+            });
         }
     }
 
     function initializeCurrentAttendanceEntity(): AttendanceEntity | null {
         let attendanceEntityForId: AttendanceEntity;
 
-        if (currentAttendanceEntityId <= 0)
-            attendanceEntityForId = AttendanceService.getEmptyInstance()
-            
-        else
-            attendanceEntityForId = savedAttendanceEntities
-               .find(attendanceEntity => attendanceEntity.id === currentAttendanceEntityId);
+        if (currentAttendanceEntityId <= 0) attendanceEntityForId = AttendanceService.getEmptyInstance();
+        else attendanceEntityForId = savedAttendanceEntities.find((attendanceEntity) => attendanceEntity.id === currentAttendanceEntityId);
 
         if (!attendanceEntityForId) {
             logDebug("Failed to load current attendance entity for current id " + currentAttendanceEntityId);
@@ -157,17 +127,24 @@ export default function index() {
     }
 
     return (
-        <ScreenWrapper 
+        <ScreenWrapper
             style={{
                 ...AttendanceIndexStyles.component.default,
-                backgroundColor: subjectColor, 
-            }} 
+                backgroundColor: subjectColor,
+            }}
         >
-            <TopBar />
-            
-            <Divider style={{...mb_2}} />
+            <HelperScrollView stickyHeaderIndices={[0]} dynamicStyle={AttendanceIndexStyles.scrollView}>
+                <HelperView
+                    dynamicStyle={AttendanceIndexStyles.topBarContainer}
+                    style={{
+                        backgroundColor: subjectColor,
+                    }}
+                >
+                    <TopBar />
 
-            <HelperScrollView dynamicStyle={AttendanceIndexStyles.scrollView}>
+                    <Divider style={{ ...prs("mb_2") }} />
+                </HelperView>
+
                 <SchoolSubjectInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
 
                 {/* Post select subject */}
@@ -176,66 +153,24 @@ export default function index() {
 
                     <SchoolYearInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
 
-                    <TopicInput 
+                    <TopicInput
                         rendered={currentAttendanceEntity.schoolSubject === "music"}
                         dynamicStyle={AttendanceIndexStyles.inputContainer}
-                        style={{zIndex: 2}} // needs to be higher than next sibling
+                        style={{ zIndex: 2 }} // needs to be higher than next sibling
                     />
 
-                    <ExaminantInput 
-                        dynamicStyle={AttendanceIndexStyles.inputContainer} 
-                        style={{zIndex: 1}} // for select container
+                    <ExaminantInput
+                        dynamicStyle={AttendanceIndexStyles.inputContainer}
+                        style={{ zIndex: 1 }} // for select container
                     />
 
-                    <Flex justifyContent="center" dynamicStyle={AttendanceIndexStyles.notesContainer}>
-                        {/* Toggle notes */}
-                        <HelperButton 
-                            disableFlex={true} 
-                            dynamicStyle={AttendanceIndexStyles.moreButton} 
-                            onPress={() => setAreNotesVisible(!areNotesVisible)}
-                        >
-                            <HelperText>Mehr</HelperText>
-                            <HelperView
-                                style={{
-                                    transform: [{rotate: animatedArrowIconRotation}]
-                                }} 
-                            >
-                                <FontAwesome name={"chevron-down"} size={FONT_SIZE} />
-                            </HelperView>
-                        </HelperButton>
-                    </Flex>
+                    <Divider style={{ ...prs("mb_6"), ...prs("mt_3") }} />
 
-                    <HelperView rendered={areNotesVisible}>
-                        {/* Note */}
-                        <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer}>
-                            <HelperInput 
-                                multiline
-                                numberOfLines={numHelperInputLines}
-                                placeholder="Thema"
-                                dynamicStyle={AttendanceIndexStyles.defaultMultilineHelperInput}
-                                containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
-                                value={currentAttendanceEntity.note}
-                                setValue={(value) => updateCurrentAttendanceEntity(["note", value])}
-                            />
-                        </HelperView>
+                    <NotesInputs />
 
-                        {/* Note2 */}
-                        <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer}>
-                            <HelperInput 
-                                multiline
-                                numberOfLines={numHelperInputLines}
-                                placeholder="Lerngruppe"
-                                dynamicStyle={AttendanceIndexStyles.defaultMultilineHelperInput}
-                                containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
-                                value={currentAttendanceEntity.note2}
-                                setValue={(value) => updateCurrentAttendanceEntity(["note2", value])}
-                            />
-                        </HelperView>
-
-                        <SchoolclassModeInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
-                    </HelperView>
+                    <SchoolclassModeInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
                 </HelperView>
             </HelperScrollView>
         </ScreenWrapper>
-    )
+    );
 }

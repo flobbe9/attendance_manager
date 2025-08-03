@@ -1,15 +1,13 @@
-import {defaultEqualsFalsy} from "@/utils/projectUtils";
-import AbstractEntity from "./Abstract_Schema";
-import {AbstractService} from "./AbstractService";
+import { defaultEqualsFalsy } from "@/utils/projectUtils";
+import AbstractEntity from "./AbstractEntity";
+import { AbstractService } from "./AbstractService";
 
 /**
  * Extend your service class with this if the entity is an attendance input value.
  *
  * @since 0.1.0
  */
-export abstract class AbstractModifiableService<
-    T extends AbstractEntity
-> extends AbstractService<T> {
+export abstract class AbstractModifiableService<T extends AbstractEntity> extends AbstractService<T> {
     /**
      * Should compare all class fields to determine whether an entity has been modified
      *
@@ -31,8 +29,6 @@ export abstract class AbstractModifiableService<
 
         if (entitiesLastSaved.length !== entitiesModified.length) return true;
 
-        return !!entitiesLastSaved.find((entityLastSaved, i) =>
-            this.isModified(entityLastSaved, entitiesModified[i])
-        );
+        return !!entitiesLastSaved.find((entityLastSaved, i) => this.isModified(entityLastSaved, entitiesModified[i]));
     }
 }

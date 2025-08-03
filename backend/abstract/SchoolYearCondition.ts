@@ -1,17 +1,16 @@
+import {ExaminantRole_Key} from "@/abstract/Examinant";
 import {MusicLessonTopic_Key} from "@/abstract/MusicLessonTopic";
+import {SchoolYear} from "@/abstract/SchoolYear";
+import {defaultEquals, defaultEqualsFalsy} from "@/utils/projectUtils";
+import {assertFalsyAndThrow, cloneObj, isNumberFalsy} from "@/utils/utils";
 import {
+    compareSchoolConditionByAttendanceCount,
     compareSchoolYearRangeSizes,
     equalsSchoolYearRange,
     getSchoolYearRangeSize,
     isWithinSchoolYearRange,
     SchoolYearRange,
 } from "./SchoolYearRange";
-import {SchoolSubject} from "@/abstract/SchoolSubject";
-import {SchoolYear} from "@/abstract/SchoolYear";
-import {assertFalsyAndThrow, cloneObj, isNumberFalsy, isStringFalsy} from "@/utils/utils";
-import {defaultEquals, defaultEqualsFalsy} from "@/utils/projectUtils";
-import {log} from "@/utils/logUtils";
-import {ExaminantRole_Key} from "@/abstract/Examinant";
 
 /**
  * @since 0.1.0
@@ -27,11 +26,6 @@ export interface SchoolYearCondition {
     examinantRole?: ExaminantRole_Key;
     /** The number of saved attendances that match this condition. This count can be used during validation e.g. */
     attendanceCount?: number;
-    /**
-     * Indicates that this range has an overlap with other condition ranges in a condition list, e.g. for sek1 and sek2 conditions.
-     * Assume `false` if not specified
-     */
-    isSchoolYearRangeNotDistinct?: boolean;
 }
 
 /**
@@ -50,13 +44,8 @@ export function findSchoolYearConditionsBySchoolYearRange(
     if (!schoolYear) return [];
 
     const schoolYearConditionsAndIndices: [SchoolYearCondition, number][] = (
-        schoolYearConditions.map((schoolYearCondition, i) => [schoolYearCondition, i]) as [
-            SchoolYearCondition,
-            number
-        ][]
-    ).filter(([schoolYearCondition]) =>
-        isWithinSchoolYearRange(schoolYear, schoolYearCondition.schoolYearRange, includeEdges)
-    );
+        schoolYearConditions.map((schoolYearCondition, i) => [schoolYearCondition, i]) as [SchoolYearCondition, number][]
+    ).filter(([schoolYearCondition]) => isWithinSchoolYearRange(schoolYear, schoolYearCondition.schoolYearRange, includeEdges));
 
     return schoolYearConditionsAndIndices;
 }
@@ -73,14 +62,9 @@ export function findSchoolYearConditionsByLessonTopic(
     assertFalsyAndThrow(schoolYearConditions);
 
     const schoolYearConditionsAndIndices: [SchoolYearCondition, number][] = (
-        schoolYearConditions.map((schoolYearCondition, i) => [schoolYearCondition, i]) as [
-            SchoolYearCondition,
-            number
-        ][]
+        schoolYearConditions.map((schoolYearCondition, i) => [schoolYearCondition, i]) as [SchoolYearCondition, number][]
     ).filter(
-        ([schoolYearCondition]) =>
-            defaultEqualsFalsy(lessonTopic, schoolYearCondition.lessonTopic) ||
-            lessonTopic === schoolYearCondition.lessonTopic
+        ([schoolYearCondition]) => defaultEqualsFalsy(lessonTopic, schoolYearCondition.lessonTopic) || lessonTopic === schoolYearCondition.lessonTopic
     );
 
     return schoolYearConditionsAndIndices;
@@ -93,14 +77,20 @@ export function findSchoolYearConditionsByLessonTopic(
  * @see {@link getSchoolYearRangeSize}
  * @see {@link compareSchoolYearRangeSizes}
  */
-export function sortSchoolYearConditionsByRangeSize(
-    schoolYearConditions: SchoolYearCondition[]
-): SchoolYearCondition[] {
+export function sortSchoolYearConditionsByRangeSize(schoolYearConditions: SchoolYearCondition[]): SchoolYearCondition[] {
     assertFalsyAndThrow(schoolYearConditions);
 
-    return schoolYearConditions.sort((condition1, condition2) =>
-        compareSchoolYearRangeSizes(condition1.schoolYearRange, condition2.schoolYearRange)
-    );
+    return schoolYearConditions.sort((condition1, condition2) => compareSchoolYearRangeSizes(condition1.schoolYearRange, condition2.schoolYearRange));
+}
+
+/**
+ * @param schoolYearConditions
+ * @returns modified `schoolYearConditions` sorted by `attendanceCount` asc
+ */
+export function sortSchoolYearConditionsByAttendanceCount(schoolYearConditions: SchoolYearCondition[]): SchoolYearCondition[] {
+    assertFalsyAndThrow(schoolYearConditions);
+
+    return schoolYearConditions.sort((c1, c2) => compareSchoolConditionByAttendanceCount(c1, c2));
 }
 
 /**
@@ -110,10 +100,7 @@ export function sortSchoolYearConditionsByRangeSize(
  * @param schoolYearCondition2
  * @returns `true` if all fields "defaultEqual" or params are both falsy
  */
-export function equalsSchoolYearCondition(
-    schoolYearCondition1: SchoolYearCondition,
-    schoolYearCondition2: SchoolYearCondition
-): boolean {
+export function equalsSchoolYearCondition(schoolYearCondition1: SchoolYearCondition, schoolYearCondition2: SchoolYearCondition): boolean {
     const equalsFalsy = defaultEqualsFalsy(schoolYearCondition1, schoolYearCondition2);
     if (equalsFalsy !== null) return equalsFalsy;
 
@@ -122,10 +109,7 @@ export function equalsSchoolYearCondition(
         defaultEquals(schoolYearCondition1.maxAttendances, schoolYearCondition2.maxAttendances) &&
         defaultEquals(schoolYearCondition1.lessonTopic, schoolYearCondition2.lessonTopic) &&
         defaultEquals(schoolYearCondition1.attendanceCount, schoolYearCondition2.attendanceCount) &&
-        equalsSchoolYearRange(
-            schoolYearCondition1.schoolYearRange,
-            schoolYearCondition2.schoolYearRange
-        )
+        equalsSchoolYearRange(schoolYearCondition1.schoolYearRange, schoolYearCondition2.schoolYearRange)
     );
 }
 
@@ -135,19 +119,13 @@ export function equalsSchoolYearCondition(
  * @returns `true` if elements with the same index are equal. Will not consider distinct falsy types for params
  * @see {@link equalsSchoolYearCondition}
  */
-export function equalsSchoolYearConditions(
-    schoolYearConditions1: SchoolYearCondition[],
-    schoolYearConditions2: SchoolYearCondition[]
-): boolean {
+export function equalsSchoolYearConditions(schoolYearConditions1: SchoolYearCondition[], schoolYearConditions2: SchoolYearCondition[]): boolean {
     const equalsFalsy = defaultEqualsFalsy(schoolYearConditions1, schoolYearConditions2);
     if (equalsFalsy !== null) return equalsFalsy;
 
     if (schoolYearConditions1.length !== schoolYearConditions2.length) return false;
 
-    return !schoolYearConditions1.find(
-        (schoolYearCondition1, i) =>
-            !equalsSchoolYearCondition(schoolYearCondition1, schoolYearConditions2[i])
-    );
+    return !schoolYearConditions1.find((schoolYearCondition1, i) => !equalsSchoolYearCondition(schoolYearCondition1, schoolYearConditions2[i]));
 }
 
 /**
@@ -157,9 +135,7 @@ export function equalsSchoolYearConditions(
  * @param schoolYearConditions to destruct (wont be modified)
  * @returns list of schoolyear conditions, each with `minAttendances === 1`
  */
-export function destructSchoolYearConditions(
-    schoolYearConditions: SchoolYearCondition[]
-): SchoolYearCondition[] {
+export function destructSchoolYearConditions(schoolYearConditions: SchoolYearCondition[]): SchoolYearCondition[] {
     assertFalsyAndThrow(schoolYearConditions);
 
     const clonedSchoolYearConditions = cloneObj(schoolYearConditions);
@@ -188,12 +164,22 @@ export function destructSchoolYearConditions(
  * @param schoolYearCondition to check
  * @returns `true` if this condition's `attendanceCount` is higher (not equal) than it's max attendance value
  */
-export function isSchoolYearConditionExceedingMax(
-    schoolYearCondition: SchoolYearCondition
-): boolean {
+export function isSchoolYearConditionExceedingMax(schoolYearCondition: SchoolYearCondition): boolean {
     return (
         !isNumberFalsy(schoolYearCondition.attendanceCount) &&
         !isNumberFalsy(schoolYearCondition.maxAttendances) &&
         schoolYearCondition.attendanceCount > schoolYearCondition.maxAttendances
+    );
+}
+
+/**
+ * @param schoolYearCondition to check
+ * @returns `true` if this condition's `attendanceCount` is equal it's max attendance value
+ */
+export function isSchoolYearConditionMaxedOut(schoolYearCondition: SchoolYearCondition): boolean {
+    return (
+        !isNumberFalsy(schoolYearCondition.attendanceCount) &&
+        !isNumberFalsy(schoolYearCondition.maxAttendances) &&
+        schoolYearCondition.attendanceCount === schoolYearCondition.maxAttendances
     );
 }

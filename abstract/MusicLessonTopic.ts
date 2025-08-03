@@ -12,11 +12,11 @@ export type MusicLessonTopic_Key = keyof typeof musicLessonTopicKeysObj;
 export const MUSIC_LESSON_TOPIC_KEYS: MusicLessonTopic_Key[] = Object.keys(musicLessonTopicKeysObj) as MusicLessonTopic_Key[]; 
 
 const musicLessonTopicValuesObj = {
-    "Gestaltungsmittel Klang": 0, 
-    "Gestaltungsmittel Rhythmik": 1,
-    "Gestaltungsmittel Form": 2,
-    "Musik und Sprache": 3,
-    "Musik und Geschichte":  4
+    "Klang (I)": 0, 
+    "Rhythmik, Melodik, Harmonik, Dynamik, Artikulation (I)": 1,
+    "Form und Struktur (II)": 2,
+    "Sprache, Szene, Bild, Film, Programm (I & II)": 3,
+    "Geschichte, Gesellschaft, Kultur (II)":  4
 };
 /**
  *  @since 0.0.1

@@ -1,25 +1,19 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
-import { isSchoolYear, mightBecomeSchoolYear, SchoolYear } from "@/abstract/SchoolYear";
+import { mightBecomeSchoolYear, SchoolYear } from "@/abstract/SchoolYear";
 import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
 import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceInputValidatorBuilder";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { isBlank } from "@/utils/utils";
-import React, { Fragment, ReactNode, useContext, useEffect, useState } from "react";
-import { ViewProps, ViewStyle } from "react-native";
+import React, { ReactNode, useContext, useEffect, useState } from "react";
+import { FlatList, ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 import Flex from "../helpers/Flex";
 import HelperInput from "../helpers/HelperInput";
 import HelperText from "../helpers/HelperText";
 import AttendanceInputTooltip from "./AttendanceInputTooltip";
-import { log, logDebug } from "@/utils/logUtils";
-import { AbstractAttendanceInputValidator } from "@/backend/abstract/AbstractAttendanceInputValidator";
-import { AbstractSchoolYearValidator } from "@/backend/abstract/AbstractSchoolYearValidator";
-import { HistorySchoolYearValidator } from "@/backend/validator/HistorySchoolYearValidator";
-import P from "../helpers/P";
-import B from "../helpers/B";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
 
@@ -99,7 +93,7 @@ export default function SchoolYearInput({...props}: Props) {
             <Flex alignItems="center" style={{zIndex: 1}}>
                 <HelperText dynamicStyle={AttendanceIndexStyles.heading}>Jahrgang</HelperText>
 
-                <AttendanceInputTooltip values={validValues} attendanceInputKey="schoolYear" validator={validator}/>
+                <AttendanceInputTooltip values={validValues} attendanceInputKey="schoolYear" validator={validator} />
             </Flex>
 
             <HelperInput 

@@ -1,5 +1,7 @@
+import { combineDynamicStyles } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
 import { AttendanceIndexStyles } from "@/assets/styles/AttendanceIndexStyles";
+import { DateInputStyles } from "@/assets/styles/DateInputStyles";
 import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceInputValidatorBuilder";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
@@ -13,34 +15,28 @@ import DatePicker, { DatePickerValue } from "../helpers/DatePicker";
 import Flex from "../helpers/Flex";
 import HelperText from "../helpers/HelperText";
 import AttendanceInputTooltip from "./AttendanceInputTooltip";
-import B from "../helpers/B";
+import { GlobalContext } from "../context/GlobalContextProvider";
 
-interface Props extends HelperProps<ViewStyle>, ViewProps {
-
-}
+interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
 /**
  * @since 0.0.1
  */
-export default function DateInput({...props}: Props) {
+export default function DateInput({ ...props }: Props) {
     const { savedAttendanceEntities } = useContext(GlobalAttendanceContext);
-    const { updateCurrentAttendanceEntity, currentAttendanceEntity, handleInvalidAttendanceInput, resetInvalidAttendanceInputErrorStyles } = useContext(AttendanceContext);
+    const { updateCurrentAttendanceEntity, currentAttendanceEntity, handleInvalidAttendanceInput, resetInvalidAttendanceInputErrorStyles } =
+        useContext(AttendanceContext);
 
-    const { allStyles: { mb_2 } } = useResponsiveStyles();
+    const [invalidValues, setInvalidValues] = useState<Map<Date, string>>(new Map());
 
-    const [invalidValues, setInvalidValues] = useState<Date[]>([]);
-
-    const validator = AttendanceInputValidatorBuilder
-        .builder(currentAttendanceEntity, savedAttendanceEntities)
-        .inputType("date")
-        .build();
+    const validator = AttendanceInputValidatorBuilder.builder(currentAttendanceEntity, savedAttendanceEntities).inputType("date").build();
 
     const componentName = "DateInput";
-    const { children, style, ...otherProps } = useHelperProps(props, componentName);
+    const { children, style, ...otherProps } = useHelperProps(props, componentName, DateInputStyles.component);
 
     useEffect(() => {
-        setInvalidValues(validator.getInvalidValues() as Date[]);
-    }, [currentAttendanceEntity])
+        setInvalidValues(validator.getInvalidValues() as Map<Date, string>);
+    }, [currentAttendanceEntity]);
 
     function handleConfirm(params: DatePickerValue): void {
         const date = params.date;
@@ -48,53 +44,39 @@ export default function DateInput({...props}: Props) {
 
         // case: valid
         if (errorMessage === null) {
-            resetInvalidAttendanceInputErrorStyles();           
+            resetInvalidAttendanceInputErrorStyles();
             return;
         }
 
-        handleInvalidAttendanceInput(
-            formatDateGermanNoTime(date),
-            errorMessage,
-            "date"
-        )
+        handleInvalidAttendanceInput(formatDateGermanNoTime(date), errorMessage, "date");
 
         // prevent set state
         throw new Error(errorMessage);
     }
 
-    /**
-     * @param invalidValue 
-     * @param index 
-     * @returns one music lesson topic formatted for tooltip body
-     */
-    function formatTooltip(invalidValue: Date, index: number): string {
-        const formattedDate = formatDateGermanNoTime(invalidValue);
-        const prefix = index >= 1 ? '\n' : '';
-        return `${prefix}${formattedDate}`;
-    }
-    
     return (
-        <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer} style={{...style as object, ...mb_2}} {...otherProps}>
-            <Flex alignItems="center">
+        <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer} style={{ ...(style as object) }} {...otherProps}>
+            <Flex alignItems="center" style={{ zIndex: 1 }}>
                 <HelperText dynamicStyle={AttendanceIndexStyles.heading}>Datum</HelperText>
 
-                <AttendanceInputTooltip 
-                    values={invalidValues}
-                    attendanceInputKey="date"
-                    validator={validator}
-                    emptyMessage="Alle Werte erlaubt."
-                    heading={<B>Invalide Werte:</B>}
-                    valueToStringPretty={formatTooltip}
-                />
+                <AttendanceInputTooltip values={invalidValues} attendanceInputKey={"date"} validator={validator} />
             </Flex>
 
-            <DatePicker 
-                date={currentAttendanceEntity.date} 
+            <DatePicker
+                date={currentAttendanceEntity.date}
                 setDate={(date) => updateCurrentAttendanceEntity(["date", date])}
-                onConfirm={handleConfirm}         
+                dynamicStyle={combineDynamicStyles(DateInputStyles.button, AttendanceIndexStyles.defaultHelperButton)}
+                ripple={{ rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground }}
+                modalProps={{
+                    emptyLabel: "__.__.____",
+                    validRange: {
+                        disabledDates: Array.from(invalidValues.keys()),
+                    },
+                }}
+                onConfirm={handleConfirm}
             />
-            
+
             {children}
         </HelperView>
-    )
+    );
 }

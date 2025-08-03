@@ -1,7 +1,7 @@
-import { isObjectFalsy } from "@/utils/utils";
 import { Animated } from "react-native";
 import { AnimatedDynamicStyle } from "./AnimatedDynamicStyle";
 import { PartialRecord } from "./PartialRecord";
+import { isFalsy } from "@/utils/utils";
 
 /**
  * Replaces css pseudo classes like ```:focus``` and ```:hover``` with respective mobile properties. 
@@ -54,11 +54,11 @@ export function combineDynamicStyles<StyleType>(dynamicStyle1: DynamicStyle<Styl
             const dynamicStyle2Value = dynamicStyle2[key];
 
             // case: only style 2
-            if (!isObjectFalsy(dynamicStyle2Value) && isObjectFalsy(dynamicStyle1Value)) {
+            if (!isFalsy(dynamicStyle2Value) && isFalsy(dynamicStyle1Value)) {
                 combined[key] = dynamicStyle2Value;
                 
             // case: only style 1
-            } else if (!isObjectFalsy(dynamicStyle1Value) && isObjectFalsy(dynamicStyle2Value))
+            } else if (!isFalsy(dynamicStyle1Value) && isFalsy(dynamicStyle2Value))
                 combined[key] = dynamicStyle1Value;
 
             // case: both

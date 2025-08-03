@@ -1,9 +1,11 @@
-import {SchoolSubject_Key} from "@/abstract/SchoolSubject";
-import {logWarn} from "@/utils/logUtils";
-import {cloneObj} from "@/utils/utils";
-import {ValueOf} from "react-native-gesture-handler/lib/typescript/typeUtils";
-import {AttendanceEntity} from "../DbSchema";
-import {AttendanceService} from "../services/AttendanceService";
+import { SchoolSubject_Key } from "@/abstract/SchoolSubject";
+import { logWarn } from "@/utils/logUtils";
+import { cloneObj } from "@/utils/utils";
+import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
+import { AttendanceEntity } from "../entities/AttendanceEntity";
+import { AttendanceService } from "../services/AttendanceService";
+import { SchoolYearConditionOptions } from "./SchoolYearConditionOptions";
+import { ReactNode } from "react";
 
 /**
  * Extend this class for attendance input validators.
@@ -53,7 +55,7 @@ export abstract class AbstractAttendanceInputValidator<
         // should not happen, if current is saved it should be among saved attendances
         if (savedCurrentAttendanceIndex === -1) {
             logWarn(
-                "Failed to find saved current attendance among saved attendances. This should not happen."
+                `Failed to find saved current attendance among saved attendances. This should not happen. id: ${this.currentAttendance.id}`
             );
             return this.savedAttendances;
         }
@@ -128,9 +130,21 @@ export abstract class AbstractAttendanceInputValidator<
     /**
      * Implement at least one, {@link getValidValues()} or {@link getInvalidValues()}.
      *
-     * @return all invalid values for `InputType` considering `currentAttendance` and `savedAttendances`. Empty array if no invalid values
+     * @return all invalid values for `InputType` considering `currentAttendance` and `savedAttendances` and their error message. Empty map if no invalid values
      */
-    public abstract getInvalidValues(): ValueOf<AttendanceEntity>[];
+    public abstract getInvalidValues(): Map<ValueOf<AttendanceEntity>, string>;
+
+    /**
+     * @param values retrieved by calling `getValidValues()` if not specified
+     * @return react node of beautified valid values, e.g. for tooltip
+     */
+    public abstract formatValidValues(values?: ValueOf<AttendanceEntity>[]): ReactNode;
+
+    /**
+     * @param values retrieved by calling `getInvalidValues()` if not specified
+     * @return react node of beautified invalid values
+     */
+    public abstract formatInvalidValues(values?: Map<ValueOf<AttendanceEntity>, string>): ReactNode;
 
     /**
      * Validate `inputValue`s conditions that don't take other attendance fields or future selections into consideration.
@@ -139,12 +153,14 @@ export abstract class AbstractAttendanceInputValidator<
      *
      * @param constantConditions any condition (propbably hardcoded) to validate `inputValue` against
      * @param inputValue to validate
+     * @param options default for includeCurrentAttendanceEntity is `false`. See {@link SchoolYearConditionOptions}
      * @returns `null` if `inputValue` is valid, an error message if invalid
      * @throws if falsy params
      */
     public abstract validateNonContextConditions(
         constantConditions: any,
-        inputValue: InputValueType
+        inputValue: InputValueType,
+        options?: SchoolYearConditionOptions
     ): string | null;
 
     /**

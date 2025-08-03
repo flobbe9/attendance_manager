@@ -30,6 +30,8 @@ export interface HelperButtonProps extends HelperProps<ViewStyle>, ViewProps {
 
 /**
  * Should act like a button, is actually a ```<HelperView>``` supporting a ripple effect and dynamic and animated styles.
+ * 
+ * NOTE: flex `alignItems` of a parent of this component will only apply when settings `containerStyles.alignSelf` to "auto".
  *  
  * @since 0.0.1
  */
@@ -41,6 +43,8 @@ export default forwardRef(function HelperButton(
         loading = false,
         loadingProps = {},
         onPress,
+        onTouchStart, 
+        onTouchEnd,
         ...props
     }: HelperButtonProps,
     ref: Ref<View>
@@ -63,8 +67,28 @@ export default forwardRef(function HelperButton(
     )
 
     function handlePress(event?: GestureResponderEvent): void {
-        if (!disabled && !loading && onPress)
+        if (!shouldNotCallEventHandler() && onPress)
             onPress(event);
+    }
+
+    function handleTouchEnd(event: GestureResponderEvent): void {
+        if (shouldNotCallEventHandler())
+            return;
+
+        if (onTouchEnd)
+            onTouchEnd(event);
+    }
+
+    function handleTouchStart(event: GestureResponderEvent): void {
+        if (shouldNotCallEventHandler())
+            return;
+
+        if (onTouchStart)
+            onTouchStart(event);
+    }
+
+    function shouldNotCallEventHandler(): boolean {
+        return disabled || loading;
     }
 
     return (
@@ -92,6 +116,8 @@ export default forwardRef(function HelperButton(
                         ...style as object,
                         opacity: anmimatedOpacity
                     }}
+                    onTouchEnd={handleTouchEnd}
+                    onTouchStart={handleTouchStart}
                     {...otherProps}
                 >
                     {

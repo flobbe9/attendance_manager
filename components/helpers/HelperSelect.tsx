@@ -1,5 +1,7 @@
+import { combineDynamicStyles } from "@/abstract/DynamicStyle";
 import HelperProps from "@/abstract/HelperProps";
 import { HelperSelectStyles } from "@/assets/styles/HelperSelectStyles";
+import HelperStyles from "@/assets/styles/helperStyles";
 import HelperView from "@/components/helpers/HelperView";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useBackHandler } from "@/hooks/useBackHandler";
@@ -7,9 +9,11 @@ import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { NO_SELECTION_LABEL } from "@/utils/constants";
 import { logError } from "@/utils/logUtils";
 import { FontAwesome } from "@expo/vector-icons";
-import React, { forwardRef, JSX, Ref, useEffect, useState } from "react";
-import { View, ViewProps, ViewStyle } from "react-native";
-import HelperButton from "./HelperButton";
+import React, { JSX, useEffect, useState } from "react";
+import { GestureResponderEvent, LayoutChangeEvent, ViewProps, ViewStyle } from "react-native";
+import { useClickOutside } from "react-native-click-outside";
+import { Divider } from "react-native-paper";
+import HelperButton, { HelperButtonProps } from "./HelperButton";
 import HelperReactChildren from "./HelperReactChildren";
 import HelperScrollView from "./HelperScrollView";
 import HelperText from "./HelperText";
@@ -20,10 +24,8 @@ interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
     selectedOptions: Set<OptionType> | OptionType | undefined,
     /** Needs to have a set as arg if ```multiselect``` is ```true```, else may be both */
     setSelectedOptions: (options: Set<OptionType> | OptionType | undefined) => void,
-    /** Default is 200 */
-    optionsContainerHeight?: number,
     /** 
-     * If ```false```, the optionsContainer wont be scrollable view which makes position absolute possible. 
+     * If ```false```, the optionsContainer wont be scrollable view which makes `position: absolute` possible. 
      * Use this if all options fit into the container height and if you want the container not to push down 
      * the rest of the layout.
      * 
@@ -35,41 +37,57 @@ interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
     /** Default is {@link NO_SELECTION_LABEL} */
     noSelectionLabel?: string,
     /** Applied to every select option. If returns `true`, disable the select option. */
-    disabledCondition?: (optionValue: OptionType) => boolean
+    disabledCondition?: (optionValue: OptionType) => boolean,
+    selectionButtonProps?: HelperButtonProps,
+    optionButtonProps?: HelperButtonProps
 }
 
 /**
  * @since 0.0.1
  */
-export default forwardRef(function HelperSelect<OptionType>({
+export default function HelperSelect<OptionType>({
         options,
         selectedOptions,
         setSelectedOptions,
-        optionsContainerHeight = 200,
         optionsContainerScroll = true,
         multiselect = false,
         noSelectionLabel = NO_SELECTION_LABEL,
         disabledCondition,
+        selectionButtonProps = {},
+        optionButtonProps = {},
         ...props
-    }: Props<OptionType>,
-    ref: Ref<View>
+    }: Props<OptionType>
 ) {
-
     const [optionElements, setOptionElements] = useState<JSX.Element[]>([]);
     const [areOptionsVisible, setAreOptionsVisible] = useState(false);
     const [selectionButtonValue, setSelectionButtonValue] = useState("");
+
+    // for "touch" outside hide
+    const [isSelectionButtonTouched, setSelectionButtonTouched] = useState(false);
+    const [isOptionsButtonTouched, setOptionsButtonTouched] = useState(false);
+
+    // set on layout change by setting height to undefined and opacity to 0
+    const [expandedOptionsContainerHeight, setExpandedOptionsContainerHeight] = useState<number>(0);
+
+    const animationDuration = 100;
+    const { animatedStyle: animatedOptionsContainerHeight, animate: slideOptionsContainer } = useAnimatedStyle(
+        [0, expandedOptionsContainerHeight], 
+        [0, expandedOptionsContainerHeight], 
+        {
+            duration: animationDuration,
+            animationDeps: null
+        }
+    );
+
+    const componentRef = useClickOutside(handleGlobalScreenTouch);
     
     const componentName = "HelperSelect";
     const { children, ...otherProps } = useDefaultProps(props, componentName, HelperSelectStyles.component);
-    
-    const { animatedStyle: animatedOptionsContainerHeight, animate: slideOptionsContainer } = useAnimatedStyle(
-        [0, optionsContainerHeight], 
-        [0, optionsContainerHeight], 
-    );
 
     useEffect(() => {
         setSelectionButtonValue(getSelectionButtonValue());
-        setOptionElements(mapOptions());
+
+        updateOptionElements();
 
     }, [selectedOptions, setSelectedOptions]);
 
@@ -86,11 +104,25 @@ export default forwardRef(function HelperSelect<OptionType>({
     }, [areOptionsVisible]);
 
     /**
+     * Update `optionElements` state and possibly reinitialize options container height
+     */
+    function updateOptionElements(): void {
+        setTimeout(() => {
+            const newOptionElements = mapOptions();
+            setOptionElements(newOptionElements);
+
+            // case: num options has changed, trigger reinitialize height
+            if (newOptionElements.length !== optionElements.length)
+                setExpandedOptionsContainerHeight(0);
+        }, animationDuration);
+    }
+
+    /**
      * Update ```selectedOptions``` state and possibly hide optionsContainer.
      * 
      * @param pressedOption 
      */
-    function handleOptionPress(pressedOption: OptionType): void {
+    function handleOptionPress(event: GestureResponderEvent, pressedOption: OptionType): void {
         if (multiselect) {
             if (!(selectedOptions instanceof Set)) {
                 logError("'selectedOptions' needs to be a Set if 'multiselect' is true");
@@ -119,6 +151,9 @@ export default forwardRef(function HelperSelect<OptionType>({
                 setSelectedOptions(updatedSelectedOptions);
             }
         }
+
+        if (optionButtonProps.onPress)
+            optionButtonProps.onPress(event);
     
         setAreOptionsVisible(multiselect);
     }
@@ -127,19 +162,47 @@ export default forwardRef(function HelperSelect<OptionType>({
         if (!options)
             return [];
 
-        return options
+        if (noSelectionLabel && !multiselect)
+            options = [(noSelectionLabel as OptionType), ...options];
+
+        const optionElements: JSX.Element[] = options
             .map((option, i) => {
-                const disabled = disabledCondition ? disabledCondition(option) : false;
+                const disabled = disabledCondition && option !== noSelectionLabel ? disabledCondition(option) : false;
+                
+                function handleTouchStart(event: GestureResponderEvent): void {
+                    setOptionsButtonTouched(true);
+
+                    if (optionButtonProps.onTouchStart)
+                        optionButtonProps.onTouchStart(event);
+                }
+
+                function handleTouchEnd(event: GestureResponderEvent): void {
+                    setOptionsButtonTouched(false);
+
+                    if (optionButtonProps.onTouchEnd)
+                        optionButtonProps.onTouchEnd(event);
+                }
+
                 return (
                     <HelperButton 
-                        style={isOptionSelected(option) && !multiselect ? HelperSelectStyles.selectedOptionButton.default : HelperSelectStyles.optionButton.default} 
-                        containerStyles={{default: {width: "100%"}}}
+                        {...optionButtonProps}
+                        dynamicStyle={combineDynamicStyles(HelperSelectStyles.optionButton, optionButtonProps.dynamicStyle)}
+                        style={{
+                            borderBottomWidth: option === noSelectionLabel ? .5 : 0,
+                            borderColor: "gray",
+                            ...isOptionSelected(option) && !multiselect ? HelperSelectStyles.selectedOptionButton.default : {},
+                            ...(optionButtonProps.style ?? {} as object)
+                        }} 
+                        containerStyles={combineDynamicStyles({default: {...HelperStyles.fullWidth}}, optionButtonProps.containerStyles)}
                         disabled={disabled}
                         key={i}
-                        onPress={() => handleOptionPress(option)}
+                        onTouchStart={handleTouchStart}
+                        onPress={(e) => handleOptionPress(e, option)}
+                        onTouchEnd={handleTouchEnd}
                     >
                         <HelperText 
-                            dynamicStyle={{...HelperSelectStyles.optionButtonText}}
+                            numberOfLines={1}
+                            dynamicStyle={HelperSelectStyles.optionButtonText}
                         >
                             {option as string}
                         </HelperText>
@@ -148,6 +211,13 @@ export default forwardRef(function HelperSelect<OptionType>({
                     </HelperButton>
                 );
             });
+
+        // separate last option visually
+        optionElements.push((
+            <Divider key={options.length} />
+        ))
+
+        return optionElements;
     }
 
     function getSelectionButtonValue(): string {
@@ -167,36 +237,86 @@ export default forwardRef(function HelperSelect<OptionType>({
     }
 
     function isOptionSelected(optionValue: OptionType): boolean {
-        return selectedOptions instanceof Set ? selectedOptions.has(optionValue) : selectedOptions === optionValue;
+        return selectedOptions instanceof Set ? selectedOptions.has(optionValue) : getSelectionButtonValue() === optionValue;
+    }
+
+    /**
+     * Hide drop down on "touch outside".
+     */
+    function handleGlobalScreenTouch(): void {
+        // let buttons handle drop down hide themselves
+        if (isSelectionButtonTouched || isOptionsButtonTouched)
+            return;
+
+        setAreOptionsVisible(false);
+    }
+
+    function initializeExpandedOptionsContainerHeight(e: LayoutChangeEvent): void {
+        if (!isExapandedOptionsContainerHeightInitialized())
+            setExpandedOptionsContainerHeight(e.nativeEvent.layout.height)
+    }
+
+    function isExapandedOptionsContainerHeightInitialized(): boolean {
+        return expandedOptionsContainerHeight !== 0;
+    }
+
+    function handleTouchStart(event: GestureResponderEvent): void {
+        setSelectionButtonTouched(true);
+
+        if (selectionButtonProps.onTouchStart)
+            selectionButtonProps.onTouchStart(event);
+    }
+
+    function handleTouchEnd(event: GestureResponderEvent): void {
+        setSelectionButtonTouched(false);
+
+        if (selectionButtonProps.onTouchEnd)
+            selectionButtonProps.onTouchEnd(event);
+    }
+
+    function handlePress(event: GestureResponderEvent): void {
+        setAreOptionsVisible(!areOptionsVisible);
+
+        if (selectionButtonProps.onPress)
+            selectionButtonProps.onPress(event);
     }
 
     return (
-        <HelperView ref={ref} {...otherProps}>
+        <HelperView ref={componentRef} {...otherProps}>
             <HelperReactChildren>
                 {children}
             </HelperReactChildren>
 
             <HelperButton 
-                dynamicStyle={HelperSelectStyles.selectionButton}
-                onPress={() => setAreOptionsVisible(!areOptionsVisible)}
+                {...selectionButtonProps}
+                dynamicStyle={combineDynamicStyles(HelperSelectStyles.selectionButton, selectionButtonProps.dynamicStyle)}
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+                onPress={handlePress}
             >
-                <HelperText dynamicStyle={HelperSelectStyles.selectionButtonValue} style={{opacity: selectionButtonValue === noSelectionLabel ? 0.5 : 1}}>
+                <HelperText 
+                    numberOfLines={1}
+                    dynamicStyle={HelperSelectStyles.selectionButtonValue} 
+                    style={{opacity: selectionButtonValue === noSelectionLabel ? 0.5 : 1}}
+                >
                     {selectionButtonValue}
                 </HelperText>
                 <FontAwesome name="chevron-down" style={HelperSelectStyles.selectionButtonValue.default} />
             </HelperButton>
 
-            <HelperView style={{position: "relative"}}>
+            <HelperView>
                 <HelperScrollView 
                     dynamicStyle={HelperSelectStyles.optionsContainer}
                     style={{
-                        height: animatedOptionsContainerHeight,
+                        height: isExapandedOptionsContainerHeightInitialized() ? animatedOptionsContainerHeight : undefined,
+                        opacity: isExapandedOptionsContainerHeightInitialized() ? 1 : 0, 
                         position: optionsContainerScroll ? "static" : "absolute",
                     }}
+                    onLayout={initializeExpandedOptionsContainerHeight}
                 >
                     {optionElements}
                 </HelperScrollView>
             </HelperView>
         </HelperView>
     )
-})
+}

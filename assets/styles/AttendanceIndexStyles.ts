@@ -3,6 +3,7 @@ import { BOLD, BORDER_RADIUS, FONT_SIZE, GLOBAL_SCREEN_PADDING } from "@/utils/s
 import { TextStyle, ViewStyle } from "react-native";
 import { default as HelperStyles, default as HS } from "./helperStyles";
 
+const defaultInputBackground = "rgb(255, 255, 255)";
 
 export class AttendanceIndexStyles {
     static component: DynamicStyle<ViewStyle> = {
@@ -20,7 +21,6 @@ export class AttendanceIndexStyles {
 
     static scrollView: DynamicStyle<ViewStyle> = {
         default: {
-            marginBottom: 60, // more than padding sothat keyboard does not cover bottom input
         }
     }
     
@@ -38,6 +38,13 @@ export class AttendanceIndexStyles {
         }
     }
 
+    static topBarContainer: DynamicStyle<ViewStyle> = {
+        default: {
+            ...HelperStyles.fullWidth,
+            zIndex: 1,
+        }
+    }
+
     static inputContainer: DynamicStyle<ViewStyle> = {
         default: {
             marginBottom: 30
@@ -45,13 +52,17 @@ export class AttendanceIndexStyles {
     }
 
     static defaultHelperInputContainer: DynamicStyle<ViewStyle & TextStyle> = {
-        default: {
-            backgroundColor: "rgb(220, 220, 220)",
-        },
         focus: {
-            backgroundColor: "rgb(240, 240, 240)"
+            backgroundColor: defaultInputBackground
         }
     }
+
+    static defaultHelperButton: DynamicStyle<ViewStyle> = {
+        default: {
+            backgroundColor: defaultInputBackground
+        }
+    }
+    static defaultHelperButtonRippleBackground = "rgba(200, 200, 200, .7)";
 
     static defaultMultilineHelperInput: DynamicStyle<TextStyle> = {
         default: {

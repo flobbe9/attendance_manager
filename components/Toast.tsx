@@ -1,7 +1,7 @@
 import HelperProps from "@/abstract/HelperProps";
 import { ToastStyles } from "@/assets/styles/ToastStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { Modal, Portal } from "react-native-paper";
 import HelperScrollView from "./helpers/HelperScrollView";
@@ -10,6 +10,7 @@ import ToastDefaultFooter from "./ToastDefaultFooter";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import HelperReactChildren from "./helpers/HelperReactChildren";
 import { logDebug } from "@/utils/logUtils";
+import { GlobalContext } from "./context/GlobalContextProvider";
 
 export interface GlobalToastProps {
     /** Applied to outer container */
@@ -63,11 +64,10 @@ export default function Toast({
     onDismiss,
     ...props
 }: Props) {
+    const { prs } = useContext(GlobalContext);
 
     const componentName = "Toast";
     const { children, style, ...otherProps } = useHelperProps(props, componentName, ToastStyles.component);
-
-    const { allStyles: { mt_2 } } = useResponsiveStyles();
 
     function handleDimsiss(): void { 
         if (onDismiss)
@@ -111,7 +111,7 @@ export default function Toast({
                 </HelperReactChildren>
 
                 <ToastDefaultFooter 
-                    style={mt_2}
+                    style={{...prs("mt_2")}}
                     rendered={defaultFooter}
                     onCancel={handleCancel}
                     onConfirm={handleConfirm}
