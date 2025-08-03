@@ -2,11 +2,13 @@ import { GlobalPopupProps } from "@/components/Popup";
 import { logWarn } from "@/utils/logUtils";
 import { isFalsy } from "@/utils/utils";
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { Keyboard } from "react-native";
+import { ImageStyle, Keyboard, TextStyle, ViewStyle } from "react-native";
 import { SnackbarProps } from "react-native-paper";
 import { de, en, registerTranslation } from "react-native-paper-dates";
 import { CustomnSnackbarProps, CustomSnackbarStatus } from "../CustomSnackbar";
 import { GlobalToastProps } from "../Toast";
+import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { ResponsiveStyle } from "@/abstract/ResponsiveStyle";
 
 /**
  * Contains global variables accessible in the whole app.
@@ -34,6 +36,8 @@ export default function GlobalContextProvider({ children }: { children: ReactNod
         content: "",
     });
 
+    const { prs } = useResponsiveStyles();
+
     const context = {
         globalScreenTouch,
         setGlobalScreenTouch,
@@ -52,6 +56,8 @@ export default function GlobalContextProvider({ children }: { children: ReactNod
         toast,
         hideToast,
         globalToastProps,
+
+        prs
     };
 
     useEffect(() => {
@@ -197,4 +203,6 @@ export const GlobalContext = createContext({
     toast: (content: ReactNode, globalToastProps: Omit<GlobalToastProps, "content" | "visible"> = {}): void => {},
     hideToast: (): void => {},
     globalToastProps: {} as GlobalToastProps,
+
+    prs: (...keys: (keyof ResponsiveStyle)[]): ViewStyle & TextStyle & ImageStyle => {return {}}
 });

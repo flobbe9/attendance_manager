@@ -1,13 +1,11 @@
 import { PartialRecord } from "@/abstract/PartialRecord";
 import { ResponsiveStyle } from "@/abstract/ResponsiveStyle";
-import { logDebug, logWarn } from "@/utils/logUtils";
+import { logWarn } from "@/utils/logUtils";
 import { LG_MIN_WIDTH, MD_MIN_WIDTH, SM_MIN_WIDTH } from "@/utils/styleConstants";
-import { flatMapObject, isBlank, isNumberFalsy, sortObjectByKeys } from "@/utils/utils";
-import { useStateForPath } from "@react-navigation/native";
+import { isBlank, isNumberFalsy, sortObjectByKeys } from "@/utils/utils";
 import { useEffect, useState } from "react";
 import { ImageStyle, TextStyle, useWindowDimensions, ViewStyle } from "react-native";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
-import { getStartOfDay } from "react-native-paper-dates/lib/typescript/Date/dateUtils";
 
 /**
  * Creates style objects that behave like css bootstrap classes.
@@ -22,6 +20,8 @@ import { getStartOfDay } from "react-native-paper-dates/lib/typescript/Date/date
  * ```
  * is the equivalent to bootstrap (v5): `col-5 col-sm-10`.
  * Notice that the order in which the styles are passed to the parsing function does not matter.
+ * 
+ * Ideally call this once only (global context e.g.) in order to improove performance.
  *
  * @returns bootstrap like style objects that get updated with screen width
  * @since 0.0.1

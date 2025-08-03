@@ -13,13 +13,14 @@ import {formatDateGermanNoTime} from "@/utils/projectUtils";
 import {FONT_SIZE} from "@/utils/styleConstants";
 import {FontAwesome} from "@expo/vector-icons";
 import {Link} from "expo-router";
-import React, {JSX} from "react";
+import React, {JSX, useContext} from "react";
 import {ViewProps, ViewStyle} from "react-native";
 import HelperStyles from "./../assets/styles/helperStyles";
 import B from "./helpers/B";
 import Flex from "./helpers/Flex";
 import HelperText from "./helpers/HelperText";
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
+import { GlobalContext } from "./context/GlobalContextProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
     attendanceEntity: AttendanceEntity;
@@ -47,9 +48,7 @@ export default function AttendanceLink({attendanceEntity, ...props}: Props) {
 
     const examinantService = new ExaminantService();
 
-    const {
-        allStyles: {ms_1, col_4, mb_2},
-    } = useResponsiveStyles();
+    const { prs } = useContext(GlobalContext);
 
     const errorColor = "red";
 
@@ -79,7 +78,7 @@ export default function AttendanceLink({attendanceEntity, ...props}: Props) {
                     color={getSubjectColor(examinant.role)}
                     size={FONT_SIZE}
                     key={i}
-                    style={{...ms_1}}
+                    style={{...prs("ms_1")}}
                 />
             ));
     }
@@ -98,7 +97,7 @@ export default function AttendanceLink({attendanceEntity, ...props}: Props) {
             <Link href="/(attendance)">
                 <HelperView>
                     {/* Top row */}
-                    <HelperView style={{...HelperStyles.fullWidth, ...mb_2}}>
+                    <HelperView style={{...HelperStyles.fullWidth, ...prs("mb_2")}}>
                         <HelperText
                             numberOfLines={1} // ellipsis
                             dynamicStyle={AttendanceLinkStyles.heading}
@@ -124,13 +123,13 @@ export default function AttendanceLink({attendanceEntity, ...props}: Props) {
                             dynamicStyle={AttendanceLinkStyles.subheading}
                             style={{
                                 color: date ? "" : errorColor,
-                                ...col_4,
+                                ...prs("col_4"),
                             }}
                         >
                             {getDate()}
                         </HelperText>
 
-                        <Flex justifyContent="center" style={{...col_4}}>
+                        <Flex justifyContent="center" style={{...prs("col_4")}}>
                             <HelperText
                                 style={{
                                     color: schoolYear ? "" : errorColor,
@@ -140,7 +139,7 @@ export default function AttendanceLink({attendanceEntity, ...props}: Props) {
                             </HelperText>
                         </Flex>
 
-                        <Flex justifyContent="flex-end" style={{...col_4}}>
+                        <Flex justifyContent="flex-end" style={{...prs("col_4")}}>
                             {/* dont use a state or this wont update correctly */}
                             {mapExaminantIcons()}
 

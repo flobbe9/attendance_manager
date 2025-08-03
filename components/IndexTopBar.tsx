@@ -13,6 +13,7 @@ import { GlobalAttendanceContext } from "./context/GlobalAttendanceContextProvid
 import Flex from "./helpers/Flex";
 import HelperText from "./helpers/HelperText";
 import HS from "@/assets/styles/helperStyles";
+import { GlobalContext } from "./context/GlobalContextProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -20,6 +21,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {}
  * @since 0.0.1
  */
 export default function IndexTopBar({...props}: Props) {
+    const { prs } = useContext(GlobalContext);
     const {savedAttendanceEntities} = useContext(GlobalAttendanceContext);
 
     const [numEducators, setNumEducators] = useState<number | null>(null);
@@ -36,10 +38,6 @@ export default function IndexTopBar({...props}: Props) {
     );
 
     const attendanceService = new AttendanceService();
-
-    const {
-        allStyles: {me_1, me_2},
-    } = useResponsiveStyles();
 
     useEffect(() => {
         setNumEducators(countEducatorExaminants());
@@ -80,7 +78,7 @@ export default function IndexTopBar({...props}: Props) {
         return (
             <Flex dynamicStyle={IndexTopBarStyles.ExaminantCount} alignItems="center">
                 <FontAwesome
-                    style={{color, ...IndexTopBarStyles.text, ...me_1, ...me_2}}
+                    style={{color, ...IndexTopBarStyles.text, ...prs("me_1"), ...prs("me_2")}}
                     name="user"
                 />
                 <HelperText style={IndexTopBarStyles.text}>
@@ -93,7 +91,7 @@ export default function IndexTopBar({...props}: Props) {
     return (
         <Flex justifyContent="space-between" alignItems="center" {...otherProps}>
             <Flex justifyContent="flex-end" style={{...HS.fullWidth}}>
-                <HelperText style={{ ...IndexTopBarStyles.text, ...me_2 }}>Erledigt:</HelperText>
+                <HelperText style={{ ...IndexTopBarStyles.text, ...prs("me_2") }}>Erledigt:</HelperText>
 
                 <ExaminantCount
                     numExaminants={numMusicExaminants}

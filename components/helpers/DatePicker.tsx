@@ -2,7 +2,7 @@ import { DatePickerStyles } from "@/assets/styles/DatePickerStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { logTrace } from "@/utils/logUtils";
 import { formatDateGermanNoTime } from "@/utils/projectUtils";
-import React, { forwardRef, Fragment, Ref, useState } from "react";
+import React, { forwardRef, Fragment, Ref, useContext, useState } from "react";
 import { GestureResponderEvent, View, ViewStyle } from "react-native";
 import { DatePickerModal, DatePickerModalSingleProps } from "react-native-paper-dates";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
@@ -14,6 +14,7 @@ import Flex from "./Flex";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import HelperView from "./HelperView";
 import HelperStyles from "@/assets/styles/helperStyles";
+import { GlobalContext } from "../context/GlobalContextProvider";
 
 export type DatePickerValue = { startDate: CalendarDate; endDate: CalendarDate } & { date: CalendarDate } & { dates: Date[] };
 
@@ -35,7 +36,7 @@ interface Props extends HelperButtonProps {
 export default forwardRef(function DatePicker({ date, setDate, locale = "de", onPress, onConfirm, modalProps, ...props }: Props, ref: Ref<View>) {
     const [isVisible, setIsVisible] = useState(false);
 
-    const { allStyles: rs } = useResponsiveStyles();
+    const { prs } = useContext(GlobalContext);
 
     const componentName = "DatePicker";
     const { children, ...otherProps } = useHelperProps(props, componentName, DatePickerStyles.component);
@@ -89,7 +90,7 @@ export default forwardRef(function DatePicker({ date, setDate, locale = "de", on
                 style={{
                     borderRadius: BORDER_RADIUS,
                     backgroundColor: (otherProps.style as ViewStyle).backgroundColor,
-                    ...rs.ms_2
+                    ...prs("ms_2")
                 }}
                 onPress={() => setDate(null)}
             >

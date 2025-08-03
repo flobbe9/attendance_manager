@@ -37,7 +37,7 @@ import DateInput from "../../components/(attendance)/DateInput";
  * @since 0.0.1
  */
 export default function index() {
-    const { hideSnackbar, toast } = useContext(GlobalContext);
+    const { hideSnackbar, toast, prs } = useContext(GlobalContext);
     const { currentAttendanceEntityId, savedAttendanceEntities, dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave } =
         useContext(GlobalAttendanceContext);
         
@@ -59,8 +59,6 @@ export default function index() {
             confirmSnackbarDelay: 200
         }
     );
-
-    const { allStyles: rs } = useResponsiveStyles();
 
     const attendanceService = new AttendanceService();
 
@@ -88,7 +86,7 @@ export default function index() {
     if (!currentAttendanceEntity)
         return (
             <ScreenWrapper style={{ ...AttendanceIndexStyles.suspenseContainer }} contentContainerStyle={{ ...HelperStyles.centerNoFlex }}>
-                <FontAwesome name="hourglass" size={FONT_SIZE} style={{ ...rs.mb_2 }} />
+                <FontAwesome name="hourglass" size={FONT_SIZE} style={{ ...prs("mb_2") }} />
                 <HelperText>Lade Unterrichtsbesuch...</HelperText>
             </ScreenWrapper>
         );
@@ -145,7 +143,7 @@ export default function index() {
                 >
                     <TopBar />
 
-                    <Divider style={{ ...rs.mb_2 }} />
+                    <Divider style={{ ...prs("mb_2") }} />
                 </HelperView>
 
                 <SchoolSubjectInput dynamicStyle={AttendanceIndexStyles.inputContainer} />
@@ -167,7 +165,7 @@ export default function index() {
                         style={{ zIndex: 1 }} // for select container
                     />
 
-                    <Divider style={{ ...rs.mb_6, ...rs.mt_3 }} />
+                    <Divider style={{ ...prs("mb_6"), ...prs("mt_3") }} />
 
                     <NotesInputs />
 

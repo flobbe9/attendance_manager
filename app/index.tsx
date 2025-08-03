@@ -4,6 +4,7 @@ import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import AttendanceLink from "@/components/AttendanceLink";
 import { GlobalAttendanceContext } from "@/components/context/GlobalAttendanceContextProvider";
+import { GlobalContext } from "@/components/context/GlobalContextProvider";
 import ExtendableButton from "@/components/helpers/ExtendableButton";
 import Flex from "@/components/helpers/Flex";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
@@ -23,16 +24,13 @@ import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
  * @since 0.0.1
  */
 export default function index() {
+    const { prs } = useContext(GlobalContext);
     const { savedAttendanceEntities, setCurrentAttendanceEntityId, updateSavedAttendanceEntities } = useContext(GlobalAttendanceContext);
 
     const [attendanceLinks, setAttendanceLinks] = useState<JSX.Element[]>([]);
     const [isExtended, setIsExtended] = useState(true);
 
     const { initializeFileLogger } = useFileLogger();
-
-    const {
-        allStyles: { mt_6 },
-    } = useResponsiveStyles();
 
     const attendanceService = new AttendanceService();
 
@@ -80,7 +78,7 @@ export default function index() {
                 <HelperScrollView
                     onScroll={handleScroll}
                     dynamicStyle={IndexStyles.linkContainer}
-                    style={{ ...mt_6 }}
+                    style={{ ...prs("mt_6") }}
                     childrenContainerStyle={{ paddingBottom: 50 }}
                     rendered={!!attendanceLinks.length}
                 >

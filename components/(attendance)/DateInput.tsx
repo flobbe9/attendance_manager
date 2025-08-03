@@ -15,6 +15,7 @@ import DatePicker, { DatePickerValue } from "../helpers/DatePicker";
 import Flex from "../helpers/Flex";
 import HelperText from "../helpers/HelperText";
 import AttendanceInputTooltip from "./AttendanceInputTooltip";
+import { GlobalContext } from "../context/GlobalContextProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -25,10 +26,6 @@ export default function DateInput({ ...props }: Props) {
     const { savedAttendanceEntities } = useContext(GlobalAttendanceContext);
     const { updateCurrentAttendanceEntity, currentAttendanceEntity, handleInvalidAttendanceInput, resetInvalidAttendanceInputErrorStyles } =
         useContext(AttendanceContext);
-
-    const {
-        allStyles: { mb_2 },
-    } = useResponsiveStyles();
 
     const [invalidValues, setInvalidValues] = useState<Map<Date, string>>(new Map());
 

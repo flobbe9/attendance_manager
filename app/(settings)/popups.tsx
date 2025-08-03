@@ -2,8 +2,9 @@ import { PopupsStyles } from "@/assets/styles/PopupsStyles";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import BooleanSetting from "./BooleanSetting";
+import { GlobalContext } from "@/components/context/GlobalContextProvider";
 
 /**
  * @since 0.1.0
@@ -13,9 +14,7 @@ export default function popups() {
     const isConfirmSubjectChangeState = useState(false);
     const isConfirmAttendanceLeaveState = useState(false);
 
-    const {
-        allStyles: {mb_3},
-    } = useResponsiveStyles();
+    const { prs } = useContext(GlobalContext);
 
     return (
         <ScreenWrapper>
@@ -26,7 +25,7 @@ export default function popups() {
                     settingsState={isShowErrorPopupState}
                     settingsKey={"popups.dontShowAttendanceInputValidationErrorPopup"}
                     invertDbValue
-                    style={{...mb_3}}
+                    style={{...prs("mb_3")}}
                 />
 
                 <BooleanSetting
@@ -35,7 +34,7 @@ export default function popups() {
                     settingsState={isConfirmSubjectChangeState}
                     settingsKey={"popups.dontConfirmSchoolSubjectChnage"}
                     invertDbValue
-                    style={{...mb_3}}
+                    style={{...prs("mb_3")}}
                 />
 
                 <BooleanSetting
@@ -44,7 +43,7 @@ export default function popups() {
                     settingsState={isConfirmAttendanceLeaveState}
                     settingsKey={"popups.dontConfirmAttendanceScreenLeave"}
                     invertDbValue
-                    style={{...mb_3}}
+                    style={{...prs("mb_3")}}
                 />
             </HelperScrollView>
         </ScreenWrapper>
