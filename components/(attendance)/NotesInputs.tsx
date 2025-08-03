@@ -9,28 +9,26 @@ import HelperInput from "../helpers/HelperInput";
 import HelperText from "../helpers/HelperText";
 import HelperView from "../helpers/HelperView";
 
-interface Props extends HelperProps<ViewStyle>, ViewProps {
-
-}
+interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
 /**
- * @since latest
+ * @since 0.2.2
  */
-export default function NotesInputs({...props}: Props) {
+export default function NotesInputs({ ...props }: Props) {
     const { currentAttendanceEntity, updateCurrentAttendanceEntity } = useContext(AttendanceContext);
-        
+
     const componentName = "NotesInputs";
     const { children, ...otherProps } = useHelperProps(props, componentName);
 
     const numHelperInputLines = 20;
-    
+
     return (
         <HelperView {...otherProps}>
             <HelperText dynamicStyle={AttendanceIndexStyles.heading}>Notitzen</HelperText>
-            
+
             {/* Note */}
             <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer}>
-                <HelperInput 
+                <HelperInput
                     placeholder="Thema"
                     multiline
                     numberOfLines={numHelperInputLines}
@@ -43,16 +41,16 @@ export default function NotesInputs({...props}: Props) {
 
             {/* Note2 */}
             <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer}>
-                <HelperInput 
+                <HelperInput
                     placeholder="Lerngruppe"
                     multiline
                     numberOfLines={numHelperInputLines}
                     dynamicStyle={AttendanceIndexStyles.defaultMultilineHelperInput}
                     containerStyles={AttendanceIndexStyles.defaultHelperInputContainer as DynamicStyle<ViewStyle>}
                     value={currentAttendanceEntity.note2}
-                    setValue={(value) => updateCurrentAttendanceEntity(["note2", value])} 
+                    setValue={(value) => updateCurrentAttendanceEntity(["note2", value])}
                 />
             </HelperView>
         </HelperView>
-    )
+    );
 }

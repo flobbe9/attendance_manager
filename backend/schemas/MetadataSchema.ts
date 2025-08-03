@@ -6,7 +6,7 @@ import { SQL_BLOB_SIZE } from "@/utils/constants";
 const METADATA_TABLE_NAME = "metadata";
 
 /**
- * @since latest
+ * @since 0.2.2
  */
 export const Metadata_Table = sqliteTable(METADATA_TABLE_NAME, {
     ...Abstract_Table,

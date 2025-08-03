@@ -5,18 +5,18 @@ import { useDao } from "@/backend/useDao";
 
 /**
  * Should only return key specific methods, not the whole repo instance.
- * 
+ *
  * @returns all default db instances as well as some repo methods
- * @since latest
+ * @since 0.2.2
  */
 export function useMetadataRepository() {
-    const {dao, db, sqliteDb} = useDao<MetadataEntity>(Metadata_Table);
+    const { dao, db, sqliteDb } = useDao<MetadataEntity>(Metadata_Table);
     const metadataRepository = new MetadataRepository(db, sqliteDb);
 
     return {
         dao,
         db,
         sqliteDb,
-        metadataRepository
+        metadataRepository,
     };
 }

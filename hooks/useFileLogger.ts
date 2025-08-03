@@ -6,8 +6,8 @@ import { ConfigureOptions, FileLogger } from "react-native-file-logger";
 
 /**
  * Use `adb` command (on android at least) to pull and modify log files.
- * 
- * @since latest
+ *
+ * @since 0.2.2
  * @see https://www.npmjs.com/package/react-native-file-logger
  */
 export function useFileLogger() {
@@ -36,7 +36,7 @@ export function useFileLogger() {
 
     /**
      * Triggers a native share popup (on android at least, dont know about ios) to send all log files.
-     * 
+     *
      * Wont delete zip files created by sendMail method.
      */
     async function shareLogFiles(): Promise<void> {
@@ -82,6 +82,6 @@ export function useFileLogger() {
         initializeFileLogger,
         shareLogFiles,
         deleteLogFiles,
-        isFileLoggerEnabled
+        isFileLoggerEnabled,
     };
 }

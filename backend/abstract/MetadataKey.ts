@@ -8,8 +8,7 @@ const metadataKeysObj = {
     "popups.dontShowAttendanceInputValidationErrorPopup": 3,
     /** Whether not to show a popup on school subject change. Default should be false */
     "popups.dontConfirmSchoolSubjectChnage": 4,
-    "popups.dontConfirmAttendanceScreenLeave": 5
-
+    "popups.dontConfirmAttendanceScreenLeave": 5,
 };
 
 export const METADATA_KEYS = Object.keys(metadataKeysObj);
@@ -17,6 +16,6 @@ export const METADATA_KEYS = Object.keys(metadataKeysObj);
 /**
  * Use these to store metadata, use them as `MetadataEntity.key`.
  *
- * @since latest
+ * @since 0.2.2
  */
 export type MetadataKey = keyof typeof metadataKeysObj;

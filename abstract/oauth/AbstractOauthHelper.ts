@@ -1,7 +1,7 @@
-import {OauthUser} from "./OauthUser";
+import { OauthUser } from "./OauthUser";
 
 /**
- * @since latest
+ * @since 0.2.2
  */
 // TODO
 // continue once google login is more clear

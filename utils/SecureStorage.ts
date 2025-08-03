@@ -11,7 +11,7 @@ import { isBlank, isFalsy, matchesAll } from "./utils";
  *
  * Be careful with authentication requirements, see docs.
  *
- * @since latest
+ * @since 0.2.2
  * @see https://docs.expo.dev/versions/latest/sdk/securestore/
  */
 export class SecureStorage {

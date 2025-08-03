@@ -3,7 +3,7 @@ import { FontAweSomeIconname } from "./FontAwesomeIconName";
 import HelperProps from "./HelperProps";
 
 /**
- * @since latest
+ * @since 0.2.2
  */
 export interface FontAwesomeProps extends HelperProps<TextStyle>, TextProps {
     size?: number;

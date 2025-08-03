@@ -1,10 +1,10 @@
-import {appJson, AUTH_APPLE_REDIRECT_URL} from "@/utils/constants";
-import {logDebug, logError} from "@/utils/logUtils";
-import {appleAuthAndroid} from "@invertase/react-native-apple-authentication";
-import {jwtDecode} from "jwt-decode";
-import {v4 as uuid} from "uuid";
-import {AbstractOauthHelper} from "./AbstractOauthHelper";
-import {OauthUser} from "./OauthUser";
+import { appJson, AUTH_APPLE_REDIRECT_URL } from "@/utils/constants";
+import { logDebug, logError } from "@/utils/logUtils";
+import { appleAuthAndroid } from "@invertase/react-native-apple-authentication";
+import { jwtDecode } from "jwt-decode";
+import { v4 as uuid } from "uuid";
+import { AbstractOauthHelper } from "./AbstractOauthHelper";
+import { OauthUser } from "./OauthUser";
 
 /**
  * Login button example:
@@ -28,7 +28,7 @@ import {OauthUser} from "./OauthUser";
         )}
     />
  * ```
- * @since latest
+ * @since 0.2.2
  * @see https://github.com/invertase/react-native-apple-authentication (apple sign in)
  * @see https://developer.android.com/identity/sign-in/credential-manager-siwg (google sign in)
  */
@@ -58,10 +58,10 @@ export class AppleOauthHelper extends AbstractOauthHelper {
             const response = await appleAuthAndroid.signIn();
             logDebug("response", response);
             if (response) {
-                const code = response.code; 
-                const idToken = response.id_token; 
+                const code = response.code;
+                const idToken = response.id_token;
                 const user = response.user; // Present when user first logs in using appleId
-                const state = response.state; // 
+                const state = response.state; //
                 // TODO: match csrf token for security?
                 // or the nonce, see docs
                 logDebug("Got auth code", code);

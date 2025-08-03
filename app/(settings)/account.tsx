@@ -14,12 +14,12 @@ import { CloudStorage, CloudStorageProvider, CloudStorageScope, useCloudFile } f
 import { useIsCloudAvailable } from "react-native-cloud-storage";
 
 /**
- * @since latest
+ * @since 0.2.2
  */
 export default function account() {
     const { snackbar } = useContext(GlobalContext);
 
-    const [cloudStorage, ] = useState(new CloudStorage(new CloudStorage().getProvider(), {strictFilenames: true}));
+    const [cloudStorage] = useState(new CloudStorage(new CloudStorage().getProvider(), { strictFilenames: true }));
 
     const [fileContent, setFileContent] = useState("");
 

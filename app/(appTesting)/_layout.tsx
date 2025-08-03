@@ -2,10 +2,9 @@ import HeaderBackButton from "@/components/HeaderBackButton";
 import { Stack } from "expo-router";
 
 /**
- * @since latest
+ * @since 0.2.2
  */
 export default function layout() {
-
     return (
         <Stack>
             <Stack.Screen
@@ -16,5 +15,5 @@ export default function layout() {
                 }}
             />
         </Stack>
-    )
+    );
 }

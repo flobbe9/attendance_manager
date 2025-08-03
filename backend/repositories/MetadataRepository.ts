@@ -11,20 +11,20 @@ import { SQLiteDatabase } from "expo-sqlite";
 
 /**
  * Update this in order to ensure that both classes have all expected methods.
- * 
- * @since latest
+ *
+ * @since 0.2.2
  */
 interface MetadataRepositoryDef {
     getBackReferenceColumnName: () => string;
 
     getOwnedEntities: (entity?: MetadataEntity) => RelatedEntityDetail<MetadataEntity, any>[];
-    
+
     existsByKey: (key: MetadataKey) => Promise<boolean>;
-    
+
     persistByKey: (key: MetadataKey, value: string) => Promise<string | null>;
-    
+
     deleteByKey: (key: MetadataKey) => Promise<void>;
-    
+
     selectByKey: (key: MetadataKey) => Promise<string | null>;
 
     selectByKeyParseBoolean: (key: MetadataKey, defaultValue: boolean) => Promise<boolean>;
@@ -32,9 +32,9 @@ interface MetadataRepositoryDef {
 
 /**
  * For keeping dao and abstract repo methods from this instance.
- * Basically creates an insatnce of `MetadataRepository` and does nothing but call it's methods. 
- * 
- * @since latest
+ * Basically creates an insatnce of `MetadataRepository` and does nothing but call it's methods.
+ *
+ * @since 0.2.2
  */
 export default class MetadataRepositoryImpl implements MetadataRepositoryDef {
     private metadataRepository: MetadataRepository;
@@ -74,8 +74,8 @@ export default class MetadataRepositoryImpl implements MetadataRepositoryDef {
 
 /**
  * NOTE: methods wont check if `key` args are actually of type {@link MetadataKey}.
- * 
- * @since latest
+ *
+ * @since 0.2.2
  */
 class MetadataRepository extends AbstractRepository<MetadataEntity> implements MetadataRepositoryDef {
     constructor(db: Db, sqliteDb: SQLiteDatabase) {
@@ -91,7 +91,7 @@ class MetadataRepository extends AbstractRepository<MetadataEntity> implements M
     }
 
     /**
-     * @param key 
+     * @param key
      * @returns `true` if a db entry exists with `key` (regardless of it's value)
      * @throws if `key` is falsy
      */
@@ -103,17 +103,16 @@ class MetadataRepository extends AbstractRepository<MetadataEntity> implements M
 
     /**
      * Create or update db entry for given key.
-     * 
-     * @param key 
-     * @param value 
+     *
+     * @param key
+     * @param value
      * @returns error message or `null` if no error
      * @throws if `key` is falsy
      */
     public async persistByKey(key: MetadataKey, value: string): Promise<string | null> {
         assertFalsyAndThrow(key);
 
-        if (isBlank(key))
-            throw new Error(`Falsy arg at index 0. 'key' cannot be blank`);
+        if (isBlank(key)) throw new Error(`Falsy arg at index 0. 'key' cannot be blank`);
 
         const cleanValue = MetadataRepository.fixEmptyColumnValue(value);
 
@@ -124,10 +123,10 @@ class MetadataRepository extends AbstractRepository<MetadataEntity> implements M
         const result = await this.persist(
             {
                 key: key,
-                value: cleanValue
+                value: cleanValue,
             },
             where
-        )
+        );
 
         let errorMessage: string = null;
 
@@ -140,8 +139,8 @@ class MetadataRepository extends AbstractRepository<MetadataEntity> implements M
     }
 
     /**
-     * @param key 
-     * @returns 
+     * @param key
+     * @returns
      * @throws if `key` is falsy
      */
     public async deleteByKey(key: MetadataKey): Promise<void> {
@@ -151,8 +150,8 @@ class MetadataRepository extends AbstractRepository<MetadataEntity> implements M
     }
 
     /**
-     * @param key 
-     * @returns 
+     * @param key
+     * @returns
      * @throws if `key` is falsy
      */
     public async selectByKey(key: MetadataKey): Promise<string | null> {
@@ -164,9 +163,9 @@ class MetadataRepository extends AbstractRepository<MetadataEntity> implements M
     }
 
     /**
-     * @param key 
+     * @param key
      * @param defaultValue returned if retrieved value is not a boolean value or `key` has no db entry. Default is `false`
-     * @returns `true` if value is `"true" || "1"`, `false` if value is `"false" || "0"`, else `defaultValue` 
+     * @returns `true` if value is `"true" || "1"`, `false` if value is `"false" || "0"`, else `defaultValue`
      * @throws if `key` is falsy
      */
     public async selectByKeyParseBoolean(key: MetadataKey, defaultValue = false): Promise<boolean> {
@@ -174,11 +173,9 @@ class MetadataRepository extends AbstractRepository<MetadataEntity> implements M
 
         const result = await this.selectByKey(key);
 
-        if (result === "true" || result === "1")
-            return true;
+        if (result === "true" || result === "1") return true;
 
-        if (result === "false" || result === "0")
-            return false;
+        if (result === "false" || result === "0") return false;
 
         return defaultValue;
     }
