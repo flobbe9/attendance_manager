@@ -12,8 +12,9 @@
 # Docs
 ## CI/CD
 Expo: https://expo.dev/accounts/flobbe9 <br>
-Apple developer: https://developer.apple.com/account <br>
-Appstore connect: https://appstoreconnect.apple.com/apps
+Apple apps: https://appstoreconnect.apple.com/apps
+Apple certificate stuff: https://developer.apple.com/account/resources/certificates/list <br>
+Apple general developer: https://developer.apple.com/account <br>
 
 ## UI
 React native paper: https://callstack.github.io/react-native-paper/docs/components/ActivityIndicator <br>
