@@ -1,9 +1,12 @@
-import { getExaminantRoleKeysToValidate } from "@/abstract/Examinant";
+import { getExamiantRoleByExaminantRoleKey, getExaminantRoleKeysToValidate } from "@/abstract/Examinant";
 import { getSchoolSubjectBySchoolSubjectKey } from "@/abstract/SchoolSubject";
+import B from "@/components/helpers/B";
+import Br from "@/components/helpers/Br";
+import HelperText from "@/components/helpers/HelperText";
 import { getGubSubjectSchoolYearConditionsBySubject, getTotalRequiredGubs } from "@/utils/attendanceValidationConstants";
-import { logDebug, logTrace } from "@/utils/logUtils";
+import { logTrace } from "@/utils/logUtils";
 import { cloneObj } from "@/utils/utils";
-import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
+import { Fragment, ReactNode } from "react";
 import { AbstractAttendanceInputValidator } from "../abstract/AbstractAttendanceInputValidator";
 import { AbstractSchoolYearValidator } from "../abstract/AbstractSchoolYearValidator";
 import { destructSchoolYearConditions, isSchoolYearConditionExceedingMax, SchoolYearCondition } from "../abstract/SchoolYearCondition";
@@ -28,7 +31,7 @@ export class ExaminantValidator extends AbstractAttendanceInputValidator<Examina
     /**
      * @returns a 2d array with single element arrays, each of them a selectable examinant
      */
-    public getValidValues(): ValueOf<AttendanceEntity>[] {
+    public getValidValues(): ExaminantEntity[][] {
         return (
             getExaminantRoleKeysToValidate()
                 // only validate unchecked examinants
@@ -39,9 +42,51 @@ export class ExaminantValidator extends AbstractAttendanceInputValidator<Examina
         );
     }
 
-    public getInvalidValues(): ValueOf<AttendanceEntity>[] {
+    public getInvalidValues(): Map<ExaminantEntity[], string> {
+        return new Map(
+            getExaminantRoleKeysToValidate()
+                // only validate unchecked examinants
+                .filter((examinantRoleKey) => !this.attendanceService.hasExaminant(this.getCurrentAttendance(), examinantRoleKey))
+                .map((examinantRoleKey) => {
+                    const examinantEntity = new ExaminantEntity(examinantRoleKey);
+                    // pseudo-check each unchecked examinant and validate list
+                    const errorMessage = this.validate([...(this.getCurrentAttendance().examinants ?? []), examinantEntity]);
+
+                    return [[examinantEntity], errorMessage] as [ExaminantEntity[], string];
+                })
+                .filter(([, errorMessage]) => errorMessage !== null)
+        );
+    }
+
+    public formatValidValues(values?: ExaminantEntity[][]): ReactNode {
         // not implemented
-        return [];
+        return "";
+    }
+
+    public formatInvalidValues(invalidValues?: Map<ExaminantEntity[], string>): ReactNode {
+        if (!invalidValues)
+            invalidValues = this.getInvalidValues();
+
+        return Array.from(invalidValues)
+                    .map(([invalidExaminants, errorMessage]) => {
+                        return invalidExaminants
+                            .flat()
+                            .map((invalidExaminant, i) => {
+                                const invalidExaminantRole = getExamiantRoleByExaminantRoleKey(invalidExaminant.role);
+                
+                                return (
+                                    <Fragment key={i}>
+                                        <Br rendered={i >= 1} large={false} />
+                
+                                        <B>
+                                            {invalidExaminantRole}
+                                        </B>
+                                        <HelperText>{errorMessage}</HelperText>
+                                    </Fragment>
+                                )
+
+                            })
+                    });
     }
 
     public validateNonContextConditions(constantConditions: any, inputValue: ExaminantEntity[], options?: SchoolYearConditionOptions): string | null {

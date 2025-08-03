@@ -1,10 +1,12 @@
 import { logLevelToString } from "@/abstract/LogLevel";
 import { APP_NAME, ENV, FILE_LOGGER_ENABLED, FILE_LOGGER_MAIL_TO, LOG_LEVEL } from "@/utils/constants";
-import { logError, logInfo } from "@/utils/logUtils";
+import { logDebug, logError, logInfo } from "@/utils/logUtils";
 import { Platform } from "react-native";
 import { ConfigureOptions, FileLogger } from "react-native-file-logger";
 
 /**
+ * Use `adb` command (on android at least) to pull and modify log files.
+ * 
  * @since latest
  * @see https://www.npmjs.com/package/react-native-file-logger
  */
@@ -40,11 +42,16 @@ export function useFileLogger() {
     async function shareLogFiles(): Promise<void> {
         if (!isFileLoggerEnabled()) return;
 
+        const mailBody = `OS: ${Platform.OS}
+                    ENV: ${ENV}
+                    LOG_LEVEL: ${logLevelToString(LOG_LEVEL)}`;
+
+        // log mail body because sharing with a different method than email wont send the "body"
+        logDebug(`Sharing log files: ${mailBody}`);
+
         try {
             await FileLogger.sendLogFilesByEmail({
-                body: `OS: ${Platform.OS}
-                    ENV: ${ENV}
-                    LOG_LEVEL: ${logLevelToString(LOG_LEVEL)}`,
+                body: mailBody,
                 to: FILE_LOGGER_MAIL_TO,
                 subject: `Log files for ${APP_NAME}`,
             });

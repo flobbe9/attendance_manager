@@ -1,4 +1,5 @@
 import {
+    getMusicLessonTopicByMusicLessonTopicKey,
     MUSIC_LESSON_TOPIC_KEYS,
     MusicLessonTopic_Key
 } from "@/abstract/MusicLessonTopic";
@@ -9,20 +10,54 @@ import {AbstractAttendanceInputValidator} from "../abstract/AbstractAttendanceIn
 import {AttendanceInputValidatorBuilder} from "./AttendanceInputValidatorBuilder";
 import { SchoolYearConditionOptions } from "../abstract/SchoolYearConditionOptions";
 import { AttendanceEntity } from "../entities/AttendanceEntity";
+import { Fragment, ReactNode } from "react";
+import HelperText from "@/components/helpers/HelperText";
+import B from "@/components/helpers/B";
+import Br from "@/components/helpers/Br";
+import { shortenString } from "@/utils/utils";
 
 /**
  * @since 0.1.0
  */
 export class LessonTopicValidator extends AbstractAttendanceInputValidator<MusicLessonTopic_Key> {
-    public getValidValues(): ValueOf<AttendanceEntity>[] {
+    public getValidValues(): MusicLessonTopic_Key[] {
         return MUSIC_LESSON_TOPIC_KEYS.filter(
             (lessonTopicKey) => this.validate(lessonTopicKey) === null
         );
     }
 
-    public getInvalidValues(): ValueOf<AttendanceEntity>[] {
+    public getInvalidValues(): Map<MusicLessonTopic_Key, string> {
+        return new Map(
+            MUSIC_LESSON_TOPIC_KEYS
+                .map((lessonTopicKey) => [lessonTopicKey, this.validate(lessonTopicKey)] as [MusicLessonTopic_Key, string])
+                .filter(value => value[1] !== null)
+            );
+    }
+
+    public formatValidValues(values?: MusicLessonTopic_Key[]): ReactNode {
         // not implemented
-        return [];
+        return "";
+    }
+
+    public formatInvalidValues(invalidValues?: Map<MusicLessonTopic_Key, string>): ReactNode {
+        if (!invalidValues)
+            invalidValues = this.getInvalidValues();
+        
+        return Array.from(invalidValues.entries())
+                    .map(([invalidTopicKey, errorMessage], i) => {
+                        const invalidTopic = shortenString(getMusicLessonTopicByMusicLessonTopicKey(invalidTopicKey), 30);
+        
+                        return (
+                            <Fragment key={i}>
+                                <Br rendered={i >= 1} large={false} />
+        
+                                <B>
+                                    {invalidTopic}
+                                </B>
+                                <HelperText>{errorMessage}</HelperText>
+                            </Fragment>
+                        )
+                    });
     }
 
     public validateNonContextConditions(

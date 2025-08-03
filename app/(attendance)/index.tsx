@@ -25,11 +25,11 @@ import { useSubjectColor } from "@/hooks/useSubjectColor";
 import { logDebug } from "@/utils/logUtils";
 import { FONT_SIZE } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
 import React, { useContext, useEffect } from "react";
 import { Divider } from "react-native-paper";
 import DateInput from "../../components/(attendance)/DateInput";
-import { useIsFocused } from "@react-navigation/native";
 
 /**
  * Attendance create / edit screen.
@@ -74,8 +74,8 @@ export default function index() {
     }, [isScreenFocused]);
 
     useScreenLeaveAttempt(isCurrentAttendanceEntityModified && !dontConfirmAttendanceScreenLeave, {
-        handleScreenLeave: handleScreenLeave,
-        handleDontLeaveScreen: handleDontLeaveScreenLeave,
+        handleScreenLeave,
+        handleDontLeaveScreen,
     });
 
     useEffect(() => {
@@ -97,7 +97,7 @@ export default function index() {
         hideSnackbar();
     }
 
-    function handleDontLeaveScreenLeave(options: DontLeaveScreenOptions): void {
+    function handleDontLeaveScreen(options: DontLeaveScreenOptions): void {
         const handleConfirm = () => navigation.dispatch(options.data.action);
 
         if (!dontConfirmAttendanceScreenLeave) {
@@ -123,8 +123,6 @@ export default function index() {
             logDebug("Failed to load current attendance entity for current id " + currentAttendanceEntityId);
             return null;
         }
-
-        logDebug("found current for id ", currentAttendanceEntityId, attendanceEntityForId.id, attendanceEntityForId.schoolSubject)
 
         setCurrentAttendanceEntity(attendanceEntityForId);
 

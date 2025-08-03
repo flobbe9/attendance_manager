@@ -1,4 +1,5 @@
-import { combineDynamicStyles, DynamicStyle } from "@/abstract/DynamicStyle";
+import { combineDynamicStyles } from "@/abstract/DynamicStyle";
+import { FontAwesomeProps } from "@/abstract/FontAwesomeProps";
 import HelperProps from "@/abstract/HelperProps";
 import { TooltipStyles } from "@/assets/styles/TooltipStyles";
 import HelperView from "@/components/helpers/HelperView";
@@ -6,11 +7,11 @@ import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useHasComponentMounted } from "@/hooks/useHasComponentMounted";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { useScreenTouch } from "@/hooks/useScreenTouch";
-import { DEFAULT_BUTTON_PADDING, FONT_SIZE } from "@/utils/styleConstants";
+import { DEFAULT_BUTTON_PADDING, FONT_SIZE, TOOLTIP_DEFAULT_ICON } from "@/utils/styleConstants";
 import { isFalsy, isNumberFalsy } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { ColorValue, TextStyle, ViewProps, ViewStyle } from "react-native";
+import { TextStyle, ViewProps, ViewStyle } from "react-native";
 import Flex from "./Flex";
 import HelperButton, { HelperButtonProps } from "./HelperButton";
 import HelperReactChildren from "./HelperReactChildren";
@@ -30,8 +31,8 @@ export interface TooltipProps extends HelperProps<ViewStyle>, ViewProps {
      * Default is `5000`.
      */
     duration?: number;
-    iconStyle?: TextStyle;
-    buttonProps?: HelperButtonProps,
+    iconProps?: FontAwesomeProps;
+    buttonProps?: HelperButtonProps;
     textContainerStyles?: ViewStyle;
 }
 
@@ -48,17 +49,19 @@ export default function Tooltip({
     visible,
     setVisible,
     duration = 5000,
-    iconStyle = {},
+    iconProps = {},
     textContainerStyles = {},
     buttonProps = {},
     ...props
 }: TooltipProps) {
     const [visibleState, setVisibleState]: [boolean, (visible: boolean) => void] =
         isFalsy(visible) || !setVisible ? useState(false) : [visible, setVisible];
-
     const [hideTextTimeout, setHideTextTimeout] = useState<number>();
 
     const [textContainerDisplay, setTextContainerDisplay] = useState<undefined | "none">(!visible ? "none" : undefined);
+
+    // for not hiding tooltip on container press
+    const [isTextContainerTouched, setTextContainerTouched] = useState(false);
 
     const { animatedStyle: animatedTextContainerOpacity, animate } = useAnimatedStyle([0, 100], [0, 1], {
         reverse: !visibleState,
@@ -96,12 +99,11 @@ export default function Tooltip({
     }
 
     function hideTooltipOnScreenTouch(): void {
-        setVisibleState(false);
+        if (!isTextContainerTouched) setVisibleState(false);
     }
 
     function handleTouchStart(_event): void {
-        if (buttonProps.onTouchStart)
-            buttonProps.onTouchStart(_event);
+        if (buttonProps.onTouchStart) buttonProps.onTouchStart(_event);
 
         setTimeout(() => {
             setVisibleState(!visibleState);
@@ -114,7 +116,7 @@ export default function Tooltip({
      * @returns the amount to move the text container
      */
     function getTextContainerOffset(): number {
-        return DEFAULT_BUTTON_PADDING * 2 + (iconStyle.fontSize ?? FONT_SIZE) + textContainerAdditionalOffset;
+        return DEFAULT_BUTTON_PADDING * 2 + ((iconProps.style as TextStyle).fontSize ?? FONT_SIZE) + textContainerAdditionalOffset;
     }
 
     /**
@@ -140,17 +142,12 @@ export default function Tooltip({
 
     return (
         <Flex alignItems="center" justifyContent="center" {...otherProps}>
-            <HelperButton 
+            <HelperButton
                 {...buttonProps}
-                dynamicStyle={combineDynamicStyles(TooltipStyles.iconButton, buttonProps.dynamicStyle)} 
-                onTouchStart={handleTouchStart} 
+                dynamicStyle={combineDynamicStyles(TooltipStyles.iconButton, buttonProps.dynamicStyle)}
+                onTouchStart={handleTouchStart}
             >
-                <FontAwesome
-                    name="lightbulb-o"
-                    style={{
-                        ...iconStyle,
-                    }}
-                />
+                <FontAwesome name={TOOLTIP_DEFAULT_ICON} {...iconProps} />
             </HelperButton>
 
             <HelperView
@@ -158,6 +155,8 @@ export default function Tooltip({
                     position: "absolute",
                     [getTextContainerPositionKey()]: getTextContainerOffset(),
                 }}
+                onTouchStart={() => setTextContainerTouched(true)}
+                onTouchEnd={() => setTextContainerTouched(false)}
             >
                 <HelperView
                     dynamicStyle={TooltipStyles.textContainer}

@@ -21,7 +21,7 @@ import Flex from "../helpers/Flex";
 import HelperCheckbox from "../helpers/HelperCheckbox";
 import HelperSelect from "../helpers/HelperSelect";
 import HelperText from "../helpers/HelperText";
-import { logDebug } from "@/utils/logUtils";
+import AttendanceInputTooltip from "./AttendanceInputTooltip";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -42,7 +42,7 @@ export default function ExaminantInput({ ...props }: Props) {
     /** Indicates that all checkbox states have been initialized with `currentAttendanceEntity` values  */
     const [initializedCheckboxes, setInitializedCheckboxes] = useState(false);
 
-    const [validValues, setValidValues] = useState<ExaminantEntity[]>([]);
+    const [invalidValues, setInvalidValues] = useState<Map<ExaminantEntity[], string>>(new Map());
 
     const examinantService = new ExaminantService();
     const validator = AttendanceInputValidatorBuilder.builder(currentAttendanceEntity, savedAttendanceEntities).inputType("examinants").build();
@@ -53,8 +53,8 @@ export default function ExaminantInput({ ...props }: Props) {
     const attendanceService = new AttendanceService();
 
     useEffect(() => {
-        const validValues = validator.getValidValues().flat() as ExaminantEntity[];
-        setValidValues(validValues);
+        const invalidValues = validator.getInvalidValues() as Map<ExaminantEntity[], string>;
+        setInvalidValues(invalidValues);
     }, [currentAttendanceEntity]);
 
     useEffect(() => {
@@ -142,11 +142,22 @@ export default function ExaminantInput({ ...props }: Props) {
         );
     }
 
+    function isExaminantInvalid(role: ExaminantRole_Key): boolean {
+        if (!invalidValues || !invalidValues.size) return false;
+
+        const flatExaminants = Array.from(invalidValues.keys()).flat();
+        return !!examinantService.findExaminant(flatExaminants, role)[0];
+    }
+
     return (
         <HelperView {...otherProps}>
-            <HelperText dynamicStyle={AttendanceIndexStyles.heading} style={{ marginBottom: 0 }}>
-                Anwesende Prüfer
-            </HelperText>
+            <Flex alignItems="center" style={{ zIndex: 1 }}>
+                <HelperText dynamicStyle={AttendanceIndexStyles.heading} style={{ marginBottom: 0 }}>
+                    Anwesende Prüfer
+                </HelperText>
+
+                <AttendanceInputTooltip values={invalidValues} attendanceInputKey={"examinants"} validator={validator} />
+            </Flex>
 
             <Flex>
                 {/* Subjects */}
@@ -154,21 +165,21 @@ export default function ExaminantInput({ ...props }: Props) {
                     checkedStatus={musicExaminantStatus}
                     setCheckedStatus={setMusicExaminantStatus}
                     role="music"
-                    disabled={musicExaminantStatus === "unchecked" && !examinantService.findExaminant(validValues, "music")[0]}
+                    disabled={musicExaminantStatus === "unchecked" && isExaminantInvalid("music")}
                 />
 
                 <CheckboxWithExaminantIcon
                     checkedStatus={historyExaminantStatus}
                     setCheckedStatus={setHistoryExaminantStatus}
                     role="history"
-                    disabled={historyExaminantStatus === "unchecked" && !examinantService.findExaminant(validValues, "history")[0]}
+                    disabled={historyExaminantStatus === "unchecked" && isExaminantInvalid("history")}
                 />
 
                 <CheckboxWithExaminantIcon
                     checkedStatus={educatorExaminantStatus}
                     setCheckedStatus={setEducatorExaminantStatus}
                     role="educator"
-                    disabled={educatorExaminantStatus === "unchecked" && !examinantService.findExaminant(validValues, "educator")[0]}
+                    disabled={educatorExaminantStatus === "unchecked" && isExaminantInvalid("educator")}
                 />
             </Flex>
 
@@ -190,10 +201,10 @@ export default function ExaminantInput({ ...props }: Props) {
                     optionsContainerScroll={false}
                     selectionButtonProps={{
                         dynamicStyle: AttendanceIndexStyles.defaultHelperButton,
-                        ripple: {rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground}
-                    }}                
+                        ripple: { rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground },
+                    }}
                     optionButtonProps={{
-                        ripple: {rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground}
+                        ripple: { rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground },
                     }}
                 >
                     <HelperText>Schulleitung</HelperText>

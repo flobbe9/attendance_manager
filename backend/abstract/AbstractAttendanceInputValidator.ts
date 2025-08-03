@@ -5,6 +5,7 @@ import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 import { AttendanceEntity } from "../entities/AttendanceEntity";
 import { AttendanceService } from "../services/AttendanceService";
 import { SchoolYearConditionOptions } from "./SchoolYearConditionOptions";
+import { ReactNode } from "react";
 
 /**
  * Extend this class for attendance input validators.
@@ -129,9 +130,21 @@ export abstract class AbstractAttendanceInputValidator<
     /**
      * Implement at least one, {@link getValidValues()} or {@link getInvalidValues()}.
      *
-     * @return all invalid values for `InputType` considering `currentAttendance` and `savedAttendances`. Empty array if no invalid values
+     * @return all invalid values for `InputType` considering `currentAttendance` and `savedAttendances` and their error message. Empty map if no invalid values
      */
-    public abstract getInvalidValues(): ValueOf<AttendanceEntity>[];
+    public abstract getInvalidValues(): Map<ValueOf<AttendanceEntity>, string>;
+
+    /**
+     * @param values retrieved by calling `getValidValues()` if not specified
+     * @return react node of beautified valid values, e.g. for tooltip
+     */
+    public abstract formatValidValues(values?: ValueOf<AttendanceEntity>[]): ReactNode;
+
+    /**
+     * @param values retrieved by calling `getInvalidValues()` if not specified
+     * @return react node of beautified invalid values
+     */
+    public abstract formatInvalidValues(values?: Map<ValueOf<AttendanceEntity>, string>): ReactNode;
 
     /**
      * Validate `inputValue`s conditions that don't take other attendance fields or future selections into consideration.

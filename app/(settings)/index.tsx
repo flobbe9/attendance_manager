@@ -43,13 +43,13 @@ export default function index() {
                 {/* <SetttingsLink href="/(settings)/popups" icon="paint-brush" label="Farben und Styles" /> */}
                 <SetttingsLink
                     href="/(settings)/popups"
-                    icon={<AttendanceInputErrorPopupIcon style={{ ...SettingsIndexStyles.settingsItemText, ...me_2 }} />}
+                    icon={<AttendanceInputErrorPopupIcon style={{ ...SettingsIndexStyles.settingsItemText, ...me_2 }} color="black" />}
                     label="Popup Präferenzen"
                 />
 
                 <SetttingsLink
                     href="/(settings)/appInfo"
-                    icon={<FontAwesome name="info-circle" style={{ ...SettingsIndexStyles.settingsItemText, ...me_2 }} />}
+                    icon={<FontAwesome name="info" style={{ ...SettingsIndexStyles.settingsItemText, ...me_2 }} />}
                     label="Über die App"
                 />
             </HelperScrollView>

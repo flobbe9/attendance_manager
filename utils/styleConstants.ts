@@ -1,3 +1,4 @@
+import { FontAweSomeIconname } from "@/abstract/FontAwesomeIconName";
 import { ViewStyle } from "react-native";
 
 /** In ms */
@@ -24,6 +25,7 @@ export const FONT_SIZE = 20;
 export const FONT_SIZE_SMALLER = 15;
 export const FONT_SIZE_LARGER = 25;
 export const DEFAULT_BUTTON_PADDING = 10;
+export const TOOLTIP_DEFAULT_ICON: FontAweSomeIconname = "lightbulb-o";
 
 /** Large smartphone (iPhone 14 Pro max) */
 export const SM_MIN_WIDTH = 430;
@@ -41,5 +43,6 @@ export const TOAST_ERROR_OUTER_STYLES: ViewStyle = {
 /** Attendanceinput Tooltip */
 export const ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR = "black";
 export const ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR = "orange";
+export const ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_ICON: FontAweSomeIconname = "info-circle";
 export const ATTENDANCE_INPUT_TOOLTIP_ICON_FLASH_INTERVAL = 100;
 export const ATTENDANCE_INPUT_TOOLTIP_ICON_NUM_FLASHES = 3;

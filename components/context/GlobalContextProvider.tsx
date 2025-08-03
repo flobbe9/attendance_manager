@@ -176,7 +176,7 @@ export default function GlobalContextProvider({ children }: { children: ReactNod
 
 export const GlobalContext = createContext({
     globalScreenTouch: false,
-    setGlobalScreenTouch: (_globalBlur: boolean) => {},
+    setGlobalScreenTouch: ((_globalBlur: boolean) => {}) as React.Dispatch<React.SetStateAction<boolean>>,
 
     isKeyBoardvisible: false,
     setKeyboardVisible: (isVisible: boolean): void => {},

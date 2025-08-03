@@ -6,11 +6,20 @@ import { assertFalsyAndThrow, cloneObj } from "@/utils/utils";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 import { AttendanceEntity } from "../entities/AttendanceEntity";
 import { AbstractAttendanceInputValidator } from "./AbstractAttendanceInputValidator";
-import { destructSchoolYearConditions, findSchoolYearConditionsBySchoolYearRange, isSchoolYearConditionExceedingMax, isSchoolYearConditionMaxedOut, SchoolYearCondition } from "./SchoolYearCondition";
+import {
+    destructSchoolYearConditions,
+    findSchoolYearConditionsBySchoolYearRange,
+    isSchoolYearConditionExceedingMax,
+    isSchoolYearConditionMaxedOut,
+    SchoolYearCondition,
+} from "./SchoolYearCondition";
 import { SchoolYearConditionOptions } from "./SchoolYearConditionOptions";
 import { isWithinSchoolYearRange, schoolYearRangeToString } from "./SchoolYearRange";
-
+import { ReactNode } from "react";
+import Flex from "@/components/helpers/Flex";
+import HelperText from "@/components/helpers/HelperText";
 /**
+
  * @since 0.1.0
  */
 export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInputValidator<SchoolYear> {
@@ -36,9 +45,26 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
         return SCHOOL_YEARS.filter((schoolYear) => this.validate(schoolYear) === null);
     }
 
-    public getInvalidValues(): ValueOf<AttendanceEntity>[] {
+    public getInvalidValues(): Map<ValueOf<AttendanceEntity>, string> {
         // not needed right now
-        return [];
+        return new Map();
+    }
+
+    public formatValidValues(values?: SchoolYear[]): ReactNode {
+        return (
+            <Flex>
+                {values.map((value, i) => (
+                    <HelperText key={i}>
+                        {value} {i < values.length - 1 && ","}{" "}
+                    </HelperText>
+                ))}
+            </Flex>
+        );
+    }
+
+    public formatInvalidValues(values?: Map<ValueOf<AttendanceEntity>, string>): ReactNode {
+        // not implemented
+        return "";
     }
 
     /**
@@ -50,7 +76,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
      */
     public getCurrentlyUnsatisfiedSchoolYearConditions(
         allConstantSchoolYearConditions: SchoolYearCondition[],
-        options: SchoolYearConditionOptions = {includeCurrentAttendanceEntity: true}
+        options: SchoolYearConditionOptions = { includeCurrentAttendanceEntity: true }
     ): SchoolYearCondition[] {
         assertFalsyAndThrow(allConstantSchoolYearConditions);
 
@@ -84,7 +110,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
     public getSchoolYearConditionsWithCount(
         constantSchoolYearConditions: SchoolYearCondition[],
         countCondition: (savedAttendance: AttendanceEntity, condition: SchoolYearCondition) => boolean,
-        options: SchoolYearConditionOptions = {includeCurrentAttendanceEntity: true}
+        options: SchoolYearConditionOptions = { includeCurrentAttendanceEntity: true }
     ): SchoolYearCondition[] {
         assertFalsyAndThrow(constantSchoolYearConditions, countCondition);
 
@@ -120,7 +146,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
      */
     protected getSchoolYearConditionsWithCountMatchRange(
         constantSchoolYearConditions: SchoolYearCondition[],
-        options: SchoolYearConditionOptions = {includeCurrentAttendanceEntity: true}
+        options: SchoolYearConditionOptions = { includeCurrentAttendanceEntity: true }
     ): SchoolYearCondition[] {
         return this.getSchoolYearConditionsWithCount(
             constantSchoolYearConditions,
@@ -148,7 +174,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
 
         const schoolYearConditionsWithCount = this.getSchoolYearConditionsWithCountMatchRange(
             findSchoolYearConditionsBySchoolYearRange(schoolYear, allConstantSchoolYearConditions).map(([condition]) => condition),
-            options ?? {includeCurrentAttendanceEntity: false}
+            options ?? { includeCurrentAttendanceEntity: false }
         );
 
         for (const schoolYearConditionWithCount of schoolYearConditionsWithCount)
@@ -208,7 +234,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
 
         const originalSchoolYear = this.getCurrentAttendance().schoolYear;
         this.getCurrentAttendance().schoolYear = schoolYear;
-        
+
         try {
             const gubConditionsWithCount = destructSchoolYearConditions(
                 this.getSchoolYearConditionsWithCount(
@@ -282,7 +308,7 @@ export abstract class AbstractSchoolYearValidator extends AbstractAttendanceInpu
     private getSavedAttendanceEntitiesFilteredBySchoolYearConditions(options: SchoolYearConditionOptions): AttendanceEntity[] {
         assertFalsyAndThrow(options);
 
-        const {includeCurrentAttendanceEntity, dontFilterBySchoolSubjectToValidateFor} = options;
+        const { includeCurrentAttendanceEntity, dontFilterBySchoolSubjectToValidateFor } = options;
 
         // get relevant saved attendances
         let savedAttendances = this.getSavedAttendancesWithOrWithoutCurrent(includeCurrentAttendanceEntity);

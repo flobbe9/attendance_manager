@@ -29,7 +29,9 @@ export default function CustomSqliteProvider({children, useSuspense = true}: Pro
     if (process.env.NODE_ENV !== "production") useDrizzleStudio(sqliteSync);
 
     useEffect(() => {
-        if (migrationsError) logDebug(migrationsError.message);
+        logDebug("Db migrations: ", migrations)
+        if (migrationsError) logDebug("Db migration error: " + migrationsError.message);
+        else logDebug("No db migration errors");
     }, [migrationsError]);
 
     return (

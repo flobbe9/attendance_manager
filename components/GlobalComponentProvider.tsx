@@ -5,6 +5,7 @@ import { GlobalContext } from "./context/GlobalContextProvider";
 import CustomSnackbar from "./CustomSnackbar";
 import Toast from "./Toast";
 import { useScreenTouch } from "@/hooks/useScreenTouch";
+import { logDebug } from "@/utils/logUtils";
 
 
 

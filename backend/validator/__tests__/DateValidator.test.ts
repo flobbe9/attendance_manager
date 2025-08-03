@@ -271,7 +271,7 @@ describe("getInvalidValues", () => {
         const validator = new DateValidator(currentAttendanceEntity, savedAttendances);
 
         expect(currentAttendanceEntity.examinants).toBeFalsy();
-        expect(validator.getInvalidValues().length).toBe(0);
+        expect(validator.getInvalidValues().size).toBe(0);
     });
 
     test("Should find invalid dates with matching examinant regardless of subject", () => {
@@ -323,6 +323,7 @@ describe("getInvalidValues", () => {
             },
         ];
         const validator = new DateValidator(currentAttendanceEntity, savedAttendances);
+        let invalidValues = validator.getInvalidValues();
 
         expect(dateEquals(validDate, invalidDate)).toBe(false);
 
@@ -330,14 +331,14 @@ describe("getInvalidValues", () => {
         expect(savedAttendances[1].schoolSubject).not.toEqual(
             savedAttendances[1].examinants[0].role
         );
-        expect(validator.getInvalidValues().length).toBe(1);
-        expect(dateEquals(validator.getInvalidValues()[0] as Date, invalidDate)).toBe(true);
+        expect(invalidValues.size).toBe(1);
+        expect(dateEquals(Array.from(invalidValues.keys())[0] as Date, invalidDate)).toBe(true);
 
         // same school subject
         savedAttendances[1].schoolSubject = savedAttendances[1].examinants[0]
             .role as SchoolSubject_Key;
         expect(savedAttendances[1].schoolSubject).toEqual(savedAttendances[1].examinants[0].role);
-        expect(validator.getInvalidValues().length).toBe(1);
-        expect(dateEquals(validator.getInvalidValues()[0] as Date, invalidDate)).toBe(true);
+        expect(invalidValues.size).toBe(1);
+        expect(dateEquals(Array.from(invalidValues.keys())[0] as Date, invalidDate)).toBe(true);
     });
 });

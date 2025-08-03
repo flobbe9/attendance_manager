@@ -33,6 +33,7 @@ export default function ScreenWrapper({...props}: Props) {
         if (!hasMounted)
             return;
         
+        // makes useScreenTouch hook work
         setGlobalScreenTouch(!globalScreenTouch);
     }
 

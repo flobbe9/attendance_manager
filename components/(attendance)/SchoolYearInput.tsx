@@ -6,8 +6,8 @@ import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceI
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { isBlank } from "@/utils/utils";
-import React, { useContext, useEffect, useState } from "react";
-import { ViewProps, ViewStyle } from "react-native";
+import React, { ReactNode, useContext, useEffect, useState } from "react";
+import { FlatList, ViewProps, ViewStyle } from "react-native";
 import { AttendanceContext } from "../context/AttendanceContextProvider";
 import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
 import Flex from "../helpers/Flex";
@@ -93,7 +93,7 @@ export default function SchoolYearInput({...props}: Props) {
             <Flex alignItems="center" style={{zIndex: 1}}>
                 <HelperText dynamicStyle={AttendanceIndexStyles.heading}>Jahrgang</HelperText>
 
-                <AttendanceInputTooltip values={validValues} attendanceInputKey="schoolYear" validator={validator}/>
+                <AttendanceInputTooltip values={validValues} attendanceInputKey="schoolYear" validator={validator} />
             </Flex>
 
             <HelperInput 
