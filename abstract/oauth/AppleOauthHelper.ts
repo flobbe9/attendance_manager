@@ -32,6 +32,7 @@ import { OauthUser } from "./OauthUser";
  * @see https://github.com/invertase/react-native-apple-authentication (apple sign in)
  * @see https://developer.android.com/identity/sign-in/credential-manager-siwg (google sign in)
  */
+// NOTE: i believe for this to work I'd need to create a "Service ID" at https://developer.apple.com/account/resources/identifiers/list/serviceId
 export class AppleOauthHelper extends AbstractOauthHelper {
     public async login(): Promise<number> {
         const rawNonce = uuid();
