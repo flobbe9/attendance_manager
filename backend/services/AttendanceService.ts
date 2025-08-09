@@ -1,16 +1,16 @@
-import {ExaminantRole_Key} from "@/abstract/Examinant";
-import {PartialRecord} from "@/abstract/PartialRecord";
-import {SchoolSubject_Key, schoolSubjectKeysObj} from "@/abstract/SchoolSubject";
-import {NO_SELECTION_LABEL} from "@/utils/constants";
-import {defaultEqualsFalsy} from "@/utils/projectUtils";
-import {assertFalsyAndThrow, dateEquals, isBlank} from "@/utils/utils";
-import {ValueOf} from "react-native-gesture-handler/lib/typescript/typeUtils";
-import {AbstractModifiableService} from "../abstract/AbstractModifiableService";
-import {ExaminantService} from "./ExaminantService";
-import {SchoolclassModeService} from "./SchoolclassModeService";
+import { ExaminantRole_Key } from "@/abstract/Examinant";
+import { PartialRecord } from "@/abstract/PartialRecord";
+import { SchoolSubject_Key, schoolSubjectKeysObj } from "@/abstract/SchoolSubject";
+import { SortOrder } from "@/abstract/SortOrder";
+import { NO_SELECTION_LABEL } from "@/utils/constants";
+import { defaultEqualsFalsy } from "@/utils/projectUtils";
+import { assertFalsyAndThrow, dateEquals, isBlank } from "@/utils/utils";
+import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
+import { AbstractModifiableService } from "../abstract/AbstractModifiableService";
 import { AttendanceEntity } from "../entities/AttendanceEntity";
 import { ExaminantEntity } from "../entities/ExaminantEntity";
-import { SortOrder } from "@/abstract/SortOrder";
+import { ExaminantService } from "./ExaminantService";
+import { SchoolclassModeService } from "./SchoolclassModeService";
 
 /**
  * @since 0.0.1
@@ -244,8 +244,10 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
     }
 
     /**
-     * Sort by `date` asc. Consider a falsy date "later" than a truthy one
-     *
+     * Sort by `date` asc. 
+     * 
+     * Consider a falsy date "later" than a truthy one.
+     * 
      * @param attendanceEntity1
      * @param attendanceEntity2
      * @param sortOrder
@@ -258,6 +260,7 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
     ): number {
         let compareValue: number;
 
+        // falsy date
         if (!attendanceEntity2.date && !attendanceEntity1.date)
             compareValue = 0;
 
@@ -267,6 +270,7 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
         else if (!attendanceEntity2.date)
             compareValue = -1;
         
+        // normal asc
         else 
             compareValue = attendanceEntity1.date.getTime() - attendanceEntity2.date.getTime();
 

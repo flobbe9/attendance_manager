@@ -48,7 +48,7 @@ export default function index() {
         PartialRecord<keyof AttendanceEntity, SortWrapper<AttendanceEntity>>
     >({
         date: {
-            sortOrder: SortOrder.ASC,
+            sortOrder: SortOrder.DESC,
             compare: attendanceService.compareDate,
         },
         schoolSubject: {
@@ -180,7 +180,12 @@ export default function index() {
             <HelperView dynamicStyle={IndexStyles.component}>
                 <IndexTopBar />
 
-                <Flex justifyContent="space-between" alignItems="center" style={{ ...HelperStyles.fullWidth, ...prs("mt_5") }}>
+                <Flex 
+                    justifyContent="space-between" 
+                    alignItems="center" 
+                    style={{ ...HelperStyles.fullWidth, ...prs("mt_5") }}
+                    rendered={!!attendanceLinks.length}
+                >
                     <Flex alignItems="center">
                         <FontAwesome name="filter" style={{ ...IndexStyles.sortButtonIcon, ...prs("me_2") }} />
 
@@ -230,7 +235,7 @@ export default function index() {
                     </Flex>
                 </Flex>
 
-                <Divider />
+                {!!attendanceLinks.length && <Divider />}
 
                 {/* Links */}
                 <HelperScrollView
