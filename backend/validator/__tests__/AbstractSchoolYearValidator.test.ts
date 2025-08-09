@@ -482,7 +482,7 @@ describe("validateContextConditions", () => {
     });
 
     test("Should only consider if current subject is music", () => {
-        const schoolYear = "9";
+        const schoolYear = "11";
 
         const currentAttendanceEntity: AttendanceEntity = {
             schoolYear: null,
@@ -1134,7 +1134,7 @@ const MOCK_MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS: SchoolYearCondition[] = [
         lessonTopic: "rhythm",
         schoolYearRange: {
             min: "5",
-            max: "8",
+            max: "10",
         },
         minAttendances: 2,
         maxAttendances: null,

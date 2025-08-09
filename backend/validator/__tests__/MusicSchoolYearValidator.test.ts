@@ -419,7 +419,7 @@ const MOCK_MUSIC_SCHOOL_YEAR_TOPIC_CONDITIONS: SchoolYearCondition[] = [
         lessonTopic: "rhythm",
         schoolYearRange: {
             min: "5",
-            max: "8",
+            max: "10",
         },
         minAttendances: 2,
         maxAttendances: null,
