@@ -57,13 +57,7 @@ export default function index() {
         },
     });
 
-    const { initializeFileLogger } = useFileLogger();
-
     const isScreenInView = useIsFocused();
-
-    useEffect(() => {
-        initializeFileLogger();
-    }, []); // once on app start (not refocus from background)
 
     useEffect(() => {
         if (isScreenInView) updateSavedAttendanceEntities();
