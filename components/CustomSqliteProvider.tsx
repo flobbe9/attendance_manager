@@ -16,6 +16,8 @@ interface Props {
 
 /**
  * Development db ui: http://localhost:8081/_expo/plugins/expo-drizzle-studio-plugin
+ * 
+ * NOTE: dont touch the drizzle migration files xd
  *
  * @since 0.0.1
  * @see https://orm.drizzle.team/docs/overview

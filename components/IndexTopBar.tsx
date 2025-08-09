@@ -94,14 +94,14 @@ export default function IndexTopBar({...props}: Props) {
                 <HelperText style={{ ...IndexTopBarStyles.text, ...prs("me_2") }}>Erledigt:</HelperText>
 
                 <ExaminantCount
-                    numExaminants={numMusicExaminants}
-                    maxExamiants={9}
-                    color={MUSIC_COLOR}
-                />
-                <ExaminantCount
                     numExaminants={numHistoryExaminants}
                     maxExamiants={9}
                     color={HISTORY_COLOR}
+                />
+                <ExaminantCount
+                    numExaminants={numMusicExaminants}
+                    maxExamiants={9}
+                    color={MUSIC_COLOR}
                 />
                 <ExaminantCount numExaminants={numEducators} maxExamiants={8} color={"black"} />
             </Flex>

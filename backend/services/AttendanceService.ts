@@ -10,6 +10,7 @@ import {ExaminantService} from "./ExaminantService";
 import {SchoolclassModeService} from "./SchoolclassModeService";
 import { AttendanceEntity } from "../entities/AttendanceEntity";
 import { ExaminantEntity } from "../entities/ExaminantEntity";
+import { SortOrder } from "@/abstract/SortOrder";
 
 /**
  * @since 0.0.1
@@ -226,15 +227,50 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
      *
      * @param attendanceEntity1
      * @param attendanceEntity2
+     * @param sortOrder
      * @returns negative value if `attendanceEntity1` should come before `attendanceEntity2`
      */
-    public sortBySubject(
+    public compareSchoolSubject(
         attendanceEntity1: AttendanceEntity,
-        attendanceEntity2: AttendanceEntity
+        attendanceEntity2: AttendanceEntity,
+        sortOrder: SortOrder = SortOrder.ASC
     ): number {
-        return (
+        const compareValue = (
             schoolSubjectKeysObj[attendanceEntity1.schoolSubject].index -
             schoolSubjectKeysObj[attendanceEntity2.schoolSubject].index
         );
+
+        return sortOrder === SortOrder.DESC ? compareValue * -1 : compareValue;
+    }
+
+    /**
+     * Sort by `date` asc. Consider a falsy date "later" than a truthy one
+     *
+     * @param attendanceEntity1
+     * @param attendanceEntity2
+     * @param sortOrder
+     * @returns negative value if `attendanceEntity1` should come before `attendanceEntity2`
+     */
+    public compareDate(
+        attendanceEntity1: AttendanceEntity,
+        attendanceEntity2: AttendanceEntity,
+        sortOrder: SortOrder = SortOrder.ASC
+    ): number {
+        let compareValue: number;
+
+        if (!attendanceEntity2.date && !attendanceEntity1.date)
+            compareValue = 0;
+
+        if (!attendanceEntity1.date)
+            compareValue = 1;
+
+        else if (!attendanceEntity2.date)
+            compareValue = -1;
+        
+        else 
+            compareValue = attendanceEntity1.date.getTime() - attendanceEntity2.date.getTime();
+
+        return sortOrder === SortOrder.DESC ? compareValue * -1 : compareValue;
+
     }
 }
