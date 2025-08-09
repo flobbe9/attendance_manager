@@ -1,5 +1,8 @@
-import { logDebug } from "./logUtils";
+import { Linking, Platform } from "react-native";
+import { appJson, STORE_CONSTANTS } from "./constants";
+import { logDebug, logError } from "./logUtils";
 import { assertFalsyAndThrow, isBlank, isFalsy } from "./utils";
+import { checkVersion, CheckVersionResponse } from "react-native-check-version";
 
 export function formatDateGermanNoTime(date: Date): string {
     if (!date) return "-";
@@ -20,8 +23,7 @@ export function parseNumOrThrow(numString: string): number {
 export function parseNumOrReturnNull(numString: string): number | null {
     const num = Number(numString);
 
-    if (isNaN(num) || isFalsy(numString))
-        return null; 
+    if (isNaN(num) || isFalsy(numString)) return null;
 
     return num;
 }
@@ -50,11 +52,7 @@ export function defaultEquals<T>(val1: T, val2: T, considerDistintFalsyValues = 
  * @param considerDistintFalsyValues if `true` values are considered not equal if they have different falsy values, e.g. `null` and `undefined`. Default is `false`
  * @returns `val1 === val2` but only if one of the values is falsy, else `null`
  */
-export function defaultEqualsFalsy<T>(
-    val1: T,
-    val2: T,
-    considerDistintFalsyValues = false
-): boolean | null {
+export function defaultEqualsFalsy<T>(val1: T, val2: T, considerDistintFalsyValues = false): boolean | null {
     if (!val1 || !val2) return defaultEquals(val1, val2, considerDistintFalsyValues);
 
     return null;
@@ -105,4 +103,39 @@ export function encodeObjToBase64(obj: object): string | null {
     }
 
     return encodeStringToBase64(JSON.stringify(obj));
+}
+
+/**
+ * Redirect to store app or browser page as fallback. Works for both android and ios.
+ */
+export async function redirectToStore(): Promise<void> {
+    const { storeAppUrl, storeBrowserUrl } = STORE_CONSTANTS[Platform.OS];
+
+    try {
+        const supported = await Linking.canOpenURL(storeAppUrl);
+        await Linking.openURL(supported ? storeAppUrl : storeBrowserUrl);
+    } catch (error) {
+        logError("Failed to redirect to store app.");
+        await Linking.openURL(storeBrowserUrl);
+    }
+}
+
+/**
+ * NOTE: propably does not work for test environments like apple's Testflight.
+ * 
+ * @returns version info containing detail about possible newer versions, or `null` if fetch failed
+ */
+export async function fetchVersionInfo(): Promise<CheckVersionResponse | null> {
+    try {
+        const versionInfo = await checkVersion({
+            bundleId: Platform.OS === "android" ? appJson.android.package : appJson.ios.bundleIdentifier
+        });
+
+        if (versionInfo.error)
+            throw versionInfo.error;
+    
+    } catch (e) {
+        logError(e.message)
+        return null;
+    }
 }

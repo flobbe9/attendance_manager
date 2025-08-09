@@ -19,7 +19,6 @@ import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import IndexTopBar from "@/components/IndexTopBar";
-import { useFileLogger } from "@/hooks/useFileLogger";
 import { getSubjectColor } from "@/hooks/useSubjectColor";
 import { cloneObj } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
