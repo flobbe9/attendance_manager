@@ -1,8 +1,7 @@
-
 /**
  * Should not do anything on mount as it might be included in many different components.
  * 
- * @since latest
+ * @since 0.2.2
  * @see https://react-native-cloud-storage.oss.kuatsu.de/docs/api/CloudStorage
  */
 export function useDbBackup() {

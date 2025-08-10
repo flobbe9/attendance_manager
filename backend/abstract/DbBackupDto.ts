@@ -8,6 +8,7 @@ import { ExaminantEntity } from "../entities/ExaminantEntity";
  * @since 0.2.2
  */
 export interface DbBackupDto {
+    // latestMigration: "m0000"
     attendances: AttendanceEntity[];
     schoolclassModes: SchoolclassMode[];
     examinants: ExaminantEntity[];

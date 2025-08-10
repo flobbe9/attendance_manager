@@ -1,8 +1,11 @@
 import { Linking, Platform } from "react-native";
 import { appJson, STORE_CONSTANTS } from "./constants";
-import { logDebug, logError } from "./logUtils";
+import { logDebug, logError, logTrace } from "./logUtils";
 import { assertFalsyAndThrow, isBlank, isFalsy } from "./utils";
 import { checkVersion, CheckVersionResponse } from "react-native-check-version";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
+import { DocumentPickerAsset, DocumentPickerOptions, getDocumentAsync } from "expo-document-picker";
 
 export function formatDateGermanNoTime(date: Date): string {
     if (!date) return "-";
@@ -122,20 +125,92 @@ export async function redirectToStore(): Promise<void> {
 
 /**
  * NOTE: propably does not work for test environments like apple's Testflight.
- * 
+ *
  * @returns version info containing detail about possible newer versions, or `null` if fetch failed
  */
 export async function fetchVersionInfo(): Promise<CheckVersionResponse | null> {
     try {
         const versionInfo = await checkVersion({
-            bundleId: Platform.OS === "android" ? appJson.android.package : appJson.ios.bundleIdentifier
+            bundleId: Platform.OS === "android" ? appJson.android.package : appJson.ios.bundleIdentifier,
         });
 
-        if (versionInfo.error)
-            throw versionInfo.error;
-    
+        if (versionInfo.error) throw versionInfo.error;
     } catch (e) {
-        logError(e.message)
+        logError(e.message);
+        return null;
+    }
+}
+
+/**
+ * Write `content` to file and open share popup on device. Enables user to store file on disk or share it via any supported method like whatsapp etc.
+ * 
+ * @param content cannot be falsy (but blank though)
+ * @param fileName include the extension but not the path
+ * @param mimeType e.g. 'text/plain' for .txt files. Will be overridden by `sharingOptions` if `sharingOptions.mimeType` is specified
+ * @param writingOptions 
+ * @param sharingOptions 
+ * @see https://docs.expo.dev/versions/latest/sdk/sharing/
+ */
+export async function stringToFile(
+    content: string,
+    fileName: string,
+    mimeType: string,
+    writingOptions?: FileSystem.WritingOptions,
+    sharingOptions?: Sharing.SharingOptions
+): Promise<void> {
+    assertFalsyAndThrow(0, fileName, mimeType);
+
+    try {
+        if (isFalsy(content))
+            throw new Error(`Failed to write to file. 'content' is ${content}`);
+    
+        if (!(await Sharing.isAvailableAsync()))
+            throw new Error("Sharing is not available");
+    
+        const fullFilePath = `${FileSystem.cacheDirectory}${fileName}`;
+        await FileSystem.writeAsStringAsync(fullFilePath, content, writingOptions);
+    
+        await Sharing.shareAsync(fullFilePath, {
+            dialogTitle: "Speichern",
+            mimeType,
+            ...sharingOptions,
+        });
+    // catch and log because expo lib errors are not logged
+    } catch (e) {
+        logError(e.message);
+        throw e;
+    }
+}
+
+/**
+ * Opens the devices file system and lets user pick a file. 
+ * 
+ * @param options includes `readContent`. If set to true the file contents will be read to string with `readOptions`:
+ * 
+ * `const content: string = await pickFile({readContent: true}).content`.
+ * 
+ * Default is `false`.
+ * @param readOptions 
+ * @returns file object (asset) containing all details of the picked file or `null` if promise is `canceled` or an error occurred
+ * @see https://docs.expo.dev/versions/latest/sdk/document-picker
+ */
+export async function pickFile(options?: DocumentPickerOptions & { readContent?: boolean }, readOptions?: FileSystem.ReadingOptions): Promise<DocumentPickerAsset & {content?: string} | null> {
+    try {
+        const response = await getDocumentAsync(options);
+        if (response.canceled) {
+            logTrace("pick file was canceled");
+            return null;
+        }
+
+        const asset = response.assets && response.assets.length ? response.assets[0] : null;
+
+        if (options.readContent)
+            Object.assign(asset, {content: await FileSystem.readAsStringAsync(asset.uri, readOptions)})
+
+        return asset;
+
+    } catch (e) {
+        logError(e.message);
         return null;
     }
 }
