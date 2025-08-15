@@ -7,6 +7,7 @@ import { SortWrapper } from "@/abstract/SortWrapper";
 import HelperStyles from "@/assets/styles/helperStyles";
 import { IndexStyles } from "@/assets/styles/IndexStyles";
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
+import { Attendance_Table } from "@/backend/schemas/AttendanceSchema";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import AttendanceLink from "@/components/AttendanceLink";
 import { GlobalAttendanceContext } from "@/components/context/GlobalAttendanceContextProvider";
@@ -19,10 +20,15 @@ import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import IndexTopBar from "@/components/IndexTopBar";
+import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
+import { useExaminantRepository } from "@/hooks/repositories/useExaminantRepository";
+import { useDbBackup } from "@/hooks/useDbBackup";
 import { getSubjectColor } from "@/hooks/useSubjectColor";
+import { logDebug } from "@/utils/logUtils";
 import { cloneObj } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
+import { eq, sql } from "drizzle-orm";
 import { Link } from "expo-router";
 import { JSX, useContext, useEffect, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
@@ -35,15 +41,17 @@ export default function index() {
     const { prs } = useContext(GlobalContext);
     const { savedAttendanceEntities, setCurrentAttendanceEntityId, updateSavedAttendanceEntities } = useContext(GlobalAttendanceContext);
 
-    const [attendanceLinks, setAttendanceLinks] = useState<JSX.Element[]>([]);
-    const [gubAttendanceLinks, setGubAttendanceLinks] = useState<JSX.Element[]>([]);
+    const [attendanceLinksNoGub, setAttendanceLinksNoGub] = useState<JSX.Element[]>([]);
+    const [attendanceLinksGub, setAttendanceLinksGub] = useState<JSX.Element[]>([]);
 
     const [isExtended, setIsExtended] = useState(true);
+
+    const {attendanceRepository, db} = useAttendanceRepository();
 
     const attendanceService = new AttendanceService();
     const [attendanceLinkFilterWrappers, setAttendanceLinkFilterWrappers] = useState<PartialRecord<SchoolSubject_Key, AttendanceFilterWrapper>>({});
     // last elements take priority over first elements
-    const [attendanceLinkSortWrappers, setAttendanceLinkSortWrappers] = useState<
+    const [attendanceLinkSortWrappers, setAttendanceLinkSNoGubortWrappers] = useState<
         PartialRecord<keyof AttendanceEntity, SortWrapper<AttendanceEntity>>
     >({
         date: {
@@ -63,8 +71,8 @@ export default function index() {
     }, [isScreenInView]); // triggered on focus and blur of /app/index view
 
     useEffect(() => {
-        setAttendanceLinks(mapAttendanceLinksWithoutGub(savedAttendanceEntities));
-        setGubAttendanceLinks(mapGubAttendanceLinksWithGub(savedAttendanceEntities));
+        setAttendanceLinksNoGub(mapAttendanceLinksWithoutGub(savedAttendanceEntities));
+        setAttendanceLinksGub(mapttendanceLinksWithGub(savedAttendanceEntities));
     }, [savedAttendanceEntities, attendanceLinkFilterWrappers, attendanceLinkSortWrappers]);
 
     function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
@@ -81,7 +89,7 @@ export default function index() {
             .map((attendanceEntity, i) => mapAttendanceLink(attendanceEntity, i));
     }
 
-    function mapGubAttendanceLinksWithGub(attendanceEntities: AttendanceEntity[]): JSX.Element[] {
+    function mapttendanceLinksWithGub(attendanceEntities: AttendanceEntity[]): JSX.Element[] {
         if (!attendanceEntities) return [];
 
         return mapAttendanceLinks(attendanceEntities)
@@ -130,7 +138,7 @@ export default function index() {
 
     /**
      * Add or remove filter wrapper to filter state and update.
-     * 
+     *
      * @param filterValue `null` if no filters should be applied
      * @param classField for comparing `filterValue`
      * @param isFilter whether to add filter wrapper instead of removing it
@@ -152,13 +160,13 @@ export default function index() {
 
     /**
      * Add sort wrapper with `classField` to the bottom of sort state for it to take priority.
-     * 
+     *
      * @param classField to sort by
      */
     function updateSort(classField: keyof AttendanceEntity): void {
         attendanceLinkSortWrappers[classField].sortOrder = getOppositeSortOrder(attendanceLinkSortWrappers[classField].sortOrder);
 
-        setAttendanceLinkSortWrappers({
+        setAttendanceLinkSNoGubortWrappers({
             ...attendanceLinkSortWrappers,
             [classField]: attendanceLinkSortWrappers[classField],
         });
@@ -168,17 +176,23 @@ export default function index() {
         return sortOrder === SortOrder.ASC ? "sort-asc" : "sort-desc";
     }
 
+    // TODO: continue here, works
+    const { getLatestMigrationKey, persistDto, loadDtoFromDb } = useDbBackup();
+    async function test() {
+        const dto = await loadDtoFromDb();
+        logDebug(dto.entities);
+
+        await persistDto(dto);
+    }
+
     return (
         <ScreenWrapper>
-            <HelperView dynamicStyle={IndexStyles.component}>
+            <HelperView dynamicStyle={IndexStyles.component} style={{ height: "100%" }}>
                 <IndexTopBar />
 
-                <Flex 
-                    justifyContent="space-between" 
-                    alignItems="center" 
-                    style={{ ...HelperStyles.fullWidth, ...prs("mt_5") }}
-                    rendered={!!attendanceLinks.length}
-                >
+                <HelperButton onPress={() => test()}>Test</HelperButton>
+
+                <Flex justifyContent="space-between" alignItems="center" style={{ ...HelperStyles.fullWidth, ...prs("mt_5") }}>
                     <Flex alignItems="center">
                         <FontAwesome name="filter" style={{ ...IndexStyles.sortButtonIcon, ...prs("me_2") }} />
 
@@ -228,7 +242,7 @@ export default function index() {
                     </Flex>
                 </Flex>
 
-                {!!attendanceLinks.length && <Divider />}
+                {!!attendanceLinksNoGub.length && <Divider />}
 
                 {/* Links */}
                 <HelperScrollView
@@ -236,17 +250,17 @@ export default function index() {
                     dynamicStyle={IndexStyles.linkContainer}
                     style={{ ...prs("mt_3") }}
                     childrenContainerStyle={{ paddingBottom: 50 }}
-                    rendered={!!attendanceLinks.length}
+                    rendered={!!attendanceLinksNoGub.length || !!attendanceLinksGub.length}
                 >
-                    {gubAttendanceLinks}
+                    {attendanceLinksGub}
 
-                    {!!gubAttendanceLinks.length && (
+                    {!!attendanceLinksNoGub.length && !!attendanceLinksGub.length && (
                         <HelperView>
                             <Divider style={{ marginBottom: 20, marginTop: 10 }} />
                         </HelperView>
                     )}
 
-                    {attendanceLinks}
+                    {attendanceLinksNoGub}
                 </HelperScrollView>
 
                 {/* Empty message */}
@@ -255,7 +269,7 @@ export default function index() {
                     justifyContent="center"
                     alignItems="center"
                     style={{ ...HelperStyles.fullHeight }}
-                    rendered={!attendanceLinks.length}
+                    rendered={!savedAttendanceEntities.length}
                 >
                     <HelperText dynamicStyle={IndexStyles.emptyMessage}>😴</HelperText>
                     <HelperText dynamicStyle={IndexStyles.emptyMessage}>Noch keine Unterrichtsbesuche...</HelperText>
