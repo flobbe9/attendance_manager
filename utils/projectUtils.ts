@@ -13,6 +13,14 @@ export function formatDateGermanNoTime(date: Date): string {
     return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
 }
 
+export function formatDateGermanIncludeTime(date: Date): string {
+    if (!date) {
+        return "-";
+    }
+    
+    return `${formatDateGermanNoTime(date)} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+}
+
 export function parseNumOrThrow(numString: string): number {
     assertFalsyAndThrow(numString);
 

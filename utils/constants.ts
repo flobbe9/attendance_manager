@@ -48,3 +48,6 @@ export const STORE_CONSTANTS: StoreConstants = {
         storeBrowserUrl: `https://play.google.com/store/apps/details?id=${appJson.android.package}`,
     },
 };
+
+export const DB_BACKUP_FILE_EXTENSION = '.ambak';
+export const DB_BACKUP_FILE_MIME_TYPE = 'application/json';

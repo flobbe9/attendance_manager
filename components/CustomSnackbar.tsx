@@ -4,7 +4,7 @@ import { isBlank } from "@/utils/utils";
 import React from "react";
 import { Portal, Snackbar, SnackbarProps } from "react-native-paper";
 
-export type CustomSnackbarStatus = "error" | "warn" | "info" | "default";
+export type CustomSnackbarStatus = "error" | "warn" | "info" | "success" | "default";
 
 export type CustomnSnackbarProps = SnackbarProps & { status: CustomSnackbarStatus };
 

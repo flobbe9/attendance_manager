@@ -16,10 +16,7 @@ import { SchoolclassModeService } from "./SchoolclassModeService";
  * @since 0.0.1
  */
 export class AttendanceService extends AbstractModifiableService<AttendanceEntity> {
-    public isModified(
-        entityLastSaved: AttendanceEntity,
-        entityModified: AttendanceEntity
-    ): boolean {
+    public isModified(entityLastSaved: AttendanceEntity, entityModified: AttendanceEntity): boolean {
         const equalsFalsy = defaultEqualsFalsy(entityLastSaved, entityModified);
         if (equalsFalsy !== null) return equalsFalsy;
 
@@ -34,10 +31,7 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
             entityLastSaved.note !== entityModified.note ||
             entityLastSaved.note2 !== entityModified.note2 ||
             examinantService.areModified(entityLastSaved.examinants, entityModified.examinants) ||
-            schoolclassModeService.isModified(
-                entityLastSaved.schoolclassMode,
-                entityModified.schoolclassMode
-            )
+            schoolclassModeService.isModified(entityLastSaved.schoolclassMode, entityModified.schoolclassMode)
         );
     }
 
@@ -46,10 +40,7 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
      * @throws if params are falsy
      * @see `ExaminantService.findExaminant`
      */
-    public getExaminantByRole(
-        attendanceEntity: AttendanceEntity,
-        role: ExaminantRole_Key
-    ): [ExaminantEntity | null, number] | undefined {
+    public getExaminantByRole(attendanceEntity: AttendanceEntity, role: ExaminantRole_Key): [ExaminantEntity | null, number] | undefined {
         assertFalsyAndThrow(attendanceEntity, role);
 
         if (!attendanceEntity.examinants) return [null, -1];
@@ -77,10 +68,7 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
      * @see {@link addOrUpdateExaminantByRole}
      * @throws if params are falsy
      */
-    public addExaminantByRole(
-        attendanceEntity: AttendanceEntity,
-        role: ExaminantRole_Key
-    ): AttendanceEntity {
+    public addExaminantByRole(attendanceEntity: AttendanceEntity, role: ExaminantRole_Key): AttendanceEntity {
         assertFalsyAndThrow(attendanceEntity, role);
 
         if (this.hasExaminant(attendanceEntity, role)) return attendanceEntity;
@@ -101,18 +89,14 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
      * @returns the updated `attendanceEntity`
      * @throws if params are falsy
      */
-    public addOrUpdateExaminantByRole(
-        attendanceEntity: AttendanceEntity,
-        examinant: ExaminantEntity
-    ): AttendanceEntity {
+    public addOrUpdateExaminantByRole(attendanceEntity: AttendanceEntity, examinant: ExaminantEntity): AttendanceEntity {
         assertFalsyAndThrow(attendanceEntity, examinant);
 
         // case: examinants not set yet
         if (!attendanceEntity.examinants) attendanceEntity.examinants = [];
 
         // case: update
-        if (this.hasExaminant(attendanceEntity, examinant.role))
-            this.removeExaminant(attendanceEntity, examinant.role);
+        if (this.hasExaminant(attendanceEntity, examinant.role)) this.removeExaminant(attendanceEntity, examinant.role);
 
         attendanceEntity.examinants.push(examinant);
 
@@ -127,17 +111,11 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
      * @returns the removed examinant or `undefined`
      * @throws if params are falsy
      */
-    public removeExaminant(
-        attendanceEntity: AttendanceEntity,
-        role: ExaminantRole_Key
-    ): ExaminantEntity | undefined {
+    public removeExaminant(attendanceEntity: AttendanceEntity, role: ExaminantRole_Key): ExaminantEntity | undefined {
         assertFalsyAndThrow(attendanceEntity, role);
 
         // find examinant by role
-        let [examinantToDelete, examinantToDeleteIndex] = this.getExaminantByRole(
-            attendanceEntity,
-            role
-        );
+        let [examinantToDelete, examinantToDeleteIndex] = this.getExaminantByRole(attendanceEntity, role);
 
         // case: found examinant to delete
         if (examinantToDelete) {
@@ -152,9 +130,7 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
      * @param fields to possibly override or just add to "empty" instance
      * @returns new object (not actually instantiated) with only required fields and `fields`
      */
-    public static getEmptyInstance(
-        fields?: PartialRecord<keyof AttendanceEntity, ValueOf<AttendanceEntity>>
-    ): AttendanceEntity {
+    public static getEmptyInstance(fields?: PartialRecord<keyof AttendanceEntity, ValueOf<AttendanceEntity>>): AttendanceEntity {
         return {
             schoolSubject: undefined,
             schoolclassMode: {
@@ -166,15 +142,10 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
         };
     }
 
-    public findAllByExaminant(
-        attendanceEntities: AttendanceEntity[],
-        role: ExaminantRole_Key
-    ): AttendanceEntity[] {
+    public findAllByExaminant(attendanceEntities: AttendanceEntity[], role: ExaminantRole_Key): AttendanceEntity[] {
         assertFalsyAndThrow(attendanceEntities, role);
 
-        return attendanceEntities.filter((attendanceEntitiy) =>
-            this.hasExaminant(attendanceEntitiy, role)
-        );
+        return attendanceEntities.filter((attendanceEntitiy) => this.hasExaminant(attendanceEntitiy, role));
     }
 
     /**
@@ -183,10 +154,7 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
      * @returns filtered list of `attendanceEntities` that have both and examinant with role `roleAndSchoolSubject` and
      * `schoolSubject` that equals `roleAndSchoolSubject`
      */
-    public findAllByExaminantAndSchoolSubject(
-        attendanceEntities: AttendanceEntity[],
-        roleAndSchoolSubject: SchoolSubject_Key
-    ): AttendanceEntity[] {
+    public findAllByExaminantAndSchoolSubject(attendanceEntities: AttendanceEntity[], roleAndSchoolSubject: SchoolSubject_Key): AttendanceEntity[] {
         assertFalsyAndThrow(attendanceEntities, roleAndSchoolSubject);
 
         return this.findAllByExaminant(attendanceEntities, roleAndSchoolSubject).filter(
@@ -235,46 +203,33 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
         attendanceEntity2: AttendanceEntity,
         sortOrder: SortOrder = SortOrder.ASC
     ): number {
-        const compareValue = (
-            schoolSubjectKeysObj[attendanceEntity1.schoolSubject].index -
-            schoolSubjectKeysObj[attendanceEntity2.schoolSubject].index
-        );
+        const compareValue =
+            schoolSubjectKeysObj[attendanceEntity1.schoolSubject].index - schoolSubjectKeysObj[attendanceEntity2.schoolSubject].index;
 
         return sortOrder === SortOrder.DESC ? compareValue * -1 : compareValue;
     }
 
     /**
-     * Sort by `date` asc. 
-     * 
+     * Sort by `date` asc.
+     *
      * Consider a falsy date "later" than a truthy one.
-     * 
+     *
      * @param attendanceEntity1
      * @param attendanceEntity2
      * @param sortOrder
      * @returns negative value if `attendanceEntity1` should come before `attendanceEntity2`
      */
-    public compareDate(
-        attendanceEntity1: AttendanceEntity,
-        attendanceEntity2: AttendanceEntity,
-        sortOrder: SortOrder = SortOrder.ASC
-    ): number {
+    public compareDate(attendanceEntity1: AttendanceEntity, attendanceEntity2: AttendanceEntity, sortOrder: SortOrder = SortOrder.ASC): number {
         let compareValue: number;
 
         // falsy date
-        if (!attendanceEntity2.date && !attendanceEntity1.date)
-            compareValue = 0;
+        if (!attendanceEntity2.date && !attendanceEntity1.date) compareValue = 0;
 
-        if (!attendanceEntity1.date)
-            compareValue = 1;
-
-        else if (!attendanceEntity2.date)
-            compareValue = -1;
-        
+        if (!attendanceEntity1.date) compareValue = 1;
+        else if (!attendanceEntity2.date) compareValue = -1;
         // normal asc
-        else 
-            compareValue = attendanceEntity1.date.getTime() - attendanceEntity2.date.getTime();
+        else compareValue = attendanceEntity1.date.getTime() - attendanceEntity2.date.getTime();
 
         return sortOrder === SortOrder.DESC ? compareValue * -1 : compareValue;
-
     }
 }

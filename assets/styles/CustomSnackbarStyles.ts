@@ -23,6 +23,9 @@ export class CustomSnackbarStyles {
     static info: ViewStyle = {
         backgroundColor: LIGHT_COLOR
     }
+    static success: ViewStyle = {
+        backgroundColor: "rgb(50, 255, 50)"
+    }
     static default: ViewStyle = {
         // only for completeness, shouldn't do anything
     }
