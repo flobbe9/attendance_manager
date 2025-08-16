@@ -7,7 +7,6 @@ import { SortWrapper } from "@/abstract/SortWrapper";
 import HelperStyles from "@/assets/styles/helperStyles";
 import { IndexStyles } from "@/assets/styles/IndexStyles";
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
-import { Attendance_Table } from "@/backend/schemas/AttendanceSchema";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import AttendanceLink from "@/components/AttendanceLink";
 import { GlobalAttendanceContext } from "@/components/context/GlobalAttendanceContextProvider";
@@ -20,15 +19,10 @@ import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import IndexTopBar from "@/components/IndexTopBar";
-import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
-import { useExaminantRepository } from "@/hooks/repositories/useExaminantRepository";
-import { useDbBackup } from "@/hooks/useDbBackup";
 import { getSubjectColor } from "@/hooks/useSubjectColor";
-import { logDebug } from "@/utils/logUtils";
 import { cloneObj } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
-import { eq, sql } from "drizzle-orm";
 import { Link } from "expo-router";
 import { JSX, useContext, useEffect, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
@@ -38,15 +32,13 @@ import { Divider, RadioButton } from "react-native-paper";
  * @since 0.0.1
  */
 export default function index() {
-    const { prs } = useContext(GlobalContext);
+    const { prs, popup } = useContext(GlobalContext);
     const { savedAttendanceEntities, setCurrentAttendanceEntityId, updateSavedAttendanceEntities } = useContext(GlobalAttendanceContext);
 
     const [attendanceLinksNoGub, setAttendanceLinksNoGub] = useState<JSX.Element[]>([]);
     const [attendanceLinksGub, setAttendanceLinksGub] = useState<JSX.Element[]>([]);
 
     const [isExtended, setIsExtended] = useState(true);
-
-    const {attendanceRepository, db} = useAttendanceRepository();
 
     const attendanceService = new AttendanceService();
     const [attendanceLinkFilterWrappers, setAttendanceLinkFilterWrappers] = useState<PartialRecord<SchoolSubject_Key, AttendanceFilterWrapper>>({});
@@ -176,21 +168,10 @@ export default function index() {
         return sortOrder === SortOrder.ASC ? "sort-asc" : "sort-desc";
     }
 
-    // TODO: continue here, works
-    const { getLatestMigrationKey, persistDto, loadDtoFromDb } = useDbBackup();
-    async function test() {
-        const dto = await loadDtoFromDb();
-        logDebug(dto.entities);
-
-        await persistDto(dto);
-    }
-
     return (
         <ScreenWrapper>
             <HelperView dynamicStyle={IndexStyles.component} style={{ height: "100%" }}>
                 <IndexTopBar />
-
-                <HelperButton onPress={() => test()}>Test</HelperButton>
 
                 <Flex justifyContent="space-between" alignItems="center" style={{ ...HelperStyles.fullWidth, ...prs("mt_5") }}>
                     <Flex alignItems="center">
