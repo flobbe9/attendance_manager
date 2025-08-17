@@ -10,16 +10,17 @@ import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { getSubjectColor, useSubjectColor } from "@/hooks/useSubjectColor";
 import { formatDateGermanNoTime } from "@/utils/projectUtils";
-import { FONT_SIZE } from "@/utils/styleConstants";
+import { BORDER_RADIUS, FONT_SIZE, FONT_SIZE_SMALLER, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import React, { JSX, useContext } from "react";
-import { ViewProps, ViewStyle } from "react-native";
+import { ColorValue, ViewProps, ViewStyle } from "react-native";
 import HelperStyles from "./../assets/styles/helperStyles";
 import { GlobalContext } from "./context/GlobalContextProvider";
 import B from "./helpers/B";
 import Flex from "./helpers/Flex";
 import HelperText from "./helpers/HelperText";
+import { isBlank } from "@/utils/utils";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
     attendanceEntity: AttendanceEntity;
@@ -28,22 +29,19 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
 /**
  * @since 0.0.1
  */
-export default function AttendanceLink({attendanceEntity, ...props}: Props) {
-    const {date, schoolSubject, examinants, musicLessonTopic, schoolYear} = attendanceEntity;
+export default function AttendanceLink({ attendanceEntity, ...props }: Props) {
+    const { date, schoolSubject, examinants, musicLessonTopic, schoolYear } = attendanceEntity;
 
     const attendanceService = new AttendanceService();
 
     // color depends on both subject and matching examinant
-    const {color: attendanceColor, transparentColor: attendanceColorTransparent} = useSubjectColor(
-        attendanceService.hasExaminant(attendanceEntity, schoolSubject) ? schoolSubject : undefined
-    );
+    const {
+        transparentColor: attendanceColorTransparent,
+        transparentColorDarker: attendanceColorTransparentDarker,
+    } = useSubjectColor(attendanceService.hasExaminant(attendanceEntity, schoolSubject) ? schoolSubject : undefined, "rgb(240, 240, 240)");
 
     const componentName = "AttendanceLink";
-    const {children, style, ...otherProps} = useHelperProps(
-        props,
-        componentName,
-        AttendanceLinkStyles.component
-    );
+    const { children, style, ...otherProps } = useHelperProps(props, componentName, AttendanceLinkStyles.component);
 
     const examinantService = new ExaminantService();
 
@@ -52,18 +50,14 @@ export default function AttendanceLink({attendanceEntity, ...props}: Props) {
     const errorColor = "red";
 
     function getDate(): string {
-        if (!date) return "Termin";
+        if (!date) return "Noch zu terminieren";
 
         return formatDateGermanNoTime(date);
     }
 
     function getTopic(): string {
-        const defaultTopic = schoolSubject === "history" ? "" : " - <Thema>";
-        return `${
-            musicLessonTopic
-                ? ` - ${getMusicLessonTopicByMusicLessonTopicKey(musicLessonTopic)}`
-                : defaultTopic
-        }`;
+        const defaultTopic = schoolSubject === "history" ? "" : "Thema";
+        return `${!isBlank(musicLessonTopic) ? `${getMusicLessonTopicByMusicLessonTopicKey(musicLessonTopic)}` : defaultTopic}`;
     }
 
     function mapExaminantIcons(): JSX.Element[] {
@@ -77,18 +71,19 @@ export default function AttendanceLink({attendanceEntity, ...props}: Props) {
                     color={getSubjectColor(examinant.role)}
                     size={FONT_SIZE}
                     key={i}
-                    style={{...prs("ms_1")}}
+                    style={{ ...prs("ms_1") }}
                 />
             ));
+    }
+
+    function getBackgroundColor(): ColorValue {
+        return attendanceService.isGub(attendanceEntity) ? attendanceColorTransparentDarker : attendanceColorTransparent;
     }
 
     return (
         <HelperView
             style={{
-                borderColor: attendanceService.isGub(attendanceEntity)
-                    ? attendanceColor
-                    : "transparent",
-                backgroundColor: attendanceColorTransparent,
+                backgroundColor: getBackgroundColor(),
                 ...(style as object),
             }}
             {...otherProps}
@@ -96,60 +91,71 @@ export default function AttendanceLink({attendanceEntity, ...props}: Props) {
             <Link href="/(attendance)">
                 <HelperView>
                     {/* Top row */}
-                    <HelperView style={{...HelperStyles.fullWidth, ...prs("mb_2")}}>
-                        <HelperText
-                            numberOfLines={1} // ellipsis
-                            dynamicStyle={AttendanceLinkStyles.heading}
-                        >
+                    <Flex style={{ ...HelperStyles.fullWidth, ...prs("mb_2") }} flexDirection="column" justifyContent="space-between">
+                        <HelperText ellipsis dynamicStyle={AttendanceLinkStyles.heading}>
                             {/* Subject */}
-                            <B>{getSchoolSubjectBySchoolSubjectKey(schoolSubject)}</B>
-
-                            {/* Topic if present */}
-                            <HelperText style={{color: musicLessonTopic ? "" : errorColor}}>
-                                {getTopic()}
-                            </HelperText>
+                            <B style={{ fontFamily: "Lato-Regular" }}>{getSchoolSubjectBySchoolSubjectKey(schoolSubject)}</B>
                         </HelperText>
-                    </HelperView>
+
+                        {/* Topic */}
+                        <HelperText
+                            style={{
+                                color: !isBlank(musicLessonTopic) ? undefined : errorColor,
+                                fontStyle: !isBlank(musicLessonTopic) ? undefined : "italic",
+                                ...AttendanceLinkStyles.topic,
+                            }}
+                            ellipsis
+                            rendered={schoolSubject !== "history"}
+                        >
+                            {getTopic()}
+                        </HelperText>
+                    </Flex>
 
                     {/* Bottom row */}
                     <Flex
                         justifyContent="space-between"
+                        alignItems="flex-end"
                         style={{
                             ...HelperStyles.fullWidth,
                         }}
                     >
+                        {/* Date */}
                         <HelperText
-                            dynamicStyle={AttendanceLinkStyles.subheading}
+                            dynamicStyle={AttendanceLinkStyles.bottomRowElement}
                             style={{
-                                color: date ? "" : errorColor,
+                                fontStyle: date ? undefined : "italic",
                                 ...prs("col_4"),
                             }}
                         >
                             {getDate()}
                         </HelperText>
 
-                        <Flex justifyContent="center" style={{...prs("col_4")}}>
+                        {/* SchoolYear */}
+                        <Flex justifyContent="center" style={{ ...prs("col_4") }}>
                             <HelperText
+                                dynamicStyle={AttendanceLinkStyles.bottomRowElement}
                                 style={{
-                                    color: schoolYear ? "" : errorColor,
+                                    fontStyle: schoolYear ? undefined : "italic",
+                                    fontWeight: schoolYear ? "bold" : undefined,
                                 }}
                             >
                                 {schoolYear || "Jahrgang"}
                             </HelperText>
                         </Flex>
 
-                        <Flex justifyContent="flex-end" style={{...prs("col_4")}}>
-                            {/* dont use a state or this wont update correctly */}
+                        {/* Examinants */}
+                        <Flex justifyContent="flex-end" style={{ ...prs("col_4") }}>
+                            {/* NOTE: dont use a state or this wont update correctly */}
                             {mapExaminantIcons()}
 
-                            {/* Invalid examinants */}
-                            <HelperText rendered={!examinants?.length}>
-                                <FontAwesome
-                                    name="user-o"
-                                    size={FONT_SIZE - 2}
-                                    color={errorColor}
+                            {/* Invalid */}
+                            {!examinants?.length && (
+                                <FontAwesome 
+                                    name="user-o" 
+                                    size={FONT_SIZE - 2} 
+                                    style={{ ...AttendanceLinkStyles.bottomRowElement.default }} 
                                 />
-                            </HelperText>
+                            )}
                         </Flex>
                     </Flex>
 

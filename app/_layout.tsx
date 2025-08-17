@@ -2,6 +2,7 @@ import { LayoutStyles } from "@/assets/styles/LayoutStyles";
 import AssetProvider from "@/components/context/AssetProvider";
 import GlobalAttendanceContextProvider from "@/components/context/GlobalAttendanceContextProvider";
 import GlobalContextProvider from "@/components/context/GlobalContextProvider";
+import IndexContextProvider from "@/components/context/IndexContextProvider";
 import CustomSqliteProvider from "@/components/CustomSqliteProvider";
 import GlobalComponentProvider from "@/components/GlobalComponentProvider";
 import { APP_NAME, ENV } from "@/utils/constants";
@@ -23,56 +24,58 @@ export default function layout() {
     return (
         <CustomSqliteProvider>
             <GlobalContextProvider>
-                <GlobalAttendanceContextProvider>
-                    <ClickOutsideProvider>
-                        <AssetProvider>
-                            <GlobalComponentProvider>
-                                <GestureHandlerRootView style={{ flex: 1 }}>
-                                    <StatusBar barStyle={`${colorScheme}-content`} />
+                <IndexContextProvider>
+                    <GlobalAttendanceContextProvider>
+                        <ClickOutsideProvider>
+                            <AssetProvider>
+                                <GlobalComponentProvider>
+                                    <GestureHandlerRootView style={{ flex: 1 }}>
+                                        <StatusBar barStyle={`${colorScheme}-content`} />
 
-                                    <Drawer>
-                                        <Drawer.Screen
-                                            name="index"
-                                            options={{
-                                                drawerItemStyle: { display: "none" }, // hide index in drawer item list, use back buttons instead
-                                                title: APP_NAME,
-                                            }}
-                                        />
+                                        <Drawer>
+                                            <Drawer.Screen
+                                                name="index"
+                                                options={{
+                                                    drawerItemStyle: { display: "none" }, // hide index in drawer item list, use back buttons instead
+                                                    title: APP_NAME,
+                                                }}
+                                            />
 
-                                        <Drawer.Screen
-                                            name="(settings)"
-                                            options={{
-                                                headerShown: false,
-                                                drawerIcon: () => <FontAwesome name="gear" style={LayoutStyles.drawerIcon} />,
-                                                title: "Einstellungen",
-                                            }}
-                                        />
+                                            <Drawer.Screen
+                                                name="(settings)"
+                                                options={{
+                                                    headerShown: false,
+                                                    drawerIcon: () => <FontAwesome name="gear" style={LayoutStyles.drawerIcon} />,
+                                                    title: "Einstellungen",
+                                                }}
+                                            />
 
-                                        <Drawer.Screen
-                                            name="(appTesting)"
-                                            options={{
-                                                headerShown: false,
-                                                drawerIcon: () => <FontAwesome name="flask" style={LayoutStyles.drawerIcon} />,
-                                                title: "App testing",
-                                                drawerItemStyle: {
-                                                    display: ENV !== "production" ? undefined : "none",
-                                                },
-                                            }}
-                                        />
+                                            <Drawer.Screen
+                                                name="(appTesting)"
+                                                options={{
+                                                    headerShown: false,
+                                                    drawerIcon: () => <FontAwesome name="flask" style={LayoutStyles.drawerIcon} />,
+                                                    title: "App testing",
+                                                    drawerItemStyle: {
+                                                        display: ENV !== "production" ? undefined : "none",
+                                                    },
+                                                }}
+                                            />
 
-                                        <Drawer.Screen
-                                            name="(attendance)"
-                                            options={{
-                                                headerShown: false,
-                                                drawerItemStyle: { display: "none" },
-                                            }}
-                                        />
-                                    </Drawer>
-                                </GestureHandlerRootView>
-                            </GlobalComponentProvider>
-                        </AssetProvider>
-                    </ClickOutsideProvider>
-                </GlobalAttendanceContextProvider>
+                                            <Drawer.Screen
+                                                name="(attendance)"
+                                                options={{
+                                                    headerShown: false,
+                                                    drawerItemStyle: { display: "none" },
+                                                }}
+                                            />
+                                        </Drawer>
+                                    </GestureHandlerRootView>
+                                </GlobalComponentProvider>
+                            </AssetProvider>
+                        </ClickOutsideProvider>
+                    </GlobalAttendanceContextProvider>
+                </IndexContextProvider>
             </GlobalContextProvider>
         </CustomSqliteProvider>
     );

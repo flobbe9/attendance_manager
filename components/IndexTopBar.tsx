@@ -4,7 +4,7 @@ import HS from "@/assets/styles/helperStyles";
 import { IndexTopBarStyles } from "@/assets/styles/IndexTopBarStyles";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
-import { HISTORY_COLOR, MUSIC_COLOR } from "@/utils/styleConstants";
+import { getSubjectColor } from "@/hooks/useSubjectColor";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext, useEffect, useState } from "react";
 import { ColorValue, ViewProps, ViewStyle } from "react-native";
@@ -12,6 +12,8 @@ import { GlobalAttendanceContext } from "./context/GlobalAttendanceContextProvid
 import { GlobalContext } from "./context/GlobalContextProvider";
 import Flex from "./helpers/Flex";
 import HelperText from "./helpers/HelperText";
+import AttendanceLinkFilters from "./AttendanceLinkFilters";
+import HelperView from "./helpers/HelperView";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -74,12 +76,12 @@ export default function IndexTopBar({ ...props }: Props) {
     return (
         <Flex justifyContent="space-between" alignItems="center" {...otherProps}>
             <Flex justifyContent="flex-end" style={{ ...HS.fullWidth }}>
-                <HelperText style={{ ...IndexTopBarStyles.text, ...prs("me_2") }}>Erledigt:</HelperText>
-
-                <ExaminantCount numExaminants={numHistoryExaminants} maxExamiants={9} color={HISTORY_COLOR} />
-                <ExaminantCount numExaminants={numMusicExaminants} maxExamiants={9} color={MUSIC_COLOR} />
+                <ExaminantCount numExaminants={numHistoryExaminants} maxExamiants={9} color={getSubjectColor("history")} />
+                <ExaminantCount numExaminants={numMusicExaminants} maxExamiants={9} color={getSubjectColor("music")} />
                 <ExaminantCount numExaminants={numEducators} maxExamiants={8} color={"black"} />
             </Flex>
+
+            <AttendanceLinkFilters style={{...prs("pb_2", "pt_4")}} />
         </Flex>
     );
 }

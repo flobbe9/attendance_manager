@@ -11,7 +11,6 @@ const addButtonWidth = 59;
 export class IndexStyles {
     static component: DynamicStyle<StyleType> = {
         default: {
-            minHeight: "100%",
             padding: GLOBAL_SCREEN_PADDING,
             backgroundColor: "white"
         }
@@ -39,7 +38,7 @@ export class IndexStyles {
         }
     }
 
-    static link: DynamicStyle<StyleType> = {
+    static attendanceLink: DynamicStyle<StyleType> = {
         default: {
             marginBottom: GLOBAL_SCREEN_PADDING
         }
