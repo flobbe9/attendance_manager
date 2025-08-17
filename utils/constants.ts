@@ -44,8 +44,8 @@ export const STORE_CONSTANTS: StoreConstants = {
         storeBrowserUrl: `https://apps.apple.com/app/id${APPLE_ID}`,
     },
     android: {
-        storeAppUrl: `market://details?id=${appJson.android.package}`,
-        storeBrowserUrl: `https://play.google.com/store/apps/details?id=${appJson.android.package}`,
+        storeAppUrl: `market://details?id=${appJson.android?.package}`,
+        storeBrowserUrl: `https://play.google.com/store/apps/details?id=${appJson.android?.package}`,
     },
 };
 
