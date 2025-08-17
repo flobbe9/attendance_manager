@@ -6,7 +6,10 @@ import React, { forwardRef, Fragment, Ref, useEffect, useImperativeHandle, useRe
 import { Animated, Text, TextProps, TextStyle } from "react-native";
 
 
-interface Props extends HelperProps<TextStyle>, TextProps {}
+interface Props extends HelperProps<TextStyle>, TextProps {
+    /** Alias for `numberOfLines: 1` */
+    ellipsis?: boolean
+}
 
 
 /**
@@ -22,6 +25,7 @@ export default forwardRef(function HelperText(
     {
         dynamicStyle = {},
         animatedDynamicStyles,
+        ellipsis = false,
         rendered = true,
         onRender,
         ...props
@@ -47,7 +51,7 @@ export default forwardRef(function HelperText(
 
 
     return (
-        <Animated.Text ref={componentRef} {...otherProps}>
+        <Animated.Text ref={componentRef} numberOfLines={ellipsis ? 1 : undefined} {...otherProps}>
             {children}
         </Animated.Text>
     )

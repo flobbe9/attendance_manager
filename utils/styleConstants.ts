@@ -1,16 +1,25 @@
 import { FontAweSomeIconname } from "@/abstract/FontAwesomeIconName";
+import { SchoolSubject_Key } from "@/abstract/SchoolSubject";
+import { SubjectColor } from "@/hooks/useSubjectColor";
 import { ViewStyle } from "react-native";
 
 /** In ms */
 export const TRANSITION_DURATION = 200;
 
-
 /** Colors */
-export const MUSIC_COLOR = "rgb(219, 125, 2)";
-export const MUSIC_COLOR_TRANSPARENT = "rgb(255, 221, 186)";
-export const HISTORY_COLOR = "rgb(0, 110, 255)";
-export const HISTORY_COLOR_TRANSPARENT = "rgb(229, 242, 255)";
 export const EXAMINANT_COLOR_NO_SUBJECT = "black";
+export const SUBJECT_COLORS: Record<SchoolSubject_Key, SubjectColor> = {
+    history: {
+        color: "rgb(0, 110, 255)",
+        transparentColor: "rgb(214, 234, 255)",
+        transparentColorDarker: "rgb(130, 192, 255)"
+    },
+    music: {
+        color: "rgb(219, 125, 2)",
+        transparentColor: "rgb(255, 221, 186)",
+        transparentColorDarker: "rgb(255, 179, 103)"
+    }
+}
 // light theme ish
 export const LIGHT_COLOR = "rgb(230, 225, 229)";
 

@@ -2,17 +2,11 @@ import { DynamicStyle } from "@/abstract/DynamicStyle";
 import { BORDER_RADIUS, BORDER_WIDTH, FONT_SIZE_LARGER, FONT_SIZE_SMALLER, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
 
-
-type StyleType = ViewStyle;
-
-
 export class AttendanceLinkStyles {
-    static component: DynamicStyle<StyleType> = {
+    static component: DynamicStyle<ViewStyle> = {
         default: {
-            borderWidth: 3,
             borderRadius: BORDER_RADIUS,
-            marginBottom: GLOBAL_SCREEN_PADDING,
-            padding: 5,
+            padding: GLOBAL_SCREEN_PADDING,
         }
     }
 
@@ -22,9 +16,16 @@ export class AttendanceLinkStyles {
         }
     }
 
-    static subheading: DynamicStyle<TextStyle> = {
+
+    static topic: DynamicStyle<TextStyle> = {
         default: {
             fontSize: FONT_SIZE_SMALLER
+        }
+    }
+
+    static bottomRowElement: DynamicStyle<TextStyle> = {
+        default: {
+            color: "rgb(100, 100, 100)"
         }
     }
 

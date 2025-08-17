@@ -10,8 +10,7 @@ import { ReactNode } from "react";
 export default function AssetProvider({ children }: { children: ReactNode }) {
     // paths relative to this file
     useFonts({
-        // "MozillaHeadline_Condensed-Regular": require("../../assets/fonts/MozillaHeadline_Condensed-Regular.ttf"),
-        // "LibertinusSerif-Regular": require("../../assets/fonts/LibertinusSerif-Regular.ttf"),
+        "Lato": require("../../assets/fonts/Lato-Regular.ttf"),
     });
 
     return children;

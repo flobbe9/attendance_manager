@@ -1,6 +1,6 @@
 import { PartialRecord } from "@/abstract/PartialRecord";
 import { ResponsiveStyle } from "@/abstract/ResponsiveStyle";
-import { logWarn } from "@/utils/logUtils";
+import { logDebug, logWarn } from "@/utils/logUtils";
 import { LG_MIN_WIDTH, MD_MIN_WIDTH, SM_MIN_WIDTH } from "@/utils/styleConstants";
 import { isBlank, isNumberFalsy, sortObjectByKeys } from "@/utils/utils";
 import { useEffect, useState } from "react";
@@ -11,7 +11,7 @@ import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
  * Creates style objects that behave like css bootstrap classes.
  *
  * Example usage:
- * 
+ *
  * ```
  * const { prs } = useResponsiveStyles();
  * ...
@@ -20,7 +20,7 @@ import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
  * ```
  * is the equivalent to bootstrap (v5): `col-5 col-sm-10`.
  * Notice that the order in which the styles are passed to the parsing function does not matter.
- * 
+ *
  * Ideally call this once only (global context e.g.) in order to improove performance.
  *
  * @returns bootstrap like style objects that get updated with screen width
@@ -140,8 +140,8 @@ export function useResponsiveStyles() {
 
     /**
      * Try to retrieve the responsive style for `key` and log warn if not present in `allStyles`.
-     * 
-     * @param key 
+     *
+     * @param key
      * @returns the responsiveStyle object for `key` or an empty object, never `undefined`
      */
     function parseResponsiveStyleKey(key: keyof ResponsiveStyle): ResponsiveStyle {
@@ -152,7 +152,7 @@ export function useResponsiveStyles() {
             return {};
         }
 
-        return { key: allStyles[key] };
+        return { [key]: allStyles[key] };
     }
 
     /**
@@ -162,18 +162,20 @@ export function useResponsiveStyles() {
     function parseResponsiveStyle(...keys: (keyof ResponsiveStyle)[]): ViewStyle & TextStyle & ImageStyle {
         if (!Object.keys(allStyles).length || !keys || !keys.length) return {};
 
-        const combinedStyles: ValueOf<ResponsiveStyle> = {};
+        let combinedStyles: ValueOf<ResponsiveStyle> = {};
 
         // parse keys to responseiveStyle obj
         let responsiveStyles: ResponsiveStyle = {};
-        keys.map((key) => parseResponsiveStyleKey(key)).forEach(
-            (responsiveStyle) => (responsiveStyles = { ...responsiveStyles, ...responsiveStyle })
-        );
+        keys.map((key) => parseResponsiveStyleKey(key)).forEach((responsiveStyle) => {
+            responsiveStyles = { ...responsiveStyles, ...responsiveStyle };
+        });
 
         const sortedResponsiveStyles = sortResponsiveStyle(responsiveStyles);
 
         // merge into one style object
-        Object.values(sortedResponsiveStyles).forEach((style) => Object.assign(combinedStyles, style));
+        Object.values(sortedResponsiveStyles).forEach((style) => {
+            combinedStyles = { ...combinedStyles, ...style };
+        });
 
         return combinedStyles;
     }

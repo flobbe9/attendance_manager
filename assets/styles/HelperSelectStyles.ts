@@ -1,7 +1,6 @@
-import {DynamicStyle} from "@/abstract/DynamicStyle";
-import {TextStyle, ViewStyle} from "react-native";
-import HS from "./helperStyles";
-import {GLOBAL_SCREEN_PADDING} from "@/utils/styleConstants";
+import { DynamicStyle } from "@/abstract/DynamicStyle";
+import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { TextStyle, ViewStyle } from "react-native";
 
 const fontSize = 15;
 
