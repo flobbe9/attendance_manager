@@ -132,24 +132,6 @@ export async function redirectToStore(): Promise<void> {
 }
 
 /**
- * NOTE: propably does not work for test environments like apple's Testflight.
- *
- * @returns version info containing detail about possible newer versions, or `null` if fetch failed
- */
-export async function fetchVersionInfo(): Promise<CheckVersionResponse | null> {
-    try {
-        const versionInfo = await checkVersion({
-            bundleId: Platform.OS === "android" ? appJson.android.package : appJson.ios.bundleIdentifier,
-        });
-
-        if (versionInfo.error) throw versionInfo.error;
-    } catch (e) {
-        logError(e.message);
-        return null;
-    }
-}
-
-/**
  * Write `content` to file and open share popup on device. Enables user to store file on disk or share it via any supported method like whatsapp etc.
  * 
  * @param content cannot be falsy (but blank though)

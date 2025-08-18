@@ -1,4 +1,3 @@
-import { logError } from "@/utils/logUtils";
 
 /**
  * For errors meant to be visible for users.
@@ -14,18 +13,6 @@ export class PrettyError extends Error {
         super(message);
         this.prettyMessage = prettyMessage;
         this.statusCode = statusCode ?? 500;
-    }
-
-    /**
-     * Makes sure the non-pretty `message` is logged. Use the callback to actually handle the errorr.
-     * 
-     * @param callback called last, use this to toast pretty message or something
-     */
-    handle(callback?: () => void): void {
-        logError(this);
-
-        if (callback)
-            callback();
     }
 
     /**

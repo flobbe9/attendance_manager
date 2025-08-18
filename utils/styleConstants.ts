@@ -1,9 +1,9 @@
 import { FontAweSomeIconname } from "@/abstract/FontAwesomeIconName";
+import { NotificationSevirity } from "@/abstract/NotificationSevirity";
 import { ViewStyle } from "react-native";
 
 /** In ms */
 export const TRANSITION_DURATION = 200;
-
 
 /** Colors */
 export const MUSIC_COLOR = "rgb(219, 125, 2)";
@@ -13,6 +13,26 @@ export const HISTORY_COLOR_TRANSPARENT = "rgb(229, 242, 255)";
 export const EXAMINANT_COLOR_NO_SUBJECT = "black";
 // light theme ish
 export const LIGHT_COLOR = "rgb(230, 225, 229)";
+
+const statusBorderWidth = 2;
+export const NOTIFICATION_SEVIRITY_STYLES: Record<NotificationSevirity, ViewStyle> = {
+    error: {
+        borderColor: "rgb(255, 50, 0)",
+        borderWidth: statusBorderWidth,
+    },
+    warn: {
+        borderColor: "rgb(255, 200, 0)",
+        borderWidth: statusBorderWidth,
+    },
+    info: {
+        borderColor: 'transparent',
+        borderWidth: statusBorderWidth,
+    },
+    success: {
+        borderColor: "rgb(50, 255, 94)",
+        borderWidth: statusBorderWidth,
+    },
+};
 
 /** Font */
 export const BOLD = 500;
@@ -36,9 +56,8 @@ export const LG_MIN_WIDTH = 1024;
 
 /** Toast */
 export const TOAST_ERROR_OUTER_STYLES: ViewStyle = {
-    backgroundColor: "rgb(255, 179, 179)"
-}
-
+    backgroundColor: "rgb(255, 179, 179)",
+};
 
 /** Attendanceinput Tooltip */
 export const ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR = "black";

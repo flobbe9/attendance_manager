@@ -13,7 +13,7 @@ import { createContext, useContext, useState } from "react";
 import { ColorValue } from "react-native";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 import AttendanceInputErrorSnackbarContent from "../(attendance)/AttendanceInputErrorSnackbarContent";
-import { CustomSnackbarStatus } from "../CustomSnackbar";
+import { NotificationSevirity } from "../CustomSnackbar";
 import { GlobalAttendanceContext } from "./GlobalAttendanceContextProvider";
 import { GlobalContext } from "./GlobalContextProvider";
 
@@ -23,21 +23,20 @@ import { GlobalContext } from "./GlobalContextProvider";
  * @param children mandatory
  * @since 0.0.1
  */
-export default function AttendanceContextProvider({children}) {
+export default function AttendanceContextProvider({ children }) {
     const { snackbar, hideSnackbar } = useContext(GlobalContext);
-    const { dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup } = useContext(GlobalAttendanceContext);
+    const { dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup } =
+        useContext(GlobalAttendanceContext);
 
     /** The attendance entity currently beeing edited. Dont set an initial value */
-    const [currentAttendanceEntity, setCurrentAttendanceEntity] = useState<
-        AttendanceEntity | undefined
-    >();
+    const [currentAttendanceEntity, setCurrentAttendanceEntity] = useState<AttendanceEntity | undefined>();
     /** Expected to be initialized with `currentAttendanceEntity` on attendance screen render */
     const [lastSavedAttendanceEntity, setLastSavedAttendanceEntity] = useState<
         AttendanceEntity | undefined
     >();
 
     /** Triggered when invalid input error popup is dismissed.  */
-    const {setDidConfirm, setDidDismiss} = useDontShowAgainStates(
+    const { setDidConfirm, setDidDismiss } = useDontShowAgainStates(
         [dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup],
         "popups.dontShowAttendanceInputValidationErrorPopup"
     );
@@ -86,7 +85,7 @@ export default function AttendanceContextProvider({children}) {
      * Update the `currentAttendanceEntity` state.
      *
      * Set `undefined` values to `null` in order for db update function to work properly.
-     * 
+     *
      * @param keyValues map of column names and values of attendance entity
      */
     function updateCurrentAttendanceEntity<T extends ValueOf<AttendanceEntity>>(
@@ -143,7 +142,7 @@ export default function AttendanceContextProvider({children}) {
         reason: string,
         invalidAttendanceInputKey: keyof AttendanceEntity,
         callback?: () => void,
-        snackbarStatus: CustomSnackbarStatus = "info"
+        snackbarStatus: NotificationSevirity = "info"
     ): Promise<void> {
         const flash = async () => {
             setCurrentlyInvalidAttendanceInputKey(invalidAttendanceInputKey);
@@ -199,7 +198,7 @@ export const AttendanceContext = createContext({
         reason: string,
         invalidAttendanceInputKey: keyof AttendanceEntity,
         callback?: () => void,
-        status: CustomSnackbarStatus = "info"
+        status: NotificationSevirity = "info"
     ): void => {},
     resetInvalidAttendanceInputErrorStyles: (): void => {},
 
