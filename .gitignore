@@ -47,5 +47,5 @@ test.*
 logs
 
 # temporarily ignored until development is finished
-app/(settings)/account
+app/(settings)/account.tsx
 abstract/oauth
