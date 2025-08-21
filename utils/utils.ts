@@ -928,3 +928,23 @@ export function getArrayDiff<T>(arr1: T[], arr2: T[]): T[] {
 
     return diffArr;
 }
+
+/**
+ * Access nested property of `obj`.
+ * 
+ * @param obj to access prop of
+ * @param nestedKey "." separated string of `obj` props, e.g. "user.address.city", then obj should look like this: `{user: {address: {city: any}}}`
+ * @returns the value of the nested prop (new reference), `obj` if nestedKey is falsy or blank, or `undefined` if `obj` has no such nested key
+ */
+export function getNestedProp(obj: object, nestedKey: string): any {
+    assertFalsyAndThrow(obj);
+
+    const props = (nestedKey || "").split(".");
+    if (!props || !props.length)
+        return obj;
+
+    let latestObj: object = obj;
+    props.forEach(key => latestObj = latestObj[key])
+
+    return latestObj;
+}
