@@ -13,9 +13,9 @@ import { createContext, useContext, useState } from "react";
 import { ColorValue } from "react-native";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 import AttendanceInputErrorSnackbarContent from "../(attendance)/AttendanceInputErrorSnackbarContent";
-import { NotificationSevirity } from "../CustomSnackbar";
 import { GlobalAttendanceContext } from "./GlobalAttendanceContextProvider";
 import { GlobalContext } from "./GlobalContextProvider";
+import { NotificationSevirity } from "@/abstract/NotificationSevirity";
 
 /**
  * Context available to all attendance edit sepcific screens of /(attendance).

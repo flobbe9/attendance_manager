@@ -13,9 +13,7 @@
             "bundleIdentifier": "de.attendance-manager",
             "infoPlist": {
                 "ITSAppUsesNonExemptEncryption": false
-            },
-            "usesIcloudStorage": true,
-            "usesAppleSignIn": true
+            }
         },
         "android": {
             "package": "de.attendance_manager",
