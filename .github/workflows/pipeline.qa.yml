@@ -56,6 +56,9 @@ jobs:
                 expo-version: latest
                 eas-version: latest
 
+          - name: Download iOS 18
+            run: xcodebuild -downloadPlatform iOS
+
           - name: Build iOS App
             run: eas build --local -p ios --profile staging --non-interactive --output app.ipa
 
