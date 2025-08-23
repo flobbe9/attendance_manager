@@ -1,5 +1,5 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { BOLD, BORDER_RADIUS, FONT_SIZE, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { ATTENDANCE_TEXT_INPUT_OPACITY, BOLD, BORDER_RADIUS, FONT_SIZE, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
 import { default as HelperStyles, default as HS } from "./helperStyles";
 
@@ -52,14 +52,23 @@ export class AttendanceIndexStyles {
     }
 
     static defaultHelperInputContainer: DynamicStyle<ViewStyle & TextStyle> = {
+        default: {
+            opacity: ATTENDANCE_TEXT_INPUT_OPACITY
+        },
         focus: {
-            backgroundColor: defaultInputBackground
-        }
+            backgroundColor: defaultInputBackground,
+        },
     }
 
     static defaultHelperButton: DynamicStyle<ViewStyle> = {
         default: {
-            backgroundColor: defaultInputBackground
+            backgroundColor: defaultInputBackground,
+        }
+    }
+    
+    static defaultHelperButtonContainer: DynamicStyle<ViewStyle> = {
+        default: {
+            opacity: ATTENDANCE_TEXT_INPUT_OPACITY
         }
     }
     static defaultHelperButtonRippleBackground = "rgba(200, 200, 200, .7)";

@@ -35,6 +35,7 @@ export const FONT_SIZE_SMALLER = 15;
 export const FONT_SIZE_LARGER = 25;
 export const DEFAULT_BUTTON_PADDING = 10;
 export const TOOLTIP_DEFAULT_ICON: FontAweSomeIconname = "lightbulb-o";
+export const ATTENDANCE_TEXT_INPUT_OPACITY = 0.6;
 
 /** Large smartphone (iPhone 14 Pro max) */
 export const SM_MIN_WIDTH = 430;

@@ -36,7 +36,6 @@ export interface DynamicStyle<StyleType> {
  * @returns single dynamic styles object (new instance)
  */
 export function combineDynamicStyles<StyleType>(dynamicStyle1: DynamicStyle<StyleType>, dynamicStyle2: DynamicStyle<StyleType>): DynamicStyle<StyleType> {
-
     if (!dynamicStyle1 && !dynamicStyle2)
         return {};
 

@@ -67,6 +67,12 @@ export default function DateInput({ ...props }: Props) {
                 setDate={(date) => updateCurrentAttendanceEntity(["date", date])}
                 dynamicStyle={combineDynamicStyles(DateInputStyles.button, AttendanceIndexStyles.defaultHelperButton)}
                 ripple={{ rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground }}
+                containerStyles={{
+                    ...AttendanceIndexStyles.defaultHelperButtonContainer
+                }}
+                clearButtonProps={{
+                    style: DateInputStyles.clearButton.default
+                }}
                 modalProps={{
                     emptyLabel: "__.__.____",
                     validRange: {

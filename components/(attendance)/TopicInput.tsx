@@ -94,6 +94,7 @@ export default function TopicInput({ ...props }: Props) {
                 selectionButtonProps={{
                     dynamicStyle: AttendanceIndexStyles.defaultHelperButton,
                     ripple: { rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground },
+                    containerStyles: AttendanceIndexStyles.defaultHelperButtonContainer
                 }}
                 optionButtonProps={{
                     ripple: { rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground },

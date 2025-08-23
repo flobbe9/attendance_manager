@@ -18,6 +18,8 @@ import Flex from "../helpers/Flex";
 import HelperInput from "../helpers/HelperInput";
 import HelperText from "../helpers/HelperText";
 import { SchoolclassModeEntity } from "@/backend/entities/SchoolclassModeEntity";
+import { LIGHT_COLOR } from "@/utils/styleConstants";
+import { SchoolclassModeInputStyles } from "@/assets/styles/SchoolclassModeInputStyles";
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
 /**
@@ -38,7 +40,7 @@ export default function SchoolclassModeInput({...props}: Props) {
     function mapSchoolclassModeRadioButtons(): JSX.Element[] {
         return SCHOOLCLASS_MODES.map((mode, i) => (
             <Flex alignItems="center" key={i} flexWrap="nowrap">
-                <RadioButton value={mode} />
+                <RadioButton value={mode} color={SchoolclassModeInputStyles.radioButtonColor} />
 
                 <HelperText style={HelperStyles.fullWidth} onPress={() => updateSchoolclassMode(mode)}>
                     {mode}

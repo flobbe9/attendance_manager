@@ -26,6 +26,7 @@ interface Props extends HelperButtonProps {
     /** May throw an error to prevent setting `date` state. Will dismiss regardless */
     onConfirm?: (params: DatePickerValue) => void;
     modalProps?: Omit<DatePickerModalSingleProps, "locale" | "mode" | "visible" | "date" | "onDismiss" | "onConfirm">;
+    clearButtonProps?: HelperButtonProps
 }
 
 /**
@@ -33,7 +34,7 @@ interface Props extends HelperButtonProps {
  *
  * @since 0.0.1
  */
-export default forwardRef(function DatePicker({ date, setDate, locale = "de", onPress, onConfirm, modalProps, ...props }: Props, ref: Ref<View>) {
+export default forwardRef(function DatePicker({ date, setDate, locale = "de", onPress, onConfirm, modalProps, clearButtonProps = {}, ...props }: Props, ref: Ref<View>) {
     const [isVisible, setIsVisible] = useState(false);
 
     const { prs } = useContext(GlobalContext);
@@ -67,6 +68,13 @@ export default forwardRef(function DatePicker({ date, setDate, locale = "de", on
         setIsVisible(!isVisible);
     }
 
+    function handleClearButtonPress(event: GestureResponderEvent): void {
+        if (clearButtonProps.onPress)
+            clearButtonProps.onPress(event);
+        
+        setDate(null);
+    }
+
     return (
         <Flex alignItems="center">
             <DatePickerModal
@@ -86,13 +94,19 @@ export default forwardRef(function DatePicker({ date, setDate, locale = "de", on
             </HelperButton>
 
             <HelperButton
-                disabled={otherProps.disabled || date === null}
+                disabled={otherProps.disabled || date === null || clearButtonProps.disabled}
                 style={{
                     borderRadius: BORDER_RADIUS,
                     backgroundColor: (otherProps.style as ViewStyle).backgroundColor,
-                    ...prs("ms_2")
+                    ...clearButtonProps.style as object
                 }}
-                onPress={() => setDate(null)}
+                {...clearButtonProps}
+                containerStyles={{
+                    default: {
+                        ...prs("ms_2")
+                    }
+                }}
+                onPress={handleClearButtonPress}
             >
                 <FontAwesome name="close" size={FONT_SIZE_SMALLER} style={{height: FONT_SIZE, lineHeight: FONT_SIZE}} />
             </HelperButton>
