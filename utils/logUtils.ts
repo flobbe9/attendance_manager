@@ -5,21 +5,22 @@ import { ENV, LOG_LEVEL } from "./constants";
 
 /**
  * Call the corresponding `console[logLevel]` method.
- * 
+ *
  * NOTE: not touching `conosle.log`
- * 
- * @param logLevel 
- * @param optionalParams 
- * @returns 
+ *
+ * @param logLevel
+ * @param optionalParams
+ * @returns
  */
 function logByLogLevel(logLevel: LogLevel, ...optionalParams: any[]): void {
-    if (!isLogLevel(logLevel))
-        return;
+    if (!isLogLevel(logLevel)) return;
 
     console[logLevelToString(logLevel).toLowerCase()](getLogStartOfLine(logLevel), ...optionalParams);
 }
 
 export function logError(message?: any, ...optionalParams: any[]): void {
+    if (message instanceof Error) message = message.message;
+
     logByLogLevel(LogLevel.ERROR, message, ...optionalParams);
 }
 
@@ -54,9 +55,9 @@ export function logApiResponse(response: CustomExceptionFormat): void {
 /**
  * Indicates whether `logLevel` is matching {@link LOG_LEVEL}, meaning that logs with that level would
  * be enabled.
- * 
+ *
  * Make sure not to debug or trace in production (use {@link ENV})
- * 
+ *
  * NOTE: dont use custom log methods here to prevent cycle.
  *
  * @param logLevel

@@ -9,12 +9,12 @@ import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
  */
 export function useAttendanceRepository() {
     const {dao, db, sqliteDb} = useDao<AttendanceEntity>(Attendance_Table);
-    const attendanceRespository = new AttendanceRepository(db, sqliteDb);
+    const attendanceRepository = new AttendanceRepository(db, sqliteDb);
 
     return {
         dao,
         db,
         sqliteDb,
-        attendanceRespository,
+        attendanceRepository,
     };
 }

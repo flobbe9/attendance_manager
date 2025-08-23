@@ -6,10 +6,9 @@ import B from "@/components/helpers/B";
 import HelperButton from "@/components/helpers/HelperButton";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
-import { logDebug } from "@/utils/logUtils";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { Href, Link } from "expo-router";
-import { ReactNode, useContext, useEffect } from "react";
+import { ReactNode, useContext } from "react";
 
 /**
  * @since 0.1.0
@@ -42,6 +41,12 @@ export default function index() {
                     href="/(settings)/popups"
                     icon={<AttendanceInputErrorPopupIcon style={{ ...SettingsIndexStyles.settingsItemText, ...prs("me_2") }} color="black" />}
                     label="Popup Präferenzen"
+                />
+
+                <SetttingsLink 
+                    href="/(settings)/backup"
+                    icon={<FontAwesome5 name="sync" style={{ ...SettingsIndexStyles.settingsItemText, ...prs("me_2") }} />}
+                    label="Backup"
                 />
 
                 <SetttingsLink

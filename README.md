@@ -22,7 +22,7 @@ Apple general developer: https://developer.apple.com/account <br>
 
 ## Credentials
 Once ios credentials expire, use `eas credentials` to generate and upload new ones to eas cloud. Important: choose "Build Credentials: Manage everything needed to build your project", don't
-upload manual credentials.json stuff because eas credentials will somehow invalidate the .mobileprovision file during the process. <br>
+upload manual credentials.json stuff because eas credentials will somehow invalidate the .mobileprovision file in the process. <br>
 https://docs.expo.dev/app-signing/local-credentials/
 
 ## UI

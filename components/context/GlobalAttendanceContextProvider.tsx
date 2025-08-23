@@ -7,7 +7,7 @@ import { createContext, useState } from "react";
  *
  * @since 0.0.1
  */
-export default function GlobalAttendanceContextProvider({children}) {
+export default function GlobalAttendanceContextProvider({ children }) {
     const [attendanceEntities, setAttendanceEntities] = useState<AttendanceEntity[]>([]);
     /**
      * The attendance entities' id currently beeing edited. Only meant for initializing the `currentAttendanceEntity`.
@@ -19,31 +19,32 @@ export default function GlobalAttendanceContextProvider({children}) {
     const [dontConfirmSchoolSubjectChange, setDontConfirmSchoolSubjectChange] = useState(false);
     const [dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave] = useState(false);
 
-    const { attendanceRespository } = useAttendanceRepository();
+    const { attendanceRepository } = useAttendanceRepository();
 
     const context = {
-        currentAttendanceEntityId, setCurrentAttendanceEntityId,
-        savedAttendanceEntities: attendanceEntities, setSavedAttendanceEntities: setAttendanceEntities,
+        currentAttendanceEntityId,
+        setCurrentAttendanceEntityId,
+        savedAttendanceEntities: attendanceEntities,
+        setSavedAttendanceEntities: setAttendanceEntities,
         updateSavedAttendanceEntities,
 
-        dontShowInvalidInputErrorPopup, setDontShowInvalidInputErrorPopup,
-        dontConfirmSchoolSubjectChange, setDontConfirmSchoolSubjectChange,
-        dontConfirmAttendanceScreenLeave, setDontConfirmAttendanceScreenLeave,
-    }
-        
+        dontShowInvalidInputErrorPopup,
+        setDontShowInvalidInputErrorPopup,
+        dontConfirmSchoolSubjectChange,
+        setDontConfirmSchoolSubjectChange,
+        dontConfirmAttendanceScreenLeave,
+        setDontConfirmAttendanceScreenLeave,
+    };
+
     async function loadAttendanceEntities(): Promise<AttendanceEntity[]> {
-        return await attendanceRespository.selectCascade();
+        return await attendanceRepository.selectCascade();
     }
-    
+
     async function updateSavedAttendanceEntities(): Promise<void> {
-        setAttendanceEntities(await loadAttendanceEntities() ?? []);
+        setAttendanceEntities((await loadAttendanceEntities()) ?? []);
     }
-    
-    return (
-        <GlobalAttendanceContext.Provider value={context}>
-            {children}
-        </GlobalAttendanceContext.Provider>
-    );
+
+    return <GlobalAttendanceContext.Provider value={context}>{children}</GlobalAttendanceContext.Provider>;
 }
 
 export const GlobalAttendanceContext = createContext({
@@ -54,7 +55,7 @@ export const GlobalAttendanceContext = createContext({
 
     updateSavedAttendanceEntities: async (): Promise<void> => {},
 
-    dontShowInvalidInputErrorPopup: false as boolean, 
+    dontShowInvalidInputErrorPopup: false as boolean,
     setDontShowInvalidInputErrorPopup: (dontShow: boolean): void => {},
 
     dontConfirmSchoolSubjectChange: false as boolean,

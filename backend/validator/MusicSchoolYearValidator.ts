@@ -190,8 +190,6 @@ export class MusicSchoolYearValidator extends AbstractSchoolYearValidator {
 
                         break;
                     }
-
-                    // TODO: replace maxed out code with isSchoolYearConditionMaxedOut
                 };
 
                 // case: topic does not match with any schoolyear left

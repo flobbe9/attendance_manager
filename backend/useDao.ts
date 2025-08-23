@@ -4,7 +4,7 @@ import { drizzle } from "drizzle-orm/expo-sqlite";
 import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
 import { useSQLiteContext } from "expo-sqlite";
 import AbstractEntity from "./abstract/AbstractEntity";
-import { log } from "@/utils/logUtils";
+import { log, logDebug } from "@/utils/logUtils";
 
 /**
  * Any database implementation should use this hook to get a db instance.
@@ -14,6 +14,7 @@ import { log } from "@/utils/logUtils";
  */
 export function useDao<Entity extends AbstractEntity>(table: SQLiteTableWithColumns<any>) {
     const sqliteDb = useSQLiteContext();
+    // NOTE: drizzle studio's `PRAGMA FOREIGN_KEYS;` does not reliably show changes made with this method
     sqliteDb.execSync("PRAGMA FOREIGN_KEYS = ON"); // enable cascade
 
     const db = drizzle(sqliteDb, DRIZZLE_DB_CONFIG);

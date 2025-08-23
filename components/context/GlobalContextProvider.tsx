@@ -5,10 +5,11 @@ import { createContext, ReactNode, useEffect, useState } from "react";
 import { ImageStyle, Keyboard, TextStyle, ViewStyle } from "react-native";
 import { SnackbarProps } from "react-native-paper";
 import { de, en, registerTranslation } from "react-native-paper-dates";
-import { CustomnSnackbarProps, CustomSnackbarStatus } from "../CustomSnackbar";
+import { CustomnSnackbarProps } from "../CustomSnackbar";
 import { GlobalToastProps } from "../Toast";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { ResponsiveStyle } from "@/abstract/ResponsiveStyle";
+import { NotificationSevirity } from "@/abstract/NotificationSevirity";
 
 /**
  * Contains global variables accessible in the whole app.
@@ -20,13 +21,16 @@ export default function GlobalContextProvider({ children }: { children: ReactNod
     const [isKeyBoardvisible, setKeyboardVisible] = useState(false);
 
     const [globalSnackbarProps, setGlobalSnackbarProps] = useState<CustomnSnackbarProps>({
-        status: "info",
+        sevirity: "info",
         visible: false,
         onDismiss: () => {},
         children: "",
     });
 
-    const [globalPopupProps, setGlobalPopupProps] = useState<GlobalPopupProps>({ message: "", visible: false });
+    const [globalPopupProps, setGlobalPopupProps] = useState<GlobalPopupProps>({
+        message: "",
+        visible: false,
+    });
     const [globalPopupTimeout, setGlobalPopupTimeout] = useState<number>();
 
     const [globalToastProps, setGlobalToastProps] = useState<GlobalToastProps>({
@@ -52,7 +56,7 @@ export default function GlobalContextProvider({ children }: { children: ReactNod
         hideToast,
         globalToastProps,
 
-        prs
+        prs,
     };
 
     useEffect(() => {
@@ -68,13 +72,13 @@ export default function GlobalContextProvider({ children }: { children: ReactNod
      * Show snackbar at bottom of screen.
      *
      * @param message the snackbar children
-     * @param status will affect the container style
+     * @param sevirity will affect the container style
      * @param options see {@link SnackbarProps}
      * @param onDismiss called once snackbar is hidden and after action press. Will hide snackbar regardless of this param's value
      */
     function snackbar(
         message: React.ReactNode,
-        status: CustomSnackbarStatus = "info",
+        sevirity: NotificationSevirity = "info",
         options: Omit<SnackbarProps, "children" | "visible" | "onDismiss"> = {},
         onDismiss?: () => void
     ): void {
@@ -94,7 +98,7 @@ export default function GlobalContextProvider({ children }: { children: ReactNod
 
         setGlobalSnackbarProps({
             ...snackbarProps,
-            status,
+            sevirity,
         });
     }
 
@@ -181,7 +185,7 @@ export const GlobalContext = createContext({
 
     snackbar: (
         message: React.ReactNode,
-        status: CustomSnackbarStatus = "info",
+        sevirity: NotificationSevirity = "info",
         options?: Omit<SnackbarProps, "children" | "visible" | "onDismiss">,
         onDismiss?: () => void
     ) => {},
@@ -192,9 +196,14 @@ export const GlobalContext = createContext({
     hideGlobalPopup: (globalPopupProps: GlobalPopupProps) => {},
     globalPopupProps: {} as GlobalPopupProps,
 
-    toast: (content: ReactNode, globalToastProps: Omit<GlobalToastProps, "content" | "visible"> = {}): void => {},
+    toast: (
+        content: ReactNode,
+        globalToastProps: Omit<GlobalToastProps, "content" | "visible"> = {}
+    ): void => {},
     hideToast: (): void => {},
     globalToastProps: {} as GlobalToastProps,
 
-    prs: (...keys: (keyof ResponsiveStyle)[]): ViewStyle & TextStyle & ImageStyle => {return {}}
+    prs: (...keys: (keyof ResponsiveStyle)[]): ViewStyle & TextStyle & ImageStyle => {
+        return {};
+    },
 });

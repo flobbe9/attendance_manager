@@ -2,7 +2,7 @@
     "expo": {
         "name": "Attendance Manager",
         "slug": "attendence_manager",
-        "version": "0.2.3",
+        "version": "0.2.4",
         "orientation": "default",
         "icon": "./assets/images/favicon.png",
         "scheme": "myapp",
@@ -13,8 +13,7 @@
             "bundleIdentifier": "de.attendance-manager",
             "infoPlist": {
                 "ITSAppUsesNonExemptEncryption": false
-            },
-            "usesAppleSignIn": true
+            }
         },
         "android": {
             "package": "de.attendance_manager",
@@ -26,6 +25,12 @@
         },
         "plugins": [
             "expo-router",
+            [
+                "expo-document-picker",
+                {
+                  "iCloudContainerEnvironment": "Production"
+                }
+            ],
             [
                 "expo-splash-screen",
                 {

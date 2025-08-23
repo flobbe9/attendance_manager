@@ -32,22 +32,20 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {}
 /**
  * @since 0.0.1
  */
-export default function TopBar({...props}: Props) {
+export default function TopBar({ ...props }: Props) {
     const { prs } = useResponsiveStyles();
 
     const { popup, toast, hideToast } = useContext(GlobalContext);
+    const { updateSavedAttendanceEntities } = useContext(GlobalAttendanceContext);
     const {
-        updateSavedAttendanceEntities
-    } = useContext(GlobalAttendanceContext);
-    const { 
-        isCurrentAttendanceEntityModified, 
-        updateLastSavedAttendanceEntity, 
-        currentAttendanceEntity, 
-        setCurrentAttendanceEntity, 
-        resetInvalidAttendanceInputErrorStyles
+        isCurrentAttendanceEntityModified,
+        updateLastSavedAttendanceEntity,
+        currentAttendanceEntity,
+        setCurrentAttendanceEntity,
+        resetInvalidAttendanceInputErrorStyles,
     } = useContext(AttendanceContext);
 
-    const { attendanceRespository } = useAttendanceRepository();
+    const { attendanceRepository } = useAttendanceRepository();
     const attendanceService = new AttendanceService();
 
     const { navigate } = useRouter();
@@ -80,7 +78,7 @@ export default function TopBar({...props}: Props) {
             return;
         }
 
-        const attendanceEntityResult = await attendanceRespository.persistCascade(currentAttendanceEntity);
+        const attendanceEntityResult = await attendanceRepository.persistCascade(currentAttendanceEntity);
         if (!attendanceEntityResult)
             return toastError(
                 "Unerwarteter Fehler beim Speichern",
@@ -129,7 +127,7 @@ export default function TopBar({...props}: Props) {
             </HelperView>,
             {
                 onConfirm: async () => {
-                    const result = await attendanceRespository.delete(eq(Attendance_Table.id, currentAttendanceEntity.id));
+                    const result = await attendanceRepository.delete(eq(Attendance_Table.id, currentAttendanceEntity.id));
 
                     if (result === null) {
                         toastError(
@@ -178,20 +176,17 @@ export default function TopBar({...props}: Props) {
         // NOTE: dont use onPress prop since it somehow does not work with sticky header
         <Flex justifyContent="space-between" {...otherProps}>
             {/* Delete button */}
-            <HelperButton dynamicStyle={TopBarStyles.deleteButton} onTouchEnd={handleDeletePress} disabled={isNumberFalsy(currentAttendanceEntity.id)}> 
-                <FontAwesome 
-                    name="trash"
-                    size={FONT_SIZE_LARGER}
-                />
+            <HelperButton
+                dynamicStyle={TopBarStyles.deleteButton}
+                onTouchEnd={handleDeletePress}
+                disabled={isNumberFalsy(currentAttendanceEntity.id)}
+            >
+                <FontAwesome name="trash" size={FONT_SIZE_LARGER} />
             </HelperButton>
 
             {/* Save button */}
-            <HelperButton 
-                dynamicStyle={TopBarStyles.saveButton} 
-                disabled={!isCurrentAttendanceEntityModified}
-                onTouchEnd={handleSavePress} 
-            > 
-                <FontAwesome 
+            <HelperButton dynamicStyle={TopBarStyles.saveButton} disabled={!isCurrentAttendanceEntityModified} onTouchEnd={handleSavePress}>
+                <FontAwesome
                     name="save"
                     style={{
                         ...TopBarStyles.saveButtonChildren.default,

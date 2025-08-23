@@ -12,25 +12,41 @@ import { GlobalContext } from "./context/GlobalContextProvider";
 interface Props extends HelperProps<ViewStyle>, ViewProps {
     onConfirm: () => void;
     onCancel: () => void;
+    /** Only show cancel button and ignore `onConfirm`. Default is `false` */
+    hideConfirmButton?: boolean;
 }
 
 /**
  * @since 0.0.1
  */
-export default function ToastDefaultFooter({ onConfirm, onCancel, ...props }: Props) {
+export default function ToastDefaultFooter({
+    onConfirm,
+    onCancel,
+    hideConfirmButton = false,
+    ...props
+}: Props) {
     const { prs } = useContext(GlobalContext);
     const componentName = "ToastDefaultFooter";
-    const { children, ...otherProps } = useHelperProps(props, componentName, ToastDefaultFooterStyles.component);
+    const { children, ...otherProps } = useHelperProps(
+        props,
+        componentName,
+        ToastDefaultFooterStyles.component
+    );
 
     return (
         <Flex justifyContent="flex-end" alignItems="flex-end" {...otherProps}>
             {children}
 
-            <HelperButton dynamicStyle={ToastDefaultFooterStyles.button} style={{ ...prs("me_2") }} onPress={onCancel}>
+            <HelperButton dynamicStyle={ToastDefaultFooterStyles.button} onPress={onCancel}>
                 <HelperText dynamicStyle={ToastDefaultFooterStyles.buttonChildren}>Cancel</HelperText>
             </HelperButton>
 
-            <HelperButton dynamicStyle={ToastDefaultFooterStyles.button} onPress={onConfirm}>
+            <HelperButton
+                dynamicStyle={ToastDefaultFooterStyles.button}
+                rendered={!hideConfirmButton}
+                style={{ ...prs("ms_2") }}
+                onPress={onConfirm}
+            >
                 <HelperText dynamicStyle={ToastDefaultFooterStyles.buttonChildren}>Confirm</HelperText>
             </HelperButton>
         </Flex>

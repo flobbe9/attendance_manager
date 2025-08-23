@@ -22,6 +22,16 @@ export class IndexStyles {
             fontSize: FONT_SIZE
         }
     }
+
+    static sortButton: DynamicStyle<ViewStyle> = {
+        default: {
+            backgroundColor: "transparent"
+        }
+    }
+
+    static sortButtonIcon: TextStyle = {
+        fontSize: FONT_SIZE
+    }
     
     static linkContainer: DynamicStyle<ViewStyle> = {
         default: {

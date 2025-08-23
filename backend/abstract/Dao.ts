@@ -35,7 +35,7 @@ export class Dao<E extends AbstractEntity> {
             if (!values) throw new Error(`Failed to insert into table '${this.getTableName()}'. 'values' cannot be '${values}'`);
 
             const prepareValue = (value: E) => {
-                value.created = new Date();
+                if (!value.created) value.created = new Date();
                 value.updated = new Date();
             };
 
@@ -109,9 +109,7 @@ export class Dao<E extends AbstractEntity> {
             let isWhereArgFalsy = !where;
             let isWhereArgFalsyButGotId = isWhereArgFalsy && value.id;
             // case: no where, fallback to values.id
-            if (isWhereArgFalsyButGotId) {
-                where = eq(this.table.id, value.id);
-            }
+            if (isWhereArgFalsyButGotId) where = eq(this.table.id, value.id);
 
             let result: E | E[];
             // case: update if where or existing id
@@ -120,9 +118,6 @@ export class Dao<E extends AbstractEntity> {
 
             // case: insert
             } else {
-                // case: got non existent id
-                if (isWhereArgFalsyButGotId) delete value.id;
-
                 result = await this.insert(value);
             }
 
@@ -167,14 +162,15 @@ export class Dao<E extends AbstractEntity> {
     /**
      *
      * @param where ommit this arg in order to delete all rows of `this.table`
-     * @returns
+     * @returns `false` if an error occurred, else `true` (true does not indicate that entities have been deleted)
      */
-    public async delete(where?: SQL) {
+    public async delete(where?: SQL): Promise<boolean> {
         try {
-            return this.db.delete(this.table).where(where);
+            await this.db.delete(this.table).where(where);
+            return true;
         } catch (e) {
             logError(e.message);
-            return null;
+            return false;
         }
     }
 
