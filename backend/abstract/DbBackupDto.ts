@@ -33,7 +33,7 @@ export interface DbBackupDto {
 /**
  * Use `'auto'` for automatic cloud backup and `'manual'` for manual file (from device) backup
  *
- * @since latest
+ * @since 0.2.4
  */
 export type DbBackupMode = "auto" | "manual";
 
@@ -96,13 +96,19 @@ export function parseDbBackupDto(dtoJson: string): DbBackupDto {
                 parseEntityDate(entity, "date");
             }
 
-        if (rawDtoObj.entities.allAttendanceEntities) for (const entity of rawDtoObj.entities.allExaminantEntities) parseAbstractEntityDates(entity);
+        if (rawDtoObj.entities.allAttendanceEntities)
+            for (const entity of rawDtoObj.entities.allExaminantEntities) parseAbstractEntityDates(entity);
 
         if (rawDtoObj.entities.allAttendanceEntities)
-            for (const entity of rawDtoObj.entities.allSchoolclassModeEntities) parseAbstractEntityDates(entity);
+            for (const entity of rawDtoObj.entities.allSchoolclassModeEntities)
+                parseAbstractEntityDates(entity);
 
         return rawDtoObj;
     } catch (e) {
-        throw PrettyError.parseError(e, `Die BackupDatei ist korrupt. Erstelle eine neue Backupdatei und versuche es dann erneut.`, 400);
+        throw PrettyError.parseError(
+            e,
+            `Die BackupDatei ist korrupt. Erstelle eine neue Backupdatei und versuche es dann erneut.`,
+            400
+        );
     }
 }

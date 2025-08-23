@@ -1,9 +1,9 @@
 /**
- * @since latest
+ * @since 0.2.4
  */
 export enum SortOrder {
     ASC,
-    DESC
+    DESC,
 }
 
 export function getOppositeSortOrder(sortOrder: SortOrder): SortOrder {

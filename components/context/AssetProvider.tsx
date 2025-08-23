@@ -3,8 +3,8 @@ import { ReactNode } from "react";
 
 /**
  * Load assets like fonts etc.. Should not render any components.
- * 
- * @since latest
+ *
+ * @since 0.2.4
  * @see https://docs.expo.dev/develop/user-interface/fonts/#with-usefonts-hook
  */
 export default function AssetProvider({ children }: { children: ReactNode }) {

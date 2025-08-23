@@ -1,8 +1,7 @@
-
 /**
  * For errors meant to be visible for users.
- * 
- * @since latest
+ *
+ * @since 0.2.4
  */
 export class PrettyError extends Error {
     public prettyMessage: string;

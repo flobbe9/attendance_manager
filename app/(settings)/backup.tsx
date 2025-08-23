@@ -22,7 +22,7 @@ import { Link } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 
 /**
- * @since latest
+ * @since 0.2.4
  */
 export default function backup() {
     const { prs } = useResponsiveStyles();
@@ -32,11 +32,11 @@ export default function backup() {
 
     const [manualBackupLastLoaded, setManualBackupLastLoaded] = useState("");
 
-    const errorToastProps: Omit<GlobalToastProps, 'visible' | 'content'> = {
-        sevirity: 'error',
+    const errorToastProps: Omit<GlobalToastProps, "visible" | "content"> = {
+        sevirity: "error",
         defaultFooter: false,
         children: <ToastDefaultFooter onCancel={hideToast} onConfirm={undefined} hideConfirmButton />,
-    }
+    };
 
     useEffect(() => {
         updateManualBackupLastLoaded();
@@ -58,17 +58,22 @@ export default function backup() {
 
                     toast(
                         <HelperView>
-                            <B style={{...prs("mb_2")}}>Backupdatei {e.statusCode === 400 ? 'fehlerhaft' : 'inkompatibel'}</B>
+                            <B style={{ ...prs("mb_2") }}>
+                                Backupdatei {e.statusCode === 400 ? "fehlerhaft" : "inkompatibel"}
+                            </B>
                             <HelperText>{e.prettyMessage}</HelperText>
-                        </HelperView>, 
+                        </HelperView>,
                         errorToastProps
                     );
                 } else {
                     toast(
                         <HelperView>
-                            <B style={{...prs("mb_2")}}>Unerwarteter Fehler</B>
-                            <HelperText>Das Backup konnte nicht erstellt werden. Keine deiner Daten wurden überschrieben. Versuche es erneut oder kontatiere den Support.</HelperText>
-                        </HelperView>, 
+                            <B style={{ ...prs("mb_2") }}>Unerwarteter Fehler</B>
+                            <HelperText>
+                                Das Backup konnte nicht erstellt werden. Keine deiner Daten wurden
+                                überschrieben. Versuche es erneut oder kontatiere den Support.
+                            </HelperText>
+                        </HelperView>
                     );
                 }
 
@@ -97,17 +102,23 @@ export default function backup() {
             if (e instanceof PrettyError) {
                 toast(
                     <HelperView>
-                        <B style={{...prs("mb_2")}}>Das hat nicht geklappt...</B>
-                        <HelperText>Das Backup konnte nicht erstellt werden. Versuche es erneut oder kontatiere den Support.</HelperText>
-                    </HelperView>, 
+                        <B style={{ ...prs("mb_2") }}>Das hat nicht geklappt...</B>
+                        <HelperText>
+                            Das Backup konnte nicht erstellt werden. Versuche es erneut oder kontatiere den
+                            Support.
+                        </HelperText>
+                    </HelperView>,
                     errorToastProps
                 );
             } else {
                 toast(
                     <HelperView>
-                        <B style={{...prs("mb_2")}}>Unerwarteter Fehler</B>
-                        <HelperText>Das Backup konnte nicht erstellt werden. Versuche es erneut oder kontatiere den Support.</HelperText>
-                    </HelperView>, 
+                        <B style={{ ...prs("mb_2") }}>Unerwarteter Fehler</B>
+                        <HelperText>
+                            Das Backup konnte nicht erstellt werden. Versuche es erneut oder kontatiere den
+                            Support.
+                        </HelperText>
+                    </HelperView>,
                     errorToastProps
                 );
             }

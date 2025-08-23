@@ -2,7 +2,7 @@ import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { FilterWrapper } from "./FilterWrapper";
 
 /**
- * @since latest
+ * @since 0.2.4
  */
 export class AttendanceFilterWrapper extends FilterWrapper<AttendanceEntity> {
     classField: keyof AttendanceEntity;

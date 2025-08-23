@@ -1,7 +1,7 @@
 import { SortOrder } from "./SortOrder";
 
 /**
- * @since latest
+ * @since 0.2.4
  */
 export interface SortWrapper<T> {
     sortOrder: SortOrder;
