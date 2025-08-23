@@ -36,6 +36,12 @@ jobs:
         needs: build_and_test
         
         steps:
+          - name: Select Xcode 16 (for iOS 18)
+            run: sudo xcode-select -s /Applications/Xcode_16.app/Contents/Developer
+
+          - run: ls /Applications | grep Xcode
+          - run: xcodebuild -version
+
           - name: Checkout repository 
             uses: actions/checkout@v4
 
@@ -55,9 +61,6 @@ jobs:
                 token: "${{ secrets.EXPO_TOKEN }}"
                 expo-version: latest
                 eas-version: latest
-
-          - name: Download iOS 18
-            run: xcodebuild -downloadPlatform iOS
 
           - name: Build iOS App
             run: eas build --local -p ios --profile staging --non-interactive --output app.ipa

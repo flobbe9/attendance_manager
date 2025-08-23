@@ -16,6 +16,7 @@
       "autoIncrement": true
     },
     "staging": {
+      "simulator": false,
       "autoIncrement": true
     },
     "production": {
