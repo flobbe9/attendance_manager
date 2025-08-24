@@ -37,7 +37,7 @@ jobs:
         
         steps:
           - name: Select Xcode 16.4 (for iOS 18)
-            run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+            run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
 
           - run: ls /Applications | grep Xcode
           - run: xcodebuild -version
