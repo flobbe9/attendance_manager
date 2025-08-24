@@ -36,23 +36,22 @@ export default function index() {
     return (
         <ScreenWrapper>
             <HelperScrollView dynamicStyle={SettingsIndexStyles.component}>
-                {/* <SetttingsLink href="/(settings)/account" icon="user-circle-o" label="Konto" /> */}
                 <SetttingsLink
-                    href="/(settings)/popups"
+                    href="/(indexStack)/(settings)/popups"
                     icon={<AttendanceInputErrorPopupIcon style={{ ...SettingsIndexStyles.settingsItemText, ...prs("me_2") }} color="black" />}
                     label="Popup Präferenzen"
                 />
 
                 <SetttingsLink 
-                    href="/(settings)/backup"
+                    href="/(indexStack)/(settings)/backup"
                     icon={<FontAwesome5 name="sync" style={{ ...SettingsIndexStyles.settingsItemText, ...prs("me_2") }} />}
                     label="Backup"
                 />
 
                 <SetttingsLink
-                    href="/(settings)/appInfo"
+                    href="/(indexStack)/(settings)/appInfo"
                     icon={<FontAwesome name="info" style={{ ...SettingsIndexStyles.settingsItemText, ...prs("ms_2", "me_3") }} />}
-                    label="Über die App"
+                    label="Über diese App"
                 />
             </HelperScrollView>
         </ScreenWrapper>

@@ -24,7 +24,7 @@ import { Divider } from "react-native-paper";
  * @since 0.0.1
  */
 export default function index() {
-    const { prs, popup } = useContext(GlobalContext);
+    const { prs } = useContext(GlobalContext);
     const { attendanceLinkFilterWrappers, attendanceLinkSortWrappers} = useContext(IndexContext);
     const { savedAttendanceEntities, setCurrentAttendanceEntityId, updateSavedAttendanceEntities } = useContext(GlobalAttendanceContext);
 
@@ -145,7 +145,7 @@ export default function index() {
                 </Flex>
 
                 {/* Add button */}
-                <Link href={"/(attendance)"} asChild onPress={() => setCurrentAttendanceEntityId(-1)}>
+                <Link href={"/(indexStack)/(attendance)"} asChild onPress={() => setCurrentAttendanceEntityId(-1)}>
                     <ExtendableButton
                         isExtended={isExtended}
                         dynamicStyle={IndexStyles.addButton}

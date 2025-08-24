@@ -1,4 +1,3 @@
-import HeaderBackButton from "@/components/HeaderBackButton";
 import B from "@/components/helpers/B";
 import Flex from "@/components/helpers/Flex";
 import { FONT_SIZE_LARGER } from "@/utils/styleConstants";
@@ -14,8 +13,6 @@ export default function layout() {
             <Stack.Screen
                 name="index"
                 options={{
-                    headerBackVisible: true,
-                    headerLeft: (props) => <HeaderBackButton />,
                     headerTitle: (props) => (
                         <Flex alignItems="center" {...props}>
                             <B style={{ fontSize: FONT_SIZE_LARGER }}>Einstellungen</B>
@@ -39,7 +36,6 @@ export default function layout() {
             <Stack.Screen
                 name="popups"
                 options={{
-                    headerLeft: (props) => <HeaderBackButton />,
                     headerTitle: (props) => (
                         <Flex alignItems="center" {...props}>
                             <B style={{ fontSize: FONT_SIZE_LARGER }}>Popups</B>
@@ -49,12 +45,22 @@ export default function layout() {
             />
 
             <Stack.Screen
-                name="appInfo"
+                name="backup"
                 options={{
-                    headerLeft: (props) => <HeaderBackButton />,
                     headerTitle: (props) => (
                         <Flex alignItems="center" {...props}>
-                            <B style={{ fontSize: FONT_SIZE_LARGER }}>Über die App</B>
+                            <B style={{ fontSize: FONT_SIZE_LARGER }}>Backup</B>
+                        </Flex>
+                    ),
+                }}
+            />
+
+            <Stack.Screen
+                name="appInfo"
+                options={{
+                    headerTitle: (props) => (
+                        <Flex alignItems="center" {...props}>
+                            <B style={{ fontSize: FONT_SIZE_LARGER }}>Über diese App</B>
                         </Flex>
                     ),
                 }}

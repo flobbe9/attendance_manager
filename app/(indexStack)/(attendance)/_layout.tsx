@@ -13,7 +13,6 @@ export default function layout() {
                 <Stack.Screen 
                     name="index"
                     options={{
-                        headerLeft: (props) => <HeaderBackButton />,
                         title: "Unterrichtsbesuch"
                     }}
                 />

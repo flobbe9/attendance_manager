@@ -88,7 +88,7 @@ export default function AttendanceLink({ attendanceEntity, ...props }: Props) {
             }}
             {...otherProps}
         >
-            <Link href="/(attendance)">
+            <Link href="/(indexStack)/(attendance)">
                 <HelperView>
                     {/* Top row */}
                     <Flex style={{ ...HelperStyles.fullWidth, ...prs("mb_2") }} flexDirection="column" justifyContent="space-between">

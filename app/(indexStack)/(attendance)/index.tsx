@@ -28,7 +28,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
 import React, { useContext, useEffect } from "react";
 import { Divider } from "react-native-paper";
-import DateInput from "../../components/(attendance)/DateInput";
+import DateInput from "../../../components/(attendance)/DateInput";
 
 /**
  * Attendance create / edit screen.
