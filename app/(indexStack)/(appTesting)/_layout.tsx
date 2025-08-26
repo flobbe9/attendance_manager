@@ -1,3 +1,5 @@
+import { LayoutStyles } from "@/assets/styles/LayoutStyles";
+import B from "@/components/helpers/B";
 import { Stack } from "expo-router";
 
 /**
@@ -9,7 +11,7 @@ export default function layout() {
             <Stack.Screen
                 name="index"
                 options={{
-                    title: "App Testing",
+                    headerTitle: () => (<B style={{ ...LayoutStyles.headerContent, marginStart: LayoutStyles.headerTitleNegativeOffset }}>Einstellungen</B>)
                 }}
             />
         </Stack>
