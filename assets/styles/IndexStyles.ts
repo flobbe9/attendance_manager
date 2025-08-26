@@ -36,6 +36,7 @@ export class IndexStyles {
     static linkContainer: DynamicStyle<ViewStyle> = {
         default: {
             ...HelperStyles.fullWidth,
+            height: 0 // for scroll to work, don't ask xd
         }
     }
 

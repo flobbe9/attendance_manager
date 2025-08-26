@@ -2,6 +2,7 @@ import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { forwardRef, Fragment, Ref, useEffect, useImperativeHandle, useRef } from "react";
 import { Animated, ScrollView, ScrollViewProps, ViewStyle } from "react-native";
 import HelperProps from "../../abstract/HelperProps";
+import { HelperScrollViewStyles } from "@/assets/styles/HelperScrollViewStyles";
 
 
 interface Props extends HelperProps<ViewStyle>, ScrollViewProps {
@@ -18,7 +19,6 @@ interface Props extends HelperProps<ViewStyle>, ScrollViewProps {
  */
 export default forwardRef(function HelperScrollView(
     {
-        dynamicStyle = {},
         childrenContainerStyle,
         animatedDynamicStyles,
         rendered = true,
@@ -27,7 +27,8 @@ export default forwardRef(function HelperScrollView(
     }: Props,
     ref: Ref<ScrollView>
 ) {
-    const { children, ...otherProps } = useHelperProps(props, undefined, dynamicStyle, animatedDynamicStyles);
+    const componentName = "HelperScrollView";
+    const { children, ...otherProps } = useHelperProps(props, componentName, HelperScrollViewStyles.component, animatedDynamicStyles);
     
     const componentRef = useRef<ScrollView>(null);
     

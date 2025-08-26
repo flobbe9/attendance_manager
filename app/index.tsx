@@ -15,7 +15,7 @@ import IndexTopBar from "@/components/IndexTopBar";
 import { cloneObj } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { JSX, useContext, useEffect, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import { Divider } from "react-native-paper";
@@ -27,6 +27,8 @@ export default function index() {
     const { prs } = useContext(GlobalContext);
     const { attendanceLinkFilterWrappers, attendanceLinkSortWrappers} = useContext(IndexContext);
     const { savedAttendanceEntities, setCurrentAttendanceEntityId, updateSavedAttendanceEntities } = useContext(GlobalAttendanceContext);
+
+    const { navigate } = useRouter();
 
     const [attendanceLinksNoGub, setAttendanceLinksNoGub] = useState<JSX.Element[]>([]);
     const [attendanceLinksGub, setAttendanceLinksGub] = useState<JSX.Element[]>([]);
@@ -108,6 +110,11 @@ export default function index() {
         );
     }
 
+    function handleAddButtonPress(): void {
+        navigate("/(indexStack)/(attendance)");
+        setCurrentAttendanceEntityId(-1);
+    }
+
     return (
         <ScreenWrapper>
             <HelperView dynamicStyle={IndexStyles.component}>
@@ -115,11 +122,11 @@ export default function index() {
 
                 {/* Links */}
                 <HelperScrollView
-                    onScroll={handleScroll}
                     dynamicStyle={IndexStyles.linkContainer}
                     style={{ ...prs("mt_1") }}
                     childrenContainerStyle={{ paddingBottom: 50 }}
                     rendered={!!attendanceLinksNoGub.length || !!attendanceLinksGub.length}
+                    onScroll={handleScroll}
                 >
                     {attendanceLinksGub}
 
@@ -145,19 +152,18 @@ export default function index() {
                 </Flex>
 
                 {/* Add button */}
-                <Link href={"/(indexStack)/(attendance)"} asChild onPress={() => setCurrentAttendanceEntityId(-1)}>
-                    <ExtendableButton
-                        isExtended={isExtended}
-                        dynamicStyle={IndexStyles.addButton}
-                        containerStyles={IndexStyles.addButtonContainer}
-                        align="flex-end"
-                        extendedWidth={152}
-                        label={<HelperText dynamicStyle={IndexStyles.addButtonLabel}>Neuer UB</HelperText>}
-                        ripple={{ rippleBackground: "rgb(70, 70, 70)" }}
-                    >
-                        <FontAwesome name="plus" style={IndexStyles.addButtonLabel.default} />
-                    </ExtendableButton>
-                </Link>
+                <ExtendableButton
+                    isExtended={isExtended}
+                    dynamicStyle={IndexStyles.addButton}
+                    containerStyles={IndexStyles.addButtonContainer}
+                    align="flex-end"
+                    extendedWidth={152}
+                    label={<HelperText dynamicStyle={IndexStyles.addButtonLabel}>Neuer UB</HelperText>}
+                    ripple={{ rippleBackground: "rgb(70, 70, 70)" }}
+                    onPress={handleAddButtonPress}
+                >
+                    <FontAwesome name="plus" style={IndexStyles.addButtonLabel.default} />
+                </ExtendableButton>
             </HelperView>
         </ScreenWrapper>
     );

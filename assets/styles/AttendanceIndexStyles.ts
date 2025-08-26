@@ -1,7 +1,7 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
 import { ATTENDANCE_TEXT_INPUT_OPACITY, BOLD, BORDER_RADIUS, FONT_SIZE, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
-import { default as HelperStyles, default as HS } from "./helperStyles";
+import HS from "./helperStyles";
 
 const defaultInputBackground = "rgb(255, 255, 255)";
 
@@ -15,8 +15,8 @@ export class AttendanceIndexStyles {
 
     static suspenseContainer: ViewStyle = {
         ...this.component.default,
-        ...HelperStyles.fullHeight, 
-        ...HelperStyles.flexCenterCenter, 
+        ...HS.fullHeight, 
+        ...HS.flexCenterCenter, 
     }
 
     static scrollView: DynamicStyle<ViewStyle> = {
@@ -40,7 +40,7 @@ export class AttendanceIndexStyles {
 
     static topBarContainer: DynamicStyle<ViewStyle> = {
         default: {
-            ...HelperStyles.fullWidth,
+            ...HS.fullWidth,
             zIndex: 1,
         }
     }
