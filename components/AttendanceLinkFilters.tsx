@@ -8,7 +8,7 @@ import HS from "@/assets/styles/helperStyles";
 import { IndexStyles } from "@/assets/styles/IndexStyles";
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { useHelperProps } from "@/hooks/useHelperProps";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
+import { getSubjectColor } from "@/hooks/useSubjectColor";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
@@ -17,8 +17,6 @@ import { IndexContext } from "./context/IndexContextProvider";
 import Flex from "./helpers/Flex";
 import HelperButton from "./helpers/HelperButton";
 import HelperText from "./helpers/HelperText";
-import { getSubjectColor } from "@/hooks/useSubjectColor";
-import { FONT_SIZE_SMALLER } from "@/utils/styleConstants";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -35,8 +33,6 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
         setAttendanceLinkSortWrappers
     } = useContext(IndexContext);
     
-    const { prs } = useResponsiveStyles();
-
     const componentName = "AttendanceLinkFilters";
     const { children, style, ...otherProps } = useHelperProps(props, componentName, AttendanceLinkFiltersStyles.component);
 

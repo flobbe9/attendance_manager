@@ -1,10 +1,9 @@
 import { PopupsStyles } from "@/assets/styles/PopupsStyles";
+import { GlobalContext } from "@/components/context/GlobalContextProvider";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import React, { useContext, useState } from "react";
 import BooleanSetting from "./BooleanSetting";
-import { GlobalContext } from "@/components/context/GlobalContextProvider";
 
 /**
  * @since 0.1.0

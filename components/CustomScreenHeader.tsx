@@ -2,10 +2,11 @@ import HelperProps from "@/abstract/HelperProps";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import Flex from "./helpers/Flex";
 import HelperReactChildren from "./helpers/HelperReactChildren";
+import { GlobalContext } from "./context/GlobalContextProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
     leftContent?: ReactNode;
@@ -19,7 +20,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  * @since latest
  */
 export default function CustomScreenHeader({ leftContent, centerContent, rightContent, ...props }: Props) {
-    const { prs } = useResponsiveStyles();
+    const { prs } = useContext(GlobalContext);
 
     const componentName = "CustomScreenHeader";
     const { children, style, ...otherProps } = useHelperProps(props, componentName);

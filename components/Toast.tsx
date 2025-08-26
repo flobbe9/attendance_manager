@@ -4,13 +4,10 @@ import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { ReactNode, useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { Modal, Portal } from "react-native-paper";
-import HelperScrollView from "./helpers/HelperScrollView";
-import HelperText from "./helpers/HelperText";
-import ToastDefaultFooter from "./ToastDefaultFooter";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import HelperReactChildren from "./helpers/HelperReactChildren";
-import { logDebug } from "@/utils/logUtils";
 import { GlobalContext } from "./context/GlobalContextProvider";
+import HelperReactChildren from "./helpers/HelperReactChildren";
+import HelperScrollView from "./helpers/HelperScrollView";
+import ToastDefaultFooter from "./ToastDefaultFooter";
 
 export interface GlobalToastProps {
     /** Applied to outer container */

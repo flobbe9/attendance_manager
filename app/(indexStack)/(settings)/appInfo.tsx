@@ -4,9 +4,8 @@ import Flex from "@/components/helpers/Flex";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
 import HelperText from "@/components/helpers/HelperText";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
-import {useResponsiveStyles} from "@/hooks/useResponsiveStyles";
-import {APP_VERSION} from "@/utils/constants";
-import {GLOBAL_SCREEN_PADDING} from "@/utils/styleConstants";
+import { APP_VERSION } from "@/utils/constants";
+import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 
 import React, { useContext } from "react";
 

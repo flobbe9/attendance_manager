@@ -3,11 +3,11 @@ import { isSchoolYear } from "@/abstract/SchoolYear";
 import HelperStyles from "@/assets/styles/helperStyles";
 import { ToastDefaultFooterStyles } from "@/assets/styles/ToastDefaultFooterStyles";
 import { TopBarStyles } from "@/assets/styles/TopBarStyles";
+import { Attendance_Table } from "@/backend/schemas/AttendanceSchema";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import { useAttendanceRepository } from "@/hooks/repositories/useAttendanceRepository";
 import { useHelperProps } from "@/hooks/useHelperProps";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import { logDebug, logTrace } from "@/utils/logUtils";
+import { logTrace } from "@/utils/logUtils";
 import { FONT_SIZE_LARGER, FONT_SIZE_SMALLER, TOAST_ERROR_OUTER_STYLES } from "@/utils/styleConstants";
 import { isBlank, isNumberFalsy } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
@@ -25,7 +25,6 @@ import HelperButton from "../helpers/HelperButton";
 import HelperText from "../helpers/HelperText";
 import HelperView from "../helpers/HelperView";
 import ToastDimissFooter from "../ToastDismissFooter";
-import { Attendance_Table } from "@/backend/schemas/AttendanceSchema";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -33,9 +32,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {}
  * @since 0.0.1
  */
 export default function TopBar({ ...props }: Props) {
-    const { prs } = useResponsiveStyles();
-
-    const { popup, toast, hideToast } = useContext(GlobalContext);
+    const { popup, toast, hideToast, prs } = useContext(GlobalContext);
     const { updateSavedAttendanceEntities } = useContext(GlobalAttendanceContext);
     const {
         isCurrentAttendanceEntityModified,

@@ -5,7 +5,6 @@ import { AbstractAttendanceInputValidator } from "@/backend/abstract/AbstractAtt
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { useDeviceOrientation } from "@/hooks/useDeviceOrientation";
 import { useHelperProps } from "@/hooks/useHelperProps";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import {
     ATTENDANCE_INPUT_TOOLTIP_ICON_COLOR,
     TOOLTIP_DEFAULT_ICON
@@ -22,7 +21,6 @@ import HelperReactChildren from "../helpers/HelperReactChildren";
 import P from "../helpers/P";
 import Tooltip, { TooltipProps } from "../helpers/Tooltip";
 import AttendanceInputErrorPopupIcon from "./AttendanceInputErrorPopupIcon";
-import Br from "../helpers/Br";
 
 interface Props<InputType extends keyof AttendanceEntity, ValuesType extends Map<ValueOf<AttendanceEntity>, string> | ValueOf<AttendanceEntity>[]>
     extends TooltipProps {
@@ -57,14 +55,12 @@ export default function AttendanceInputTooltip<
     onTouchStart,
     ...props
 }: Props<InputType, ValuesType>) {
-    const { snackbar } = useContext(GlobalContext);
+    const { snackbar, prs } = useContext(GlobalContext);
     const { tooltipIconColor, setTooltipIconColor, currentlyInvalidAttendanceInputKey, currentAttendanceEntity } = useContext(AttendanceContext);
 
     const [tooltipContent, setTooltipContent] = useState<ReactNode>();
 
     const [valuesLength, setValuesLength] = useState(0);
-
-    const { prs } = useResponsiveStyles();
 
     const componentName = "AttendanceInputTooltip";
     const { children, ...otherProps } = useHelperProps(props, componentName, AttendanceInputTooltipStyles.component);

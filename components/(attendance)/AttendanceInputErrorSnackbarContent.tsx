@@ -1,19 +1,16 @@
 import HelperProps from "@/abstract/HelperProps";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import { ATTENDANCE_INPUT_TOOLTIP_ICON_ERROR_COLOR, FONT_SIZE_SMALLER } from "@/utils/styleConstants";
-import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { GlobalAttendanceContext } from "../context/GlobalAttendanceContextProvider";
+import { GlobalContext } from "../context/GlobalContextProvider";
 import B from "../helpers/B";
 import Br from "../helpers/Br";
 import Flex from "../helpers/Flex";
 import HelperCheckbox from "../helpers/HelperCheckbox";
 import HelperText from "../helpers/HelperText";
 import AttendanceInputErrorPopupIcon from "./AttendanceInputErrorPopupIcon";
-import { GlobalContext } from "../context/GlobalContextProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
     reason: string;

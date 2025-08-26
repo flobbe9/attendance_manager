@@ -2,19 +2,16 @@ import { DatePickerStyles } from "@/assets/styles/DatePickerStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { logTrace } from "@/utils/logUtils";
 import { formatDateGermanNoTime } from "@/utils/projectUtils";
-import React, { forwardRef, Fragment, Ref, useContext, useState } from "react";
+import { BORDER_RADIUS, FONT_SIZE, FONT_SIZE_SMALLER } from "@/utils/styleConstants";
+import { FontAwesome } from "@expo/vector-icons";
+import React, { forwardRef, Ref, useContext, useState } from "react";
 import { GestureResponderEvent, View, ViewStyle } from "react-native";
 import { DatePickerModal, DatePickerModalSingleProps } from "react-native-paper-dates";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
+import { GlobalContext } from "../context/GlobalContextProvider";
+import Flex from "./Flex";
 import HelperButton, { HelperButtonProps } from "./HelperButton";
 import HelperText from "./HelperText";
-import { FontAwesome } from "@expo/vector-icons";
-import { BORDER_RADIUS, FONT_SIZE, FONT_SIZE_SMALLER } from "@/utils/styleConstants";
-import Flex from "./Flex";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import HelperView from "./HelperView";
-import HelperStyles from "@/assets/styles/helperStyles";
-import { GlobalContext } from "../context/GlobalContextProvider";
 
 export type DatePickerValue = { startDate: CalendarDate; endDate: CalendarDate } & { date: CalendarDate } & { dates: Date[] };
 
