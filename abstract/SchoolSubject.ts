@@ -16,7 +16,7 @@ export const schoolSubjectKeysObj = {
 export type SchoolSubject_Key = keyof typeof schoolSubjectKeysObj;
 export const SCHOOL_SUBJECT_KEYS: SchoolSubject_Key[] = Object.keys(schoolSubjectKeysObj) as SchoolSubject_Key[];
 
-export const schoolSubjectValuesObj = { Geschichte: 0, Musikg: 1 };
+export const schoolSubjectValuesObj = { Geschichte: 0, Musik: 1 };
 /**
  *  @since 0.0.1
  */

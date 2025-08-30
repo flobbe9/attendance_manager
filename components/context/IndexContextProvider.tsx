@@ -27,10 +27,14 @@ export default function IndexContextProvider({children}: {children: ReactNode}) 
             compare: attendanceService.compareSchoolSubject,
         },
     });
+
+    /** Whether to separate the non-gub attendances into past and future */
+    const [isSeparateFutureAttendances, setSeparateFutureAttendances] = useState(true);
     
     const context = {
         attendanceLinkFilterWrappers, setAttendanceLinkFilterWrappers,
-        attendanceLinkSortWrappers, setAttendanceLinkSortWrappers
+        attendanceLinkSortWrappers, setAttendanceLinkSortWrappers,
+        isSeparateFutureAttendances, setSeparateFutureAttendances
     }
 
     return (
@@ -44,5 +48,7 @@ export const IndexContext = createContext({
     attendanceLinkFilterWrappers: {} as PartialRecord<SchoolSubject_Key, AttendanceFilterWrapper>,
     setAttendanceLinkFilterWrappers:  (wrappers: PartialRecord<SchoolSubject_Key, AttendanceFilterWrapper>): void => {},
     attendanceLinkSortWrappers: {} as  PartialRecord<keyof AttendanceEntity, SortWrapper<AttendanceEntity>>, 
-    setAttendanceLinkSortWrappers: (wrappers:  PartialRecord<keyof AttendanceEntity, SortWrapper<AttendanceEntity>>): void => {}
+    setAttendanceLinkSortWrappers: (wrappers:  PartialRecord<keyof AttendanceEntity, SortWrapper<AttendanceEntity>>): void => {},
+    isSeparateFutureAttendances: false as boolean, 
+    setSeparateFutureAttendances: (separate: boolean): void => {}
 })

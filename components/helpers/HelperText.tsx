@@ -31,18 +31,7 @@ export default forwardRef(function HelperText(
 ) {
     const { defaultFontStyles } = useContext(AssetContext);
     const componentName = "HelperText";
-    const { children, style, ...otherProps } = useHelperProps(props, componentName, {
-        default: {
-            // TODO: continue here
-                // make sure this is applied to
-                    // icons (?)
-                    // label components
-                        // radiobutton
-                        // checkbox
-                        // select (?)
-                        // sectioned input
-        }
-    });
+    const { children, style, ...otherProps } = useHelperProps(props, componentName);
     
     const componentRef = useRef<Text>(null);
     

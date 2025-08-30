@@ -8,12 +8,11 @@ import { getSubjectColor } from "@/hooks/useSubjectColor";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext, useEffect, useState } from "react";
 import { ColorValue, ViewProps, ViewStyle } from "react-native";
+import AttendanceLinkFilters from "./AttendanceLinkFilters";
 import { GlobalAttendanceContext } from "./context/GlobalAttendanceContextProvider";
 import { GlobalContext } from "./context/GlobalContextProvider";
 import Flex from "./helpers/Flex";
 import HelperText from "./helpers/HelperText";
-import AttendanceLinkFilters from "./AttendanceLinkFilters";
-import HelperView from "./helpers/HelperView";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 

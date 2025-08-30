@@ -18,39 +18,43 @@ import Flex from "./helpers/Flex";
 import HelperButton from "./helpers/HelperButton";
 import HelperText from "./helpers/HelperText";
 import { AssetContext } from "./context/AssetProvider";
+import HelperView from "./helpers/HelperView";
+import HelperCheckbox from "./helpers/HelperCheckbox";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
-type FilterValue = 'all' | SchoolSubject_Key;
+type FilterValue = "all" | SchoolSubject_Key;
 
 /**
  * @since latest
  */
 export default function AttendanceLinkFilters({ ...props }: Props) {
     const { defaultFontStyles } = useContext(AssetContext);
-    const { 
-        attendanceLinkFilterWrappers, 
+    const {
+        attendanceLinkFilterWrappers,
         setAttendanceLinkFilterWrappers,
         attendanceLinkSortWrappers,
-        setAttendanceLinkSortWrappers
+        setAttendanceLinkSortWrappers,
+        isSeparateFutureAttendances,
+        setSeparateFutureAttendances,
     } = useContext(IndexContext);
-    
+
     const componentName = "AttendanceLinkFilters";
-    const { children, style, ...otherProps } = useHelperProps(props, componentName, AttendanceLinkFiltersStyles.component);
+    const { children, ...otherProps } = useHelperProps(props, componentName, AttendanceLinkFiltersStyles.component);
 
     const filterValueButtonProps: Partial<SegmentedButtonsProps["buttons"]> = [
         {
-            checkedColor: 'white',
+            checkedColor: "white",
             labelStyle: {
-                ...defaultFontStyles({})
+                ...defaultFontStyles({}),
             },
             style: {
                 ...AttendanceLinkFiltersStyles.filterValueButton,
             },
             // just for completion
             value: "",
-        }
-    ]
+        },
+    ];
 
     /**
      * Add or remove filter wrapper to filter state and update.
@@ -73,7 +77,7 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
             ...attendanceLinkFilterWrappers,
         });
     }
-    
+
     /**
      * Add sort wrapper with `classField` to the bottom of sort state for it to take priority.
      *
@@ -93,8 +97,7 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
     }
 
     function getCurrentFilterValue(): FilterValue {
-        if (!Object.keys(attendanceLinkFilterWrappers).length)
-            return "all";
+        if (!Object.keys(attendanceLinkFilterWrappers).length) return "all";
 
         return Object.keys(attendanceLinkFilterWrappers)[0] as FilterValue;
     }
@@ -102,11 +105,9 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
     function setCurrentFilterValue(filterValue: FilterValue): void {
         if (filterValue === "all") {
             updateFilterState(null, null, false);
-
         } else if (filterValue === "history") {
             updateFilterState("history", "schoolSubject", true);
             updateFilterState("music", "schoolSubject", false);
-
         } else if (filterValue === "music") {
             updateFilterState("music", "schoolSubject", true);
             updateFilterState("history", "schoolSubject", false);
@@ -114,75 +115,86 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
     }
 
     return (
-        <Flex 
-            alignItems="center" 
-            justifyContent="space-between"
-            flexWrap="nowrap"
-            style={{ 
-                ...HS.fullWidth, 
-                ...style as object
-            }}
-            {...otherProps}
-        >
-            {/* Filter */}
-            <SegmentedButtons
-                value={getCurrentFilterValue()}
-                density="small"
+        <HelperView {...otherProps}>
+            {/* Row */}
+            <Flex
+                alignItems="center"
+                justifyContent="space-between"
+                flexWrap="nowrap"
                 style={{
-                    width: 250,
-                    ...AttendanceLinkFiltersStyles.filterInput,
+                    ...HS.fullWidth,
                 }}
-                buttons={[
-                    {
-                        ...filterValueButtonProps[0],
-                        uncheckedColor: 'black',
-                        value: "all",
-                        label: "Alle",
-                        style: {
-                            backgroundColor: getCurrentFilterValue() === "all" ? "rgb(100, 100, 100)" : undefined,
-                            ...filterValueButtonProps[0].style as object,
+            >
+                {/* Filter */}
+                <SegmentedButtons
+                    value={getCurrentFilterValue()}
+                    density="small"
+                    style={{
+                        width: 250,
+                        ...AttendanceLinkFiltersStyles.filterInput,
+                    }}
+                    buttons={[
+                        {
+                            ...filterValueButtonProps[0],
+                            uncheckedColor: "black",
+                            value: "all",
+                            label: "Alle",
+                            style: {
+                                backgroundColor: getCurrentFilterValue() === "all" ? "rgb(100, 100, 100)" : undefined,
+                                ...(filterValueButtonProps[0].style as object),
+                            },
                         },
-                    },
-                    {
-                        ...filterValueButtonProps[0],
-                        uncheckedColor: getSubjectColor("history") as string,
-                        value: "history",
-                        label: getSchoolSubjectBySchoolSubjectKey("history").charAt(0),
-                        style: {
-                            backgroundColor: getCurrentFilterValue() === "history" ? getSubjectColor("history") : undefined,
-                            ...filterValueButtonProps[0].style as object,
+                        {
+                            ...filterValueButtonProps[0],
+                            uncheckedColor: getSubjectColor("history") as string,
+                            value: "history",
+                            label: getSchoolSubjectBySchoolSubjectKey("history").charAt(0),
+                            style: {
+                                backgroundColor: getCurrentFilterValue() === "history" ? getSubjectColor("history") : undefined,
+                                ...(filterValueButtonProps[0].style as object),
+                            },
                         },
-                    },
-                    {
-                        ...filterValueButtonProps[0],
-                        uncheckedColor: getSubjectColor("music") as string,
-                        value: "music",
-                        label: getSchoolSubjectBySchoolSubjectKey("music").charAt(0),
-                        style: {
-                            backgroundColor: getCurrentFilterValue() === "music" ? getSubjectColor("music") : undefined,
-                            ...filterValueButtonProps[0].style as object,
+                        {
+                            ...filterValueButtonProps[0],
+                            uncheckedColor: getSubjectColor("music") as string,
+                            value: "music",
+                            label: getSchoolSubjectBySchoolSubjectKey("music").charAt(0),
+                            style: {
+                                backgroundColor: getCurrentFilterValue() === "music" ? getSubjectColor("music") : undefined,
+                                ...(filterValueButtonProps[0].style as object),
+                            },
                         },
-                    },
-                ]}
-                onValueChange={setCurrentFilterValue}
-            />
+                    ]}
+                    onValueChange={setCurrentFilterValue}
+                />
 
-            {/* Sort */}
-            <Flex justifyContent="flex-end">
-                {/* By date */}
-                <HelperButton disableFlex dynamicStyle={IndexStyles.sortButton} onPress={() => updateSortState("date")}>
-                    <HelperText>Termin</HelperText>
-                    <FontAwesome style={IndexStyles.sortButtonIcon} name={getSortButtonIcon(attendanceLinkSortWrappers.date.sortOrder)} />
-                </HelperButton>
+                {/* Sort */}
+                <Flex justifyContent="flex-end">
+                    {/* By date */}
+                    <HelperButton disableFlex dynamicStyle={IndexStyles.sortButton} onPress={() => updateSortState("date")}>
+                        <HelperText>Termin</HelperText>
+                        <FontAwesome style={IndexStyles.sortButtonIcon} name={getSortButtonIcon(attendanceLinkSortWrappers.date.sortOrder)} />
+                    </HelperButton>
 
-                {/* By subject */}
-                <HelperButton disableFlex dynamicStyle={IndexStyles.sortButton} onPress={() => updateSortState("schoolSubject")}>
-                    <HelperText>Fach</HelperText>
-                    <FontAwesome style={IndexStyles.sortButtonIcon} name={getSortButtonIcon(attendanceLinkSortWrappers.schoolSubject.sortOrder)} />
-                </HelperButton>
+                    {/* By subject */}
+                    <HelperButton disableFlex dynamicStyle={IndexStyles.sortButton} onPress={() => updateSortState("schoolSubject")}>
+                        <HelperText>Fach</HelperText>
+                        <FontAwesome
+                            style={IndexStyles.sortButtonIcon}
+                            name={getSortButtonIcon(attendanceLinkSortWrappers.schoolSubject.sortOrder)}
+                        />
+                    </HelperButton>
+                </Flex>
+            </Flex>
+
+            {/* Row */}
+            <Flex>
+                <HelperCheckbox iconStyle={AttendanceLinkFiltersStyles.futureCheckboxContent} checked={isSeparateFutureAttendances} setChecked={setSeparateFutureAttendances}>
+                    <HelperText style={AttendanceLinkFiltersStyles.futureCheckboxContent}>Planansicht</HelperText>
+                </HelperCheckbox>
             </Flex>
 
             {children}
-        </Flex>
+        </HelperView>
     );
 }

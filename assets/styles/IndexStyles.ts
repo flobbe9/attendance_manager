@@ -40,6 +40,18 @@ export class IndexStyles {
         }
     }
 
+    static attendanceLinkLabel: DynamicStyle<TextStyle> = {
+        default: {
+            fontSize: FONT_SIZE,
+            marginBottom: 5
+        }
+    }
+
+    static attendanceLinkDevider: ViewStyle = {
+        marginTop: 10, 
+        marginBottom: 15
+    }
+
     static attendanceLink: DynamicStyle<StyleType> = {
         default: {
             marginBottom: GLOBAL_SCREEN_PADDING

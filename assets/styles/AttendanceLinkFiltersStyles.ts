@@ -1,4 +1,5 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
+import { FONT_SIZE } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
 
 const borderRadius = 20;
@@ -21,5 +22,9 @@ export class AttendanceLinkFiltersStyles {
         borderTopEndRadius: borderRadius,
         borderTopStartRadius: borderRadius,
         borderWidth: 0,
+    }
+
+    static futureCheckboxContent: TextStyle = {
+        fontSize: FONT_SIZE
     }
 }
