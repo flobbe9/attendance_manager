@@ -12,6 +12,7 @@ import { GlobalContext } from "../context/GlobalContextProvider";
 import Flex from "./Flex";
 import HelperButton, { HelperButtonProps } from "./HelperButton";
 import HelperText from "./HelperText";
+import { combineDynamicStyles } from "@/abstract/DynamicStyle";
 
 export type DatePickerValue = { startDate: CalendarDate; endDate: CalendarDate } & { date: CalendarDate } & { dates: Date[] };
 
@@ -98,14 +99,10 @@ export default forwardRef(function DatePicker({ date, setDate, locale = "de", on
                     ...clearButtonProps.style as object
                 }}
                 {...clearButtonProps}
-                containerStyles={{
-                    default: {
-                        ...prs("ms_2")
-                    }
-                }}
+                containerStyles={combineDynamicStyles({default: {...prs("ms_2")}}, clearButtonProps.dynamicStyle)}
                 onPress={handleClearButtonPress}
             >
-                <FontAwesome name="close" size={FONT_SIZE_SMALLER} style={{height: FONT_SIZE, lineHeight: FONT_SIZE}} />
+                <FontAwesome name="close" size={FONT_SIZE_SMALLER} style={{height: FONT_SIZE_SMALLER, lineHeight: FONT_SIZE_SMALLER}} />
             </HelperButton>
         </Flex>
     );

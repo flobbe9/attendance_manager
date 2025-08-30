@@ -24,7 +24,18 @@ export const SUBJECT_COLORS: Record<SchoolSubject_Key, SubjectColor> = {
 export const LIGHT_COLOR = "rgb(230, 225, 229)";
 
 /** Font */
-export const BOLD = 500;
+/** The font size used by react native if none specified */
+export const DEFAULT_FONT_SIZE = 14;
+export const DEFAULT_FONT_WEIGHT = 400;
+
+export const FONT_WEIGHT_BOLD = 500;
+export const FONT_FAMILY = 'Lato';
+export const FONT_FAMILY_BOLD = 'Lato-Bold';
+export const FONT_FAMILY_ITALIC = 'Lato-Italic';
+export const FONT_FAMILY_BOLD_ITALIC = 'Lato-Bold-Italic';
+/** For `FONT_FAMILY` */
+export const LINE_HEIGHT = 1.2;
+
 
 /** Other */
 export const BORDER_RADIUS = 8;

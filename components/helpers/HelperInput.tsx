@@ -5,7 +5,7 @@ import HS from "@/assets/styles/helperStyles";
 import { useDynamicStyle } from "@/hooks/useDynamicStyle";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { logDebug, logTrace } from "@/utils/logUtils";
-import React, { forwardRef, Fragment, Ref, useEffect, useImperativeHandle, useRef } from "react";
+import React, { forwardRef, Fragment, Ref, useContext, useEffect, useImperativeHandle, useRef } from "react";
 import {
     Animated,
     Keyboard,
@@ -17,6 +17,7 @@ import {
     useAnimatedValue,
     ViewStyle,
 } from "react-native";
+import { AssetContext } from "../context/AssetProvider";
 
 interface Props extends HelperProps<TextStyle>, TextInputProps {
     disabled?: boolean;
@@ -33,6 +34,8 @@ export default forwardRef(function HelperInput(
     { rendered = true, disabled, containerStyles = {}, setValue, onRender, onChangeText: propsOnChangeText, ...props }: Props,
     ref: Ref<TextInput>
 ) {
+    const { defaultFontStyles } = useContext(AssetContext);
+    
     const componentRef = useRef<TextInput>(null);
 
     const animatedBackgroundColor = useAnimatedValue(0);
@@ -104,6 +107,8 @@ export default forwardRef(function HelperInput(
                 style={{
                     ...(disabled ? HS.disabled : {}),
                     ...(style as object),
+                    // NOTE: props returned by this method will not maintain state
+                    ...defaultFontStyles(style as TextStyle)
                 }}
                 returnKeyType={otherProps.multiline ? "none" : "default"}
                 onChangeText={onChangeText}

@@ -1,11 +1,9 @@
 import HelperProps from "@/abstract/HelperProps";
 import { useHelperProps } from "@/hooks/useHelperProps";
-import { BOLD } from "@/utils/styleConstants";
 import React, { forwardRef, Ref } from "react";
 import { Text, TextProps, TextStyle } from "react-native";
-import HelperText from "./HelperText";
-
-interface Props extends HelperProps<TextStyle>, TextProps {}
+import HelperText, { HelperTextProps } from "./HelperText";
+import { FONT_WEIGHT_BOLD } from "@/utils/styleConstants";
 
 /**
  * ```<HelperText>``` with bold style.
@@ -13,19 +11,12 @@ interface Props extends HelperProps<TextStyle>, TextProps {}
  * @see HelperText
  * @since 0.0.1
  */
-export default forwardRef(function B({ ...props }: Props, ref: Ref<Text>) {
+export default forwardRef(function B({ ...props }: HelperTextProps, ref: Ref<Text>) {
     const componentName = "B";
-    const { children, style, ...otherProps } = useHelperProps(props, componentName);
+    const { children, ...otherProps } = useHelperProps(props, componentName, {default: {fontWeight: FONT_WEIGHT_BOLD}});
 
     return (
-        <HelperText
-            ref={ref}
-            style={{
-                fontWeight: BOLD,
-                ...(style as TextStyle),
-            }}
-            {...otherProps}
-        >
+        <HelperText ref={ref} {...otherProps}>
             {children}
         </HelperText>
     );

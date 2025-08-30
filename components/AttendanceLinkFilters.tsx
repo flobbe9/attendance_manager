@@ -17,6 +17,7 @@ import { IndexContext } from "./context/IndexContextProvider";
 import Flex from "./helpers/Flex";
 import HelperButton from "./helpers/HelperButton";
 import HelperText from "./helpers/HelperText";
+import { AssetContext } from "./context/AssetProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -26,6 +27,7 @@ type FilterValue = 'all' | SchoolSubject_Key;
  * @since latest
  */
 export default function AttendanceLinkFilters({ ...props }: Props) {
+    const { defaultFontStyles } = useContext(AssetContext);
     const { 
         attendanceLinkFilterWrappers, 
         setAttendanceLinkFilterWrappers,
@@ -39,7 +41,9 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
     const filterValueButtonProps: Partial<SegmentedButtonsProps["buttons"]> = [
         {
             checkedColor: 'white',
-            labelStyle: {},
+            labelStyle: {
+                ...defaultFontStyles({})
+            },
             style: {
                 ...AttendanceLinkFiltersStyles.filterValueButton,
             },

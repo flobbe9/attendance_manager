@@ -50,7 +50,7 @@ export default function index() {
 
                 <SetttingsLink
                     href="/(indexStack)/(settings)/appInfo"
-                    icon={<FontAwesome name="info" style={{ ...SettingsIndexStyles.settingsItemText, ...prs("ms_2", "me_3") }} />}
+                    icon={<FontAwesome name="info" style={{ ...SettingsIndexStyles.settingsItemText, ...prs("ms_1", "me_3") }} />}
                     label="Über diese App"
                 />
             </HelperScrollView>

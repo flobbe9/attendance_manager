@@ -1,8 +1,10 @@
 import { CustomSnackbarStyles } from "@/assets/styles/CustomSnackbarStyles";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
+import { FONT_WEIGHT_BOLD } from "@/utils/styleConstants";
 import { isBlank } from "@/utils/utils";
-import React from "react";
+import React, { useContext } from "react";
 import { Portal, Snackbar, SnackbarProps } from "react-native-paper";
+import { AssetContext } from "./context/AssetProvider";
 
 export type CustomSnackbarStatus = "error" | "warn" | "info" | "success" | "default";
 
@@ -25,6 +27,7 @@ export default function CustomSnackbar(
         ...props
     }: Props
 ) {
+    const { defaultFontStyles } = useContext(AssetContext);
     const componentName = "Snackbar";
     const { children, style, ...otherProps } = useDefaultProps(props, componentName, CustomSnackbarStyles.component);
 
@@ -41,6 +44,7 @@ export default function CustomSnackbar(
                     labelStyle: {
                         ...(!isBlank(otherActions.label) ? CustomSnackbarStyles.label : {}),
                         color: status !== "default" ? "black" : otherActions.textColor,
+                        ...defaultFontStyles({fontWeight: FONT_WEIGHT_BOLD}),
                         ...labelStyle as object
                     },
                     ...otherActions,

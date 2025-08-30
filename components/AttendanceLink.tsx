@@ -10,17 +10,17 @@ import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { getSubjectColor, useSubjectColor } from "@/hooks/useSubjectColor";
 import { formatDateGermanNoTime } from "@/utils/projectUtils";
-import { BORDER_RADIUS, FONT_SIZE, FONT_SIZE_SMALLER, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { FONT_SIZE } from "@/utils/styleConstants";
+import { isBlank } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import React, { JSX, useContext } from "react";
+import React, { JSX, useContext, useState } from "react";
 import { ColorValue, ViewProps, ViewStyle } from "react-native";
 import HelperStyles from "./../assets/styles/helperStyles";
 import { GlobalContext } from "./context/GlobalContextProvider";
 import B from "./helpers/B";
 import Flex from "./helpers/Flex";
 import HelperText from "./helpers/HelperText";
-import { isBlank } from "@/utils/utils";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
     attendanceEntity: AttendanceEntity;
@@ -92,10 +92,8 @@ export default function AttendanceLink({ attendanceEntity, ...props }: Props) {
                 <HelperView>
                     {/* Top row */}
                     <Flex style={{ ...HelperStyles.fullWidth, ...prs("mb_2") }} flexDirection="column" justifyContent="space-between">
-                        <HelperText ellipsis dynamicStyle={AttendanceLinkStyles.heading}>
-                            {/* Subject */}
-                            <B style={{ fontFamily: "Lato-Regular" }}>{getSchoolSubjectBySchoolSubjectKey(schoolSubject)}</B>
-                        </HelperText>
+                        {/* Subject */}
+                        <B ellipsis dynamicStyle={AttendanceLinkStyles.heading}>{getSchoolSubjectBySchoolSubjectKey(schoolSubject)}</B>
 
                         {/* Topic */}
                         <HelperText
