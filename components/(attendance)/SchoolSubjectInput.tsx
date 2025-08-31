@@ -79,7 +79,8 @@ export default function SchoolSubjectInput({...props}: Props) {
             noSelectionLabel={currentAttendanceEntity.schoolSubject ? null : NO_SELECTION_LABEL}
             selectionButtonProps={{
                 dynamicStyle: AttendanceIndexStyles.defaultHelperButton,
-                ripple: {rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground}
+                ripple: {rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground},
+                containerStyles: AttendanceIndexStyles.defaultHelperButtonContainer
             }}
             optionButtonProps={{
                 ripple: {rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground}

@@ -54,7 +54,7 @@ export function isDbBackupDto(dbBackupDto: DbBackupDto): dbBackupDto is DbBackup
 /**
  * In addition to calling `JSON.parse`, create `Date` objects for each date timestamp.
  *
- * @param dtoJson TODO: continue here, also test blank dates
+ * @param dtoJson
  * @returns parsed dto with `Date` objects
  * @throws `PrettyError` 400 if some date value is invalid (not if it's falsy)
  */

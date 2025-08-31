@@ -5,7 +5,6 @@ import { DateInputStyles } from "@/assets/styles/DateInputStyles";
 import { AttendanceInputValidatorBuilder } from "@/backend/validator/AttendanceInputValidatorBuilder";
 import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { formatDateGermanNoTime } from "@/utils/projectUtils";
 import React, { useContext, useEffect, useState } from "react";
 import { ViewProps, ViewStyle } from "react-native";
@@ -15,7 +14,6 @@ import DatePicker, { DatePickerValue } from "../helpers/DatePicker";
 import Flex from "../helpers/Flex";
 import HelperText from "../helpers/HelperText";
 import AttendanceInputTooltip from "./AttendanceInputTooltip";
-import { GlobalContext } from "../context/GlobalContextProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -67,6 +65,12 @@ export default function DateInput({ ...props }: Props) {
                 setDate={(date) => updateCurrentAttendanceEntity(["date", date])}
                 dynamicStyle={combineDynamicStyles(DateInputStyles.button, AttendanceIndexStyles.defaultHelperButton)}
                 ripple={{ rippleBackground: AttendanceIndexStyles.defaultHelperButtonRippleBackground }}
+                containerStyles={{
+                    ...AttendanceIndexStyles.defaultHelperButtonContainer
+                }}
+                clearButtonProps={{
+                    style: DateInputStyles.clearButton.default
+                }}
                 modalProps={{
                     emptyLabel: "__.__.____",
                     validRange: {

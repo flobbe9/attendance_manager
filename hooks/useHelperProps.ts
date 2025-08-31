@@ -8,7 +8,11 @@ import { useDefaultProps } from "./useDefaultProps";
  * Simply calls ```useDefaultProps``` but combining ```props.dynamicStyle``` with ```dynamicStyle``` and ```props.animatedStyles``` with ```animatedStyles```.
  * 
  * Use this instead of ```useDefaultProps``` if the component uses ```HelperProps```.
- * 
+ * @param props 
+ * @param componentName 
+ * @param dynamicStyle 
+ * @param animatedDynamicStyles 
+ * @param componentNameAsId 
  * @see useDefaultProps
  * @since 0.0.1
  */

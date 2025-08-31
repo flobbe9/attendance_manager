@@ -1,12 +1,13 @@
 import { ExaminantRole_Key } from "@/abstract/Examinant";
-import { SchoolSubject } from "@/abstract/SchoolSubject";
-import { EXAMINANT_COLOR_NO_SUBJECT, HISTORY_COLOR, HISTORY_COLOR_TRANSPARENT, MUSIC_COLOR, MUSIC_COLOR_TRANSPARENT } from "@/utils/styleConstants";
+import { getSchoolSubjectKeyBySchoolSubject, SchoolSubject } from "@/abstract/SchoolSubject";
+import { EXAMINANT_COLOR_NO_SUBJECT, SUBJECT_COLORS } from "@/utils/styleConstants";
 import { DependencyList, useEffect, useState } from "react";
 import { ColorValue } from "react-native";
 
-interface SubjectColor {
+export interface SubjectColor {
     color: ColorValue,
-    transparentColor: ColorValue
+    transparentColor: ColorValue,
+    transparentColorDarker: ColorValue
 }
 
 /**
@@ -18,13 +19,15 @@ interface SubjectColor {
 export function useSubjectColor(subject: SchoolSubject | ExaminantRole_Key | undefined, defaultColor?: ColorValue, deps?: DependencyList): SubjectColor {
     const [subjectColor, setSubjectColor] = useState<SubjectColor>({
         color: defaultColor,
-        transparentColor: defaultColor
+        transparentColor: defaultColor,
+        transparentColorDarker: defaultColor
     });
 
     useEffect(() => {
         setSubjectColor({
-            color: getSubjectColor(subject, false, defaultColor),
-            transparentColor: getSubjectColor(subject, true, defaultColor)
+            color: getSubjectColor(subject, 'color', defaultColor),
+            transparentColor: getSubjectColor(subject, "transparentColor", defaultColor),
+            transparentColorDarker: getSubjectColor(subject, "transparentColorDarker", defaultColor)
         });
 
     }, [subject, ...(deps ? deps : [])]);
@@ -34,19 +37,17 @@ export function useSubjectColor(subject: SchoolSubject | ExaminantRole_Key | und
 
 /**
  * @param subject school subject or examinant role
- * @param transparent indicates to use the transparent variants (not using alpha value though). Default is ```false```
+ * @param variant the {@link SubjectColor} variant to use. Default is 'color'
  * @param defaultColor to return if subject is ```undefined```. Default is `white`
  * @returns the color of the subject or ```defaultColor```
  */
-export function getSubjectColor(subject: SchoolSubject | ExaminantRole_Key | undefined, transparent = false, defaultColor: ColorValue = "white"): ColorValue {
-    if (subject === "Geschichte" || subject === "history")
-        return transparent ? HISTORY_COLOR_TRANSPARENT : HISTORY_COLOR;
-
-    if (subject === "Musik" || subject === "music")
-        return transparent ? MUSIC_COLOR_TRANSPARENT : MUSIC_COLOR;
-
+export function getSubjectColor(subject: SchoolSubject | ExaminantRole_Key | undefined, variant: keyof SubjectColor = 'color', defaultColor: ColorValue = "white"): ColorValue {
     if (subject === "educator" || subject === "headmaster")
         return EXAMINANT_COLOR_NO_SUBJECT;
+
+    const subjectKey = getSchoolSubjectKeyBySchoolSubject(subject);
+    if (subjectKey)
+        return SUBJECT_COLORS[subjectKey][variant];
     
     return defaultColor;
 }

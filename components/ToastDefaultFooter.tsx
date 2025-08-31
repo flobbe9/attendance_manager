@@ -4,10 +4,9 @@ import Flex from "@/components/helpers/Flex";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
+import { GlobalContext } from "./context/GlobalContextProvider";
 import HelperButton from "./helpers/HelperButton";
 import HelperText from "./helpers/HelperText";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
-import { GlobalContext } from "./context/GlobalContextProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
     onConfirm: () => void;

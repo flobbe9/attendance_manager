@@ -22,24 +22,28 @@ export class IndexStyles {
             fontSize: FONT_SIZE
         }
     }
-
-    static sortButton: DynamicStyle<ViewStyle> = {
-        default: {
-            backgroundColor: "transparent"
-        }
-    }
-
-    static sortButtonIcon: TextStyle = {
-        fontSize: FONT_SIZE
-    }
     
     static linkContainer: DynamicStyle<ViewStyle> = {
         default: {
             ...HelperStyles.fullWidth,
+            height: 0 // for scroll to work, don't ask xd
         }
     }
 
-    static link: DynamicStyle<StyleType> = {
+    static attendanceLinkLabel: DynamicStyle<TextStyle> = {
+        default: {
+            backgroundColor: IndexStyles.component.default.backgroundColor,
+            fontSize: FONT_SIZE,
+            marginBottom: 5
+        }
+    }
+
+    static attendanceLinkDevider: ViewStyle = {
+        marginTop: 10, 
+        marginBottom: 15
+    }
+
+    static attendanceLink: DynamicStyle<StyleType> = {
         default: {
             marginBottom: GLOBAL_SCREEN_PADDING
         }

@@ -1,9 +1,3 @@
-import { AttendanceFilterWrapper } from "@/abstract/AttendanceFilterWrapper";
-import { FontAweSomeIconname } from "@/abstract/FontAwesomeIconName";
-import { PartialRecord } from "@/abstract/PartialRecord";
-import { SchoolSubject_Key } from "@/abstract/SchoolSubject";
-import { getOppositeSortOrder, SortOrder } from "@/abstract/SortOrder";
-import { SortWrapper } from "@/abstract/SortWrapper";
 import HelperStyles from "@/assets/styles/helperStyles";
 import { IndexStyles } from "@/assets/styles/IndexStyles";
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
@@ -11,50 +5,47 @@ import { AttendanceService } from "@/backend/services/AttendanceService";
 import AttendanceLink from "@/components/AttendanceLink";
 import { GlobalAttendanceContext } from "@/components/context/GlobalAttendanceContextProvider";
 import { GlobalContext } from "@/components/context/GlobalContextProvider";
+import { IndexContext } from "@/components/context/IndexContextProvider";
+import B from "@/components/helpers/B";
 import ExtendableButton from "@/components/helpers/ExtendableButton";
 import Flex from "@/components/helpers/Flex";
-import HelperButton from "@/components/helpers/HelperButton";
 import HelperScrollView from "@/components/helpers/HelperScrollView";
 import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import IndexTopBar from "@/components/IndexTopBar";
-import { getSubjectColor } from "@/hooks/useSubjectColor";
-import { cloneObj } from "@/utils/utils";
+import { assertFalsyAndThrow, cloneObj, isDateAfter } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
-import { Link } from "expo-router";
-import { JSX, useContext, useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import { Fragment, JSX, useContext, useEffect, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
-import { Divider, RadioButton } from "react-native-paper";
+import { Divider } from "react-native-paper";
+
+interface SectionedAttendanceLinksConditions {
+    isGub: boolean;
+    dateMode?: "future" | "pastPresent" | "all";
+}
 
 /**
  * @since 0.0.1
  */
 export default function index() {
-    const { prs, popup } = useContext(GlobalContext);
+    const { prs } = useContext(GlobalContext);
+    const { attendanceLinkFilterWrappers, attendanceLinkSortWrappers, isRenderAttendanceLinksSections } = useContext(IndexContext);
     const { savedAttendanceEntities, setCurrentAttendanceEntityId, updateSavedAttendanceEntities } = useContext(GlobalAttendanceContext);
 
-    const [attendanceLinksNoGub, setAttendanceLinksNoGub] = useState<JSX.Element[]>([]);
+    const { navigate } = useRouter();
+
+    const [attendanceLinksAll, setAttendanceLinksAll] = useState<JSX.Element[]>([]);
+
+    const [attendanceLinksPastPresent, setAttendanceLinksPastPresent] = useState<JSX.Element[]>([]);
+    const [attendanceLinksFuture, setAttendanceLinksFuture] = useState<JSX.Element[]>([]);
     const [attendanceLinksGub, setAttendanceLinksGub] = useState<JSX.Element[]>([]);
 
     const [isExtended, setIsExtended] = useState(true);
 
     const attendanceService = new AttendanceService();
-    const [attendanceLinkFilterWrappers, setAttendanceLinkFilterWrappers] = useState<PartialRecord<SchoolSubject_Key, AttendanceFilterWrapper>>({});
-    // last elements take priority over first elements
-    const [attendanceLinkSortWrappers, setAttendanceLinkSNoGubortWrappers] = useState<
-        PartialRecord<keyof AttendanceEntity, SortWrapper<AttendanceEntity>>
-    >({
-        date: {
-            sortOrder: SortOrder.DESC,
-            compare: attendanceService.compareDate,
-        },
-        schoolSubject: {
-            sortOrder: SortOrder.ASC,
-            compare: attendanceService.compareSchoolSubject,
-        },
-    });
 
     const isScreenInView = useIsFocused();
 
@@ -63,9 +54,17 @@ export default function index() {
     }, [isScreenInView]); // triggered on focus and blur of /app/index view
 
     useEffect(() => {
-        setAttendanceLinksNoGub(mapAttendanceLinksWithoutGub(savedAttendanceEntities));
-        setAttendanceLinksGub(mapttendanceLinksWithGub(savedAttendanceEntities));
-    }, [savedAttendanceEntities, attendanceLinkFilterWrappers, attendanceLinkSortWrappers]);
+        if (!isRenderAttendanceLinksSections) setAttendanceLinksAll(mapAttendanceLinks(filterAttendanceLinksGeneral(savedAttendanceEntities)));
+        else {
+            setAttendanceLinksPastPresent(
+                mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: false, dateMode: "pastPresent" }))
+            );
+            setAttendanceLinksFuture(
+                mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: false, dateMode: "future" }))
+            );
+            setAttendanceLinksGub(mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: true, dateMode: "all" })));
+        }
+    }, [savedAttendanceEntities, attendanceLinkFilterWrappers, attendanceLinkSortWrappers, isRenderAttendanceLinksSections]);
 
     function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
         const currentScrollPosition = Math.floor(event.nativeEvent?.contentOffset?.y) ?? 0;
@@ -73,20 +72,39 @@ export default function index() {
         setIsExtended(currentScrollPosition <= 0);
     }
 
-    function mapAttendanceLinksWithoutGub(attendanceEntities: AttendanceEntity[]): JSX.Element[] {
+    /**
+     *
+     * @param attendanceEntities to filter (not modified)
+     * @param sectionConditions the filter conditions
+     * @returns filtered `attendanceEntities` or empty array
+     */
+    function filterAttendanceLinksSectioned(
+        attendanceEntities: AttendanceEntity[],
+        sectionConditions: SectionedAttendanceLinksConditions
+    ): AttendanceEntity[] {
         if (!attendanceEntities) return [];
 
-        return mapAttendanceLinks(attendanceEntities)
-            .filter((attendanceEntity) => !attendanceService.isGub(attendanceEntity))
-            .map((attendanceEntity, i) => mapAttendanceLink(attendanceEntity, i));
-    }
+        let filteredAttendanceLinks = [...attendanceEntities];
 
-    function mapttendanceLinksWithGub(attendanceEntities: AttendanceEntity[]): JSX.Element[] {
-        if (!attendanceEntities) return [];
+        // gub
+        filteredAttendanceLinks = filteredAttendanceLinks.filter((attendanceEntity) => {
+            const isGub = attendanceService.isGub(attendanceEntity);
+            return (!isGub && !sectionConditions.isGub) || (isGub && sectionConditions.isGub);
+        });
 
-        return mapAttendanceLinks(attendanceEntities)
-            .filter((attendanceEntity) => attendanceService.isGub(attendanceEntity))
-            .map((attendanceEntity, i) => mapAttendanceLink(attendanceEntity, i));
+        // date
+        if (sectionConditions.dateMode !== "all")
+            filteredAttendanceLinks = filteredAttendanceLinks.filter((attendanceEntity) => {
+                const attendanceIsFuture = isFutureAttendance(attendanceEntity);
+                return (
+                    (attendanceIsFuture && sectionConditions.dateMode === "future") ||
+                    (!attendanceIsFuture && sectionConditions.dateMode === "pastPresent")
+                );
+            });
+
+        filteredAttendanceLinks = filterAttendanceLinksGeneral(filteredAttendanceLinks);
+
+        return filteredAttendanceLinks;
     }
 
     /**
@@ -95,7 +113,7 @@ export default function index() {
      * @param attendanceEntities wont modify
      * @returns
      */
-    function mapAttendanceLinks(attendanceEntities: AttendanceEntity[]): AttendanceEntity[] {
+    function filterAttendanceLinksGeneral(attendanceEntities: AttendanceEntity[]): AttendanceEntity[] {
         if (!attendanceEntities) return [];
 
         let attendanceEntitiesCloned = cloneObj(attendanceEntities);
@@ -118,130 +136,97 @@ export default function index() {
         return attendanceEntitiesCloned;
     }
 
+    function mapAttendanceLinks(attendanceEntities: AttendanceEntity[]): JSX.Element[] {
+        if (!attendanceEntities) return [];
+
+        return attendanceEntities.map(mapAttendanceLink);
+    }
+
     function mapAttendanceLink(attendanceEntity: AttendanceEntity, key: number | string): JSX.Element {
         return (
             <AttendanceLink
                 key={`${attendanceEntity.schoolSubject}_${key}`}
                 attendanceEntity={attendanceEntity}
+                dynamicStyle={IndexStyles.attendanceLink}
                 onTouchStart={() => setCurrentAttendanceEntityId(attendanceEntity.id)}
             />
         );
     }
 
-    /**
-     * Add or remove filter wrapper to filter state and update.
-     *
-     * @param filterValue `null` if no filters should be applied
-     * @param classField for comparing `filterValue`
-     * @param isFilter whether to add filter wrapper instead of removing it
-     */
-    function updateFilter(filterValue: string | number | null, classField: keyof AttendanceEntity, isFilter: boolean): void {
-        // case: dont filter
-        if (filterValue === null) {
-            setAttendanceLinkFilterWrappers({});
-            return;
-        }
-
-        if (isFilter) attendanceLinkFilterWrappers[filterValue] = new AttendanceFilterWrapper(filterValue, classField);
-        else delete attendanceLinkFilterWrappers[filterValue];
-
-        setAttendanceLinkFilterWrappers({
-            ...attendanceLinkFilterWrappers,
-        });
+    function handleAddButtonPress(): void {
+        navigate("/(indexStack)/(attendance)");
+        setCurrentAttendanceEntityId(-1);
     }
 
     /**
-     * Add sort wrapper with `classField` to the bottom of sort state for it to take priority.
-     *
-     * @param classField to sort by
+     * @param attendanceEntity to check the `date` for
+     * @returns `true` if `attendanceEntity.date` is tomorrow or later (ignore time), `false` if is today, in the past or falsy
+     * @throw if args is falsy
      */
-    function updateSort(classField: keyof AttendanceEntity): void {
-        attendanceLinkSortWrappers[classField].sortOrder = getOppositeSortOrder(attendanceLinkSortWrappers[classField].sortOrder);
+    function isFutureAttendance(attendanceEntity: AttendanceEntity): boolean {
+        assertFalsyAndThrow(attendanceEntity);
 
-        setAttendanceLinkSNoGubortWrappers({
-            ...attendanceLinkSortWrappers,
-            [classField]: attendanceLinkSortWrappers[classField],
-        });
+        return !attendanceEntity.date || isDateAfter(attendanceEntity.date, new Date());
     }
 
-    function getSortButtonIcon(sortOrder: SortOrder): FontAweSomeIconname {
-        return sortOrder === SortOrder.ASC ? "sort-asc" : "sort-desc";
+    function AttendanceLinkDevider({ rendered = true }) {
+        return (
+            <HelperView rendered={rendered}>
+                <Divider style={IndexStyles.attendanceLinkDevider} />
+            </HelperView>
+        );
     }
 
     return (
         <ScreenWrapper>
-            <HelperView dynamicStyle={IndexStyles.component} style={{ height: "100%" }}>
+            <HelperView dynamicStyle={IndexStyles.component}>
                 <IndexTopBar />
-
-                <Flex justifyContent="space-between" alignItems="center" style={{ ...HelperStyles.fullWidth, ...prs("mt_5") }}>
-                    <Flex alignItems="center">
-                        <FontAwesome name="filter" style={{ ...IndexStyles.sortButtonIcon, ...prs("me_2") }} />
-
-                        <RadioButton
-                            value={null}
-                            status={!Object.keys(attendanceLinkFilterWrappers).length ? "checked" : "unchecked"}
-                            onPress={() => updateFilter(null, null, false)}
-                        />
-
-                        <RadioButton
-                            value={"history"}
-                            status={Object.hasOwn(attendanceLinkFilterWrappers, "history") ? "checked" : "unchecked"}
-                            color={getSubjectColor("history") as string}
-                            uncheckedColor={getSubjectColor("history") as string}
-                            onPress={() => {
-                                updateFilter("history", "schoolSubject", true);
-                                updateFilter("music", "schoolSubject", false);
-                            }}
-                        />
-
-                        <RadioButton
-                            value={"music"}
-                            status={Object.hasOwn(attendanceLinkFilterWrappers, "music") ? "checked" : "unchecked"}
-                            color={getSubjectColor("music") as string}
-                            uncheckedColor={getSubjectColor("music") as string}
-                            onPress={() => {
-                                updateFilter("music", "schoolSubject", true);
-                                updateFilter("history", "schoolSubject", false);
-                            }}
-                        />
-                    </Flex>
-
-                    <Flex alignItems="center">
-                        <FontAwesome name="sort" style={{ ...IndexStyles.sortButtonIcon, ...prs("me_2") }} />
-                        <HelperButton disableFlex dynamicStyle={IndexStyles.sortButton} onPress={() => updateSort("date")}>
-                            <HelperText>Termin</HelperText>
-                            <FontAwesome style={IndexStyles.sortButtonIcon} name={getSortButtonIcon(attendanceLinkSortWrappers.date.sortOrder)} />
-                        </HelperButton>
-
-                        <HelperButton disableFlex dynamicStyle={IndexStyles.sortButton} onPress={() => updateSort("schoolSubject")}>
-                            <HelperText>Fach</HelperText>
-                            <FontAwesome
-                                style={IndexStyles.sortButtonIcon}
-                                name={getSortButtonIcon(attendanceLinkSortWrappers.schoolSubject.sortOrder)}
-                            />
-                        </HelperButton>
-                    </Flex>
-                </Flex>
-
-                {!!attendanceLinksNoGub.length && <Divider />}
 
                 {/* Links */}
                 <HelperScrollView
-                    onScroll={handleScroll}
                     dynamicStyle={IndexStyles.linkContainer}
-                    style={{ ...prs("mt_3") }}
-                    childrenContainerStyle={{ paddingBottom: 50 }}
-                    rendered={!!attendanceLinksNoGub.length || !!attendanceLinksGub.length}
+                    style={{ ...prs("mt_1") }}
+                    childrenContainerStyle={{ ...prs("pb_6") }}
+                    rendered={!!attendanceLinksPastPresent.length || !!attendanceLinksFuture.length || !!attendanceLinksGub.length}
+                    stickyHeaderIndices={isRenderAttendanceLinksSections ? [0, 2, 4] : []}
+                    onScroll={handleScroll}
                 >
-                    {attendanceLinksGub}
+                    {/* Future section */}
+                    <B
+                        dynamicStyle={IndexStyles.attendanceLinkLabel}
+                        rendered={isRenderAttendanceLinksSections && !!attendanceLinksFuture.length}
+                    >
+                        Noch offen
+                    </B>
+                    <HelperView rendered={isRenderAttendanceLinksSections && !!attendanceLinksFuture.length}>
+                        {attendanceLinksFuture}
 
-                    {!!attendanceLinksNoGub.length && !!attendanceLinksGub.length && (
-                        <HelperView>
-                            <Divider style={{ marginBottom: 20, marginTop: 10 }} />
-                        </HelperView>
-                    )}
+                        <AttendanceLinkDevider rendered={!!attendanceLinksGub.length || !!attendanceLinksPastPresent.length} />
+                    </HelperView>
 
-                    {attendanceLinksNoGub}
+                    {/* Gub section */}
+                    <B dynamicStyle={IndexStyles.attendanceLinkLabel} rendered={isRenderAttendanceLinksSections && !!attendanceLinksGub.length}>
+                        GUBs
+                    </B>
+                    <HelperView rendered={isRenderAttendanceLinksSections && !!attendanceLinksGub.length}>
+                        {attendanceLinksGub}
+
+                        <AttendanceLinkDevider rendered={!!attendanceLinksPastPresent.length} />
+                    </HelperView>
+
+                    {/* Past / Present section */}
+                    <B
+                        dynamicStyle={IndexStyles.attendanceLinkLabel}
+                        rendered={isRenderAttendanceLinksSections && !!attendanceLinksPastPresent.length}
+                    >
+                        Erledigt
+                    </B>
+                    <HelperView rendered={isRenderAttendanceLinksSections && !!attendanceLinksPastPresent.length}>
+                        {attendanceLinksPastPresent}
+                    </HelperView>
+
+                    {/* All (no section) */}
+                    <HelperView rendered={!isRenderAttendanceLinksSections}>{attendanceLinksAll}</HelperView>
                 </HelperScrollView>
 
                 {/* Empty message */}
@@ -249,7 +234,7 @@ export default function index() {
                     flexDirection="column"
                     justifyContent="center"
                     alignItems="center"
-                    style={{ ...HelperStyles.fullHeight }}
+                    style={{ ...prs("mt_10", "mt_md_3") }}
                     rendered={!savedAttendanceEntities.length}
                 >
                     <HelperText dynamicStyle={IndexStyles.emptyMessage}>😴</HelperText>
@@ -257,19 +242,18 @@ export default function index() {
                 </Flex>
 
                 {/* Add button */}
-                <Link href={"/(attendance)"} asChild onPress={() => setCurrentAttendanceEntityId(-1)}>
-                    <ExtendableButton
-                        isExtended={isExtended}
-                        dynamicStyle={IndexStyles.addButton}
-                        containerStyles={IndexStyles.addButtonContainer}
-                        align="flex-end"
-                        extendedWidth={152}
-                        label={<HelperText dynamicStyle={IndexStyles.addButtonLabel}>Neuer UB</HelperText>}
-                        ripple={{ rippleBackground: "rgb(70, 70, 70)" }}
-                    >
-                        <FontAwesome name="plus" style={IndexStyles.addButtonLabel.default} />
-                    </ExtendableButton>
-                </Link>
+                <ExtendableButton
+                    isExtended={isExtended}
+                    dynamicStyle={IndexStyles.addButton}
+                    containerStyles={IndexStyles.addButtonContainer}
+                    align="flex-end"
+                    extendedWidth={152}
+                    label={<HelperText dynamicStyle={IndexStyles.addButtonLabel}>Neuer UB</HelperText>}
+                    ripple={{ rippleBackground: "rgb(70, 70, 70)" }}
+                    onPress={handleAddButtonPress}
+                >
+                    <FontAwesome name="plus" style={IndexStyles.addButtonLabel.default} />
+                </ExtendableButton>
             </HelperView>
         </ScreenWrapper>
     );

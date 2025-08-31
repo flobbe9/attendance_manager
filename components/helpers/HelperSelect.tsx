@@ -17,6 +17,7 @@ import HelperButton, { HelperButtonProps } from "./HelperButton";
 import HelperReactChildren from "./HelperReactChildren";
 import HelperScrollView from "./HelperScrollView";
 import HelperText from "./HelperText";
+import { BORDER_RADIUS } from "@/utils/styleConstants";
 
 interface Props<OptionType> extends HelperProps<ViewStyle>, ViewProps {
     options: OptionType[],
@@ -168,6 +169,7 @@ export default function HelperSelect<OptionType>({
         const optionElements: JSX.Element[] = options
             .map((option, i) => {
                 const disabled = disabledCondition && option !== noSelectionLabel ? disabledCondition(option) : false;
+                const isLastOption = i === options.length - 1;
                 
                 function handleTouchStart(event: GestureResponderEvent): void {
                     setOptionsButtonTouched(true);
@@ -190,6 +192,8 @@ export default function HelperSelect<OptionType>({
                         style={{
                             borderBottomWidth: option === noSelectionLabel ? .5 : 0,
                             borderColor: "gray",
+                            borderBottomStartRadius: isLastOption ? BORDER_RADIUS : undefined,
+                            borderBottomEndRadius: isLastOption ? BORDER_RADIUS : undefined,
                             ...isOptionSelected(option) && !multiselect ? HelperSelectStyles.selectedOptionButton.default : {},
                             ...(optionButtonProps.style ?? {} as object)
                         }} 
@@ -289,6 +293,11 @@ export default function HelperSelect<OptionType>({
 
             <HelperButton 
                 {...selectionButtonProps}
+                style={{
+                    ...selectionButtonProps.style as object,
+                    borderBottomLeftRadius: areOptionsVisible ? 0 : HelperSelectStyles.selectionButton.default.borderBottomLeftRadius,
+                    borderBottomRightRadius: areOptionsVisible ? 0 : HelperSelectStyles.selectionButton.default.borderBottomRightRadius,
+                }}
                 dynamicStyle={combineDynamicStyles(HelperSelectStyles.selectionButton, selectionButtonProps.dynamicStyle)}
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}

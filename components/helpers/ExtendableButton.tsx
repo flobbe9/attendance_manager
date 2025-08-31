@@ -1,13 +1,13 @@
 import { ExtendableButtonStyles } from "@/assets/styles/ExtendableButtonStyles";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useHelperProps } from "@/hooks/useHelperProps";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { TRANSITION_DURATION } from "@/utils/styleConstants";
-import React, { forwardRef, ReactNode, Ref, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { View, ViewStyle } from "react-native";
+import React, { forwardRef, ReactNode, Ref, useContext, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { useWindowDimensions, View, ViewStyle } from "react-native";
+import { GlobalContext } from "../context/GlobalContextProvider";
 import HelperButton, { HelperButtonProps } from "./HelperButton";
-import HelperView from "./HelperView";
 import HelperReactChildren from "./HelperReactChildren";
+import HelperView from "./HelperView";
 
 
 interface Props extends HelperButtonProps {
@@ -37,7 +37,8 @@ export default forwardRef(function ExtendableButton(
     }: Props,
     ref: Ref<View>) {
 
-    const { allStyles } = useResponsiveStyles();
+    const { prs } = useContext(GlobalContext);
+    const { width } = useWindowDimensions();
 
     const componentRef = useRef<View>(null);
     const labelRef = useRef<View>(null);
@@ -61,18 +62,18 @@ export default forwardRef(function ExtendableButton(
     useEffect(() => {
         updateLabelStyle();
 
-    }, [isExtended, allStyles]);
+    }, [isExtended, width]);
 
 
     function getLabelMargin(): ViewStyle {
 
         if (align === "flex-end")
-            return allStyles.me_2;
+            return prs("me_2");
 
         if (align === "flex-start")
-            return allStyles.ms_2;
+            return prs("ms_2");
 
-        return {...allStyles.ms_2, ...allStyles.me_2};
+        return {...prs("ms_2"), ...prs("me_2")};
     }
 
 
