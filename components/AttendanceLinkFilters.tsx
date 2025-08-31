@@ -28,7 +28,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {}
 type FilterValue = "all" | SchoolSubject_Key;
 
 /**
- * @since latest
+ * @since 0.2.5
  */
 export default function AttendanceLinkFilters({ ...props }: Props) {
     const { prs } = useContext(GlobalContext);
@@ -43,7 +43,11 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
     } = useContext(IndexContext);
 
     const componentName = "AttendanceLinkFilters";
-    const { children, ...otherProps } = useHelperProps(props, componentName, AttendanceLinkFiltersStyles.component);
+    const { children, ...otherProps } = useHelperProps(
+        props,
+        componentName,
+        AttendanceLinkFiltersStyles.component
+    );
 
     const filterValueButtonProps: Partial<SegmentedButtonsProps["buttons"]> = [
         {
@@ -66,14 +70,19 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
      * @param classField for comparing `filterValue`
      * @param isFilter whether to add filter wrapper instead of removing it
      */
-    function updateFilterState(filterValue: string | number | null, classField: keyof AttendanceEntity, isFilter: boolean): void {
+    function updateFilterState(
+        filterValue: string | number | null,
+        classField: keyof AttendanceEntity,
+        isFilter: boolean
+    ): void {
         // case: dont filter
         if (filterValue === null) {
             setAttendanceLinkFilterWrappers({});
             return;
         }
 
-        if (isFilter) attendanceLinkFilterWrappers[filterValue] = new AttendanceFilterWrapper(filterValue, classField);
+        if (isFilter)
+            attendanceLinkFilterWrappers[filterValue] = new AttendanceFilterWrapper(filterValue, classField);
         else delete attendanceLinkFilterWrappers[filterValue];
 
         setAttendanceLinkFilterWrappers({
@@ -87,7 +96,9 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
      * @param classField to sort by
      */
     function updateSortState(classField: keyof AttendanceEntity): void {
-        attendanceLinkSortWrappers[classField].sortOrder = getOppositeSortOrder(attendanceLinkSortWrappers[classField].sortOrder);
+        attendanceLinkSortWrappers[classField].sortOrder = getOppositeSortOrder(
+            attendanceLinkSortWrappers[classField].sortOrder
+        );
 
         setAttendanceLinkSortWrappers({
             ...attendanceLinkSortWrappers,
@@ -133,7 +144,7 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
                     style={{
                         width: 240,
                         ...AttendanceLinkFiltersStyles.filterInput,
-                        ...prs("m_1", "m_md_2", "ms_0")
+                        ...prs("m_1", "m_md_2", "ms_0"),
                     }}
                     buttons={[
                         {
@@ -142,7 +153,8 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
                             value: "all",
                             label: "Alle",
                             style: {
-                                backgroundColor: getCurrentFilterValue() === "all" ? "rgb(100, 100, 100)" : undefined,
+                                backgroundColor:
+                                    getCurrentFilterValue() === "all" ? "rgb(100, 100, 100)" : undefined,
                                 ...(filterValueButtonProps[0].style as object),
                             },
                         },
@@ -152,7 +164,10 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
                             value: "history",
                             label: getSchoolSubjectBySchoolSubjectKey("history").charAt(0) + " ", // makes label a bit wider to prevent ellipsis on app start
                             style: {
-                                backgroundColor: getCurrentFilterValue() === "history" ? getSubjectColor("history") : undefined,
+                                backgroundColor:
+                                    getCurrentFilterValue() === "history"
+                                        ? getSubjectColor("history")
+                                        : undefined,
                                 ...(filterValueButtonProps[0].style as object),
                             },
                         },
@@ -162,7 +177,10 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
                             value: "music",
                             label: getSchoolSubjectBySchoolSubjectKey("music").charAt(0) + " ", // makes label a bit wider to prevent ellipsis on app start
                             style: {
-                                backgroundColor: getCurrentFilterValue() === "music" ? getSubjectColor("music") : undefined,
+                                backgroundColor:
+                                    getCurrentFilterValue() === "music"
+                                        ? getSubjectColor("music")
+                                        : undefined,
                                 ...(filterValueButtonProps[0].style as object),
                             },
                         },
@@ -171,19 +189,25 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
                 />
 
                 {/* Sort */}
-                <Flex style={{...prs("m_1", "m_md_2", "ms_0")}}>
+                <Flex style={{ ...prs("m_1", "m_md_2", "ms_0") }}>
                     {/* By date */}
                     <HelperButton
                         dynamicStyle={AttendanceLinkFiltersStyles.sortButton}
-                        style={{...prs("me_1")}}
+                        style={{ ...prs("me_1") }}
                         onPress={() => updateSortState("date")}
                     >
-                        <HelperText style={{...prs("me_1")}}>Termin</HelperText>
+                        <HelperText style={{ ...prs("me_1") }}>Termin</HelperText>
                         <FontAwesome
                             style={{
                                 ...AttendanceLinkFiltersStyles.sortButtonIcon,
-                                paddingBottom: attendanceLinkSortWrappers.date.sortOrder === SortOrder.DESC ? AttendanceLinkFiltersStyles.sortButtonIconOffset : undefined,
-                                paddingTop: attendanceLinkSortWrappers.date.sortOrder === SortOrder.ASC ? AttendanceLinkFiltersStyles.sortButtonIconOffset : undefined,
+                                paddingBottom:
+                                    attendanceLinkSortWrappers.date.sortOrder === SortOrder.DESC
+                                        ? AttendanceLinkFiltersStyles.sortButtonIconOffset
+                                        : undefined,
+                                paddingTop:
+                                    attendanceLinkSortWrappers.date.sortOrder === SortOrder.ASC
+                                        ? AttendanceLinkFiltersStyles.sortButtonIconOffset
+                                        : undefined,
                             }}
                             name={getSortButtonIcon(attendanceLinkSortWrappers.date.sortOrder)}
                         />
@@ -194,25 +218,33 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
                         dynamicStyle={AttendanceLinkFiltersStyles.sortButton}
                         onPress={() => updateSortState("schoolSubject")}
                     >
-                        <HelperText style={{...prs("me_1")}}>Fach</HelperText>
+                        <HelperText style={{ ...prs("me_1") }}>Fach</HelperText>
                         <FontAwesome
                             style={{
                                 ...AttendanceLinkFiltersStyles.sortButtonIcon,
-                                paddingBottom: attendanceLinkSortWrappers.schoolSubject.sortOrder === SortOrder.DESC ? AttendanceLinkFiltersStyles.sortButtonIconOffset : undefined,
-                                paddingTop: attendanceLinkSortWrappers.schoolSubject.sortOrder === SortOrder.ASC ? AttendanceLinkFiltersStyles.sortButtonIconOffset : undefined,
+                                paddingBottom:
+                                    attendanceLinkSortWrappers.schoolSubject.sortOrder === SortOrder.DESC
+                                        ? AttendanceLinkFiltersStyles.sortButtonIconOffset
+                                        : undefined,
+                                paddingTop:
+                                    attendanceLinkSortWrappers.schoolSubject.sortOrder === SortOrder.ASC
+                                        ? AttendanceLinkFiltersStyles.sortButtonIconOffset
+                                        : undefined,
                             }}
                             name={getSortButtonIcon(attendanceLinkSortWrappers.schoolSubject.sortOrder)}
                         />
                     </HelperButton>
                 </Flex>
 
-                <Flex style={{...prs("m_1", "m_md_2", "ms_0")}}>
+                <Flex style={{ ...prs("m_1", "m_md_2", "ms_0") }}>
                     <HelperCheckbox
                         iconStyle={AttendanceLinkFiltersStyles.futureCheckboxContent}
                         checked={isRenderAttendanceLinksSections}
                         setChecked={setRenderAttendanceLinkSections}
                     >
-                        <HelperText style={AttendanceLinkFiltersStyles.futureCheckboxContent}>Kategorisiert</HelperText>
+                        <HelperText style={AttendanceLinkFiltersStyles.futureCheckboxContent}>
+                            Kategorisiert
+                        </HelperText>
                     </HelperCheckbox>
                 </Flex>
             </Flex>

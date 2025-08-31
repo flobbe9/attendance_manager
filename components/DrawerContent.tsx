@@ -16,19 +16,27 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {}
 /**
  * The content of the navigation drawer.
  *
- * @since latest
+ * @since 0.2.5
  */
 export default function DrawerContent({ ...props }: Props) {
     const componentName = "DrawerContent";
     const { children, ...otherProps } = useHelperProps(props, componentName, DrawerContentStyles.component);
     const { navigate } = useRouter();
 
-    function DrawerLinkButton({ href, iconName, label }: { href: Href; iconName: FontAweSomeIconname; label: string }) {
+    function DrawerLinkButton({
+        href,
+        iconName,
+        label,
+    }: {
+        href: Href;
+        iconName: FontAweSomeIconname;
+        label: string;
+    }) {
         return (
-            <HelperButton 
-                dynamicStyle={DrawerContentStyles.linkButton}  
-                ripple={{rippleBackground: LIGHT_COLOR}} 
-                onPress={() => navigate(href as any)} 
+            <HelperButton
+                dynamicStyle={DrawerContentStyles.linkButton}
+                ripple={{ rippleBackground: LIGHT_COLOR }}
+                onPress={() => navigate(href as any)}
             >
                 <FontAwesome
                     name={iconName}

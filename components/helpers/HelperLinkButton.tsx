@@ -10,7 +10,7 @@ interface Props extends HelperButtonProps {
 /**
  * `<HelperButton>` with a navigation call `onPress`.
  *
- * @since latest
+ * @since 0.2.5
  */
 export function HelperLinkButton({ href, onPress, ...props }: Props) {
     const { navigate } = useRouter();

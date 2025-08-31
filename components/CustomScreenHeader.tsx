@@ -17,7 +17,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
 /**
  * Customized screen header. By default devided into left, center right.
  *
- * @since latest
+ * @since 0.2.5
  */
 export default function CustomScreenHeader({ leftContent, centerContent, rightContent, ...props }: Props) {
     const { prs } = useContext(GlobalContext);

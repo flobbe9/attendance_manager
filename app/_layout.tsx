@@ -17,7 +17,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
  * Initialize global stuff in here.
  *
  * @since 0.0.1
- * @edited latest make this a drawer nav
+ * @edited 0.2.5 make this a drawer nav
  */
 export default function layout() {
     const colorScheme = useColorScheme();
