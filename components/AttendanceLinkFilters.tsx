@@ -20,6 +20,8 @@ import HelperText from "./helpers/HelperText";
 import { AssetContext } from "./context/AssetProvider";
 import HelperView from "./helpers/HelperView";
 import HelperCheckbox from "./helpers/HelperCheckbox";
+import { LIGHT_COLOR } from "@/utils/styleConstants";
+import { GlobalContext } from "./context/GlobalContextProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -29,6 +31,7 @@ type FilterValue = "all" | SchoolSubject_Key;
  * @since latest
  */
 export default function AttendanceLinkFilters({ ...props }: Props) {
+    const { prs } = useContext(GlobalContext);
     const { defaultFontStyles } = useContext(AssetContext);
     const {
         attendanceLinkFilterWrappers,
@@ -116,11 +119,9 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
 
     return (
         <HelperView {...otherProps}>
-            {/* Row */}
             <Flex
                 alignItems="center"
                 justifyContent="space-between"
-                flexWrap="nowrap"
                 style={{
                     ...HS.fullWidth,
                 }}
@@ -130,8 +131,9 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
                     value={getCurrentFilterValue()}
                     density="small"
                     style={{
-                        width: 250,
+                        width: 240,
                         ...AttendanceLinkFiltersStyles.filterInput,
+                        ...prs("m_1", "m_md_2", "ms_0")
                     }}
                     buttons={[
                         {
@@ -169,29 +171,50 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
                 />
 
                 {/* Sort */}
-                <Flex justifyContent="flex-end">
+                <Flex style={{...prs("m_1", "m_md_2", "ms_0")}}>
                     {/* By date */}
-                    <HelperButton disableFlex dynamicStyle={IndexStyles.sortButton} onPress={() => updateSortState("date")}>
-                        <HelperText>Termin</HelperText>
-                        <FontAwesome style={IndexStyles.sortButtonIcon} name={getSortButtonIcon(attendanceLinkSortWrappers.date.sortOrder)} />
+                    <HelperButton
+                        dynamicStyle={AttendanceLinkFiltersStyles.sortButton}
+                        style={{...prs("me_1")}}
+                        onPress={() => updateSortState("date")}
+                    >
+                        <HelperText style={{...prs("me_1")}}>Termin</HelperText>
+                        <FontAwesome
+                            style={{
+                                ...AttendanceLinkFiltersStyles.sortButtonIcon,
+                                paddingBottom: attendanceLinkSortWrappers.date.sortOrder === SortOrder.DESC ? AttendanceLinkFiltersStyles.sortButtonIconOffset : undefined,
+                                paddingTop: attendanceLinkSortWrappers.date.sortOrder === SortOrder.ASC ? AttendanceLinkFiltersStyles.sortButtonIconOffset : undefined,
+                            }}
+                            name={getSortButtonIcon(attendanceLinkSortWrappers.date.sortOrder)}
+                        />
                     </HelperButton>
 
                     {/* By subject */}
-                    <HelperButton disableFlex dynamicStyle={IndexStyles.sortButton} onPress={() => updateSortState("schoolSubject")}>
-                        <HelperText>Fach</HelperText>
+                    <HelperButton
+                        dynamicStyle={AttendanceLinkFiltersStyles.sortButton}
+                        onPress={() => updateSortState("schoolSubject")}
+                    >
+                        <HelperText style={{...prs("me_1")}}>Fach</HelperText>
                         <FontAwesome
-                            style={IndexStyles.sortButtonIcon}
+                            style={{
+                                ...AttendanceLinkFiltersStyles.sortButtonIcon,
+                                paddingBottom: attendanceLinkSortWrappers.schoolSubject.sortOrder === SortOrder.DESC ? AttendanceLinkFiltersStyles.sortButtonIconOffset : undefined,
+                                paddingTop: attendanceLinkSortWrappers.schoolSubject.sortOrder === SortOrder.ASC ? AttendanceLinkFiltersStyles.sortButtonIconOffset : undefined,
+                            }}
                             name={getSortButtonIcon(attendanceLinkSortWrappers.schoolSubject.sortOrder)}
                         />
                     </HelperButton>
                 </Flex>
-            </Flex>
 
-            {/* Row */}
-            <Flex>
-                <HelperCheckbox iconStyle={AttendanceLinkFiltersStyles.futureCheckboxContent} checked={isRenderAttendanceLinksSections} setChecked={setRenderAttendanceLinkSections}>
-                    <HelperText style={AttendanceLinkFiltersStyles.futureCheckboxContent}>Planansicht</HelperText>
-                </HelperCheckbox>
+                <Flex style={{...prs("m_1", "m_md_2", "ms_0")}}>
+                    <HelperCheckbox
+                        iconStyle={AttendanceLinkFiltersStyles.futureCheckboxContent}
+                        checked={isRenderAttendanceLinksSections}
+                        setChecked={setRenderAttendanceLinkSections}
+                    >
+                        <HelperText style={AttendanceLinkFiltersStyles.futureCheckboxContent}>Kategorisiert</HelperText>
+                    </HelperCheckbox>
+                </Flex>
             </Flex>
 
             {children}

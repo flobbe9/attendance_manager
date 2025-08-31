@@ -1,14 +1,20 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { FONT_SIZE } from "@/utils/styleConstants";
+import { FONT_SIZE, LIGHT_COLOR } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
+import HelperStyles from "./helperStyles";
 
 const borderRadius = 20;
 
 export class AttendanceLinkFiltersStyles {
     static component: DynamicStyle<ViewStyle> = {
         default: {
+            ...HelperStyles.fullWidth
         },
     };
+
+    static column: ViewStyle = {
+        margin: 5
+    }
     
     static filterInput: ViewStyle = {
         backgroundColor: "rgb(230, 230, 230)",
@@ -26,5 +32,20 @@ export class AttendanceLinkFiltersStyles {
 
     static futureCheckboxContent: TextStyle = {
         fontSize: FONT_SIZE
+    }
+
+    
+    static sortButton: DynamicStyle<ViewStyle> = {
+        default: {
+            backgroundColor: LIGHT_COLOR,
+            borderRadius: 20, 
+            borderWidth: 1, 
+            paddingVertical: 2,
+        }
+    }
+
+    static sortButtonIconOffset = 7;
+    static sortButtonIcon: TextStyle = {
+        fontSize: FONT_SIZE,
     }
 }

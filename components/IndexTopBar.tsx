@@ -80,7 +80,7 @@ export default function IndexTopBar({ ...props }: Props) {
                 <ExaminantCount numExaminants={numEducators} maxExamiants={8} color={"black"} />
             </Flex>
 
-            <AttendanceLinkFilters style={{ ...prs("py_3") }} />
+            <AttendanceLinkFilters style={{ ...prs("py_3", "py_md_1") }} />
         </Flex>
     );
 }

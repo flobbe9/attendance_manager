@@ -13,7 +13,7 @@ import { formatDateGermanNoTime } from "@/utils/projectUtils";
 import { FONT_SIZE } from "@/utils/styleConstants";
 import { isBlank } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import React, { JSX, useContext, useState } from "react";
 import { ColorValue, ViewProps, ViewStyle } from "react-native";
 import HelperStyles from "./../assets/styles/helperStyles";
@@ -21,6 +21,8 @@ import { GlobalContext } from "./context/GlobalContextProvider";
 import B from "./helpers/B";
 import Flex from "./helpers/Flex";
 import HelperText from "./helpers/HelperText";
+import HelperButton from "./helpers/HelperButton";
+import { HelperLinkButton } from "./helpers/HelperLinkButton";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
     attendanceEntity: AttendanceEntity;
@@ -31,6 +33,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function AttendanceLink({ attendanceEntity, ...props }: Props) {
     const { date, schoolSubject, examinants, musicLessonTopic, schoolYear } = attendanceEntity;
+    const { navigate } = useRouter();
 
     const attendanceService = new AttendanceService();
 
@@ -81,85 +84,82 @@ export default function AttendanceLink({ attendanceEntity, ...props }: Props) {
     }
 
     return (
-        <HelperView
+        <HelperLinkButton
             style={{
                 backgroundColor: getBackgroundColor(),
                 ...(style as object),
             }}
+            href={"/(indexStack)/(attendance)"}
             {...otherProps}
         >
-            <Link href="/(indexStack)/(attendance)">
-                <HelperView>
-                    {/* Top row */}
-                    <Flex style={{ ...HelperStyles.fullWidth, ...prs("mb_2") }} flexDirection="column" justifyContent="space-between">
-                        {/* Subject */}
-                        <B ellipsis dynamicStyle={AttendanceLinkStyles.heading}>{getSchoolSubjectBySchoolSubjectKey(schoolSubject)}</B>
+            {/* Top row */}
+            <Flex style={{ ...HelperStyles.fullWidth, ...prs("mb_2") }} flexDirection="column" justifyContent="space-between">
+                {/* Subject */}
+                <B ellipsis dynamicStyle={AttendanceLinkStyles.heading}>{getSchoolSubjectBySchoolSubjectKey(schoolSubject)}</B>
 
-                        {/* Topic */}
-                        <HelperText
-                            style={{
-                                color: !isBlank(musicLessonTopic) ? undefined : errorColor,
-                                fontStyle: !isBlank(musicLessonTopic) ? undefined : "italic",
-                                ...AttendanceLinkStyles.topic,
-                            }}
-                            ellipsis
-                            rendered={schoolSubject !== "history"}
-                        >
-                            {getTopic()}
-                        </HelperText>
-                    </Flex>
+                {/* Topic */}
+                <HelperText
+                    style={{
+                        color: !isBlank(musicLessonTopic) ? undefined : errorColor,
+                        fontStyle: !isBlank(musicLessonTopic) ? undefined : "italic",
+                        ...AttendanceLinkStyles.topic,
+                    }}
+                    ellipsis
+                    rendered={schoolSubject !== "history"}
+                >
+                    {getTopic()}
+                </HelperText>
+            </Flex>
 
-                    {/* Bottom row */}
-                    <Flex
-                        justifyContent="space-between"
-                        alignItems="flex-end"
+            {/* Bottom row */}
+            <Flex
+                justifyContent="space-between"
+                alignItems="flex-end"
+                style={{
+                    ...HelperStyles.fullWidth,
+                }}
+            >
+                {/* Date */}
+                <HelperText
+                    dynamicStyle={AttendanceLinkStyles.bottomRowElement}
+                    style={{
+                        fontStyle: date ? undefined : "italic",
+                        ...prs("col_4"),
+                    }}
+                >
+                    {getDate()}
+                </HelperText>
+
+                {/* SchoolYear */}
+                <Flex justifyContent="center" style={{ ...prs("col_4") }}>
+                    <HelperText
+                        dynamicStyle={AttendanceLinkStyles.bottomRowElement}
                         style={{
-                            ...HelperStyles.fullWidth,
+                            fontStyle: schoolYear ? undefined : "italic",
+                            fontWeight: schoolYear ? "bold" : undefined,
                         }}
                     >
-                        {/* Date */}
-                        <HelperText
-                            dynamicStyle={AttendanceLinkStyles.bottomRowElement}
-                            style={{
-                                fontStyle: date ? undefined : "italic",
-                                ...prs("col_4"),
-                            }}
-                        >
-                            {getDate()}
-                        </HelperText>
+                        {schoolYear || "Jahrgang"}
+                    </HelperText>
+                </Flex>
 
-                        {/* SchoolYear */}
-                        <Flex justifyContent="center" style={{ ...prs("col_4") }}>
-                            <HelperText
-                                dynamicStyle={AttendanceLinkStyles.bottomRowElement}
-                                style={{
-                                    fontStyle: schoolYear ? undefined : "italic",
-                                    fontWeight: schoolYear ? "bold" : undefined,
-                                }}
-                            >
-                                {schoolYear || "Jahrgang"}
-                            </HelperText>
-                        </Flex>
+                {/* Examinants */}
+                <Flex justifyContent="flex-end" style={{ ...prs("col_4") }}>
+                    {/* NOTE: dont use a state or this wont update correctly */}
+                    {mapExaminantIcons()}
 
-                        {/* Examinants */}
-                        <Flex justifyContent="flex-end" style={{ ...prs("col_4") }}>
-                            {/* NOTE: dont use a state or this wont update correctly */}
-                            {mapExaminantIcons()}
+                    {/* Invalid */}
+                    {!examinants?.length && (
+                        <FontAwesome 
+                            name="user-o" 
+                            size={FONT_SIZE - 2} 
+                            style={{ ...AttendanceLinkStyles.bottomRowElement.default }} 
+                        />
+                    )}
+                </Flex>
+            </Flex>
 
-                            {/* Invalid */}
-                            {!examinants?.length && (
-                                <FontAwesome 
-                                    name="user-o" 
-                                    size={FONT_SIZE - 2} 
-                                    style={{ ...AttendanceLinkStyles.bottomRowElement.default }} 
-                                />
-                            )}
-                        </Flex>
-                    </Flex>
-
-                    {children}
-                </HelperView>
-            </Link>
-        </HelperView>
+            {children}
+        </HelperLinkButton>
     );
 }

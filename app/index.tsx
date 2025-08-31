@@ -1,4 +1,4 @@
-import { FilterWrapper } from "@/abstract/FilterWrapper";
+import HelperStyles from "@/assets/styles/helperStyles";
 import { IndexStyles } from "@/assets/styles/IndexStyles";
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { AttendanceService } from "@/backend/services/AttendanceService";
@@ -23,16 +23,13 @@ import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import { Divider } from "react-native-paper";
 
 interface SectionedAttendanceLinksConditions {
-    isGub: boolean, 
-    dateMode?: "future" | "pastPresent" | "all"
+    isGub: boolean;
+    dateMode?: "future" | "pastPresent" | "all";
 }
 
 /**
  * @since 0.0.1
  */
-// TODO: continue here
-    // clean up sections if gubs stay in normal gub view
-    // redesign sort buttons
 export default function index() {
     const { prs } = useContext(GlobalContext);
     const { attendanceLinkFilterWrappers, attendanceLinkSortWrappers, isRenderAttendanceLinksSections } = useContext(IndexContext);
@@ -57,13 +54,15 @@ export default function index() {
     }, [isScreenInView]); // triggered on focus and blur of /app/index view
 
     useEffect(() => {
-        if (!isRenderAttendanceLinksSections)
-            setAttendanceLinksAll(mapAttendanceLinks(filterAttendanceLinksGeneral(savedAttendanceEntities)));
-        
+        if (!isRenderAttendanceLinksSections) setAttendanceLinksAll(mapAttendanceLinks(filterAttendanceLinksGeneral(savedAttendanceEntities)));
         else {
-            setAttendanceLinksPastPresent(mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, {isGub: false, dateMode: "pastPresent"})));
-            setAttendanceLinksFuture(mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, {isGub: false, dateMode: "future"})));
-            setAttendanceLinksGub(mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, {isGub: true, dateMode: "all"})));
+            setAttendanceLinksPastPresent(
+                mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: false, dateMode: "pastPresent" }))
+            );
+            setAttendanceLinksFuture(
+                mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: false, dateMode: "future" }))
+            );
+            setAttendanceLinksGub(mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: true, dateMode: "all" })));
         }
     }, [savedAttendanceEntities, attendanceLinkFilterWrappers, attendanceLinkSortWrappers, isRenderAttendanceLinksSections]);
 
@@ -74,30 +73,34 @@ export default function index() {
     }
 
     /**
-     * 
+     *
      * @param attendanceEntities to filter (not modified)
      * @param sectionConditions the filter conditions
      * @returns filtered `attendanceEntities` or empty array
      */
-    function filterAttendanceLinksSectioned(attendanceEntities: AttendanceEntity[], sectionConditions: SectionedAttendanceLinksConditions): AttendanceEntity[] {
+    function filterAttendanceLinksSectioned(
+        attendanceEntities: AttendanceEntity[],
+        sectionConditions: SectionedAttendanceLinksConditions
+    ): AttendanceEntity[] {
         if (!attendanceEntities) return [];
 
         let filteredAttendanceLinks = [...attendanceEntities];
-        
+
         // gub
-        filteredAttendanceLinks = filteredAttendanceLinks
-            .filter((attendanceEntity) => {
-                const isGub = attendanceService.isGub(attendanceEntity);
-                return (!isGub && !sectionConditions.isGub) || (isGub && sectionConditions.isGub);
-            });
+        filteredAttendanceLinks = filteredAttendanceLinks.filter((attendanceEntity) => {
+            const isGub = attendanceService.isGub(attendanceEntity);
+            return (!isGub && !sectionConditions.isGub) || (isGub && sectionConditions.isGub);
+        });
 
         // date
         if (sectionConditions.dateMode !== "all")
-            filteredAttendanceLinks = filteredAttendanceLinks
-                .filter((attendanceEntity) => {
-                    const attendanceIsFuture = isFutureAttendance(attendanceEntity);
-                    return (attendanceIsFuture && sectionConditions.dateMode === "future") || (!attendanceIsFuture && sectionConditions.dateMode === "pastPresent");
-                });
+            filteredAttendanceLinks = filteredAttendanceLinks.filter((attendanceEntity) => {
+                const attendanceIsFuture = isFutureAttendance(attendanceEntity);
+                return (
+                    (attendanceIsFuture && sectionConditions.dateMode === "future") ||
+                    (!attendanceIsFuture && sectionConditions.dateMode === "pastPresent")
+                );
+            });
 
         filteredAttendanceLinks = filterAttendanceLinksGeneral(filteredAttendanceLinks);
 
@@ -134,10 +137,9 @@ export default function index() {
     }
 
     function mapAttendanceLinks(attendanceEntities: AttendanceEntity[]): JSX.Element[] {
-        if (!attendanceEntities)
-            return [];
+        if (!attendanceEntities) return [];
 
-        return attendanceEntities.map(mapAttendanceLink); 
+        return attendanceEntities.map(mapAttendanceLink);
     }
 
     function mapAttendanceLink(attendanceEntity: AttendanceEntity, key: number | string): JSX.Element {
@@ -167,12 +169,12 @@ export default function index() {
         return !attendanceEntity.date || isDateAfter(attendanceEntity.date, new Date());
     }
 
-    function AttendanceLinkDevider({rendered = true}) {
+    function AttendanceLinkDevider({ rendered = true }) {
         return (
             <HelperView rendered={rendered}>
                 <Divider style={IndexStyles.attendanceLinkDevider} />
             </HelperView>
-        )
+        );
     }
 
     return (
@@ -186,37 +188,45 @@ export default function index() {
                     style={{ ...prs("mt_1") }}
                     childrenContainerStyle={{ ...prs("pb_6") }}
                     rendered={!!attendanceLinksPastPresent.length || !!attendanceLinksFuture.length || !!attendanceLinksGub.length}
+                    stickyHeaderIndices={isRenderAttendanceLinksSections ? [0, 2, 4] : []}
                     onScroll={handleScroll}
                 >
-                    {/* Sectioned */}
-                    <HelperView rendered={isRenderAttendanceLinksSections}>
-                        {/* Future section */}
-                        <HelperView rendered={!!attendanceLinksFuture.length}>
-                            <B dynamicStyle={IndexStyles.attendanceLinkLabel}>Noch offen</B>
-                            {attendanceLinksFuture}
+                    {/* Future section */}
+                    <B
+                        dynamicStyle={IndexStyles.attendanceLinkLabel}
+                        rendered={isRenderAttendanceLinksSections && !!attendanceLinksFuture.length}
+                    >
+                        Noch offen
+                    </B>
+                    <HelperView rendered={isRenderAttendanceLinksSections && !!attendanceLinksFuture.length}>
+                        {attendanceLinksFuture}
 
-                            <AttendanceLinkDevider rendered={!!attendanceLinksGub.length || !!attendanceLinksPastPresent.length} />
-                        </HelperView>
-
-                        {/* Gub section */}
-                        <HelperView rendered={!!attendanceLinksGub.length}>
-                            <B dynamicStyle={IndexStyles.attendanceLinkLabel}>GUBs</B>
-                            {attendanceLinksGub}
-
-                            <AttendanceLinkDevider rendered={!!attendanceLinksPastPresent.length} />
-                        </HelperView>
-
-                        {/* Past / Present section */}
-                        <HelperView rendered={!!attendanceLinksPastPresent.length}>
-                            <B dynamicStyle={IndexStyles.attendanceLinkLabel}>Erledigt</B>
-                            {attendanceLinksPastPresent}
-                        </HelperView>
+                        <AttendanceLinkDevider rendered={!!attendanceLinksGub.length || !!attendanceLinksPastPresent.length} />
                     </HelperView>
 
-                    {/* All */}
-                    <HelperView rendered={!isRenderAttendanceLinksSections}>
-                        {attendanceLinksAll}
+                    {/* Gub section */}
+                    <B dynamicStyle={IndexStyles.attendanceLinkLabel} rendered={isRenderAttendanceLinksSections && !!attendanceLinksGub.length}>
+                        GUBs
+                    </B>
+                    <HelperView rendered={isRenderAttendanceLinksSections && !!attendanceLinksGub.length}>
+                        {attendanceLinksGub}
+
+                        <AttendanceLinkDevider rendered={!!attendanceLinksPastPresent.length} />
                     </HelperView>
+
+                    {/* Past / Present section */}
+                    <B
+                        dynamicStyle={IndexStyles.attendanceLinkLabel}
+                        rendered={isRenderAttendanceLinksSections && !!attendanceLinksPastPresent.length}
+                    >
+                        Erledigt
+                    </B>
+                    <HelperView rendered={isRenderAttendanceLinksSections && !!attendanceLinksPastPresent.length}>
+                        {attendanceLinksPastPresent}
+                    </HelperView>
+
+                    {/* All (no section) */}
+                    <HelperView rendered={!isRenderAttendanceLinksSections}>{attendanceLinksAll}</HelperView>
                 </HelperScrollView>
 
                 {/* Empty message */}

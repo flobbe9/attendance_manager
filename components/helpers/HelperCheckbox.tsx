@@ -70,7 +70,7 @@ export default forwardRef(function HelperCheckbox(
 
             <HelperView
                 style={{ 
-                    width: (iconStyle.fontSize ?? defaultFontSize) + 10, // make sure that checked icon has enough space
+                    width: (iconStyle.fontSize ?? defaultFontSize) + 5, // make sure that checked icon has enough space
                 }}
             >
                 <FontAwesome 

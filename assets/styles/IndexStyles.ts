@@ -22,16 +22,6 @@ export class IndexStyles {
             fontSize: FONT_SIZE
         }
     }
-
-    static sortButton: DynamicStyle<ViewStyle> = {
-        default: {
-            backgroundColor: "transparent"
-        }
-    }
-
-    static sortButtonIcon: TextStyle = {
-        fontSize: FONT_SIZE
-    }
     
     static linkContainer: DynamicStyle<ViewStyle> = {
         default: {
@@ -42,6 +32,7 @@ export class IndexStyles {
 
     static attendanceLinkLabel: DynamicStyle<TextStyle> = {
         default: {
+            backgroundColor: IndexStyles.component.default.backgroundColor,
             fontSize: FONT_SIZE,
             marginBottom: 5
         }
