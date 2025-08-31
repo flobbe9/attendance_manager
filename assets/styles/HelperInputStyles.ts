@@ -1,12 +1,12 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { BORDER_RADIUS, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
 
 
 export class HelperInputStyles {
     static component: DynamicStyle<TextStyle> = {
         default: {
-            borderBottomWidth: 1,
+            borderWidth: 0,
             color: "black",
             padding: GLOBAL_SCREEN_PADDING,
         }
@@ -16,9 +16,10 @@ export class HelperInputStyles {
     static view: DynamicStyle<ViewStyle> = {
         default: {
             backgroundColor: "rgb(255, 255, 255)",
+            borderRadius: BORDER_RADIUS,
         },
         focus: {
-            backgroundColor: "rgb(220, 220, 220)",
+            backgroundColor: "rgb(150, 150, 150)",
         },
         animatedDynamicStyles: {
             backgroundColor: (animatedValue) => ({
@@ -27,7 +28,7 @@ export class HelperInputStyles {
                 inputRange: [0, 255],
                 event: "focus",
                 duration: 100
-            })
+            }),
         }
     }
 }

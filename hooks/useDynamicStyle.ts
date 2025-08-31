@@ -1,6 +1,6 @@
 import { AnimatedDynamicStyle } from "@/abstract/AnimatedDynamicStyle";
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { logDebug, logWarn } from "@/utils/logUtils";
+import { logWarn } from "@/utils/logUtils";
 import { TRANSITION_DURATION } from "@/utils/styleConstants";
 import { cloneObj, flatMapObject, isFalsy } from "@/utils/utils";
 import { useEffect, useState } from "react";
@@ -33,7 +33,7 @@ export function useDynamicStyle<StyleType>(
     const [currentStylesInitialized, setCurrentStylesInitialized] = useState(false);
     const [currentStyles, setCurrentStyles] = useState<DynamicStyle<StyleType>>(initAnimatedStyles());
     const [currentStylesFlat, setCurrentStylesFlat] = useState<StyleType>(initStyles.default);
-    
+
     useEffect(() => {
         setCurrentStylesFlat(flatMapObject(currentStyles) as StyleType);
     }, [currentStyles]);
@@ -92,53 +92,53 @@ export function useDynamicStyle<StyleType>(
     }
 
     function onFocus(): void {
+        addStyles("focus");
         startAnimations("focus");
-        startAnimations("blur", true);
 
         removeStyles("blur");
-        addStyles("focus");
+        startAnimations("blur", true);
     }
 
     function onBlur(): void {
-        startAnimations("blur");
-        startAnimations("focus", true);
-
-        removeStyles("focus");
         addStyles("blur");
+        startAnimations("blur");
+    
+        removeStyles("focus");
+        startAnimations("focus", true);
     }
 
     function onTouchStart(): void {
-        startAnimations("touchStart");
-
         addStyles("touchStart");
+        
+        startAnimations("touchStart");
     }
 
     function onTouchEnd(): void {
-        startAnimations("touchEnd");
-
         addStyles("touchEnd");
+        
+        startAnimations("touchEnd");
     }
         
     /**
      * NOTE: triggered only when onPress event is present
      */
     function onPressIn(): void {
-        startAnimations("pressIn");
-        startAnimations("pressOut", true);
-
         removeStyles("pressOut");
         addStyles("pressIn");
+        
+        startAnimations("pressIn");
+        startAnimations("pressOut", true);
     }
 
     /**
      * NOTE: triggered only when onPress event is present
      */
     function onPressOut(): void {
-        startAnimations("pressOut");
-        startAnimations("pressIn", true);
-
         removeStyles("pressIn");
         addStyles("pressOut");
+        
+        startAnimations("pressOut");
+        startAnimations("pressIn", true);
     }
 
     function addStyles(key: keyof DynamicStyle<StyleType>): void {

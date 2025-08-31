@@ -6,7 +6,6 @@ import HelperView from "@/components/helpers/HelperView";
 import { useAnimatedStyle } from "@/hooks/useAnimatedStyle";
 import { useDefaultProps } from "@/hooks/useDefaultProps";
 import { useDeviceOrientation } from "@/hooks/useDeviceOrientation";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import React, { forwardRef, ReactNode, Ref, useContext, useEffect, useState } from "react";
 import { GestureResponderEvent, Image, View, ViewProps, ViewStyle } from "react-native";
 import favicon from "../assets/images/favicon-small-transparent.png";
@@ -36,7 +35,7 @@ interface Props extends HelperProps<ViewStyle>, ViewProps, PopupProps {}
 export default forwardRef(function Popup({ icon, visible, message, containerStyle = {}, onTouchStart, ...props }: Props, ref: Ref<View>) {
     const orientation = useDeviceOrientation();
 
-    const { hideGlobalPopup, globalPopupProps } = useContext(GlobalContext);
+    const { hideGlobalPopup, globalPopupProps, prs } = useContext(GlobalContext);
 
     // make sure hidden popup does not overlay anything
     const [componentZIndex, setComponentZIndex] = useState(-1);
@@ -48,8 +47,6 @@ export default forwardRef(function Popup({ icon, visible, message, containerStyl
         reverse: !visible,
         animationDeps: null,
     });
-
-    const { prs } = useResponsiveStyles();
 
     useEffect(() => {
         handleFadeToggle();

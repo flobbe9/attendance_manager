@@ -23,7 +23,7 @@ export default function HeaderBackButton({ ...props }: Props) {
 
     return (
         <HelperButton dynamicStyle={HelperButtonStyles.minimalistic} onPress={() => navigation.goBack()} {...otherProps}>
-            <FontAwesome name="arrow-left" style={{ ...LayoutStyles.headerIcon }} />
+            <FontAwesome name="arrow-left" style={{ ...LayoutStyles.headerContent }} />
         </HelperButton>
     );
 }

@@ -23,10 +23,38 @@ export const schoolSubjectValuesObj = { Geschichte: 0, Musik: 1 };
 export type SchoolSubject = keyof typeof schoolSubjectValuesObj;
 export const SCHOOL_SUBJECTS: SchoolSubject[] = Object.keys(schoolSubjectValuesObj) as SchoolSubject[];
 
-export function getSchoolSubjectBySchoolSubjectKey(key: SchoolSubject_Key): SchoolSubject {
-    return SCHOOL_SUBJECTS[SCHOOL_SUBJECT_KEYS.indexOf(key)];
+/**
+ * @param schoolSubjectKey 
+ * @returns the related `SchoolSubject` or `schoolSubjectKey` itself. `null` if is neither `SchoolSubject` nor `SchoolSubject_Key`
+ */
+export function getSchoolSubjectBySchoolSubjectKey(schoolSubjectKey: string): SchoolSubject {
+    if (isSchoolSubjectKey(schoolSubjectKey))
+        return SCHOOL_SUBJECTS[SCHOOL_SUBJECT_KEYS.indexOf(schoolSubjectKey)];
+
+    if (isSchoolSubject(schoolSubjectKey))
+        return schoolSubjectKey;
+
+    return null;
 }
 
-export function getSchoolSubjectKeyBySchoolSubject(schoolSubject: SchoolSubject): SchoolSubject_Key {
-    return SCHOOL_SUBJECT_KEYS[SCHOOL_SUBJECTS.indexOf(schoolSubject)];
+/**
+ * @param schoolSubject
+ * @returns the related `SchoolSubject_Key` or `schoolSubject` itself. `null` if is neither `SchoolSubject` nor `SchoolSubject_Key`
+ */
+export function getSchoolSubjectKeyBySchoolSubject(schoolSubject: string): SchoolSubject_Key {
+    if (isSchoolSubject(schoolSubject))
+        return SCHOOL_SUBJECT_KEYS[SCHOOL_SUBJECTS.indexOf(schoolSubject)];
+
+    if (isSchoolSubjectKey(schoolSubject))
+        return schoolSubject;
+
+    return null;
+}
+
+function isSchoolSubject(schoolSubject: string): schoolSubject is SchoolSubject {
+    return SCHOOL_SUBJECTS.includes(schoolSubject as SchoolSubject);
+}
+
+function isSchoolSubjectKey(schoolSubjectKey: string): schoolSubjectKey is SchoolSubject_Key {
+    return SCHOOL_SUBJECT_KEYS.includes(schoolSubjectKey as SchoolSubject_Key);
 }

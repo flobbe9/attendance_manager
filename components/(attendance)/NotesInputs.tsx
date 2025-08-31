@@ -24,7 +24,7 @@ export default function NotesInputs({ ...props }: Props) {
 
     return (
         <HelperView {...otherProps}>
-            <HelperText dynamicStyle={AttendanceIndexStyles.heading}>Notitzen</HelperText>
+            <HelperText dynamicStyle={AttendanceIndexStyles.heading}>Notizen</HelperText>
 
             {/* Note */}
             <HelperView dynamicStyle={AttendanceIndexStyles.inputContainer}>

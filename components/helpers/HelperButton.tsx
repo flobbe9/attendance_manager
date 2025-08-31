@@ -96,6 +96,7 @@ export default forwardRef(function HelperButton(
             style={{
                 // prevent corner leaks of ripple effect
                 borderRadius: (style as ViewStyle).borderRadius, 
+                width: (style as ViewStyle).width,
                 overflow: "hidden",
                 ...HS.fitContent,
                 ...containerStyles,

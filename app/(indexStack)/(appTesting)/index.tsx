@@ -1,5 +1,6 @@
 import { AppTestingIndexStyles } from "@/assets/styles/AppTestingIndexStyles";
 import { SettingsStyles } from "@/assets/styles/SettingsStyles";
+import { GlobalContext } from "@/components/context/GlobalContextProvider";
 import B from "@/components/helpers/B";
 import HelperButton from "@/components/helpers/HelperButton";
 import HelperText from "@/components/helpers/HelperText";
@@ -7,15 +8,14 @@ import HelperView from "@/components/helpers/HelperView";
 import P from "@/components/helpers/P";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import { useFileLogger } from "@/hooks/useFileLogger";
-import { useResponsiveStyles } from "@/hooks/useResponsiveStyles";
 import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
-import React from "react";
+import React, { useContext } from "react";
 
 export default function index() {
     const { shareLogFiles, isFileLoggerEnabled } = useFileLogger();
 
-    const { prs } = useResponsiveStyles();
+    const { prs } = useContext(GlobalContext);
 
     return (
         <ScreenWrapper style={{padding: GLOBAL_SCREEN_PADDING}}>

@@ -7,11 +7,6 @@ import { BORDER_RADIUS, FONT_SIZE, FONT_SIZE_LARGER, FONT_SIZE_SMALLER, GLOBAL_S
 export class IndexTopBarStyles {
     static component: DynamicStyle<ViewStyle> = {
         default: {
-            position: "absolute", 
-            right: GLOBAL_SCREEN_PADDING,
-            top: GLOBAL_SCREEN_PADDING,
-            zIndex: 1,
-            ...HelperStyles.fullWidth
         }
     }
 
