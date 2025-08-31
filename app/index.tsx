@@ -1,3 +1,4 @@
+import { FilterWrapper } from "@/abstract/FilterWrapper";
 import { IndexStyles } from "@/assets/styles/IndexStyles";
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { AttendanceService } from "@/backend/services/AttendanceService";
@@ -17,22 +18,32 @@ import { assertFalsyAndThrow, cloneObj, isDateAfter } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { JSX, useContext, useEffect, useState } from "react";
+import { Fragment, JSX, useContext, useEffect, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import { Divider } from "react-native-paper";
+
+interface SectionedAttendanceLinksConditions {
+    isGub: boolean, 
+    dateMode?: "future" | "pastPresent" | "all"
+}
 
 /**
  * @since 0.0.1
  */
+// TODO: continue here
+    // clean up sections if gubs stay in normal gub view
+    // redesign sort buttons
 export default function index() {
     const { prs } = useContext(GlobalContext);
-    const { attendanceLinkFilterWrappers, attendanceLinkSortWrappers, isSeparateFutureAttendances } = useContext(IndexContext);
+    const { attendanceLinkFilterWrappers, attendanceLinkSortWrappers, isRenderAttendanceLinksSections } = useContext(IndexContext);
     const { savedAttendanceEntities, setCurrentAttendanceEntityId, updateSavedAttendanceEntities } = useContext(GlobalAttendanceContext);
 
     const { navigate } = useRouter();
 
-    const [attendanceLinksNoGub, setAttendanceLinksNoGub] = useState<JSX.Element[]>([]);
-    const [attendanceLinksNoGubFuture, setAttendanceLinksNoGubFuture] = useState<JSX.Element[]>([]);
+    const [attendanceLinksAll, setAttendanceLinksAll] = useState<JSX.Element[]>([]);
+
+    const [attendanceLinksPastPresent, setAttendanceLinksPastPresent] = useState<JSX.Element[]>([]);
+    const [attendanceLinksFuture, setAttendanceLinksFuture] = useState<JSX.Element[]>([]);
     const [attendanceLinksGub, setAttendanceLinksGub] = useState<JSX.Element[]>([]);
 
     const [isExtended, setIsExtended] = useState(true);
@@ -46,10 +57,15 @@ export default function index() {
     }, [isScreenInView]); // triggered on focus and blur of /app/index view
 
     useEffect(() => {
-        setAttendanceLinksNoGub(mapAttendanceLinksWithoutGub(savedAttendanceEntities));
-        setAttendanceLinksNoGubFuture(mapAttendanceLinksWithoutGub(savedAttendanceEntities, true));
-        setAttendanceLinksGub(mapttendanceLinksWithGub(savedAttendanceEntities));
-    }, [savedAttendanceEntities, attendanceLinkFilterWrappers, attendanceLinkSortWrappers, isSeparateFutureAttendances]);
+        if (!isRenderAttendanceLinksSections)
+            setAttendanceLinksAll(mapAttendanceLinks(filterAttendanceLinksGeneral(savedAttendanceEntities)));
+        
+        else {
+            setAttendanceLinksPastPresent(mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, {isGub: false, dateMode: "pastPresent"})));
+            setAttendanceLinksFuture(mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, {isGub: false, dateMode: "future"})));
+            setAttendanceLinksGub(mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, {isGub: true, dateMode: "all"})));
+        }
+    }, [savedAttendanceEntities, attendanceLinkFilterWrappers, attendanceLinkSortWrappers, isRenderAttendanceLinksSections]);
 
     function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
         const currentScrollPosition = Math.floor(event.nativeEvent?.contentOffset?.y) ?? 0;
@@ -57,27 +73,35 @@ export default function index() {
         setIsExtended(currentScrollPosition <= 0);
     }
 
-    function mapAttendanceLinksWithoutGub(attendanceEntities: AttendanceEntity[], filterByFutureDate = false): JSX.Element[] {
+    /**
+     * 
+     * @param attendanceEntities to filter (not modified)
+     * @param sectionConditions the filter conditions
+     * @returns filtered `attendanceEntities` or empty array
+     */
+    function filterAttendanceLinksSectioned(attendanceEntities: AttendanceEntity[], sectionConditions: SectionedAttendanceLinksConditions): AttendanceEntity[] {
         if (!attendanceEntities) return [];
 
-        let filteredAttendanceLinks = mapAttendanceLinks(attendanceEntities).filter((attendanceEntity) => !attendanceService.isGub(attendanceEntity));
+        let filteredAttendanceLinks = [...attendanceEntities];
+        
+        // gub
+        filteredAttendanceLinks = filteredAttendanceLinks
+            .filter((attendanceEntity) => {
+                const isGub = attendanceService.isGub(attendanceEntity);
+                return (!isGub && !sectionConditions.isGub) || (isGub && sectionConditions.isGub);
+            });
 
-        if (isSeparateFutureAttendances)
-            // show past only if future is checked or with any date if not checked
-            filteredAttendanceLinks = filteredAttendanceLinks.filter(
-                (attendanceEntity) =>
-                    (isFutureAttendance(attendanceEntity) && filterByFutureDate) || (!isFutureAttendance(attendanceEntity) && !filterByFutureDate)
-            );
+        // date
+        if (sectionConditions.dateMode !== "all")
+            filteredAttendanceLinks = filteredAttendanceLinks
+                .filter((attendanceEntity) => {
+                    const attendanceIsFuture = isFutureAttendance(attendanceEntity);
+                    return (attendanceIsFuture && sectionConditions.dateMode === "future") || (!attendanceIsFuture && sectionConditions.dateMode === "pastPresent");
+                });
 
-        return filteredAttendanceLinks.map((attendanceEntity, i) => mapAttendanceLink(attendanceEntity, i));
-    }
+        filteredAttendanceLinks = filterAttendanceLinksGeneral(filteredAttendanceLinks);
 
-    function mapttendanceLinksWithGub(attendanceEntities: AttendanceEntity[]): JSX.Element[] {
-        if (!attendanceEntities) return [];
-
-        return mapAttendanceLinks(attendanceEntities)
-            .filter((attendanceEntity) => attendanceService.isGub(attendanceEntity))
-            .map((attendanceEntity, i) => mapAttendanceLink(attendanceEntity, i));
+        return filteredAttendanceLinks;
     }
 
     /**
@@ -86,7 +110,7 @@ export default function index() {
      * @param attendanceEntities wont modify
      * @returns
      */
-    function mapAttendanceLinks(attendanceEntities: AttendanceEntity[]): AttendanceEntity[] {
+    function filterAttendanceLinksGeneral(attendanceEntities: AttendanceEntity[]): AttendanceEntity[] {
         if (!attendanceEntities) return [];
 
         let attendanceEntitiesCloned = cloneObj(attendanceEntities);
@@ -107,6 +131,13 @@ export default function index() {
         );
 
         return attendanceEntitiesCloned;
+    }
+
+    function mapAttendanceLinks(attendanceEntities: AttendanceEntity[]): JSX.Element[] {
+        if (!attendanceEntities)
+            return [];
+
+        return attendanceEntities.map(mapAttendanceLink); 
     }
 
     function mapAttendanceLink(attendanceEntity: AttendanceEntity, key: number | string): JSX.Element {
@@ -154,29 +185,37 @@ export default function index() {
                     dynamicStyle={IndexStyles.linkContainer}
                     style={{ ...prs("mt_1") }}
                     childrenContainerStyle={{ ...prs("pb_6") }}
-                    rendered={!!attendanceLinksNoGub.length || !!attendanceLinksNoGubFuture.length || !!attendanceLinksGub.length}
+                    rendered={!!attendanceLinksPastPresent.length || !!attendanceLinksFuture.length || !!attendanceLinksGub.length}
                     onScroll={handleScroll}
                 >
-                    {/* Ubs future */}
-                    <HelperView rendered={isSeparateFutureAttendances && !!attendanceLinksNoGubFuture.length}>
-                        <B dynamicStyle={IndexStyles.attendanceLinkLabel}>Noch offen</B>
-                        {attendanceLinksNoGubFuture}
+                    {/* Sectioned */}
+                    <HelperView rendered={isRenderAttendanceLinksSections}>
+                        {/* Future section */}
+                        <HelperView rendered={!!attendanceLinksFuture.length}>
+                            <B dynamicStyle={IndexStyles.attendanceLinkLabel}>Noch offen</B>
+                            {attendanceLinksFuture}
 
-                        <AttendanceLinkDevider rendered={!!attendanceLinksGub.length || !!attendanceLinksNoGub.length} />
+                            <AttendanceLinkDevider rendered={!!attendanceLinksGub.length || !!attendanceLinksPastPresent.length} />
+                        </HelperView>
+
+                        {/* Gub section */}
+                        <HelperView rendered={!!attendanceLinksGub.length}>
+                            <B dynamicStyle={IndexStyles.attendanceLinkLabel}>GUBs</B>
+                            {attendanceLinksGub}
+
+                            <AttendanceLinkDevider rendered={!!attendanceLinksPastPresent.length} />
+                        </HelperView>
+
+                        {/* Past / Present section */}
+                        <HelperView rendered={!!attendanceLinksPastPresent.length}>
+                            <B dynamicStyle={IndexStyles.attendanceLinkLabel}>Erledigt</B>
+                            {attendanceLinksPastPresent}
+                        </HelperView>
                     </HelperView>
 
-                    {/* Gubs */}
-                    <HelperView rendered={!!attendanceLinksGub.length}>
-                        <B dynamicStyle={IndexStyles.attendanceLinkLabel}>GUBs</B>
-                        {attendanceLinksGub}
-
-                        <AttendanceLinkDevider rendered={!!attendanceLinksNoGub.length} />
-                    </HelperView>
-
-                    {/* Ubs (possibly past) */}
-                    <HelperView rendered={!!attendanceLinksNoGub.length}>
-                        <B dynamicStyle={IndexStyles.attendanceLinkLabel} rendered={isSeparateFutureAttendances}>Erledigt</B>
-                        {attendanceLinksNoGub}
+                    {/* All */}
+                    <HelperView rendered={!isRenderAttendanceLinksSections}>
+                        {attendanceLinksAll}
                     </HelperView>
                 </HelperScrollView>
 

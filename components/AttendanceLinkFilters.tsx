@@ -35,8 +35,8 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
         setAttendanceLinkFilterWrappers,
         attendanceLinkSortWrappers,
         setAttendanceLinkSortWrappers,
-        isSeparateFutureAttendances,
-        setSeparateFutureAttendances,
+        isRenderAttendanceLinksSections,
+        setRenderAttendanceLinkSections,
     } = useContext(IndexContext);
 
     const componentName = "AttendanceLinkFilters";
@@ -189,7 +189,7 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
 
             {/* Row */}
             <Flex>
-                <HelperCheckbox iconStyle={AttendanceLinkFiltersStyles.futureCheckboxContent} checked={isSeparateFutureAttendances} setChecked={setSeparateFutureAttendances}>
+                <HelperCheckbox iconStyle={AttendanceLinkFiltersStyles.futureCheckboxContent} checked={isRenderAttendanceLinksSections} setChecked={setRenderAttendanceLinkSections}>
                     <HelperText style={AttendanceLinkFiltersStyles.futureCheckboxContent}>Planansicht</HelperText>
                 </HelperCheckbox>
             </Flex>
