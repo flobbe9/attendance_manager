@@ -7,6 +7,7 @@ export class AttendanceLinkStyles {
         default: {
             borderRadius: BORDER_RADIUS,
             padding: GLOBAL_SCREEN_PADDING,
+            paddingTop: 5
         }
     }
 
