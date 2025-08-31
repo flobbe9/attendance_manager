@@ -6,23 +6,21 @@ import "@/assets/styles/AttendanceLinkStyles.ts";
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { AttendanceService } from "@/backend/services/AttendanceService";
 import { ExaminantService } from "@/backend/services/ExaminantService";
-import HelperView from "@/components/helpers/HelperView";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { getSubjectColor, useSubjectColor } from "@/hooks/useSubjectColor";
 import { formatDateGermanNoTime } from "@/utils/projectUtils";
 import { FONT_SIZE } from "@/utils/styleConstants";
 import { isBlank } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
-import { Link, useRouter } from "expo-router";
-import React, { JSX, useContext, useState } from "react";
+import React, { JSX, useContext } from "react";
 import { ColorValue, ViewProps, ViewStyle } from "react-native";
 import HelperStyles from "./../assets/styles/helperStyles";
 import { GlobalContext } from "./context/GlobalContextProvider";
 import B from "./helpers/B";
 import Flex from "./helpers/Flex";
-import HelperText from "./helpers/HelperText";
-import HelperButton from "./helpers/HelperButton";
 import { HelperLinkButton } from "./helpers/HelperLinkButton";
+import HelperText from "./helpers/HelperText";
+import HelperView from "./helpers/HelperView";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {
     attendanceEntity: AttendanceEntity;
@@ -33,7 +31,6 @@ interface Props extends HelperProps<ViewStyle>, ViewProps {
  */
 export default function AttendanceLink({ attendanceEntity, ...props }: Props) {
     const { date, schoolSubject, examinants, musicLessonTopic, schoolYear } = attendanceEntity;
-    const { navigate } = useRouter();
 
     const attendanceService = new AttendanceService();
 
@@ -93,7 +90,7 @@ export default function AttendanceLink({ attendanceEntity, ...props }: Props) {
             {...otherProps}
         >
             {/* Top row */}
-            <Flex style={{ ...HelperStyles.fullWidth, ...prs("mb_2") }} flexDirection="column" justifyContent="space-between">
+            <HelperView style={{ ...HelperStyles.fullWidth, ...prs("mb_2") }}>
                 {/* Subject */}
                 <B ellipsis dynamicStyle={AttendanceLinkStyles.heading}>{getSchoolSubjectBySchoolSubjectKey(schoolSubject)}</B>
 
@@ -109,7 +106,7 @@ export default function AttendanceLink({ attendanceEntity, ...props }: Props) {
                 >
                     {getTopic()}
                 </HelperText>
-            </Flex>
+            </HelperView>
 
             {/* Bottom row */}
             <Flex

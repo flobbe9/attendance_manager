@@ -1,4 +1,3 @@
-import HelperStyles from "@/assets/styles/helperStyles";
 import { IndexStyles } from "@/assets/styles/IndexStyles";
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { AttendanceService } from "@/backend/services/AttendanceService";
@@ -18,7 +17,7 @@ import { assertFalsyAndThrow, cloneObj, isDateAfter } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { Fragment, JSX, useContext, useEffect, useState } from "react";
+import { JSX, useContext, useEffect, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import { Divider } from "react-native-paper";
 

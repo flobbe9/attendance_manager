@@ -40,7 +40,7 @@ export class AttendanceLinkFiltersStyles {
             backgroundColor: LIGHT_COLOR,
             borderRadius: 20, 
             borderWidth: 1, 
-            paddingVertical: 2,
+            paddingVertical: 1,
         }
     }
 

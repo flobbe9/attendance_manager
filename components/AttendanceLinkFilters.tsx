@@ -20,7 +20,7 @@ import HelperText from "./helpers/HelperText";
 import { AssetContext } from "./context/AssetProvider";
 import HelperView from "./helpers/HelperView";
 import HelperCheckbox from "./helpers/HelperCheckbox";
-import { LIGHT_COLOR } from "@/utils/styleConstants";
+import { DEFAULT_FONT_SIZE, LIGHT_COLOR } from "@/utils/styleConstants";
 import { GlobalContext } from "./context/GlobalContextProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
@@ -150,7 +150,7 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
                             ...filterValueButtonProps[0],
                             uncheckedColor: getSubjectColor("history") as string,
                             value: "history",
-                            label: getSchoolSubjectBySchoolSubjectKey("history").charAt(0),
+                            label: getSchoolSubjectBySchoolSubjectKey("history").charAt(0) + " ", // makes label a bit wider to prevent ellipsis on app start
                             style: {
                                 backgroundColor: getCurrentFilterValue() === "history" ? getSubjectColor("history") : undefined,
                                 ...(filterValueButtonProps[0].style as object),
@@ -160,7 +160,7 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
                             ...filterValueButtonProps[0],
                             uncheckedColor: getSubjectColor("music") as string,
                             value: "music",
-                            label: getSchoolSubjectBySchoolSubjectKey("music").charAt(0),
+                            label: getSchoolSubjectBySchoolSubjectKey("music").charAt(0) + " ", // makes label a bit wider to prevent ellipsis on app start
                             style: {
                                 backgroundColor: getCurrentFilterValue() === "music" ? getSubjectColor("music") : undefined,
                                 ...(filterValueButtonProps[0].style as object),

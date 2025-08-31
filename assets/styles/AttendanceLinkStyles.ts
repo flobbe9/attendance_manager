@@ -1,6 +1,7 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
 import { BORDER_RADIUS, BORDER_WIDTH, FONT_SIZE_LARGER, FONT_SIZE_SMALLER, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
+import HelperStyles from "./helperStyles";
 
 export class AttendanceLinkStyles {
     static component: DynamicStyle<ViewStyle> = {
@@ -13,7 +14,8 @@ export class AttendanceLinkStyles {
 
     static heading: DynamicStyle<TextStyle> = {
         default: {
-            fontSize: FONT_SIZE_LARGER
+            fontSize: FONT_SIZE_LARGER,
+            ...HelperStyles.fullWidth
         }
     }
 

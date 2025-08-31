@@ -1,9 +1,8 @@
-import HelperProps from "@/abstract/HelperProps";
 import { useHelperProps } from "@/hooks/useHelperProps";
-import React, { forwardRef, Ref } from "react";
-import { Text, TextProps, TextStyle } from "react-native";
-import HelperText, { HelperTextProps } from "./HelperText";
 import { FONT_WEIGHT_BOLD } from "@/utils/styleConstants";
+import React, { forwardRef, Ref } from "react";
+import { Text } from "react-native";
+import HelperText, { HelperTextProps } from "./HelperText";
 
 /**
  * ```<HelperText>``` with bold style.
