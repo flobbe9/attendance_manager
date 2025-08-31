@@ -1,5 +1,5 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { ATTENDANCE_TEXT_INPUT_OPACITY, BOLD, BORDER_RADIUS, FONT_SIZE, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { ATTENDANCE_TEXT_INPUT_OPACITY, FONT_WEIGHT_BOLD, BORDER_RADIUS, FONT_SIZE, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { TextStyle, ViewStyle } from "react-native";
 import HS from "./helperStyles";
 
@@ -27,7 +27,7 @@ export class AttendanceIndexStyles {
     static heading: DynamicStyle<TextStyle> = {
         default: {
             fontSize: FONT_SIZE,
-            fontWeight: BOLD,
+            fontWeight: FONT_WEIGHT_BOLD,
             marginBottom: GLOBAL_SCREEN_PADDING
         }
     }
