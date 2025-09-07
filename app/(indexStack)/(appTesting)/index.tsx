@@ -8,7 +8,7 @@ import HelperView from "@/components/helpers/HelperView";
 import P from "@/components/helpers/P";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import { useFileLogger } from "@/hooks/useFileLogger";
-import { GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { BORDER_RADIUS, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext } from "react";
 
@@ -23,9 +23,9 @@ export default function index() {
 
             <HelperView rendered={isFileLoggerEnabled()}>
                 <HelperButton
-                    rendered={isFileLoggerEnabled()}
+                    style={{borderRadius: BORDER_RADIUS}}
                     onPress={shareLogFiles}
-                    >
+                >
                     <FontAwesome name="share" style={{...prs("me_2"), ...AppTestingIndexStyles.buttonContent.default}} />
                     <HelperText dynamicStyle={AppTestingIndexStyles.buttonContent}>Logs senden</HelperText>
                 </HelperButton>

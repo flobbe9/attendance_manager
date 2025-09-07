@@ -31,6 +31,8 @@ export interface HelperButtonProps extends HelperProps<ViewStyle>, ViewProps {
 /**
  * Should act like a button, is actually a ```<HelperView>``` supporting a ripple effect and dynamic and animated styles.
  * 
+ * NOTE: full width by default but not inside a flex container for some reason. See also `HelperStyles.fitContent`
+ * 
  * @since 0.0.1
  */
 export default forwardRef(function HelperButton(

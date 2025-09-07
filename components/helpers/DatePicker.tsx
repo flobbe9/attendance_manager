@@ -87,10 +87,12 @@ export default forwardRef(function DatePicker({ date, setDate, locale = "de", on
                 onConfirm={handleConfirm}
             />
 
+            {/* Pick date */}
             <HelperButton ref={ref} {...otherProps} onPress={handlePress}>
                 {children ?? <HelperText>{date ? formatDateGermanNoTime(date) : modalProps.emptyLabel ?? "NA"}</HelperText>}
             </HelperButton>
 
+            {/* Clear date */}
             <HelperButton
                 disabled={otherProps.disabled || date === null || clearButtonProps.disabled}
                 style={{
