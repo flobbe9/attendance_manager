@@ -4,7 +4,7 @@ import { SchoolSubject_Key, schoolSubjectKeysObj } from "@/abstract/SchoolSubjec
 import { SortOrder } from "@/abstract/SortOrder";
 import { NO_SELECTION_LABEL } from "@/utils/constants";
 import { defaultEqualsFalsy } from "@/utils/projectUtils";
-import { assertFalsyAndThrow, dateEquals, isBlank } from "@/utils/utils";
+import { assertFalsyAndThrow, dateEquals, isBlank, isDateAfter } from "@/utils/utils";
 import { ValueOf } from "react-native-gesture-handler/lib/typescript/typeUtils";
 import { AbstractModifiableService } from "../abstract/AbstractModifiableService";
 import { AttendanceEntity } from "../entities/AttendanceEntity";
@@ -231,5 +231,16 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
         else compareValue = attendanceEntity1.date.getTime() - attendanceEntity2.date.getTime();
 
         return sortOrder === SortOrder.DESC ? compareValue * -1 : compareValue;
+    }
+    
+    /**
+     * @param attendanceEntity to check the `date` for
+     * @returns `true` if `attendanceEntity.date` is tomorrow or later (ignore time), `false` if is today, in the past or falsy
+     * @throw if args is falsy
+     */
+    public isFutureAttendance(attendanceEntity: AttendanceEntity): boolean {
+        assertFalsyAndThrow(attendanceEntity);
+
+        return !attendanceEntity.date || isDateAfter(attendanceEntity.date, new Date());
     }
 }

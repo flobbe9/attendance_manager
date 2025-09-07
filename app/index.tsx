@@ -94,7 +94,7 @@ export default function index() {
         // date
         if (sectionConditions.dateMode !== "all")
             filteredAttendanceLinks = filteredAttendanceLinks.filter((attendanceEntity) => {
-                const attendanceIsFuture = isFutureAttendance(attendanceEntity);
+                const attendanceIsFuture = attendanceService.isFutureAttendance(attendanceEntity);
                 return (
                     (attendanceIsFuture && sectionConditions.dateMode === "future") ||
                     (!attendanceIsFuture && sectionConditions.dateMode === "pastPresent")
@@ -128,9 +128,10 @@ export default function index() {
         });
 
         // sort
-        Object.values(attendanceLinkSortWrappers).forEach((attendanceLinkSortWrapper) =>
-            attendanceEntitiesCloned.sort((a1, a2) => attendanceLinkSortWrapper.compare(a1, a2, attendanceLinkSortWrapper.sortOrder))
-        );
+        Object.values(attendanceLinkSortWrappers)
+            .forEach((attendanceLinkSortWrapper) =>
+                attendanceEntitiesCloned.sort((a1, a2) => 
+                    attendanceLinkSortWrapper.compare(a1, a2, attendanceLinkSortWrapper.sortOrder)));
 
         return attendanceEntitiesCloned;
     }
@@ -155,17 +156,6 @@ export default function index() {
     function handleAddButtonPress(): void {
         navigate("/(indexStack)/(attendance)");
         setCurrentAttendanceEntityId(-1);
-    }
-
-    /**
-     * @param attendanceEntity to check the `date` for
-     * @returns `true` if `attendanceEntity.date` is tomorrow or later (ignore time), `false` if is today, in the past or falsy
-     * @throw if args is falsy
-     */
-    function isFutureAttendance(attendanceEntity: AttendanceEntity): boolean {
-        assertFalsyAndThrow(attendanceEntity);
-
-        return !attendanceEntity.date || isDateAfter(attendanceEntity.date, new Date());
     }
 
     function AttendanceLinkDevider({ rendered = true }) {

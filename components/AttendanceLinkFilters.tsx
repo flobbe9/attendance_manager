@@ -237,6 +237,7 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
                 </Flex>
 
                 <Flex style={{ ...prs("m_1", "m_md_2", "ms_0") }}>
+                    {/* Sectioned */}
                     <HelperCheckbox
                         iconStyle={AttendanceLinkFiltersStyles.futureCheckboxContent}
                         checked={isRenderAttendanceLinksSections}
