@@ -56,12 +56,14 @@ export default function index() {
         if (!isRenderAttendanceLinksSections) setAttendanceLinksAll(mapAttendanceLinks(filterAttendanceLinksGeneral(savedAttendanceEntities)));
         else {
             setAttendanceLinksPastPresent(
-                mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: false, dateMode: "pastPresent" }))
-            );
+                mapAttendanceLinks(
+                    filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: false, dateMode: "pastPresent" })));
             setAttendanceLinksFuture(
-                mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: false, dateMode: "future" }))
-            );
-            setAttendanceLinksGub(mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: true, dateMode: "all" })));
+                mapAttendanceLinks(
+                    filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: false, dateMode: "future" })));
+            setAttendanceLinksGub(
+                mapAttendanceLinks(
+                    filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: true, dateMode: "all" })));
         }
     }, [savedAttendanceEntities, attendanceLinkFilterWrappers, attendanceLinkSortWrappers, isRenderAttendanceLinksSections]);
 
@@ -72,7 +74,6 @@ export default function index() {
     }
 
     /**
-     *
      * @param attendanceEntities to filter (not modified)
      * @param sectionConditions the filter conditions
      * @returns filtered `attendanceEntities` or empty array
@@ -88,7 +89,14 @@ export default function index() {
         // gub
         filteredAttendanceLinks = filteredAttendanceLinks.filter((attendanceEntity) => {
             const isGub = attendanceService.isGub(attendanceEntity);
-            return (!isGub && !sectionConditions.isGub) || (isGub && sectionConditions.isGub);
+            const attendanceIsFuture = attendanceService.isFutureAttendance(attendanceEntity);
+            return (!isGub && !sectionConditions.isGub) || 
+                (isGub && 
+                    // past gubs in GUB section
+                    (sectionConditions.isGub && !attendanceIsFuture) ||
+                    // future gubs in FUTURE section
+                    (sectionConditions.dateMode === "future" && attendanceIsFuture)
+                );
         });
 
         // date
