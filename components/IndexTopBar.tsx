@@ -42,8 +42,11 @@ export default function IndexTopBar({ ...props }: Props) {
      * @returns the number of attendance entities having at least one educator examinant
      */
     function countEducatorExaminants(): number {
-        return savedAttendanceEntities.filter((attendanceEntity) => 
-            attendanceService.hasExaminant(attendanceEntity, "educator")).length;
+        return savedAttendanceEntities
+            .filter((attendanceEntity) => 
+                attendanceService.hasExaminant(attendanceEntity, "educator") && 
+                !attendanceService.isFutureAttendance(attendanceEntity))
+            .length;
     }
 
     /**
