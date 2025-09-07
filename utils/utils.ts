@@ -419,6 +419,18 @@ export function isDateBefore(date: Date, otherDate: Date): boolean {
 }
 
 /**
+ * @param date date that is supposedly equal to ```otherDate```
+ * @param otherDAte date that is supposedly equal to ```date```
+ * @returns true if ```date``` has the same year, month and day as ```otherDate```. Ignores time
+ */
+export function isDateEqual(date: Date, otherDate: Date): boolean {
+    const date1 = stripTimeFromDate(new Date(date));
+    const date2 = stripTimeFromDate(new Date(otherDate));
+
+    return date1.getTime() === date2.getTime();
+}
+
+/**
  * @param date date that is supposedly after ```otherDate```
  * @param otherDAte date that is supposedly before ```date```
  * @returns true if ```date``` is after ```otherDate``` (not equal). Ignores time and uses only date
