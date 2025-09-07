@@ -34,9 +34,16 @@ export class AttendanceLinkFiltersStyles {
         fontSize: FONT_SIZE
     }
 
+    static sortBySubjectButton: DynamicStyle<ViewStyle> = {
+        default: {
+            backgroundColor: "transparent", 
+            padding: 0
+        }
+    }
     
     static sortButton: DynamicStyle<ViewStyle> = {
         default: {
+            padding: 7,
             backgroundColor: LIGHT_COLOR,
             borderRadius: 20, 
             borderWidth: 1, 

@@ -6,4 +6,6 @@ import { SortOrder } from "./SortOrder";
 export interface SortWrapper<T> {
     sortOrder: SortOrder;
     compare: (obj1: T, obj2: T, sortOrder: SortOrder) => number;
+    /** Whether to sort or not */
+    enabled: boolean
 }

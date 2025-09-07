@@ -5,7 +5,8 @@ import { ViewStyle } from "react-native";
 export class HelperCheckboxStyles {
     static component: DynamicStyle<ViewStyle> = {
         default: {
-            padding: 0       
+            backgroundColor: "transparent",
+            padding: 0,
         }
     }
 }

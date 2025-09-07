@@ -11,6 +11,7 @@ import { useMetadataRepository } from "@/hooks/repositories/useMetadataRepositor
 import { useHasComponentMounted } from "@/hooks/useHasComponentMounted";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { logTrace } from "@/utils/logUtils";
+import { SWITCH_TRUE_COLOR } from "@/utils/styleConstants";
 import { useEffect } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { Switch } from "react-native-paper";
@@ -79,7 +80,7 @@ export default function BooleanSetting({
                 <Switch
                     value={settingTurnedOn}
                     onValueChange={setSettingTurnedOn}
-                    color="rgb(50, 200, 100)"
+                    color={SWITCH_TRUE_COLOR}
                 />
             </Flex>
 

@@ -1,17 +1,14 @@
-import HelperProps from "@/abstract/HelperProps";
 import { HelperCheckboxStyles } from "@/assets/styles/HelperCheckboxStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { FONT_SIZE } from "@/utils/styleConstants";
 import FontAwesome from "@expo/vector-icons/build/FontAwesome";
 import React, { forwardRef, Ref } from "react";
-import { GestureResponderEvent, TextStyle, View, ViewProps, ViewStyle } from "react-native";
-import HelperButton from "./HelperButton";
+import { GestureResponderEvent, TextStyle, View } from "react-native";
+import HelperButton, { HelperButtonProps } from "./HelperButton";
 import HelperReactChildren from "./HelperReactChildren";
 import HelperView from "./HelperView";
-import { logDebug } from "@/utils/logUtils";
 
-
-interface Props extends HelperProps<ViewStyle>, ViewProps {
+interface Props extends HelperButtonProps {
     checked: boolean,
     setChecked: (checked: boolean) => void,
     /** Applied to the checkbox icon (the square and the square with checkmark) */
@@ -40,7 +37,7 @@ export default forwardRef(function HelperCheckbox(
     ref: Ref<View>
 ) {
     const componentName = "HelperCheckbox";
-    const { children, style, ...otherProps } = useHelperProps(props, componentName, HelperCheckboxStyles.component);
+    const { children, ...otherProps } = useHelperProps(props, componentName, HelperCheckboxStyles.component);
 
     const defaultFontSize = FONT_SIZE;
 
@@ -57,10 +54,6 @@ export default forwardRef(function HelperCheckbox(
     return (
         <HelperButton
             ref={ref}
-            style={{
-                backgroundColor: "transparent",
-                ...style as object,
-            }}
             ripple={null}
             disabled={disabled}
             onTouchStart={handleTouchStart}

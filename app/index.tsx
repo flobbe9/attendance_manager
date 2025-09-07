@@ -13,7 +13,7 @@ import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import IndexTopBar from "@/components/IndexTopBar";
-import { assertFalsyAndThrow, cloneObj, isDateAfter } from "@/utils/utils";
+import { cloneObj } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import { useRouter } from "expo-router";
@@ -122,16 +122,17 @@ export default function index() {
             // case: no filters selected, dont filter at all
             if (!Object.keys(attendanceLinkFilterWrappers).length) return true;
 
-            return !!Array.from(Object.entries(attendanceLinkFilterWrappers)).find(([, filterWrapper]) => {
-                return filterWrapper.filter(attendanceEntity);
-            });
+            return !!Array.from(Object.entries(attendanceLinkFilterWrappers))
+                .find(([, filterWrapper]) => filterWrapper.filter(attendanceEntity));
         });
 
         // sort
         Object.values(attendanceLinkSortWrappers)
-            .forEach((attendanceLinkSortWrapper) =>
-                attendanceEntitiesCloned.sort((a1, a2) => 
-                    attendanceLinkSortWrapper.compare(a1, a2, attendanceLinkSortWrapper.sortOrder)));
+            .forEach((attendanceLinkSortWrapper) => {
+                if (attendanceLinkSortWrapper.enabled)
+                    attendanceEntitiesCloned.sort((a1, a2) => 
+                        attendanceLinkSortWrapper.compare(a1, a2, attendanceLinkSortWrapper.sortOrder))
+            });
 
         return attendanceEntitiesCloned;
     }
