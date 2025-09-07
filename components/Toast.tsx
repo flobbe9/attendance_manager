@@ -1,12 +1,12 @@
 import HelperProps from "@/abstract/HelperProps";
+import { NotificationSevirity } from "@/abstract/NotificationSevirity";
 import { ToastStyles } from "@/assets/styles/ToastStyles";
 import { useHelperProps } from "@/hooks/useHelperProps";
+import { NOTIFICATION_SEVIRITY_STYLES } from "@/utils/styleConstants";
 import React, { ReactNode, useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
 import { Modal, Portal } from "react-native-paper";
 import { GlobalContext } from "./context/GlobalContextProvider";
-import { NotificationSevirity } from "@/abstract/NotificationSevirity";
-import { NOTIFICATION_SEVIRITY_STYLES } from "@/utils/styleConstants";
 import HelperReactChildren from "./helpers/HelperReactChildren";
 import HelperScrollView from "./helpers/HelperScrollView";
 import ToastDefaultFooter from "./ToastDefaultFooter";
@@ -95,12 +95,12 @@ export default function Toast({
                 contentContainerStyle={{
                     ...(style as object),
                     ...NOTIFICATION_SEVIRITY_STYLES[sevirity],
-                    ...(outerStyle as object),
+                    ...(outerStyle as object)
                 }}
                 onDismiss={handleDimsiss}
                 {...otherProps}
             >
-                <HelperScrollView dynamicStyle={ToastStyles.childrenContainer} style={childrenContainerStyle}>
+                <HelperScrollView dynamicStyle={ToastStyles.childrenContainer} style={childrenContainerStyle} persistentScrollbar>
                     <HelperReactChildren>{content}</HelperReactChildren>
                 </HelperScrollView>
 

@@ -46,7 +46,7 @@ export default forwardRef(function HelperScrollView(
 
 
     return (
-        <Animated.ScrollView ref={componentRef} contentContainerStyle={childrenContainerStyle} persistentScrollbar {...otherProps}>
+        <Animated.ScrollView ref={componentRef} contentContainerStyle={childrenContainerStyle} {...otherProps}>
             {children}
         </Animated.ScrollView>
     )

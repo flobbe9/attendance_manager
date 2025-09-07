@@ -13,6 +13,7 @@ export class ToastDefaultFooterStyles {
     static button: DynamicStyle<ViewStyle> = {
         default: {
             borderRadius: BORDER_RADIUS,
+            borderWidth: 1
         },
     };
 
