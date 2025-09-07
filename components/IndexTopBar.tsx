@@ -42,7 +42,11 @@ export default function IndexTopBar({ ...props }: Props) {
      * @returns the number of attendance entities having at least one educator examinant
      */
     function countEducatorExaminants(): number {
-        return savedAttendanceEntities.filter((attendanceEntity) => attendanceService.hasExaminant(attendanceEntity, "educator")).length;
+        return savedAttendanceEntities
+            .filter((attendanceEntity) => 
+                attendanceService.hasExaminant(attendanceEntity, "educator") && 
+                !attendanceService.isFutureAttendance(attendanceEntity))
+            .length;
     }
 
     /**
@@ -52,11 +56,12 @@ export default function IndexTopBar({ ...props }: Props) {
     function countExaminantsWithSameSubject(schoolSubject: SchoolSubject_Key): number {
         if (!schoolSubject) return NaN;
 
-        return savedAttendanceEntities.filter(
-            (attendanceEntity) =>
+        return savedAttendanceEntities
+            .filter((attendanceEntity) =>
                 attendanceEntity.schoolSubject === schoolSubject && // is attendance with that subject
-                attendanceService.hasExaminant(attendanceEntity, schoolSubject)
-        ).length; // has examinant for that subject
+                attendanceService.hasExaminant(attendanceEntity, schoolSubject) && 
+                !attendanceService.isFutureAttendance(attendanceEntity)
+            ).length; // has examinant for that subject
     }
 
     function ExaminantCount(props: { numExaminants: number; maxExamiants: number; color: ColorValue }) {
@@ -64,7 +69,10 @@ export default function IndexTopBar({ ...props }: Props) {
 
         return (
             <Flex dynamicStyle={IndexTopBarStyles.ExaminantCount} alignItems="center">
-                <FontAwesome style={{ color, ...IndexTopBarStyles.text, ...prs("me_1"), ...prs("me_2") }} name="user" />
+                <FontAwesome
+                    style={{ color, ...IndexTopBarStyles.text, ...prs("me_1"), ...prs("me_2") }}
+                    name="user"
+                />
                 <HelperText style={IndexTopBarStyles.text}>
                     {numExaminants ?? "-"}/{maxExamiants}
                 </HelperText>
@@ -75,8 +83,16 @@ export default function IndexTopBar({ ...props }: Props) {
     return (
         <Flex justifyContent="space-between" alignItems="center" {...otherProps}>
             <Flex justifyContent="flex-end" style={{ ...HS.fullWidth }}>
-                <ExaminantCount numExaminants={numHistoryExaminants} maxExamiants={9} color={getSubjectColor("history")} />
-                <ExaminantCount numExaminants={numMusicExaminants} maxExamiants={9} color={getSubjectColor("music")} />
+                <ExaminantCount
+                    numExaminants={numHistoryExaminants}
+                    maxExamiants={9}
+                    color={getSubjectColor("history")}
+                />
+                <ExaminantCount
+                    numExaminants={numMusicExaminants}
+                    maxExamiants={9}
+                    color={getSubjectColor("music")}
+                />
                 <ExaminantCount numExaminants={numEducators} maxExamiants={8} color={"black"} />
             </Flex>
 

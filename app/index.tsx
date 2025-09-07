@@ -13,7 +13,7 @@ import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import IndexTopBar from "@/components/IndexTopBar";
-import { assertFalsyAndThrow, cloneObj, isDateAfter } from "@/utils/utils";
+import { cloneObj } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import { useRouter } from "expo-router";
@@ -56,12 +56,14 @@ export default function index() {
         if (!isRenderAttendanceLinksSections) setAttendanceLinksAll(mapAttendanceLinks(filterAttendanceLinksGeneral(savedAttendanceEntities)));
         else {
             setAttendanceLinksPastPresent(
-                mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: false, dateMode: "pastPresent" }))
-            );
+                mapAttendanceLinks(
+                    filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: false, dateMode: "pastPresent" })));
             setAttendanceLinksFuture(
-                mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: false, dateMode: "future" }))
-            );
-            setAttendanceLinksGub(mapAttendanceLinks(filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: true, dateMode: "all" })));
+                mapAttendanceLinks(
+                    filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: false, dateMode: "future" })));
+            setAttendanceLinksGub(
+                mapAttendanceLinks(
+                    filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: true, dateMode: "all" })));
         }
     }, [savedAttendanceEntities, attendanceLinkFilterWrappers, attendanceLinkSortWrappers, isRenderAttendanceLinksSections]);
 
@@ -72,7 +74,6 @@ export default function index() {
     }
 
     /**
-     *
      * @param attendanceEntities to filter (not modified)
      * @param sectionConditions the filter conditions
      * @returns filtered `attendanceEntities` or empty array
@@ -88,13 +89,20 @@ export default function index() {
         // gub
         filteredAttendanceLinks = filteredAttendanceLinks.filter((attendanceEntity) => {
             const isGub = attendanceService.isGub(attendanceEntity);
-            return (!isGub && !sectionConditions.isGub) || (isGub && sectionConditions.isGub);
+            const attendanceIsFuture = attendanceService.isFutureAttendance(attendanceEntity);
+            return (!isGub && !sectionConditions.isGub) || 
+                (isGub && 
+                    // past gubs in GUB section
+                    (sectionConditions.isGub && !attendanceIsFuture) ||
+                    // future gubs in FUTURE section
+                    (sectionConditions.dateMode === "future" && attendanceIsFuture)
+                );
         });
 
         // date
         if (sectionConditions.dateMode !== "all")
             filteredAttendanceLinks = filteredAttendanceLinks.filter((attendanceEntity) => {
-                const attendanceIsFuture = isFutureAttendance(attendanceEntity);
+                const attendanceIsFuture = attendanceService.isFutureAttendance(attendanceEntity);
                 return (
                     (attendanceIsFuture && sectionConditions.dateMode === "future") ||
                     (!attendanceIsFuture && sectionConditions.dateMode === "pastPresent")
@@ -122,15 +130,17 @@ export default function index() {
             // case: no filters selected, dont filter at all
             if (!Object.keys(attendanceLinkFilterWrappers).length) return true;
 
-            return !!Array.from(Object.entries(attendanceLinkFilterWrappers)).find(([, filterWrapper]) => {
-                return filterWrapper.filter(attendanceEntity);
-            });
+            return !!Array.from(Object.entries(attendanceLinkFilterWrappers))
+                .find(([, filterWrapper]) => filterWrapper.filter(attendanceEntity));
         });
 
         // sort
-        Object.values(attendanceLinkSortWrappers).forEach((attendanceLinkSortWrapper) =>
-            attendanceEntitiesCloned.sort((a1, a2) => attendanceLinkSortWrapper.compare(a1, a2, attendanceLinkSortWrapper.sortOrder))
-        );
+        Object.values(attendanceLinkSortWrappers)
+            .forEach((attendanceLinkSortWrapper) => {
+                if (attendanceLinkSortWrapper.enabled)
+                    attendanceEntitiesCloned.sort((a1, a2) => 
+                        attendanceLinkSortWrapper.compare(a1, a2, attendanceLinkSortWrapper.sortOrder))
+            });
 
         return attendanceEntitiesCloned;
     }
@@ -155,17 +165,6 @@ export default function index() {
     function handleAddButtonPress(): void {
         navigate("/(indexStack)/(attendance)");
         setCurrentAttendanceEntityId(-1);
-    }
-
-    /**
-     * @param attendanceEntity to check the `date` for
-     * @returns `true` if `attendanceEntity.date` is tomorrow or later (ignore time), `false` if is today, in the past or falsy
-     * @throw if args is falsy
-     */
-    function isFutureAttendance(attendanceEntity: AttendanceEntity): boolean {
-        assertFalsyAndThrow(attendanceEntity);
-
-        return !attendanceEntity.date || isDateAfter(attendanceEntity.date, new Date());
     }
 
     function AttendanceLinkDevider({ rendered = true }) {

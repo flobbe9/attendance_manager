@@ -23,11 +23,13 @@ export default function IndexContextProvider({ children }: { children: ReactNode
         date: {
             sortOrder: SortOrder.DESC,
             compare: attendanceService.compareDate,
+            enabled: true
         },
         schoolSubject: {
             sortOrder: SortOrder.ASC,
             compare: attendanceService.compareSchoolSubject,
-        },
+            enabled: true
+        }
     });
 
     /** Whether to separate the non-gub attendances into past and future */

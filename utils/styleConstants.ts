@@ -44,6 +44,8 @@ export const NOTIFICATION_SEVIRITY_STYLES: Record<NotificationSevirity, ViewStyl
     },
 };
 
+export const SWITCH_TRUE_COLOR = "rgb(50, 200, 100)";
+
 /** Font */
 /** The font size used by react native if none specified */
 export const DEFAULT_FONT_SIZE = 14;

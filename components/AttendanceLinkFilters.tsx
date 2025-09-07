@@ -5,23 +5,22 @@ import { getSchoolSubjectBySchoolSubjectKey, SchoolSubject_Key } from "@/abstrac
 import { getOppositeSortOrder, SortOrder } from "@/abstract/SortOrder";
 import { AttendanceLinkFiltersStyles } from "@/assets/styles/AttendanceLinkFiltersStyles";
 import HS from "@/assets/styles/helperStyles";
-import { IndexStyles } from "@/assets/styles/IndexStyles";
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { getSubjectColor } from "@/hooks/useSubjectColor";
+import { FONT_SIZE, SWITCH_TRUE_COLOR } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
-import { SegmentedButtons, SegmentedButtonsProps } from "react-native-paper";
+import { SegmentedButtons, SegmentedButtonsProps, Switch } from "react-native-paper";
+import { AssetContext } from "./context/AssetProvider";
+import { GlobalContext } from "./context/GlobalContextProvider";
 import { IndexContext } from "./context/IndexContextProvider";
 import Flex from "./helpers/Flex";
 import HelperButton from "./helpers/HelperButton";
 import HelperText from "./helpers/HelperText";
-import { AssetContext } from "./context/AssetProvider";
 import HelperView from "./helpers/HelperView";
 import HelperCheckbox from "./helpers/HelperCheckbox";
-import { DEFAULT_FONT_SIZE, LIGHT_COLOR } from "@/utils/styleConstants";
-import { GlobalContext } from "./context/GlobalContextProvider";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -128,6 +127,12 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
         }
     }
 
+    function handleIsSortBySubjectChange(isSortBySubject: boolean): void {
+        attendanceLinkSortWrappers.schoolSubject.enabled = isSortBySubject;
+
+        setAttendanceLinkSortWrappers({...attendanceLinkSortWrappers});
+    }
+
     return (
         <HelperView {...otherProps}>
             <Flex
@@ -189,11 +194,12 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
                 />
 
                 {/* Sort */}
-                <Flex style={{ ...prs("m_1", "m_md_2", "ms_0") }}>
+                <Flex style={{ ...prs("m_1", "m_md_2", "ms_0") }} flexWrap="nowrap">
                     {/* By date */}
                     <HelperButton
                         dynamicStyle={AttendanceLinkFiltersStyles.sortButton}
-                        style={{ ...prs("me_1") }}
+                        rendered={attendanceLinkSortWrappers.date.enabled}
+                        style={{ ...prs("me_3") }}
                         onPress={() => updateSortState("date")}
                     >
                         <HelperText style={{ ...prs("me_1") }}>Termin</HelperText>
@@ -214,38 +220,41 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
                     </HelperButton>
 
                     {/* By subject */}
-                    <HelperButton
+                    <Flex
                         dynamicStyle={AttendanceLinkFiltersStyles.sortButton}
-                        onPress={() => updateSortState("schoolSubject")}
+                        alignItems="center"
                     >
-                        <HelperText style={{ ...prs("me_1") }}>Fach</HelperText>
-                        <FontAwesome
-                            style={{
-                                ...AttendanceLinkFiltersStyles.sortButtonIcon,
-                                paddingBottom:
-                                    attendanceLinkSortWrappers.schoolSubject.sortOrder === SortOrder.DESC
-                                        ? AttendanceLinkFiltersStyles.sortButtonIconOffset
-                                        : undefined,
-                                paddingTop:
-                                    attendanceLinkSortWrappers.schoolSubject.sortOrder === SortOrder.ASC
-                                        ? AttendanceLinkFiltersStyles.sortButtonIconOffset
-                                        : undefined,
-                            }}
-                            name={getSortButtonIcon(attendanceLinkSortWrappers.schoolSubject.sortOrder)}
+                        <HelperCheckbox 
+                            checked={attendanceLinkSortWrappers.schoolSubject.enabled} 
+                            setChecked={handleIsSortBySubjectChange} 
                         />
-                    </HelperButton>
+
+                        <HelperButton
+                            dynamicStyle={AttendanceLinkFiltersStyles.sortBySubjectButton}
+                            disabled={!attendanceLinkSortWrappers.schoolSubject.enabled}
+                            onPress={() => updateSortState("schoolSubject")}
+                        >
+                            <HelperText style={{ ...prs("me_1") }}>Fach</HelperText>
+                            <FontAwesome
+                                style={{
+                                    ...AttendanceLinkFiltersStyles.sortButtonIcon,
+                                    paddingBottom: attendanceLinkSortWrappers.schoolSubject.sortOrder === SortOrder.DESC
+                                        ? AttendanceLinkFiltersStyles.sortButtonIconOffset : undefined,
+                                    paddingTop: attendanceLinkSortWrappers.schoolSubject.sortOrder === SortOrder.ASC
+                                        ? AttendanceLinkFiltersStyles.sortButtonIconOffset : undefined,
+                                }}
+                                name={getSortButtonIcon(attendanceLinkSortWrappers.schoolSubject.sortOrder)}
+                            />
+                        </HelperButton>
+                    </Flex>
                 </Flex>
 
                 <Flex style={{ ...prs("m_1", "m_md_2", "ms_0") }}>
-                    <HelperCheckbox
-                        iconStyle={AttendanceLinkFiltersStyles.futureCheckboxContent}
-                        checked={isRenderAttendanceLinksSections}
-                        setChecked={setRenderAttendanceLinkSections}
-                    >
-                        <HelperText style={AttendanceLinkFiltersStyles.futureCheckboxContent}>
-                            Kategorisiert
-                        </HelperText>
-                    </HelperCheckbox>
+                    {/* Sectioned */}
+                    <Switch value={isRenderAttendanceLinksSections} onValueChange={setRenderAttendanceLinkSections} color={SWITCH_TRUE_COLOR} />
+                    <HelperText style={AttendanceLinkFiltersStyles.futureCheckboxContent}>
+                        Kategorisiert
+                    </HelperText>
                 </Flex>
             </Flex>
 

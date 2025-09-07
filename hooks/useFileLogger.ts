@@ -42,9 +42,7 @@ export function useFileLogger() {
     async function shareLogFiles(): Promise<void> {
         if (!isFileLoggerEnabled()) return;
 
-        const mailBody = `OS: ${Platform.OS}
-                    ENV: ${ENV}
-                    LOG_LEVEL: ${logLevelToString(LOG_LEVEL)}`;
+        const mailBody = `OS: ${Platform.OS}\nENV: ${ENV}\nLOG_LEVEL: ${logLevelToString(LOG_LEVEL)}`;
 
         // log mail body because sharing with a different method than email wont send the "body"
         logDebug(`Sharing log files: ${mailBody}`);

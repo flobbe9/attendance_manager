@@ -29,7 +29,7 @@ export default function popups() {
 
                 <BooleanSetting
                     heading="UB Fach ändern"
-                    explanation="Ein Bestätigungs-popup wird angezeigt, bevor das UB Fach gewechselt wird, weil einige UB Werte dabei zurückgesetzt werden."
+                    explanation="Ein Bestätigungspopup wird angezeigt, bevor das UB Fach gewechselt wird, weil einige UB Werte dabei zurückgesetzt werden."
                     settingsState={isConfirmSubjectChangeState}
                     settingsKey={"popups.dontConfirmSchoolSubjectChnage"}
                     invertDbValue
@@ -38,7 +38,7 @@ export default function popups() {
 
                 <BooleanSetting
                     heading="UB ohne speichern verlassen"
-                    explanation="Ein Bestätigungs-popup wird vor dem Verlassen des UB Bearbeitungs-screens angezeigt, wenn es ungespeicherte Änderungen gibt."
+                    explanation="Ein Bestätigungspopup wird vor dem Verlassen des UB Bearbeitungsscreens angezeigt, wenn es ungespeicherte Änderungen gibt."
                     settingsState={isConfirmAttendanceLeaveState}
                     settingsKey={"popups.dontConfirmAttendanceScreenLeave"}
                     invertDbValue

@@ -2,6 +2,7 @@ import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { ExaminantEntity } from "@/backend/entities/ExaminantEntity";
 import { SchoolclassModeEntity } from "@/backend/entities/SchoolclassModeEntity";
 import {AttendanceService} from "../AttendanceService";
+import { dateMinusDays, datePlusDays, isDateAfter, isDateBefore, isDateEqual } from "@/utils/utils";
 
 describe("isModified", () => {
     const attendanceService = new AttendanceService();
@@ -376,3 +377,53 @@ describe("isGub", () => {
         expect(attendanceService.isGub(attendanceEntity)).toBe(true);
     });
 });
+
+describe("isFutureAttendance", () => {
+    const attendanceService = new AttendanceService();
+
+    test("Should throw if invalid args", () => {
+        expect(() => attendanceService.isFutureAttendance(null)).toThrow();
+        expect(() => attendanceService.isFutureAttendance(undefined)).toThrow();
+
+        expect(() => attendanceService.isFutureAttendance({
+            schoolSubject: "history",
+            schoolYear: "5",
+            examinants: [],
+            schoolclassMode: new SchoolclassModeEntity
+        })).not.toThrow();
+    })
+
+    test("Should be true for falsy date and future date", () => {
+        const attendanceEntity: AttendanceEntity = {
+            date: null,
+            schoolSubject: "history",
+            schoolYear: "5",
+            examinants: [],
+            schoolclassMode: null
+        }
+
+        expect(attendanceEntity.date).toBeFalsy();
+        expect(attendanceService.isFutureAttendance(attendanceEntity)).toBe(true);
+
+        attendanceEntity.date = datePlusDays(1);
+        expect(isDateAfter(attendanceEntity.date, new Date())).toBe(true);
+        expect(attendanceService.isFutureAttendance(attendanceEntity)).toBe(true);
+    })
+
+    test("Should be false for past date and present date", () => {
+        const attendanceEntity: AttendanceEntity = {
+            date: new Date(),
+            schoolSubject: "history",
+            schoolYear: "5",
+            examinants: [],
+            schoolclassMode: null
+        }
+
+        expect(isDateEqual(attendanceEntity.date, new Date())).toBe(true);
+        expect(attendanceService.isFutureAttendance(attendanceEntity)).toBe(false);
+
+        attendanceEntity.date = dateMinusDays(1);
+        expect(isDateBefore(attendanceEntity.date, new Date())).toBe(true);
+        expect(attendanceService.isFutureAttendance(attendanceEntity)).toBe(false);
+    })
+})

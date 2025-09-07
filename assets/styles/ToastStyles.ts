@@ -1,12 +1,12 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
-import { BORDER_RADIUS, GLOBAL_SCREEN_PADDING } from "@/utils/styleConstants";
+import { BORDER_RADIUS, GLOBAL_SCREEN_PADDING, LIGHT_COLOR } from "@/utils/styleConstants";
 import { ViewStyle } from "react-native";
 import HelperStyles from "./helperStyles";
 
 export class ToastStyles {
     static component: DynamicStyle<ViewStyle> = {
         default: {
-            backgroundColor: "white",
+            backgroundColor: LIGHT_COLOR,
             borderRadius: BORDER_RADIUS,
             ...HelperStyles.flexStartStart,
             flexDirection: "column",

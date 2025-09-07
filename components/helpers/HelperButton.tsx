@@ -31,8 +31,8 @@ export interface HelperButtonProps extends HelperProps<ViewStyle>, ViewProps {
 /**
  * Should act like a button, is actually a ```<HelperView>``` supporting a ripple effect and dynamic and animated styles.
  * 
- * NOTE: flex `alignItems` of a parent of this component will only apply when settings `containerStyles.alignSelf` to "auto".
- *  
+ * NOTE: full width by default but not inside a flex container for some reason. See also `HelperStyles.fitContent`
+ * 
  * @since 0.0.1
  */
 export default forwardRef(function HelperButton(
@@ -56,8 +56,8 @@ export default forwardRef(function HelperButton(
     const { currentStyles: containerStyles, eventHandlers: containerEventHandlers } = useDynamicStyle(props.containerStyles);
 
     const { animatedStyle: anmimatedOpacity } = useAnimatedStyle(
-        [50, 100],
-        [0.5, 1],
+        [30, 100],
+        [0.3, 1],
         {
             reverse: disabled || loading,
             startReversed: !disabled && !loading,
@@ -98,7 +98,6 @@ export default forwardRef(function HelperButton(
                 borderRadius: (style as ViewStyle).borderRadius, 
                 width: (style as ViewStyle).width,
                 overflow: "hidden",
-                ...HS.fitContent,
                 ...containerStyles,
             }}
             {...containerEventHandlers}

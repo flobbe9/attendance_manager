@@ -49,5 +49,5 @@ export const STORE_CONSTANTS: StoreConstants = {
     },
 };
 
-export const DB_BACKUP_FILE_EXTENSION = '.ambak';
+export const DB_BACKUP_FILE_EXTENSION = '.ambak.json';
 export const DB_BACKUP_FILE_MIME_TYPE = 'application/json';

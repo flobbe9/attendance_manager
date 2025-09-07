@@ -1,12 +1,10 @@
 import { DynamicStyle } from "@/abstract/DynamicStyle";
 import { ViewStyle } from "react-native";
 
-
-export class HelperCheckboxStyles {
+export class CustomScreenHeaderStyles {
     static component: DynamicStyle<ViewStyle> = {
         default: {
-            backgroundColor: "transparent",
-            padding: 0,
-        }
-    }
+            backgroundColor: "white"
+        },
+    };
 }
