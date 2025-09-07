@@ -7,6 +7,8 @@ import React, { useContext } from "react";
 import { Portal, Snackbar, SnackbarProps } from "react-native-paper";
 import { AssetContext } from "./context/AssetProvider";
 import HelperReactChildren from "./helpers/HelperReactChildren";
+import HelperScrollView from "./helpers/HelperScrollView";
+import { useWindowDimensions } from "react-native";
 
 export type CustomnSnackbarProps = SnackbarProps & { sevirity: NotificationSevirity };
 
@@ -20,6 +22,7 @@ interface Props extends CustomnSnackbarProps {}
  * @since 0.0.1
  */
 export default function CustomSnackbar({ sevirity = "info", action = { label: "Cancel" }, ...props }: Props) {
+    const { height } = useWindowDimensions();
     const { defaultFontStyles } = useContext(AssetContext);
     const componentName = "Snackbar";
     const { children, style, ...otherProps } = useDefaultProps(
@@ -28,7 +31,7 @@ export default function CustomSnackbar({ sevirity = "info", action = { label: "C
         CustomSnackbarStyles.component
     );
 
-    const { labelStyle, ...otherActions } = action;
+    const { labelStyle = {}, ...otherActions } = action;
 
     return (
         <Portal>
@@ -36,19 +39,21 @@ export default function CustomSnackbar({ sevirity = "info", action = { label: "C
                 style={{
                     ...(style as object),
                     ...NOTIFICATION_SEVIRITY_STYLES[sevirity],
+                    maxHeight: (height ?? 500) / 3, // same as "height: 33%", there's some other outer container which prevents % from working
                 }}
                 action={{
                     labelStyle: {
                         ...(!isBlank(otherActions.label) ? CustomSnackbarStyles.label : {}),
-                        color: sevirity !== "info" ? "black" : otherActions.textColor,
-                        ...defaultFontStyles({fontWeight: FONT_WEIGHT_BOLD}),
-                        ...labelStyle as object
+                        ...defaultFontStyles({ fontWeight: FONT_WEIGHT_BOLD }),
+                        ...(labelStyle as object),
                     },
                     ...otherActions,
                 }}
                 {...otherProps}
             >
-                <HelperReactChildren>{children}</HelperReactChildren>
+                <HelperScrollView persistentScrollbar>
+                    <HelperReactChildren>{children}</HelperReactChildren>
+                </HelperScrollView>
             </Snackbar>
         </Portal>
     );
