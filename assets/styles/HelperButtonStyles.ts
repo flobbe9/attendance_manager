@@ -12,7 +12,6 @@ export class HelperButtonStyles {
         default: {
             backgroundColor: "rgb(220, 220, 220)",
             padding: padding,
-            ...HS.fitContent,
         }
     }
 
