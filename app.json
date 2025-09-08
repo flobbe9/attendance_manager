@@ -1,41 +1,58 @@
 {
-  "expo": {
-    "name": "attendence_manager",
-    "slug": "attendence_manager",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+    "expo": {
+        "name": "Attendance Manager",
+        "slug": "attendence_manager",
+        "version": "0.2.6",
+        "orientation": "default",
+        "icon": "./assets/images/favicon.png",
+        "scheme": "myapp",
+        "userInterfaceStyle": "automatic",
+        "newArchEnabled": true,
+        "ios": {
+            "supportsTablet": true,
+            "bundleIdentifier": "de.attendance-manager",
+            "infoPlist": {
+                "ITSAppUsesNonExemptEncryption": false
+            }
+        },
+        "android": {
+            "package": "de.attendance_manager",
+            "versionCode": 1,
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/images/favicon.png",
+                "backgroundColor": "#ffffff"
+            }
+        },
+        "plugins": [
+            "expo-router",
+            [
+                "expo-document-picker",
+                {
+                  "iCloudContainerEnvironment": "Production"
+                }
+            ],
+            [
+                "expo-splash-screen",
+                {
+                    "image": "./assets/images/favicon.png",
+                    "imageWidth": 200,
+                    "resizeMode": "contain",
+                    "backgroundColor": "#ffffff"
+                }
+            ],
+            "expo-sqlite",
+            "react-native-cloud-storage"
+        ],
+        "experiments": {
+            "typedRoutes": true
+        },
+        "extra": {
+            "router": {
+                "origin": false
+            },
+            "eas": {
+                "projectId": "1ba5e012-7222-413b-a300-e7d9daa09591"
+            }
         }
-      ]
-    ],
-    "experiments": {
-      "typedRoutes": true
     }
-  }
 }

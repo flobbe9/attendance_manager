@@ -1,50 +1,36 @@
-# Welcome to your Expo app 👋
+# Glossary
+- UB = Unterrichtsbesuch
+    - an attendance
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+- GUB = Großer Unterrichtsbesuch
+    - An attendance becomse a "GUB" if all 3 examinants are present (music, history, educator)
 
-## Get started
+- Sek = Sekundarstufe
+    - Sek1 describes school years from 5 - 10 (inclusive)
+    - Sek2 describes school years from 11 - 13 (inclusive)
 
-1. Install dependencies
+# Deploy
+## ios credentials
+The `eas build` command expects some credentials to be uploaded in eas cloud. This needs to be done once locally and does not happen in the pipeline. See docs below. 
 
-   ```bash
-   npm install
-   ```
+# Docs
+## CI/CD
+Expo: https://expo.dev/accounts/flobbe9 <br>
+Apple apps: https://appstoreconnect.apple.com/apps
+Apple certificate stuff: https://developer.apple.com/account/resources/certificates/list <br>
+Apple general developer: https://developer.apple.com/account <br>
 
-2. Start the app
+## Credentials
+Once ios credentials expire, use `eas credentials` to generate and upload new ones to eas cloud. Important: choose "Build Credentials: Manage everything needed to build your project", don't
+upload manual credentials.json stuff because eas credentials will somehow invalidate the .mobileprovision file in the process. <br>
+https://docs.expo.dev/app-signing/local-credentials/
 
-   ```bash
-    npx expo start
-   ```
+## UI
+React native paper: https://callstack.github.io/react-native-paper/docs/components/ActivityIndicator <br>
 
-In the output, you'll find options to open the app in a
+# Debugging
+## `drizzle-kit generate` failing
+- Could be because of "expo-constants" module. Don't know why but commenting it out in constants.ts can solve the issue.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## .env
+The `eas build` command does not seem to use the .env variables (according to this post that is: https://www.reddit.com/r/expo/comments/1feh09e/solution_for_using_environment_variables_in_expo/).

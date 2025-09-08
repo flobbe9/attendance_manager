@@ -1,39 +1,59 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import AssetProvider from "@/components/context/AssetProvider";
+import GlobalAttendanceContextProvider from "@/components/context/GlobalAttendanceContextProvider";
+import GlobalContextProvider from "@/components/context/GlobalContextProvider";
+import IndexContextProvider from "@/components/context/IndexContextProvider";
+import CustomSqliteProvider from "@/components/CustomSqliteProvider";
+import DrawerContent from "@/components/DrawerContent";
+import GlobalComponentProvider from "@/components/GlobalComponentProvider";
+import { APP_NAME } from "@/utils/constants";
+import { useRouter } from "expo-router";
+import { Drawer } from "expo-router/drawer";
+import { useEffect } from "react";
+import { StatusBar, useColorScheme } from "react-native";
+import { ClickOutsideProvider } from "react-native-click-outside";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+/**
+ * Initialize global stuff in here.
+ *
+ * @since 0.0.1
+ * @edited 0.2.5 make this a drawer nav
+ */
+export default function layout() {
+    const colorScheme = useColorScheme();
+    const { navigate } = useRouter();
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    function handleLayout(): void {
+        // because wont use 'indexStack/_layout' file on render by default
+        navigate("/(indexStack)");
     }
-  }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+    return (
+        <CustomSqliteProvider>
+            <GlobalContextProvider>
+                <IndexContextProvider>
+                    <GlobalAttendanceContextProvider>
+                        <ClickOutsideProvider>
+                            <AssetProvider>
+                                <GlobalComponentProvider>
+                                    <GestureHandlerRootView style={{ flex: 1 }} onLayout={handleLayout}>
+                                        <StatusBar barStyle={`${colorScheme}-content`} />
 
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+                                        <Drawer
+                                            drawerContent={() => <DrawerContent />}
+                                            screenOptions={{
+                                                swipeEnabled: false,
+                                                headerShown: false, // see (indexStack)/_layout for open drawer button
+                                            }}
+                                            initialRouteName="(indexStack)"
+                                        />
+                                    </GestureHandlerRootView>
+                                </GlobalComponentProvider>
+                            </AssetProvider>
+                        </ClickOutsideProvider>
+                    </GlobalAttendanceContextProvider>
+                </IndexContextProvider>
+            </GlobalContextProvider>
+        </CustomSqliteProvider>
+    );
 }
