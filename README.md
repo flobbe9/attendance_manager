@@ -9,9 +9,18 @@
     - Sek1 describes school years from 5 - 10 (inclusive)
     - Sek2 describes school years from 11 - 13 (inclusive)
 
+
 # Deploy
 ## ios credentials
 The `eas build` command expects some credentials to be uploaded in eas cloud. This needs to be done once locally and does not happen in the pipeline. See docs below. 
+
+## test deploy (qa)
+- simply push to qa, pipeline will do the rest
+
+## prod deploy
+- merge qa to production
+- manually deploy the latest qa build
+
 
 # Docs
 ## CI/CD
