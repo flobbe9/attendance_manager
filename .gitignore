@@ -16,6 +16,9 @@ expo-env.d.ts
 *.p12
 *.key
 *.mobileprovision
+credentials.json
+android
+ios
 
 # Metro
 .metro-health-check*
@@ -30,9 +33,19 @@ yarn-error.*
 *.pem
 
 # local env files
-.env*.local
+.env.*.local
 
 # typescript
 *.tsbuildinfo
 
 app-example
+notes.md
+DefaultComponent.tsx
+DefaultComponentStyles.ts
+test.*
+.vscode
+logs
+
+# temporarily ignored until development is finished
+app/(settings)/account.tsx
+abstract/oauth
