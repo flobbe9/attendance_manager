@@ -1,4 +1,4 @@
-name: attendance_manager dev
+name: attendance_manager development
 
 run-name: ${{ github.event.head_commit.message }}
 on:
