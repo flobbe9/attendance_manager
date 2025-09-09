@@ -1,30 +1,26 @@
 {
-  "cli": {
-    "version": ">= 16.3.3",
-    "appVersionSource": "remote",
-    "requireCommit": true
-  },
-  "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
-    },
-    "preview": {
-      "distribution": "internal"
-    },
-    "dev": {
-      "autoIncrement": true
-    },
-    "staging": {
-      "autoIncrement": true
-    },
-    "production": {
-      "autoIncrement": true
-    }
-  },
-  "submit": {
-    "dev": {},
-    "staging": {},
-    "production": {}
-  }
+	"cli": {
+		"version": ">= 16.3.3",
+		"appVersionSource": "remote",
+		"requireCommit": true
+	},
+	"build": {
+		"development": {
+			"developmentClient": true,
+			"distribution": "internal"
+		},
+		"preview": {
+			"distribution": "internal"
+		},
+		"qa": {
+			"autoIncrement": true
+		},
+		"production": {
+			"autoIncrement": true
+		}
+	},
+	"submit": {
+		"qa": {},
+		"production": {}
+	}
 }
