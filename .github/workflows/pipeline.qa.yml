@@ -2,10 +2,7 @@ name: attendance_manager qa
 
 run-name: ${{ github.event.head_commit.message }}
 on:
-  push:
-    branches:
-      - qa
-
+  workflow_dispatch:
 
 jobs:
     build_and_test:
