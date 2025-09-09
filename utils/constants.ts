@@ -4,7 +4,7 @@ import { StoreConstants } from "@/abstract/StoreConstants";
 import { DrizzleConfig } from "drizzle-orm";
 import ExpoConstants from "expo-constants";
 
-/** Values from app.json file */
+/** Values from app.json file "expo" property */
 export const appJson = ExpoConstants.expoConfig;
 
 export const APP_VERSION = appJson.version;

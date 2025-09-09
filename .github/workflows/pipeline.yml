@@ -1,8 +1,14 @@
-name: attendance_manager qa
+name: build and test or deploy
 
 run-name: ${{ github.event.head_commit.message }}
 on:
-  workflow_dispatch:
+    workflow_dispatch:
+    push:
+        branches:
+            - development
+
+env:
+    BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 jobs:
     build_and_test:
@@ -27,7 +33,9 @@ jobs:
           - name: Run tests
             run: npm run test
 
+    # run only for qa and production
     deploy:
+        if: ${{ github.head_ref || github.ref_name }} == 'qa' || ${{ github.head_ref || github.ref_name }} == 'production'
         runs-on: macos-15 # uses mandatory xcode v16
         needs: build_and_test
         
@@ -56,7 +64,7 @@ jobs:
                 eas-version: latest
 
           - name: Build iOS App
-            run: eas build --local -p ios --profile staging --non-interactive --output app.ipa
+            run: eas build --local -p ios --profile ${{ env.BRANCH_NAME }} --non-interactive --output app.ipa
 
           - name: Deploy TestFlight
             uses: apple-actions/upload-testflight-build@v3
