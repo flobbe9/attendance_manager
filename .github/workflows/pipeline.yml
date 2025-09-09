@@ -2,10 +2,10 @@ name: build and test or deploy
 
 run-name: ${{ github.event.head_commit.message }}
 on:
-    push:
-        branches:
-            - development
-    workflow_dispatch:
+  push:
+      branches:
+        - development
+  workflow_dispatch:
 
 env:
     BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
