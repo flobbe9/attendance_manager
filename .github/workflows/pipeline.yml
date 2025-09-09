@@ -10,6 +10,8 @@ on:
 env:
     BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
+    # TODO: continue here, conditional does not work
+        # document that pipeline changes to workflow_dispatch only apply when on master branch
 jobs:
     build_and_test:
         runs-on: ubuntu-latest
