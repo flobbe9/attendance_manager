@@ -2,9 +2,7 @@ name: attendance_manager production
 
 run-name: ${{ github.event.head_commit.message }}
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch
 
 
 jobs:
