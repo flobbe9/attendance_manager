@@ -10,10 +10,8 @@ on:
 env:
     BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
-    # TODO: continue here, conditional does not work
 jobs:
     build_and_test:
-        if: (github.head_ref || github.ref_name) == 'qa' || (github.head_ref || github.ref_name) == 'production'
         runs-on: ubuntu-latest
 
         steps:
