@@ -11,9 +11,9 @@ env:
     BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
     # TODO: continue here, conditional does not work
-        # document that pipeline changes to workflow_dispatch only apply when on master branch
 jobs:
     build_and_test:
+        if: (github.head_ref || github.ref_name) == 'qa' || (github.head_ref || github.ref_name) == 'production'
         runs-on: ubuntu-latest
 
         steps:
@@ -37,9 +37,10 @@ jobs:
 
     # run only for qa and production
     deploy:
+        if: (github.head_ref || github.ref_name) == 'qa' || (github.head_ref || github.ref_name) == 'production'
         runs-on: macos-15 # uses mandatory xcode v16
         needs: build_and_test
-        if: ${{ github.head_ref || github.ref_name }} == 'qa' || ${{ github.head_ref || github.ref_name }} == 'production'
+
         steps:
           - name: Select Xcode 16.4 (for iOS 18)
             run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
