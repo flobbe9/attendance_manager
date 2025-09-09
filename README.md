@@ -11,16 +11,20 @@
 
 
 # Deploy
+
+<strong>Important:</strong> The deploy pipeline assumes that eas build profiles and git branches are named the same!
+
 ## ios credentials
 The `eas build` command expects some credentials to be uploaded in eas cloud. This needs to be done once locally and does not happen in the pipeline. See docs below. 
 
-## test deploy (qa)
-- simply push to qa, pipeline will do the rest
+## qa deploy
+- merge `development` into `qa`
+- start the deployment pipeline in `qa` branch manually
 
 ## prod deploy
-- merge qa to production
-- manually deploy the latest qa build
-
+- increase the version in `development` then merge to `qa` and then to `master`
+- start the deployment pipeline in `production` branch manually <br>
+Note that this does not deploy to the app store but to testFlight. Production deployment is done manually (ios: https://appstoreconnect.apple.com/apps)
 
 # Docs
 ## CI/CD
