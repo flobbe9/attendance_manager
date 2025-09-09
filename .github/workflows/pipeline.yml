@@ -13,9 +13,9 @@ env:
 jobs:
     build_and_test:
         runs-on: ubuntu-latest
+        if: ${{ github.head_ref || github.ref_name }} == 'qa' || ${{ github.head_ref || github.ref_name }} == 'production'
 
         steps:
-          - run: echo ${{ github.head_ref || github.ref_name }}
           - name: Checkout repository 
             uses: actions/checkout@v4
 
@@ -36,9 +36,9 @@ jobs:
 
     # run only for qa and production
     deploy:
-        if: ${{ github.head_ref || github.ref_name }} == 'qa' || ${{ github.head_ref || github.ref_name }} == 'production'
         runs-on: macos-15 # uses mandatory xcode v16
         needs: build_and_test
+        if: ${{ github.head_ref || github.ref_name }} == 'qa' || ${{ github.head_ref || github.ref_name }} == 'production'
         
         steps:
           - name: Select Xcode 16.4 (for iOS 18)
