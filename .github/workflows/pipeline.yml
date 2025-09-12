@@ -38,6 +38,9 @@ jobs:
         # needs: build_and_test
 
         steps:
+          - name: Checkout repository 
+            uses: actions/checkout@v4
+
           - name: retrieve app version
             uses: sergeysova/jq-action@v2
             id: appVersion
@@ -50,6 +53,8 @@ jobs:
         needs: get_app_version
 
         steps:
+          - name: Checkout repository 
+            uses: actions/checkout@v4
           - run: 'echo "${{ needs.get_app_version.outputs.appVersion }}"'
           - run: 'echo "${{ needs.get_app_version.outputs.appVersion.value }}"'
             
