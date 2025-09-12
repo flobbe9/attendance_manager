@@ -46,7 +46,7 @@ jobs:
             id: appVersion
             with: 
                 cmd: 'jq .expo.version app.json -r'
-          - run: 'echo "Got app version ${{ steps.appVersion.outputs.value }}'
+          - run: 'echo "Got app version ${{ steps.appVersion.outputs.value }}"'
 
     test_job:
         runs-on: ubuntu-latest
