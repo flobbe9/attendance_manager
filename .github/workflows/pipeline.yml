@@ -11,81 +11,94 @@ env:
     BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 jobs:
-    build_and_test:
-        runs-on: ubuntu-latest
+    # build_and_test:
+    #     runs-on: ubuntu-latest
 
-        steps:
-          - name: Checkout repository 
-            uses: actions/checkout@v4
+        # steps:
+        #   - name: Checkout repository 
+        #     uses: actions/checkout@v4
 
-          - name: Install dependencies
-            run: npm ci
+        #   - name: Install dependencies
+        #     run: npm ci
 
-          - name: Compile typescript
-            run: npx tsc --noEmit
+        #   - name: Compile typescript
+        #     run: npx tsc --noEmit
 
-          - name: Build / bundle
-            run: npx expo export:embed --eager --platform ios --dev false
+        #   - name: Build / bundle
+        #     run: npx expo export:embed --eager --platform ios --dev false
 
-          - name: Prebuild
-            run: npx expo prebuild
+        #   - name: Prebuild
+        #     run: npx expo prebuild
     
-          - name: Run tests
-            run: npm run test
+        #   - name: Run tests
+        #     run: npm run test
 
-    # run only for qa and production
-    deploy:
-        # NOTE: ${{}} syntax does not work here
-        if: (github.head_ref || github.ref_name) == 'qa' || (github.head_ref || github.ref_name) == 'production'
-        runs-on: macos-15 # uses mandatory xcode v16
-        needs: build_and_test
+    get_app_version:
+        runs-on: ubuntu-latest
+        # needs: build_and_test
 
         steps:
-          - name: Select Xcode 16.4 (for iOS 18)
-            run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
-            
-          - name: Checkout repository 
-            uses: actions/checkout@v4
-
-          - name: Setup node
-            uses: actions/setup-node@v4
-            with:
-                node-version: 22.x
-
-          - name: Intall dependencies
-            run: npm ci
-            shell: bash
-
-          - name: Setup eas
-            uses: expo/expo-github-action@v8
-            with:
-                packager: npm
-                token: "${{ secrets.EXPO_TOKEN }}"
-                expo-version: latest
-                eas-version: latest
-
           - name: retrieve app version
             uses: sergeysova/jq-action@v2
             id: appVersion
             with: 
                 cmd: 'jq .expo.version app.json -r'
-          - run: echo 'APP_FILE_NAME=attendance_manager_v${{ steps.appVersion.outputs.value }}.ipa' >> $GITHUB_ENV
+          - run: 'echo "Got app version ${{ steps.appVersion.outputs.value }}'
 
-          - name: Build iOS App
-            run: eas build --local -p ios --profile ${{ env.BRANCH_NAME }} --non-interactive --output ${{ env.APP_FILE_NAME }}
+    test_job:
+        runs-on: ubuntu-latest
+        needs: get_app_version
 
-          - name: Deploy TestFlight
-            uses: apple-actions/upload-testflight-build@v3
-            if: (github.head_ref || github.ref_name) == 'qa'
-            with: 
-                app-path: './${{ env.APP_FILE_NAME }}'
-                issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-                api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
-                api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+        steps:
+          - run: 'echo "${{ needs.get_app_version.outputs.appVersion }}"'
+          - run: 'echo "${{ needs.get_app_version.outputs.appVersion.value }}"'
+            
+    # run only for qa and production
+    # deploy:
+    #     # NOTE: ${{}} syntax does not work here
+    #     if: (github.head_ref || github.ref_name) == 'qa' || (github.head_ref || github.ref_name) == 'production'
+    #     runs-on: macos-15 # uses mandatory xcode v16
+    #     needs: get_app_version
+
+    #     steps:
+    #       - name: Select Xcode 16.4 (for iOS 18)
+    #         run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
+            
+    #       - name: Checkout repository 
+    #         uses: actions/checkout@v4
+
+    #       - name: Setup node
+    #         uses: actions/setup-node@v4
+    #         with:
+    #             node-version: 22.x
+
+    #       - name: Intall dependencies
+    #         run: npm ci
+    #         shell: bash
+
+    #       - name: Setup eas
+    #         uses: expo/expo-github-action@v8
+    #         with:
+    #             packager: npm
+    #             token: "${{ secrets.EXPO_TOKEN }}"
+    #             expo-version: latest
+    #             eas-version: latest
+
+    #       - name: Build iOS App
+    #         run: eas build --local -p ios --profile ${{ env.BRANCH_NAME }} --non-interactive --output attendance_manager_v${{ needs.get_app_version.outputs.appVersion }}.ipa
+
+    #       - name: Deploy TestFlight
+    #         uses: apple-actions/upload-testflight-build@v3
+    #         if: (github.head_ref || github.ref_name) == 'qa'
+    #         with: 
+    #             app-path: './attendance_manager_v${{ needs.get_app_version.outputs.appVersion }}.ipa'
+    #             issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+    #             api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+    #             api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
                 
-          - name: Upload .ipa file for production
-            uses: actions/upload-artifact@v4
-            if: (github.head_ref || github.ref_name) == 'production'
-            with:
-                name: ${{ env.APP_FILE_NAME }}
-                path: ${{ env.APP_FILE_NAME }}
+    #       - name: Upload .ipa file for production
+    #         uses: actions/upload-artifact@v4
+    #         if: (github.head_ref || github.ref_name) == 'production'
+    #         with:
+    #             name: attendance_manager_v${{ needs.get_app_version.outputs.appVersion }}.ipa
+    #             path: attendance_manager_v${{ needs.get_app_version.outputs.appVersion }}.ipa
