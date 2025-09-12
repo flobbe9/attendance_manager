@@ -18,45 +18,20 @@ jobs:
           - name: Checkout repository 
             uses: actions/checkout@v4
 
-          - name: retrieve app version
-            uses: sergeysova/jq-action@v2
-            id: appVersion
-            with: 
-                cmd: 'jq .expo.version app.json -r'
-                
-          - name: should be 1.0.0
-            run: 'echo "${{ steps.appVersion.outputs.value }}"'
+          - name: Install dependencies
+            run: npm ci
 
-          - run: echo 'APP_FILE_NAME=attendance_manager_v${{ steps.appVersion.outputs.value }}.ipa' >> $GITHUB_ENV
+          - name: Compile typescript
+            run: npx tsc --noEmit
 
-          - name: APP_FILE_NAME should be attendance_manager_v_1.0.0.ipa
-            run: 'echo "APP_FILE_NAME=${{ env.APP_FILE_NAME }}"'
+          - name: Build / bundle
+            run: npx expo export:embed --eager --platform ios --dev false
 
-          - name: Upload app.json
-            uses: actions/upload-artifact@v4
-            with:
-                name: app json
-                path: app.json
-
-          - name: Skip this setp
-            if: (github.head_ref || github.ref_name) == 'qa'
-            run: 'echo "this should not be echoed"'
-
-
-        #   - name: Install dependencies
-        #     run: npm ci
-
-        #   - name: Compile typescript
-        #     run: npx tsc --noEmit
-
-        #   - name: Build / bundle
-        #     run: npx expo export:embed --eager --platform ios --dev false
-
-        #   - name: Prebuild
-        #     run: npx expo prebuild
+          - name: Prebuild
+            run: npx expo prebuild
     
-        #   - name: Run tests
-        #     run: npm run test
+          - name: Run tests
+            run: npm run test
 
     # run only for qa and production
     deploy:
@@ -101,7 +76,7 @@ jobs:
 
           - name: Deploy TestFlight
             uses: apple-actions/upload-testflight-build@v3
-            if: (github.head_ref || github.ref_name) == 'production'
+            if: (github.head_ref || github.ref_name) == 'qa'
             with: 
                 app-path: './${{ env.APP_FILE_NAME }}'
                 issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
@@ -110,7 +85,7 @@ jobs:
                 
           - name: Upload .ipa file for production
             uses: actions/upload-artifact@v4
-            if: (github.head_ref || github.ref_name) == 'qa'
+            if: (github.head_ref || github.ref_name) == 'production'
             with:
-                name: attendance_manager app file
+                name: ${{ env.APP_FILE_NAME }}
                 path: ${{ env.APP_FILE_NAME }}
