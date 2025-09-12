@@ -35,10 +35,11 @@ jobs:
 
     # run only for qa and production
     deploy:
-        if: ${{ github.head_ref || github.ref_name }} == 'qa' || ${{ github.head_ref || github.ref_name }} == 'production'
+        # NOTE: ${{}} syntax does not work here
+        if: (github.head_ref || github.ref_name) == 'qa' || (github.head_ref || github.ref_name) == 'production'
         runs-on: macos-15 # uses mandatory xcode v16
         needs: build_and_test
-        
+
         steps:
           - name: Select Xcode 16.4 (for iOS 18)
             run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
@@ -63,13 +64,28 @@ jobs:
                 expo-version: latest
                 eas-version: latest
 
+          - name: retrieve app version
+            uses: sergeysova/jq-action@v2
+            id: appVersion
+            with: 
+                cmd: 'jq .expo.version app.json -r'
+          - run: echo 'APP_FILE_NAME=attendance_manager_v${{ steps.appVersion.outputs.value }}.ipa' >> $GITHUB_ENV
+
           - name: Build iOS App
-            run: eas build --local -p ios --profile ${{ env.BRANCH_NAME }} --non-interactive --output app.ipa
+            run: eas build --local -p ios --profile ${{ env.BRANCH_NAME }} --non-interactive --output ${{ env.APP_FILE_NAME }}
 
           - name: Deploy TestFlight
             uses: apple-actions/upload-testflight-build@v3
+            if: (github.head_ref || github.ref_name) == 'qa'
             with: 
-                app-path: './app.ipa'
+                app-path: './${{ env.APP_FILE_NAME }}'
                 issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
                 api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
                 api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+                
+          - name: Upload .ipa file for production
+            uses: actions/upload-artifact@v4
+            if: (github.head_ref || github.ref_name) == 'production'
+            with:
+                name: ${{ env.APP_FILE_NAME }}
+                path: ${{ env.APP_FILE_NAME }}

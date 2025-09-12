@@ -22,7 +22,7 @@ The `eas build` command expects some credentials to be uploaded in eas cloud. Th
 - start the deployment pipeline in `qa` branch manually
 
 ## prod deploy
-- increase the version in `development` then merge to `qa` and then to `production`
+- merge to `qa` and then to `production`
 - start the deployment pipeline in `production` branch manually <br>
 Note that this does not deploy to the app store but to testFlight. Production deployment is done manually (ios: https://appstoreconnect.apple.com/apps)
 
