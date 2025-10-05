@@ -2,6 +2,7 @@ import { ExaminantRole_Key } from "@/abstract/Examinant";
 import { PartialRecord } from "@/abstract/PartialRecord";
 import { SchoolSubject_Key, schoolSubjectKeysObj } from "@/abstract/SchoolSubject";
 import { SortOrder } from "@/abstract/SortOrder";
+import { SortWrapper } from "@/abstract/SortWrapper";
 import { NO_SELECTION_LABEL } from "@/utils/constants";
 import { defaultEqualsFalsy } from "@/utils/projectUtils";
 import { assertFalsyAndThrow, dateEquals, isBlank, isDateAfter } from "@/utils/utils";
@@ -11,6 +12,7 @@ import { AttendanceEntity } from "../entities/AttendanceEntity";
 import { ExaminantEntity } from "../entities/ExaminantEntity";
 import { ExaminantService } from "./ExaminantService";
 import { SchoolclassModeService } from "./SchoolclassModeService";
+import { logDebug } from "@/utils/logUtils";
 
 /**
  * @since 0.0.1
@@ -231,6 +233,20 @@ export class AttendanceService extends AbstractModifiableService<AttendanceEntit
         else compareValue = attendanceEntity1.date.getTime() - attendanceEntity2.date.getTime();
 
         return sortOrder === SortOrder.DESC ? compareValue * -1 : compareValue;
+    }
+
+    public compare(attendanceEntity1: AttendanceEntity, attendanceEntity2: AttendanceEntity, sortWrapper: SortWrapper, classField: keyof AttendanceEntity): number {
+        assertFalsyAndThrow(attendanceEntity1, attendanceEntity2, sortWrapper, classField);
+
+        switch (classField) {
+            case "date": 
+                return this.compareDate(attendanceEntity1, attendanceEntity2, sortWrapper.sortOrder);
+
+            case "schoolSubject":
+                return this.compareSchoolSubject(attendanceEntity1, attendanceEntity2, sortWrapper.sortOrder);
+
+            default: 0;
+        }
     }
     
     /**

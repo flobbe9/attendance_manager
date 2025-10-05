@@ -1,4 +1,3 @@
-import { AttendanceFilterWrapper } from "@/abstract/AttendanceFilterWrapper";
 import { FontAweSomeIconname } from "@/abstract/FontAwesomeIconName";
 import HelperProps from "@/abstract/HelperProps";
 import { getSchoolSubjectBySchoolSubjectKey, SchoolSubject_Key } from "@/abstract/SchoolSubject";
@@ -8,7 +7,7 @@ import HS from "@/assets/styles/helperStyles";
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { useHelperProps } from "@/hooks/useHelperProps";
 import { getSubjectColor } from "@/hooks/useSubjectColor";
-import { FONT_SIZE, SWITCH_TRUE_COLOR } from "@/utils/styleConstants";
+import { SWITCH_TRUE_COLOR } from "@/utils/styleConstants";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { ViewProps, ViewStyle } from "react-native";
@@ -18,9 +17,9 @@ import { GlobalContext } from "./context/GlobalContextProvider";
 import { IndexContext } from "./context/IndexContextProvider";
 import Flex from "./helpers/Flex";
 import HelperButton from "./helpers/HelperButton";
+import HelperCheckbox from "./helpers/HelperCheckbox";
 import HelperText from "./helpers/HelperText";
 import HelperView from "./helpers/HelperView";
-import HelperCheckbox from "./helpers/HelperCheckbox";
 
 interface Props extends HelperProps<ViewStyle>, ViewProps {}
 
@@ -81,12 +80,14 @@ export default function AttendanceLinkFilters({ ...props }: Props) {
         }
 
         if (isFilter)
-            attendanceLinkFilterWrappers[filterValue] = new AttendanceFilterWrapper(filterValue, classField);
-        else delete attendanceLinkFilterWrappers[filterValue];
+            attendanceLinkFilterWrappers[filterValue] = {
+                filterValue,
+                classField
+            };
+        else 
+            delete attendanceLinkFilterWrappers[filterValue];
 
-        setAttendanceLinkFilterWrappers({
-            ...attendanceLinkFilterWrappers,
-        });
+        setAttendanceLinkFilterWrappers({...attendanceLinkFilterWrappers});
     }
 
     /**

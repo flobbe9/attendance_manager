@@ -1,3 +1,5 @@
+import { PartialRecord } from "@/abstract/PartialRecord";
+import { SortWrapper } from "@/abstract/SortWrapper";
 import { IndexStyles } from "@/assets/styles/IndexStyles";
 import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
 import { AttendanceService } from "@/backend/services/AttendanceService";
@@ -13,13 +15,16 @@ import HelperText from "@/components/helpers/HelperText";
 import HelperView from "@/components/helpers/HelperView";
 import ScreenWrapper from "@/components/helpers/ScreenWrapper";
 import IndexTopBar from "@/components/IndexTopBar";
-import { cloneObj } from "@/utils/utils";
+import { AsyncStorageImpl } from "@/utils/AsyncStorageImpl";
+import { ATTENDANCE_LINK_FILTER_WRAPPERS_CACHE_KEY, ATTENDANCE_LINK_SORT_WRAPPERS_CACHE_KEY, IS_RENDER_ATTENDANCE_LINK_SECTIONS_CACHE_KEY } from "@/utils/constants";
+import { LIGHT_COLOR } from "@/utils/styleConstants";
+import { cloneObj, isFalsy } from "@/utils/utils";
 import { FontAwesome } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { JSX, useContext, useEffect, useState } from "react";
 import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
-import { Divider } from "react-native-paper";
+import { ActivityIndicator, Divider } from "react-native-paper";
 
 interface SectionedAttendanceLinksConditions {
     isGub: boolean;
@@ -31,10 +36,20 @@ interface SectionedAttendanceLinksConditions {
  */
 export default function index() {
     const { prs } = useContext(GlobalContext);
-    const { attendanceLinkFilterWrappers, attendanceLinkSortWrappers, isRenderAttendanceLinksSections } = useContext(IndexContext);
+    const { 
+        attendanceLinkFilterWrappers, 
+        attendanceLinkSortWrappers, 
+        isRenderAttendanceLinksSections, 
+        setAttendanceLinkFilterWrappers, 
+        setAttendanceLinkSortWrappers, 
+        setRenderAttendanceLinkSections 
+    } = useContext(IndexContext);
     const { savedAttendanceEntities, setCurrentAttendanceEntityId, updateSavedAttendanceEntities } = useContext(GlobalAttendanceContext);
 
     const { navigate } = useRouter();
+
+    /** Indicates that sort/filter attendance link wrappers states have been initialized with values from async storage */
+    const [didLoadWrappersFromCache, setDidLoadWrappersFromCache] = useState(false);
 
     const [attendanceLinksAll, setAttendanceLinksAll] = useState<JSX.Element[]>([]);
 
@@ -45,15 +60,38 @@ export default function index() {
     const [isExtended, setIsExtended] = useState(true);
 
     const attendanceService = new AttendanceService();
+    const asyncStorage = new AsyncStorageImpl();
 
     const isScreenInView = useIsFocused();
+
+    useEffect(() => {
+        initAttendanceLinkWrappersStates();
+    }, []); // on app launch only (triggered twice though)
 
     useEffect(() => {
         if (isScreenInView) updateSavedAttendanceEntities();
     }, [isScreenInView]); // triggered on focus and blur of /app/index view
 
     useEffect(() => {
-        if (!isRenderAttendanceLinksSections) setAttendanceLinksAll(mapAttendanceLinks(filterAttendanceLinksGeneral(savedAttendanceEntities)));
+        if (didLoadWrappersFromCache)
+            updateAttendanceLinkStates();
+    }, [savedAttendanceEntities, attendanceLinkFilterWrappers, attendanceLinkSortWrappers, isRenderAttendanceLinksSections, didLoadWrappersFromCache]);
+    
+    useEffect(() => {
+        if (didLoadWrappersFromCache)
+            updateAttendanceLinkWrappersCache();
+    }, [attendanceLinkFilterWrappers, attendanceLinkSortWrappers, isRenderAttendanceLinksSections, didLoadWrappersFromCache]);
+
+    function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
+        const currentScrollPosition = Math.floor(event.nativeEvent?.contentOffset?.y) ?? 0;
+
+        setIsExtended(currentScrollPosition <= 0);
+    }
+
+    function updateAttendanceLinkStates() {
+        if (!isRenderAttendanceLinksSections)
+            setAttendanceLinksAll(mapAttendanceLinks(filterAttendanceLinksGeneral(savedAttendanceEntities)));
+        
         else {
             setAttendanceLinksPastPresent(
                 mapAttendanceLinks(
@@ -65,12 +103,6 @@ export default function index() {
                 mapAttendanceLinks(
                     filterAttendanceLinksSectioned(savedAttendanceEntities, { isGub: true, dateMode: "all" })));
         }
-    }, [savedAttendanceEntities, attendanceLinkFilterWrappers, attendanceLinkSortWrappers, isRenderAttendanceLinksSections]);
-
-    function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
-        const currentScrollPosition = Math.floor(event.nativeEvent?.contentOffset?.y) ?? 0;
-
-        setIsExtended(currentScrollPosition <= 0);
     }
 
     /**
@@ -131,15 +163,15 @@ export default function index() {
             if (!Object.keys(attendanceLinkFilterWrappers).length) return true;
 
             return !!Array.from(Object.entries(attendanceLinkFilterWrappers))
-                .find(([, filterWrapper]) => filterWrapper.filter(attendanceEntity));
+                .find(([, filterWrapper]) => filterWrapper.filterValue === attendanceEntity[filterWrapper.classField]);
         });
 
         // sort
-        Object.values(attendanceLinkSortWrappers)
-            .forEach((attendanceLinkSortWrapper) => {
+        Array.from(Object.entries(attendanceLinkSortWrappers))
+            .forEach(([classField, attendanceLinkSortWrapper]) => {
                 if (attendanceLinkSortWrapper.enabled)
                     attendanceEntitiesCloned.sort((a1, a2) => 
-                        attendanceLinkSortWrapper.compare(a1, a2, attendanceLinkSortWrapper.sortOrder))
+                        attendanceService.compare(a1, a2, attendanceLinkSortWrapper, classField as keyof AttendanceEntity))
             });
 
         return attendanceEntitiesCloned;
@@ -175,6 +207,35 @@ export default function index() {
         );
     }
 
+    /**
+     * Update the async storage values for all sort/filter wrappers using the current states.
+     */
+    async function updateAttendanceLinkWrappersCache(): Promise<void> {
+        await asyncStorage.set(ATTENDANCE_LINK_FILTER_WRAPPERS_CACHE_KEY, attendanceLinkFilterWrappers);
+        await asyncStorage.set(ATTENDANCE_LINK_SORT_WRAPPERS_CACHE_KEY, attendanceLinkSortWrappers);
+        await asyncStorage.set(IS_RENDER_ATTENDANCE_LINK_SECTIONS_CACHE_KEY, isRenderAttendanceLinksSections + "");
+    }
+
+    /**
+     * Update states for all sort/filter wrappers using the currently cached values (if not falsy).
+     */
+    async function initAttendanceLinkWrappersStates(): Promise<void> {
+        // parse then set with arg = false
+        const cachedAttendanceLinkFilterWrappers: object = await asyncStorage.get(ATTENDANCE_LINK_FILTER_WRAPPERS_CACHE_KEY, true) as object;
+        if (cachedAttendanceLinkFilterWrappers)
+            setAttendanceLinkFilterWrappers(cachedAttendanceLinkFilterWrappers);
+
+        const cachedAttendanceLinkSortWrappers: PartialRecord<keyof AttendanceEntity, SortWrapper> = await asyncStorage.get(ATTENDANCE_LINK_SORT_WRAPPERS_CACHE_KEY, true) as object;
+        if (cachedAttendanceLinkSortWrappers)
+            setAttendanceLinkSortWrappers(cachedAttendanceLinkSortWrappers);
+
+        const cachedRenderAttendanceLinkSections = await asyncStorage.get(IS_RENDER_ATTENDANCE_LINK_SECTIONS_CACHE_KEY) === "true";
+        if (!isFalsy(cachedRenderAttendanceLinkSections))
+            setRenderAttendanceLinkSections(cachedRenderAttendanceLinkSections);
+
+        setDidLoadWrappersFromCache(true);
+    }
+
     return (
         <ScreenWrapper>
             <HelperView dynamicStyle={IndexStyles.component}>
@@ -185,7 +246,7 @@ export default function index() {
                     dynamicStyle={IndexStyles.linkContainer}
                     style={{ ...prs("mt_1") }}
                     childrenContainerStyle={{ ...prs("pb_6") }}
-                    rendered={!!attendanceLinksPastPresent.length || !!attendanceLinksFuture.length || !!attendanceLinksGub.length}
+                    rendered={!!attendanceLinksPastPresent.length || !!attendanceLinksFuture.length || !!attendanceLinksGub.length || !!attendanceLinksAll.length}
                     stickyHeaderIndices={isRenderAttendanceLinksSections ? [0, 2, 4] : []}
                     onScroll={handleScroll}
                 >
@@ -237,6 +298,17 @@ export default function index() {
                 >
                     <HelperText dynamicStyle={IndexStyles.emptyMessage}>😴</HelperText>
                     <HelperText dynamicStyle={IndexStyles.emptyMessage}>Noch keine Unterrichtsbesuche...</HelperText>
+                </Flex>
+
+                {/* Loading wrappers from cache */}
+                <Flex
+                    flexDirection="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    style={{ ...prs("mt_10", "mt_md_3") }}
+                    rendered={!!savedAttendanceEntities.length && !didLoadWrappersFromCache}
+                >
+                    <ActivityIndicator animating={true} color={LIGHT_COLOR} size={50} />
                 </Flex>
 
                 {/* Add button */}
