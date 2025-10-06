@@ -3,31 +3,24 @@ import { PartialRecord } from "@/abstract/PartialRecord";
 import { SchoolSubject_Key } from "@/abstract/SchoolSubject";
 import { SortOrder } from "@/abstract/SortOrder";
 import { SortWrapper } from "@/abstract/SortWrapper";
-import { AttendanceEntity } from "@/backend/entities/AttendanceEntity";
-import { AttendanceService } from "@/backend/services/AttendanceService";
+import { AttendanceEntity } from '@/backend/entities/AttendanceEntity';
 import { createContext, ReactNode, useState } from "react";
 
 /**
  * @since 0.2.5
  */
 export default function IndexContextProvider({ children }: { children: ReactNode }) {
-    const attendanceService = new AttendanceService();
-
     const [attendanceLinkFilterWrappers, setAttendanceLinkFilterWrappers] = useState<
         PartialRecord<SchoolSubject_Key, AttendanceFilterWrapper>
     >({});
     // last elements take priority over first elements
-    const [attendanceLinkSortWrappers, setAttendanceLinkSortWrappers] = useState<
-        PartialRecord<keyof AttendanceEntity, SortWrapper<AttendanceEntity>>
-    >({
+    const [attendanceLinkSortWrappers, setAttendanceLinkSortWrappers] = useState<PartialRecord<keyof AttendanceEntity, SortWrapper>>({
         date: {
             sortOrder: SortOrder.DESC,
-            compare: attendanceService.compareDate,
             enabled: true
         },
         schoolSubject: {
             sortOrder: SortOrder.ASC,
-            compare: attendanceService.compareSchoolSubject,
             enabled: true
         }
     });
@@ -52,9 +45,9 @@ export const IndexContext = createContext({
     setAttendanceLinkFilterWrappers: (
         wrappers: PartialRecord<SchoolSubject_Key, AttendanceFilterWrapper>
     ): void => {},
-    attendanceLinkSortWrappers: {} as PartialRecord<keyof AttendanceEntity, SortWrapper<AttendanceEntity>>,
+    attendanceLinkSortWrappers: {} as PartialRecord<keyof AttendanceEntity, SortWrapper>,
     setAttendanceLinkSortWrappers: (
-        wrappers: PartialRecord<keyof AttendanceEntity, SortWrapper<AttendanceEntity>>
+        wrappers: PartialRecord<keyof AttendanceEntity, SortWrapper>
     ): void => {},
     isRenderAttendanceLinksSections: false as boolean,
     setRenderAttendanceLinkSections: (separate: boolean): void => {},

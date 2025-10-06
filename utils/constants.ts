@@ -51,3 +51,7 @@ export const STORE_CONSTANTS: StoreConstants = {
 
 export const DB_BACKUP_FILE_EXTENSION = '.ambak.json';
 export const DB_BACKUP_FILE_MIME_TYPE = 'application/json';
+
+export const ATTENDANCE_LINK_FILTER_WRAPPERS_CACHE_KEY = "attendanceLinkFilterWrappers";
+export const ATTENDANCE_LINK_SORT_WRAPPERS_CACHE_KEY = "attendanceLinkSortWrappers";
+export const IS_RENDER_ATTENDANCE_LINK_SECTIONS_CACHE_KEY = "isRenderAttendanceLinksSections";
