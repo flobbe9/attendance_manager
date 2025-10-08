@@ -1,11 +1,10 @@
-import { Linking, Platform } from "react-native";
-import { appJson, STORE_CONSTANTS } from "./constants";
-import { logDebug, logError, logTrace } from "./logUtils";
-import { assertFalsyAndThrow, isBlank, isFalsy } from "./utils";
-import { checkVersion, CheckVersionResponse } from "react-native-check-version";
+import { DocumentPickerAsset, DocumentPickerOptions, getDocumentAsync } from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
-import { DocumentPickerAsset, DocumentPickerOptions, getDocumentAsync } from "expo-document-picker";
+import { Linking, Platform } from "react-native";
+import { STORE_CONSTANTS } from "./constants";
+import { logError, logTrace } from "./logUtils";
+import { assertFalsyAndThrow, isFalsy } from "./utils";
 
 export function formatDateGermanNoTime(date: Date): string {
     if (!date) return "-";
@@ -67,53 +66,6 @@ export function defaultEqualsFalsy<T>(val1: T, val2: T, considerDistintFalsyValu
     if (!val1 || !val2) return defaultEquals(val1, val2, considerDistintFalsyValues);
 
     return null;
-}
-
-export function encodeStringToBase64(rawStr: string): string {
-    if (isBlank(rawStr)) {
-        logDebug(`Failed to encode string to base64. 'rawStr' is ${rawStr}`);
-        return null;
-    }
-
-    return Buffer.from(rawStr).toString("base64");
-}
-
-export function encodeBase64(base64: string): string {
-    if (isBlank(base64)) {
-        logDebug(`Failed to encode base64. 'base64' is ${base64}`);
-        return null;
-    }
-
-    return Buffer.from(base64, "base64").toString();
-}
-
-/**
- * base64Str -> json string -> obj.
- *
- * @param base64Str
- * @returns
- */
-export function encodeBase64ToObj(base64Str: string): any {
-    if (isBlank(base64Str)) {
-        logDebug(`Failed to encode base64 to obj. 'base64Str' is ${base64Str}`);
-        return null;
-    }
-
-    return JSON.parse(encodeBase64(base64Str));
-}
-
-/**
- * obj -> json string -> base64.
- * @param obj
- * @returns
- */
-export function encodeObjToBase64(obj: object): string | null {
-    if (isFalsy(obj)) {
-        logDebug(`Failed to encode json to base64. 'obj' is ${obj}`);
-        return null;
-    }
-
-    return encodeStringToBase64(JSON.stringify(obj));
 }
 
 /**

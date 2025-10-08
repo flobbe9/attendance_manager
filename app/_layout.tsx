@@ -5,10 +5,7 @@ import IndexContextProvider from "@/components/context/IndexContextProvider";
 import CustomSqliteProvider from "@/components/CustomSqliteProvider";
 import DrawerContent from "@/components/DrawerContent";
 import GlobalComponentProvider from "@/components/GlobalComponentProvider";
-import { APP_NAME } from "@/utils/constants";
-import { useRouter } from "expo-router";
 import { Drawer } from "expo-router/drawer";
-import { useEffect } from "react";
 import { StatusBar, useColorScheme } from "react-native";
 import { ClickOutsideProvider } from "react-native-click-outside";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -21,12 +18,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
  */
 export default function layout() {
     const colorScheme = useColorScheme();
-    const { navigate } = useRouter();
-
-    function handleLayout(): void {
-        // because wont use 'indexStack/_layout' file on render by default
-        navigate("/(indexStack)");
-    }
 
     return (
         <CustomSqliteProvider>
@@ -36,7 +27,7 @@ export default function layout() {
                         <ClickOutsideProvider>
                             <AssetProvider>
                                 <GlobalComponentProvider>
-                                    <GestureHandlerRootView style={{ flex: 1 }} onLayout={handleLayout}>
+                                    <GestureHandlerRootView style={{ flex: 1 }}>
                                         <StatusBar barStyle={`${colorScheme}-content`} />
 
                                         <Drawer
@@ -45,7 +36,6 @@ export default function layout() {
                                                 swipeEnabled: false,
                                                 headerShown: false, // see (indexStack)/_layout for open drawer button
                                             }}
-                                            initialRouteName="(indexStack)"
                                         />
                                     </GestureHandlerRootView>
                                 </GlobalComponentProvider>

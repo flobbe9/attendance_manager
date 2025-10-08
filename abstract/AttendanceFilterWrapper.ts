@@ -4,15 +4,6 @@ import { FilterWrapper } from "./FilterWrapper";
 /**
  * @since 0.2.4
  */
-export class AttendanceFilterWrapper extends FilterWrapper<AttendanceEntity> {
+export interface AttendanceFilterWrapper extends FilterWrapper{
     classField: keyof AttendanceEntity;
-
-    constructor(filterValue: string | number, classField: keyof AttendanceEntity) {
-        super(filterValue);
-        this.classField = classField;
-    }
-
-    filter(obj: AttendanceEntity): boolean {
-        return this.filterValue === obj[this.classField];
-    }
 }

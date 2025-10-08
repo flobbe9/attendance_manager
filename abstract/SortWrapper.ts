@@ -3,9 +3,8 @@ import { SortOrder } from "./SortOrder";
 /**
  * @since 0.2.4
  */
-export interface SortWrapper<T> {
+export interface SortWrapper {
     sortOrder: SortOrder;
-    compare: (obj1: T, obj2: T, sortOrder: SortOrder) => number;
     /** Whether to sort or not */
-    enabled: boolean
+    enabled: boolean;
 }

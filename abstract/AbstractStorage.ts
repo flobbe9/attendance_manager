@@ -1,6 +1,5 @@
 import { SECURE_STORAGE_KEY_REGEX } from "../utils/constants";
-import { logDebug, logError } from "../utils/logUtils";
-import { encodeBase64ToObj, encodeObjToBase64 } from "../utils/projectUtils";
+import { logDebug, logError, logTrace } from "../utils/logUtils";
 import { isBlank, isFalsy } from "../utils/utils";
 
 /**
@@ -48,18 +47,18 @@ export abstract class AbstractStorage<OptionsType> { // generic optionstype
      * 
      * Add some debug logs if invalid.
      * 
-     * @param value storage value (either the original string or base64 encoded)
+     * @param value storage value
      */
     protected abstract isValueValid(value: string): boolean;
 
     /**
      * @param key for storage value. See {@link SECURE_STORAGE_KEY_REGEX}
-     * @param parseBase64 whether to expect value to be base64 encoded and a json string. Will return an object if `true`. Default is `false`
-     * @param options to pass to secure store get method. See {@link ExpoSecureStore.SecureStoreOptions}
+     * @param parseJson whether to expect value to be stringfied json. Will return an object if `true`. Default is `false`
+     * @param options to pass to secure store get method. 
      * @returns resolved promise with either the string value, an object or null if an error occurred or no value with
      * `key` exists
      */
-    async get(key: string, parseBase64 = false, options?: OptionsType): Promise<object | string | null> {
+    async get(key: string, parseJson = false, options?: OptionsType): Promise<object | string | null> {
         if (isBlank(key)) {
             logDebug(`Failed to get value from secure storage. 'key' cannot be blank.`);
             return null;
@@ -72,13 +71,13 @@ export abstract class AbstractStorage<OptionsType> { // generic optionstype
             return null;
         }
 
-        if (parseBase64) {
-            value = encodeBase64ToObj(value);
-
-            if (value === null) {
-                logError(`Failed to get value from secure storage for key '${key}'.`);
-                return null;
-            }
+        try {
+            logTrace("get storage", key, value)
+            
+            if (parseJson)
+                value = JSON.parse(value);
+        } catch (e) {
+            logError(e);
         }
 
         return value;
@@ -102,16 +101,21 @@ export abstract class AbstractStorage<OptionsType> { // generic optionstype
             logDebug(`Failed to save value to secure storage. 'value' cannot be falsy. 'key': ${key}.`);
             return;
         }
+        
+        try {
+            if (typeof value === "object")
+                value = JSON.stringify(value);
 
-        if (typeof value === "object") {
-            logDebug(value);
-            value = encodeObjToBase64(value);
+            logTrace("storage set", key, value);
+                    
+            if (!this.isValueValid(value))
+                return null;
+
+            await this.setImpl(key, value, options);
+        } catch (e) {
+            logError("set")
+            logError(e);
         }
-                
-        if (!this.isValueValid(value))
-            return null;
-
-        await this.setImpl(key, value, options);
     }
 
     /**
