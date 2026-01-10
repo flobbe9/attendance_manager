@@ -9,6 +9,9 @@
 - For iOS:
     - `npx expo run:ios`
 
+## Generate .apk for android
+`eas build -p android --profile preview`
+
 ## Glossary
 - UB = Unterrichtsbesuch
     - an attendance
