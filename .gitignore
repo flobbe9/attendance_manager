@@ -1,4 +1,7 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# IDEs
+.idea
+.vscode
 
 # dependencies
 node_modules/
@@ -43,7 +46,6 @@ notes.md
 DefaultComponent.tsx
 DefaultComponentStyles.ts
 test.*
-.vscode
 logs
 
 # temporarily ignored until development is finished
